@@ -45,6 +45,7 @@ class RewriteRules extends ArrayObject
 			array( 'name' => 'display_groups', 'parse_regex' => '#^admin/(?P<page>groups)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminGroupsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage groups' ),
 			array( 'name' => 'display_group', 'parse_regex' => '#^admin/(?P<page>group)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminGroupsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage a group' ),
 			array( 'name' => 'display_tags', 'parse_regex' => '#^admin/(?P<page>tags)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminTagsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage tags' ),
+			array( 'name' => 'display_logs', 'parse_regex' => '#^admin/(?P<page>logs)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminLogsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage logs' ),
 
 			array( 'name' => 'admin', 'parse_regex' => '#^admin(?:/?$|/(?P<page>[^/]*))/?$#i', 'build_str' => 'admin/({$page})', 'handler' => 'AdminHandler', 'action' => 'admin', 'priority' => 6, 'description' => 'An admin action' ),
 
@@ -54,6 +55,8 @@ class RewriteRules extends ArrayObject
 			array( 'name' => 'admin_ajax_groups', 'parse_regex' => '#^admin_ajax/(?P<context>groups)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminGroupsHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for managing groups' ),
 			array( 'name' => 'admin_ajax_update_groups', 'parse_regex' => '#^admin_ajax/(?P<context>update_groups)/?$#', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminGroupsHandler', 'action' => 'admin_ajax', 'priority' => 4, 'description' => 'Authenticated ajax handler for updating a group' ),
 			array( 'name' => 'admin_ajax_tags', 'parse_regex' => '#^admin_ajax/(?P<context>tags)/?$#', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminTagsHandler', 'action' => 'admin_ajax', 'priority' => 4, 'description' => 'Authenticated ajax handler for managing tags' ),
+			array( 'name' => 'admin_ajax_logs', 'parse_regex' => '#^admin_ajax/(?P<context>logs)/?$#', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminLogsHandler', 'action' => 'admin_ajax', 'priority' => 4, 'description' => 'Authenticated ajax handler for managing logs' ),
+			array( 'name' => 'admin_ajax_delete_logs', 'parse_regex' => '#^admin_ajax/(?P<context>delete_logs)/?$#', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminLogsHandler', 'action' => 'admin_ajax', 'priority' => 4, 'description' => 'Authenticated ajax handler for deleting logs' ),
 
 			array( 'name' => 'admin_ajax', 'parse_regex' => '#^admin_ajax/(?P<context>[^/]+)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for the admin' ),
 
