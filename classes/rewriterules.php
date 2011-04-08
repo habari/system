@@ -37,6 +37,9 @@ class RewriteRules extends ArrayObject
 
 			// Admin actions
 			array( 'name' => 'display_dashboard', 'parse_regex' => '#^admin/?$#', 'build_str' => 'admin', 'handler' => 'AdminDashboardHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Display the admin dashboard' ),
+			array( 'name' => 'display_publish', 'parse_regex' => '#^admin/(?P<page>publish)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminPostsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage publishing posts' ),
+			array( 'name' => 'display_posts', 'parse_regex' => '#^admin/(?P<page>posts)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminPostsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage posts' ),
+			array( 'name' => 'delete_post', 'parse_regex' => '#^admin/(?P<page>delete_post)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminPostsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Delete a post' ),
 			array( 'name' => 'user_profile', 'parse_regex' => '#^admin/(?P<page>user)/(?P<user>[^/]+)/?$#', 'build_str' => 'admin/{$page}/{$user}', 'handler' => 'AdminUsersHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'The profile page for a specific user' ),
 			array( 'name' => 'display_users', 'parse_regex' => '#^admin/(?P<page>users)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminUsersHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage users' ),
 			array( 'name' => 'own_user_profile', 'parse_regex' => '#^admin/(?P<page>user)/?$#', 'build_str' => 'admin/{$page}/{$user}', 'handler' => 'AdminUsersHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'The profile page for a specific user' ),
@@ -59,6 +62,8 @@ class RewriteRules extends ArrayObject
 
 			// Admin AJAX actions
 			array( 'name' => 'admin_ajax_dashboard', 'parse_regex' => '#^admin_ajax/(?P<context>dashboard)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminDashboardHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for the admin dashboard' ),
+			array( 'name' => 'admin_ajax_posts', 'parse_regex' => '#^admin_ajax/(?P<context>posts)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminPostsHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for the managing posts' ),
+			array( 'name' => 'admin_ajax_update_posts', 'parse_regex' => '#^admin_ajax/(?P<context>update_posts)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminPostsHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for the updating posts' ),
 			array( 'name' => 'admin_ajax_add_block', 'parse_regex' => '#^admin_ajax/(?P<context>add_block)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminThemesHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for adding a block' ),
 			array( 'name' => 'admin_ajax_delete_block', 'parse_regex' => '#^admin_ajax/(?P<context>delete_block)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminThemesHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for deleting a block' ),
 			array( 'name' => 'admin_ajax_save_areas', 'parse_regex' => '#^admin_ajax/(?P<context>save_areas)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminThemesHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for saving areas' ),
