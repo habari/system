@@ -42,11 +42,16 @@ class RewriteRules extends ArrayObject
 			array( 'name' => 'display_options', 'parse_regex' => '#^admin/(?P<page>options)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminOptionsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'The options page for the blog' ),
 			array( 'name' => 'display_comments', 'parse_regex' => '#^admin/(?P<page>comments)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminCommentsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage comments' ),
 			array( 'name' => 'edit_comment', 'parse_regex' => '#^admin/(?P<page>comment)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminCommentsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Edit a comment' ),
+			array( 'name' => 'display_groups', 'parse_regex' => '#^admin/(?P<page>groups)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminGroupsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage groups' ),
+			array( 'name' => 'display_group', 'parse_regex' => '#^admin/(?P<page>group)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminGroupsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage a group' ),
 
 			array( 'name' => 'admin', 'parse_regex' => '#^admin(?:/?$|/(?P<page>[^/]*))/?$#i', 'build_str' => 'admin/({$page})', 'handler' => 'AdminHandler', 'action' => 'admin', 'priority' => 6, 'description' => 'An admin action' ),
 
 			// Admin AJAX actions
-			array( 'name' => 'admin_ajax_comments', 'parse_regex' => '#^admin_ajax/(?P<context>[^/]+)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminCommentsHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for managing comments' ),
+			array( 'name' => 'admin_ajax_comments', 'parse_regex' => '#^admin_ajax/(?P<context>comments)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminCommentsHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for managing comments' ),
+			array( 'name' => 'admin_ajax_update_comment', 'parse_regex' => '#^admin_ajax/(?P<context>update_comment)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminCommentsHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for updating a comment' ),
+			array( 'name' => 'admin_ajax_groups', 'parse_regex' => '#^admin_ajax/(?P<context>groups)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminGroupsHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for managing groups' ),
+			array( 'name' => 'admin_ajax_update_groups', 'parse_regex' => '#^admin_ajax/(?P<context>update_groups)/?$#', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminGroupsHandler', 'action' => 'admin_ajax', 'priority' => 4, 'description' => 'Authenticated ajax handler for updating a group' ),
 
 			array( 'name' => 'admin_ajax', 'parse_regex' => '#^admin_ajax/(?P<context>[^/]+)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for the admin' ),
 
