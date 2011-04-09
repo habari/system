@@ -1543,7 +1543,7 @@ class FormControlTag extends FormControl
 	 */
 	function get( $forvalidation = true )
 	{
-		$theme = $this->get_theme( $forvalidation, $this );
+		$theme = $this->get_theme( $forvalidation );
 		$max = Tags::vocabulary()->max_count();
 
 		$tag = $this->tag;
