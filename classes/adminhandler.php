@@ -238,7 +238,7 @@ class AdminHandler extends ActionHandler
 			'spam_percentage' => array(
 				'label' => _t( 'Comment SPAM Threshold' ),
 				'type' => 'text',
-				'helptext' => _t('The liklihood a comment is considered SPAM, in percent.'),
+				'helptext' => _t('The likelihood a comment is considered SPAM, in percent.'),
 				),
 			);
 
