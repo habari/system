@@ -1516,7 +1516,7 @@ class FormControlStatic extends FormControlNoSave
 /**
  * A control to display a single tag for output via FormUI
  */
-class FormControlTag extends FormContainer
+class FormControlTag extends FormControl
 {
 	/**
 	 * Override the FormControl constructor to support more parameters
@@ -1554,7 +1554,7 @@ class FormControlTag extends FormContainer
 		$theme->caption = $tag->term_display;
 		$theme->count = $tag->count;
 
-		return $theme->fetch( 'tabcontrol_tag', true );
+		return $theme->fetch( $this->template, true );
 	}
 
 }
