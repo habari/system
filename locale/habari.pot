@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-03 00:00+0000\n"
+"POT-Creation-Date: 2011-04-10 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -161,7 +161,7 @@ msgid "New Block Type:"
 msgstr ""
 
 #: system/admin/block_instances.php:7 system/themes/mzingi/loginform.php:19
-#: system/themes/mzingi/theme.php:79 system/themes/k2/loginform.php:21
+#: system/themes/mzingi/theme.php:91 system/themes/k2/loginform.php:21
 msgid "Name:"
 msgstr ""
 
@@ -857,7 +857,7 @@ msgstr ""
 msgid "Login to %s"
 msgstr ""
 
-#: system/admin/login.php:40 system/themes/charcoal/theme.php:201
+#: system/admin/login.php:40 system/themes/charcoal/theme.php:214
 #: system/themes/k2/theme.php:125
 msgid "Name"
 msgstr ""
@@ -915,11 +915,6 @@ msgstr ""
 msgid "Edit post"
 msgstr ""
 
-#: system/themes/charcoal/tag.php:5
-#, php-format
-msgid "Displaying posts tagged: %s"
-msgstr ""
-
 #: system/themes/charcoal/tag.php:21 system/themes/charcoal/home.php:24
 #: system/themes/charcoal/multiple.php:20 system/themes/charcoal/search.php:22
 #: system/themes/charcoal/entry.single.php:30 system/themes/k2/theme.php:116
@@ -928,7 +923,7 @@ msgstr ""
 
 #: system/themes/charcoal/tag.php:21 system/themes/charcoal/home.php:24
 #: system/themes/charcoal/multiple.php:20 system/themes/charcoal/search.php:22
-#: system/themes/charcoal/entry.single.php:30 system/classes/theme.php:871
+#: system/themes/charcoal/entry.single.php:30 system/classes/theme.php:867
 msgid "No Comments"
 msgstr ""
 
@@ -1028,7 +1023,7 @@ msgstr ""
 msgid "Atom Comments"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:29 system/themes/charcoal/theme.php:216
+#: system/themes/charcoal/theme.php:29 system/themes/charcoal/theme.php:229
 msgid "Charcoal Menu"
 msgstr ""
 
@@ -1113,58 +1108,73 @@ msgstr ""
 msgid "Options saved"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:147
+#: system/themes/charcoal/theme.php:115
+#, php-format
+msgid "Displaying posts tagged: %s"
+msgstr ""
+
+#: system/themes/charcoal/theme.php:118
+#, php-format
+msgid "Displaying posts not tagged: %s"
+msgstr ""
+
+#: system/themes/charcoal/theme.php:121
+#, php-format
+msgid "Displaying posts tagged: %s and not %s"
+msgstr ""
+
+#: system/themes/charcoal/theme.php:160
 msgid "Search for "
 msgstr ""
 
-#: system/themes/charcoal/theme.php:152 system/themes/charcoal/theme.php:158
+#: system/themes/charcoal/theme.php:165 system/themes/charcoal/theme.php:171
 #, php-format
 msgid "Search results for '%s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:155
+#: system/themes/charcoal/theme.php:168
 #, php-format
 msgid "No results found for your search '%1$s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:155
+#: system/themes/charcoal/theme.php:168
 #, php-format
 msgid "You can try searching for '%2$s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:161
+#: system/themes/charcoal/theme.php:174
 #, php-format
 msgid "No results found for your search '%s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:201
+#: system/themes/charcoal/theme.php:214
 msgid "(Required)"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:203 system/themes/k2/theme.php:127
+#: system/themes/charcoal/theme.php:216 system/themes/k2/theme.php:127
 msgid "Mail"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:203
+#: system/themes/charcoal/theme.php:216
 msgid "(will not be published"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:203
+#: system/themes/charcoal/theme.php:216
 msgid "- Required)"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:205 system/themes/k2/theme.php:129
+#: system/themes/charcoal/theme.php:218 system/themes/k2/theme.php:129
 #: system/classes/post.php:989
 msgid "Website"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:208 system/themes/mzingi/theme.php:96
+#: system/themes/charcoal/theme.php:221 system/themes/mzingi/theme.php:108
 #: system/themes/k2/theme.php:132 system/classes/post.php:1009
 #: system/plugins/habarisilo/habarisilo.plugin.php:471
 msgid "Submit"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:228 system/themes/k2/theme.php:152
+#: system/themes/charcoal/theme.php:241 system/themes/k2/theme.php:152
 msgid "Blog"
 msgstr ""
 
@@ -1178,10 +1188,6 @@ msgstr ""
 
 #: system/themes/charcoal/comments.php:35
 msgid "Be the first to write a comment!"
-msgstr ""
-
-#: system/themes/mzingi/tag.php:9
-msgid "Posts Tagged with"
 msgstr ""
 
 #: system/themes/mzingi/tag.php:19 system/themes/mzingi/entry.multiple.php:17
@@ -1297,32 +1303,47 @@ msgstr ""
 msgid "GO!"
 msgstr ""
 
-#: system/themes/mzingi/theme.php:75
+#: system/themes/mzingi/theme.php:63
+#, php-format
+msgid "Posts tagged with %s"
+msgstr ""
+
+#: system/themes/mzingi/theme.php:66
+#, php-format
+msgid "Posts not tagged with %s"
+msgstr ""
+
+#: system/themes/mzingi/theme.php:69
+#, php-format
+msgid "Posts tagged with %s and not with %s"
+msgstr ""
+
+#: system/themes/mzingi/theme.php:87
 msgid "About You"
 msgstr ""
 
-#: system/themes/mzingi/theme.php:79 system/themes/mzingi/theme.php:82
+#: system/themes/mzingi/theme.php:91 system/themes/mzingi/theme.php:94
 #: system/themes/k2/theme.php:125 system/themes/k2/theme.php:127
 msgid "Required"
 msgstr ""
 
-#: system/themes/mzingi/theme.php:82
+#: system/themes/mzingi/theme.php:94
 msgid "Email Address:"
 msgstr ""
 
-#: system/themes/mzingi/theme.php:85
+#: system/themes/mzingi/theme.php:97
 msgid "Web Address:"
 msgstr ""
 
-#: system/themes/mzingi/theme.php:87
+#: system/themes/mzingi/theme.php:99
 msgid "<p><em><small>Email address is not published</small></em></p>"
 msgstr ""
 
-#: system/themes/mzingi/theme.php:90
+#: system/themes/mzingi/theme.php:102
 msgid "Add to the Discussion"
 msgstr ""
 
-#: system/themes/mzingi/theme.php:94
+#: system/themes/mzingi/theme.php:106
 msgid "Message: (Required)"
 msgstr ""
 
@@ -2168,7 +2189,7 @@ msgid "Comment SPAM Threshold"
 msgstr ""
 
 #: system/classes/adminhandler.php:241
-msgid "The liklihood a comment is considered SPAM, in percent."
+msgid "The likelihood a comment is considered SPAM, in percent."
 msgstr ""
 
 #: system/classes/adminhandler.php:245
@@ -3272,23 +3293,23 @@ msgstr ""
 msgid "Remove this item?"
 msgstr ""
 
-#: system/classes/theme.php:258
+#: system/classes/theme.php:249
 msgid "Whoops! 404. The page you were trying to access is not really there. Please try again."
 msgstr ""
 
-#: system/classes/theme.php:797
+#: system/classes/theme.php:793
 msgid "Previous"
 msgstr ""
 
-#: system/classes/theme.php:824
+#: system/classes/theme.php:820
 msgid "Next"
 msgstr ""
 
-#: system/classes/theme.php:850
+#: system/classes/theme.php:846
 msgid "Read Comments"
 msgstr ""
 
-#: system/classes/theme.php:876
+#: system/classes/theme.php:872
 #, php-format
 msgid "%s Comment"
 msgid_plural "%s Comments"
