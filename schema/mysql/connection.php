@@ -28,7 +28,8 @@ class MySQLConnection extends DatabaseConnection
 		if ( !defined('MYSQL_CHAR_SET') ) {
 			define('MYSQL_CHAR_SET', 'UTF8');
 		}
-		$this->exec('SET NAMES ' . MYSQL_CHAR_SET);
+
+		// SET CHARACTER SET covers all the values included in SET NAMES, as per http://dev.mysql.com/doc/refman/5.0/en/charset-connection.html
 		$this->exec('SET CHARACTER SET ' . MYSQL_CHAR_SET);
 
 		return true;
