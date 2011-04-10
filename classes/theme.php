@@ -121,7 +121,7 @@ class Theme extends Pluggable
 
 		$handler = Controller::get_handler();
 		if ( isset( $handler ) ) {
-			Plugins::act( 'add_template_vars', $this, Controller::get_handler()->handler_vars );
+			Plugins::act( 'add_template_vars', $this, $handler->handler_vars );
 		}
 	}
 
