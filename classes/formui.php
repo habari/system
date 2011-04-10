@@ -1352,11 +1352,7 @@ class FormControl
 	 */
 	protected function get_theme( $forvalidation )
 	{
-		$theme = $this->container->get_theme( $forvalidation, $this );
-		foreach ( $this->properties as $name => $value ) {
-			$theme->name = $value;
-		}
-		return $theme;
+		return $this->container->get_theme( $forvalidation, $this );
 	}
 
 
@@ -1554,7 +1550,7 @@ class FormControlTag extends FormControl
 		$theme->caption = $tag->term_display;
 		$theme->count = $tag->count;
 
-		return $theme->fetch( $this->template, true );
+		return $theme->fetch( $this->get_template(), true );
 	}
 
 }
