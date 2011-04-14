@@ -9,7 +9,7 @@
 		url: {
 			habari: '<?php Site::out_url('habari'); ?>',
 			ajaxDashboard: '<?php echo URL::get('admin_ajax', array('context' => 'dashboard')); ?>',
-			ajaxUpdatePosts: '<?php echo URL::get('admin_ajax', array('context' => 'update_entries')); ?>',
+			ajaxUpdatePosts: '<?php echo URL::get('admin_ajax', array('context' => 'update_posts')); ?>',
 			ajaxLogDelete: '<?php echo URL::get('admin_ajax', array('context' => 'delete_logs')); ?>',
 			ajaxUpdateUsers: '<?php echo URL::get('admin_ajax', array('context' => 'update_users')); ?>',
 			ajaxUpdateGroups: '<?php echo URL::get('admin_ajax', array('context' => 'update_groups')); ?>',

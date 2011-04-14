@@ -6,8 +6,11 @@
  *
  * We look for the undefined class in the following folders:
  * - /system/classes/*.php
- * - /user/classes/*.php
- * - /user/sites/x.y.z/classes/*.php
+ * - /system/handlers/*.php 
+ * - /user/classes/*.php 
+ * - /user/handlers/*.php 
+ * - /user/sites/x.y.z/classes/*.php 
+ * - /user/sites/x.y.z/handlers/*.php 
  *
  * @param string $class_name Class called by the user
  */
@@ -20,11 +23,16 @@ function habari_autoload( $class_name )
 
 	if ( empty( $files ) ) {
 		$files = array();
-		$dirs = array( HABARI_PATH . '/system', HABARI_PATH . '/user' );
+		$dirs = array(
+			HABARI_PATH . '/system/classes',
+			HABARI_PATH . '/system/handlers',
+			HABARI_PATH . '/user/classes',
+			HABARI_PATH . '/user/handlers',
+		);
 
 		// For each directory, save the available files in the $files array.
 		foreach ( $dirs as $dir ) {
-			$glob = glob( $dir . '/classes/*.php' );
+			$glob = glob( $dir . '/*.php' );
 			if ( $glob === false || empty( $glob ) ) continue;
 			$fnames = array_map( create_function( '$a', 'return strtolower(basename($a));' ), $glob );
 			$files = array_merge( $files, array_combine( $fnames, $glob ) );
@@ -39,7 +47,7 @@ function habari_autoload( $class_name )
 		if ( ( $site_user_dir = Site::get_dir( 'user' ) ) != HABARI_PATH . '/user' ) {
 			// We are dealing with a site defined in /user/sites/x.y.z
 			// Add the available files in that directory in the $files array.
-			$glob = glob( $site_user_dir . '/classes/*.php' );
+			$glob = glob( $site_user_dir . '/*.php' );
 			if ( $glob !== false && !empty( $glob ) ) {
 				$fnames = array_map( create_function( '$a', 'return strtolower(basename($a));' ), $glob );
 				$files = array_merge( $files, array_combine( $fnames, $glob ) );

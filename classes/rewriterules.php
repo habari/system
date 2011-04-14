@@ -35,16 +35,57 @@ class RewriteRules extends ArrayObject
 			// Form actions
 			array( 'name' => 'submit_feedback', 'parse_regex' => '#^(?P<id>[0-9]+)/feedback/?$#i', 'build_str' => '{$id}/feedback', 'handler' => 'FeedbackHandler', 'action' => 'add_comment', 'priority' => 8, 'description' => 'Adds a comment to a post' ),
 
-			// User actions
+			// Admin actions
+			array( 'name' => 'display_dashboard', 'parse_regex' => '#^admin/?$#', 'build_str' => 'admin', 'handler' => 'AdminDashboardHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Display the admin dashboard' ),
+			array( 'name' => 'display_publish', 'parse_regex' => '#^admin/(?P<page>publish)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminPostsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage publishing posts' ),
+			array( 'name' => 'display_posts', 'parse_regex' => '#^admin/(?P<page>posts)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminPostsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage posts' ),
+			array( 'name' => 'delete_post', 'parse_regex' => '#^admin/(?P<page>delete_post)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminPostsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Delete a post' ),
+			array( 'name' => 'user_profile', 'parse_regex' => '#^admin/(?P<page>user)/(?P<user>[^/]+)/?$#', 'build_str' => 'admin/{$page}/{$user}', 'handler' => 'AdminUsersHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'The profile page for a specific user' ),
+			array( 'name' => 'display_users', 'parse_regex' => '#^admin/(?P<page>users)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminUsersHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage users' ),
+			array( 'name' => 'own_user_profile', 'parse_regex' => '#^admin/(?P<page>user)/?$#', 'build_str' => 'admin/{$page}/{$user}', 'handler' => 'AdminUsersHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'The profile page for a specific user' ),
+			array( 'name' => 'display_themes', 'parse_regex' => '#^admin/(?P<page>themes)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminThemesHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage themes' ),
+			array( 'name' => 'activate_theme', 'parse_regex' => '#^admin/(?P<page>activate_theme)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminThemesHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Activate a theme' ),
+			array( 'name' => 'preview_theme', 'parse_regex' => '#^admin/(?P<page>preview_theme)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminThemesHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Preview a theme' ),
+			array( 'name' => 'configure_block', 'parse_regex' => '#^admin/(?P<page>configure_block)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminThemesHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Configure a block in an iframe' ),
+			array( 'name' => 'display_plugins', 'parse_regex' => '#^admin/(?P<page>plugins)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminPluginsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage plugins' ),
+			array( 'name' => 'plugin_toggle', 'parse_regex' => '#^admin/(?P<page>plugin_toggle)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminPluginsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Activate or deactivate a plugin' ),
+			array( 'name' => 'display_options', 'parse_regex' => '#^admin/(?P<page>options)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminOptionsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'The options page for the blog' ),
+			array( 'name' => 'display_comments', 'parse_regex' => '#^admin/(?P<page>comments)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminCommentsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage comments' ),
+			array( 'name' => 'edit_comment', 'parse_regex' => '#^admin/(?P<page>comment)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminCommentsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Edit a comment' ),
+			array( 'name' => 'display_groups', 'parse_regex' => '#^admin/(?P<page>groups)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminGroupsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage groups' ),
+			array( 'name' => 'display_group', 'parse_regex' => '#^admin/(?P<page>group)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminGroupsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage a group' ),
+			array( 'name' => 'display_tags', 'parse_regex' => '#^admin/(?P<page>tags)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminTagsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage tags' ),
+			array( 'name' => 'display_logs', 'parse_regex' => '#^admin/(?P<page>logs)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminLogsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage logs' ),
+			array( 'name' => 'display_import', 'parse_regex' => '#^admin/(?P<page>import)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminimportHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage importing content' ),
+
 			array( 'name' => 'admin', 'parse_regex' => '#^admin(?:/?$|/(?P<page>[^/]*))/?$#i', 'build_str' => 'admin/({$page})', 'handler' => 'AdminHandler', 'action' => 'admin', 'priority' => 6, 'description' => 'An admin action' ),
+
+			// Admin AJAX actions
+			array( 'name' => 'admin_ajax_dashboard', 'parse_regex' => '#^admin_ajax/(?P<context>dashboard)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminDashboardHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for the admin dashboard' ),
+			array( 'name' => 'admin_ajax_posts', 'parse_regex' => '#^admin_ajax/(?P<context>posts)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminPostsHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for the managing posts' ),
+			array( 'name' => 'admin_ajax_update_posts', 'parse_regex' => '#^admin_ajax/(?P<context>update_posts)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminPostsHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for the updating posts' ),
+			array( 'name' => 'admin_ajax_media', 'parse_regex' => '#^admin_ajax/(?P<context>media)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminPostsHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling from media silos' ),
+			array( 'name' => 'admin_ajax_media_panel', 'parse_regex' => '#^admin_ajax/(?P<context>media_panel)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminPostsHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling from media panels' ),
+			array( 'name' => 'admin_ajax_add_block', 'parse_regex' => '#^admin_ajax/(?P<context>add_block)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminThemesHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for adding a block' ),
+			array( 'name' => 'admin_ajax_delete_block', 'parse_regex' => '#^admin_ajax/(?P<context>delete_block)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminThemesHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for deleting a block' ),
+			array( 'name' => 'admin_ajax_save_areas', 'parse_regex' => '#^admin_ajax/(?P<context>save_areas)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminThemesHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for saving areas' ),
+			array( 'name' => 'admin_ajax_comments', 'parse_regex' => '#^admin_ajax/(?P<context>comments)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminCommentsHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for managing comments' ),
+			array( 'name' => 'admin_ajax_update_comment', 'parse_regex' => '#^admin_ajax/(?P<context>update_comment)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminCommentsHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for updating a comment' ),
+			array( 'name' => 'admin_ajax_groups', 'parse_regex' => '#^admin_ajax/(?P<context>groups)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminGroupsHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for managing groups' ),
+			array( 'name' => 'admin_ajax_update_groups', 'parse_regex' => '#^admin_ajax/(?P<context>update_groups)/?$#', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminGroupsHandler', 'action' => 'admin_ajax', 'priority' => 4, 'description' => 'Authenticated ajax handler for updating a group' ),
+			array( 'name' => 'admin_ajax_tags', 'parse_regex' => '#^admin_ajax/(?P<context>tags)/?$#', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminTagsHandler', 'action' => 'admin_ajax', 'priority' => 4, 'description' => 'Authenticated ajax handler for managing tags' ),
+			array( 'name' => 'admin_ajax_logs', 'parse_regex' => '#^admin_ajax/(?P<context>logs)/?$#', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminLogsHandler', 'action' => 'admin_ajax', 'priority' => 4, 'description' => 'Authenticated ajax handler for managing logs' ),
+			array( 'name' => 'admin_ajax_delete_logs', 'parse_regex' => '#^admin_ajax/(?P<context>delete_logs)/?$#', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminLogsHandler', 'action' => 'admin_ajax', 'priority' => 4, 'description' => 'Authenticated ajax handler for deleting logs' ),
+
+			array( 'name' => 'admin_ajax', 'parse_regex' => '#^admin_ajax/(?P<context>[^/]+)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for the admin' ),
+
+			// User actions
 			array( 'name' => 'auth', 'parse_regex' => '#^auth/(?P<page>[^/]*)$#i', 'build_str' => 'auth/{$page}', 'handler' => 'UserHandler', 'action' => '{$page}', 'priority' => 7, 'description' => 'A user action or display, for instance the login screen' ),
 			array( 'name' => 'user', 'parse_regex' => '#^user/(?P<page>[^/]*)$#i', 'build_str' => 'user/{$page}', 'handler' => 'UserHandler', 'action' => '{$page}', 'priority' => 7, 'description' => 'A user action or display, for instance the login screen' ),
-			array( 'name' => 'user_profile', 'parse_regex' => '#^admin/(?P<page>user)/(?P<user>[^/]+)/?$#', 'build_str' => 'admin/{$page}/{$user}', 'handler' => 'AdminHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'The profile page for a specific user' ),
 
 			// AJAX requests
 			array( 'name' => 'ajax', 'parse_regex' => '#^ajax/(?P<context>[^/]+)/?$#i', 'build_str' => 'ajax/{$context}', 'handler' => 'AjaxHandler', 'action' => 'ajax', 'priority' => 8, 'description' => 'Ajax handling' ),
 			array( 'name' => 'auth_ajax', 'parse_regex' => '#^auth_ajax/(?P<context>[^/]+)/?$#i', 'build_str' => 'auth_ajax/{$context}', 'handler' => 'AjaxHandler', 'action' => 'auth_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling' ),
-			array( 'name' => 'admin_ajax', 'parse_regex' => '#^admin_ajax/(?P<context>[^/]+)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for the admin' ),
 
 			// Atom Syndication Format
 			array( 'name' => 'rsd', 'parse_regex' => '/^rsd$/i', 'build_str' => 'rsd', 'handler' => 'AtomHandler', 'action' => 'rsd', 'priority' => 1, 'description' => 'RSD output' ),
