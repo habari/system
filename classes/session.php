@@ -27,7 +27,7 @@ class Session
 		
 		// the default path for the session cookie is /, but let's make that potentially more restrictive so no one steals our cookehs
 		// we also can't use 'null' when we set a secure-only value, because that doesn't mean the same as the default like it should
-		$path = Site::get_path( 'base' );
+		$path = Site::get_path( 'base', true );
 		
 		// the default is not to require a secure session
 		$secure = false;
