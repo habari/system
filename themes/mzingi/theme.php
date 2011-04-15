@@ -81,27 +81,33 @@ class Mzingi extends Theme
 	}
 
 	/**
-	 * Customize comment form layout with fieldsets. Needs thorough commenting.
+	 * Customize comment form layout with fieldsets.
 	 */
 	public function action_form_comment( $form ) { 
+		//Create a fieldset for Name, Email and URL
 		$form->append( 'fieldset', 'cf_commenterinfo', _t( 'About You' ) );
+		//move the fieldset before Name
 		$form->move_before( $form->cf_commenterinfo, $form->cf_commenter );
-
+		//move the Name ( cf_commenter) into the fieldset
 		$form->cf_commenter->move_into($form->cf_commenterinfo);
+		
 		$form->cf_commenter->caption = _t('Name:') . '<span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span></label>';
-
+		//move the Email ( cf_email) into the Fieldset
 		$form->cf_email->move_into( $form->cf_commenterinfo );
+		
 		$form->cf_email->caption = _t( 'Email Address:' ) . '<span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span></label>'; 
-
+		//move the URL into the fieldset
 		$form->cf_url->move_into( $form->cf_commenterinfo );
 		$form->cf_url->caption = _t( 'Web Address:' );
-
+		//add a disclaimer/message
 		$form->append('static','cf_disclaimer', _t( '<p><em><small>Email address is not published</small></em></p>') );
+		//move the disclaimer into the fieldset
 		$form->cf_disclaimer->move_into( $form->cf_commenterinfo );
-
+		//create a second fieldset for the comment textarea
 		$form->append('fieldset', 'cf_contentbox', _t( 'Add to the Discussion' ) );
+		//move the fieldset befoer the textarea
 		$form->move_before($form->cf_contentbox, $form->cf_content);
-
+		//move the textarea into the second fieldset
 		$form->cf_content->move_into($form->cf_contentbox);
 	        $form->cf_content->caption = _t( 'Message: (Required)' );
 
