@@ -22,7 +22,6 @@ class CoreBlocks extends Plugin
 			'tag_archives' => _t( 'Tag Archives' ),
 			'meta_links' => _t( 'Meta Links' ),
 			'search_form' => _t( 'Search Form' ),
-			'page_navigation' => _t( 'Page Navigation' ),
 		);
 		
 		foreach ( array_keys( $this->allblocks ) as $blockname ) {
