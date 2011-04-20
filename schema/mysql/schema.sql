@@ -61,21 +61,6 @@ CREATE TABLE  {$prefix}userinfo (
   PRIMARY KEY (user_id,name)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
-CREATE TABLE  {$prefix}tags (
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  tag_text VARCHAR(255) NOT NULL,
-  tag_slug VARCHAR(255) NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE KEY tag_slug (tag_slug)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
-
-CREATE TABLE  {$prefix}tag2post (
-  tag_id INT UNSIGNED NOT NULL,
-  post_id INT UNSIGNED NOT NULL,
-  PRIMARY KEY (tag_id,post_id),
-  KEY post_id (post_id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
-
 CREATE TABLE  {$prefix}comments (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   post_id INT UNSIGNED NOT NULL,

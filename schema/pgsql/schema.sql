@@ -65,25 +65,6 @@ CREATE TABLE {$prefix}userinfo (
   PRIMARY KEY (user_id,name)
 );
 
-CREATE SEQUENCE {$prefix}tags_pkey_seq;
-CREATE TABLE {$prefix}tags (
-  id BIGINT NOT NULL DEFAULT nextval('{$prefix}tags_pkey_seq'),
-  tag_text VARCHAR(255) NOT NULL,
-  tag_slug VARCHAR(255) NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE (tag_slug)
-);
-
-CREATE TABLE {$prefix}tag2post (
-  tag_id BIGINT NOT NULL,
-  post_id BIGINT NOT NULL,
-  PRIMARY KEY (tag_id,post_id)
-);
-
-CREATE INDEX {$prefix}tag2post_post_id_key ON {$prefix}tag2post (
-  post_id
-);
-
 CREATE SEQUENCE {$prefix}comments_pkey_seq;
 CREATE TABLE {$prefix}comments (
   id BIGINT NOT NULL DEFAULT nextval('{$prefix}comments_pkey_seq'),

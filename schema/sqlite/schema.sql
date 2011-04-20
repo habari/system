@@ -59,20 +59,6 @@ CREATE TABLE {$prefix}userinfo (
   PRIMARY KEY (user_id, name)
 );
 
-CREATE TABLE {$prefix}tags (
-  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  tag_text VARCHAR(255) NOT NULL,
-  tag_slug VARCHAR(255) NOT NULL
-);
-CREATE UNIQUE INDEX IF NOT EXISTS tag_slug ON {$prefix}tags(tag_slug);
-
-CREATE TABLE {$prefix}tag2post (
-  tag_id INTEGER NOT NULL,
-  post_id INTEGER NOT NULL,
-  PRIMARY KEY (tag_id, post_id)
-);
-CREATE INDEX IF NOT EXISTS tag2post_post_id ON {$prefix}tag2post(post_id);
-
 CREATE TABLE {$prefix}comments (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   post_id INTEGER NOT NULL,
