@@ -124,11 +124,12 @@ class AdminUsersHandler extends AdminHandler
 		// Regional settings
 		$timezones = DateTimeZone::listIdentifiers();
 		$timezones = array_merge( array_combine( array_values( $timezones ), array_values( $timezones ) ) );
-		$locale_tz = $form->regional_settings->append( 'text', 'locale_tz', 'null:null', _t( 'Timezone' ), 'optionscontrol_select' );
+		$locale_tz = $form->regional_settings->append( 'select', 'locale_tz', 'null:null', _t( 'Timezone' ) );
 		$locale_tz->class[] = 'item clear';
 		$locale_tz->value = $edit_user->info->locale_tz;
 		$locale_tz->options = $timezones;
 		$locale_tz->multiple = false;
+		$locale_tz->template = 'optionscontrol_select';
 
 		$locale_date_format = $form->regional_settings->append( 'text', 'locale_date_format', 'null:null', _t( 'Date Format' ), 'optionscontrol_text' );
 		$locale_date_format->class[] = 'item clear';
