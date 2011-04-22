@@ -1687,6 +1687,15 @@ class InstallHandler extends ActionHandler
 		
 	}
 	
+	private function upgrade_db_post_5096 ( ) {
+		
+		DB::execute( 'drop table {tags}' );
+		DB::execute( 'drop table {tag2post}' );
+		
+		// what about postgres and sqlite indexes?
+		
+	}
+	
 	/**
 	 * Validate database credentials for MySQL
 	 * Try to connect and verify if database name exists
