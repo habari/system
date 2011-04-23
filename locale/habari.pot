@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-17 00:00+0000\n"
+"POT-Creation-Date: 2011-04-24 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -83,7 +83,7 @@ msgstr ""
 #: system/admin/groups_item.php:8 system/admin/block_instances.php:24
 #: system/admin/publish.php:15 system/admin/posts_items.php:29
 #: system/admin/group.php:127 system/handlers/admincommentshandler.php:453
-#: system/handlers/adminusershandler.php:169
+#: system/handlers/adminusershandler.php:170
 #: system/plugins/habarisilo/habarisilo.plugin.php:489
 #: system/plugins/habarisilo/habarisilo.plugin.php:506
 msgid "Delete"
@@ -850,7 +850,7 @@ msgid "deny"
 msgstr ""
 
 #: system/admin/group.php:130 system/handlers/adminoptionshandler.php:169
-#: system/handlers/adminusershandler.php:166
+#: system/handlers/adminusershandler.php:167
 msgid "Apply"
 msgstr ""
 
@@ -1389,7 +1389,7 @@ msgstr ""
 msgid "Caffeine"
 msgstr ""
 
-#: system/themes/k2/footer.php:12 system/handlers/adminusershandler.php:169
+#: system/themes/k2/footer.php:12 system/handlers/adminusershandler.php:170
 msgid "and"
 msgstr ""
 
@@ -2376,7 +2376,7 @@ msgstr ""
 msgid "User Group %1$s: Users were removed from the group."
 msgstr ""
 
-#: system/classes/databaseconnection.php:257
+#: system/classes/databaseconnection.php:259
 msgid "Attempt to fetch in class mode with a non-included class"
 msgstr ""
 
@@ -2487,7 +2487,7 @@ msgstr ""
 #: system/handlers/admingroupshandler.php:222
 #: system/handlers/adminlogshandler.php:238
 #: system/handlers/adminpostshandler.php:519
-#: system/handlers/adminusershandler.php:289
+#: system/handlers/adminusershandler.php:290
 msgid "WSSE authentication failed."
 msgstr ""
 
@@ -2530,13 +2530,13 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: system/handlers/installhandler.php:147
-#: system/handlers/adminusershandler.php:414
+#: system/handlers/adminusershandler.php:415
 msgid "Password mis-match."
 msgstr ""
 
 #: system/handlers/installhandler.php:153
-#: system/handlers/installhandler.php:1720
-#: system/handlers/installhandler.php:1791
+#: system/handlers/installhandler.php:1729
+#: system/handlers/installhandler.php:1800
 msgid "Allowed characters are A-Z, a-z and \"_\"."
 msgstr ""
 
@@ -2596,33 +2596,33 @@ msgstr ""
 
 #: system/handlers/installhandler.php:536
 #: system/handlers/installhandler.php:569
-#: system/handlers/installhandler.php:1735
-#: system/handlers/installhandler.php:1806
+#: system/handlers/installhandler.php:1744
+#: system/handlers/installhandler.php:1815
 msgid "Access denied. Make sure these credentials are valid."
 msgstr ""
 
 #: system/handlers/installhandler.php:539
 #: system/handlers/installhandler.php:572
-#: system/handlers/installhandler.php:1739
-#: system/handlers/installhandler.php:1810
+#: system/handlers/installhandler.php:1748
+#: system/handlers/installhandler.php:1819
 msgid "That database does not exist."
 msgstr ""
 
 #: system/handlers/installhandler.php:542
 #: system/handlers/installhandler.php:575
-#: system/handlers/installhandler.php:1743
-#: system/handlers/installhandler.php:1814
+#: system/handlers/installhandler.php:1752
+#: system/handlers/installhandler.php:1823
 msgid "Could not connect to host."
 msgstr ""
 
 #: system/handlers/installhandler.php:603
-#: system/handlers/installhandler.php:1862
+#: system/handlers/installhandler.php:1871
 #, php-format
 msgid "Cannot write to %s. The SQLite data file is not writable by the web server."
 msgstr ""
 
 #: system/handlers/installhandler.php:607
-#: system/handlers/installhandler.php:1855
+#: system/handlers/installhandler.php:1864
 #, php-format
 msgid "Cannot write to %s directory. SQLite requires that the directory that holds the DB file be writable by the web server."
 msgstr ""
@@ -2674,22 +2674,22 @@ msgstr ""
 msgid "Manage dashboard modules"
 msgstr ""
 
-#: system/handlers/installhandler.php:1702
-#: system/handlers/installhandler.php:1773
+#: system/handlers/installhandler.php:1711
+#: system/handlers/installhandler.php:1782
 msgid "The database host field was left empty."
 msgstr ""
 
-#: system/handlers/installhandler.php:1708
-#: system/handlers/installhandler.php:1779
+#: system/handlers/installhandler.php:1717
+#: system/handlers/installhandler.php:1788
 msgid "The database name field was left empty."
 msgstr ""
 
-#: system/handlers/installhandler.php:1714
-#: system/handlers/installhandler.php:1785
+#: system/handlers/installhandler.php:1723
+#: system/handlers/installhandler.php:1794
 msgid "The database user field was left empty."
 msgstr ""
 
-#: system/handlers/installhandler.php:1845
+#: system/handlers/installhandler.php:1854
 msgid "The database file was left empty."
 msgstr ""
 
@@ -3186,7 +3186,7 @@ msgid "Current Date Time: %s"
 msgstr ""
 
 #: system/handlers/adminoptionshandler.php:88
-#: system/handlers/adminusershandler.php:133
+#: system/handlers/adminusershandler.php:134
 msgid "Date Format"
 msgstr ""
 
@@ -3196,7 +3196,7 @@ msgid "Current Date: %s"
 msgstr ""
 
 #: system/handlers/adminoptionshandler.php:93
-#: system/handlers/adminusershandler.php:144
+#: system/handlers/adminusershandler.php:145
 msgid "Time Format"
 msgstr ""
 
@@ -3293,7 +3293,7 @@ msgid "%s's User Information"
 msgstr ""
 
 #: system/handlers/adminusershandler.php:46
-#: system/handlers/adminusershandler.php:372
+#: system/handlers/adminusershandler.php:373
 msgid "nobody"
 msgstr ""
 
@@ -3337,74 +3337,74 @@ msgstr ""
 msgid "Timezone"
 msgstr ""
 
-#: system/handlers/adminusershandler.php:142
-#: system/handlers/adminusershandler.php:153
+#: system/handlers/adminusershandler.php:143
+#: system/handlers/adminusershandler.php:154
 #, php-format
 msgid "See <a href=\"%s\">php.net/date</a> for details. Current format: %s"
 msgstr ""
 
-#: system/handlers/adminusershandler.php:156
+#: system/handlers/adminusershandler.php:157
 msgid "Hide Spam Count"
 msgstr ""
 
-#: system/handlers/adminusershandler.php:158
+#: system/handlers/adminusershandler.php:159
 msgid "Hide the number of SPAM comments on your dashboard."
 msgstr ""
 
-#: system/handlers/adminusershandler.php:169
+#: system/handlers/adminusershandler.php:170
 #, php-format
 msgid "Reassign posts to: %s"
 msgstr ""
 
-#: system/handlers/adminusershandler.php:215
+#: system/handlers/adminusershandler.php:216
 #, php-format
 msgid "%s has been deleted"
 msgstr ""
 
-#: system/handlers/adminusershandler.php:220
-#: system/handlers/adminusershandler.php:347
+#: system/handlers/adminusershandler.php:221
+#: system/handlers/adminusershandler.php:348
 msgid "You cannot delete yourself."
 msgstr ""
 
-#: system/handlers/adminusershandler.php:228
+#: system/handlers/adminusershandler.php:229
 #, php-format
 msgid "%1$s has been renamed to %2$s."
 msgstr ""
 
-#: system/handlers/adminusershandler.php:241
+#: system/handlers/adminusershandler.php:242
 msgid "Password changed."
 msgstr ""
 
-#: system/handlers/adminusershandler.php:264
+#: system/handlers/adminusershandler.php:265
 msgid "User updated."
 msgstr ""
 
-#: system/handlers/adminusershandler.php:317
+#: system/handlers/adminusershandler.php:318
 msgid "No users deleted."
 msgstr ""
 
-#: system/handlers/adminusershandler.php:354
+#: system/handlers/adminusershandler.php:355
 #, php-format
 msgid "Deleted %d users."
 msgstr ""
 
-#: system/handlers/adminusershandler.php:411
+#: system/handlers/adminusershandler.php:412
 msgid "Password is required."
 msgstr ""
 
-#: system/handlers/adminusershandler.php:417
+#: system/handlers/adminusershandler.php:418
 msgid "Please supply a valid email address."
 msgstr ""
 
-#: system/handlers/adminusershandler.php:420
+#: system/handlers/adminusershandler.php:421
 msgid "Please supply a user name."
 msgstr ""
 
-#: system/handlers/adminusershandler.php:425
+#: system/handlers/adminusershandler.php:426
 msgid "That username is already assigned."
 msgstr ""
 
-#: system/handlers/adminusershandler.php:430
+#: system/handlers/adminusershandler.php:431
 #, php-format
 msgid "Added user '%s'"
 msgstr ""
