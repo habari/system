@@ -160,8 +160,14 @@ class Stack
 	 * @param string $value_name The name of the value to remove
 	 * @return array The rest of the stack, post-remove
 	 **/
-	public static function remove( $stack_name, $value_name )
+	public static function remove( $stack_name, $value_name = null )
 	{
+		
+		if ( $value_name == null ) {
+			unset( self::$stacks[ $stack_name ] );
+			return array();
+		}
+		
 		$stack = self::get_named_stack( $stack_name );
 		if ( isset( $stack[$value_name] ) ) {
 			unset( $stack[$value_name] );
