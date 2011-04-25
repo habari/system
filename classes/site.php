@@ -242,6 +242,7 @@ class Site
 		$path = '';
 		switch ( strtolower( $name ) ) {
 			case 'base':
+			case 'habari':
 				$path = rtrim( dirname( Site::script_name() ), '/\\' );
 				break;
 			case 'user':
