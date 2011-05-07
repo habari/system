@@ -147,7 +147,7 @@ class Format
 		// should never autop ANY content in these items
 		$no_auto_p = array(
 			'pre','code','ul','h1','h2','h3','h4','h5','h6',
-			'table','ul','ol','li','i','b','em','strong'
+			'table','ul','ol','li','i','b','em','strong','script'
 		);
 
 		$block_elements = array(
