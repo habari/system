@@ -110,6 +110,19 @@ class Charcoal extends Theme
 		}
 		$this->assign( 'post_id', ( isset( $this->post ) && $this->post->content_type == Post::type( 'page' ) ) ? $this->post->id : 0 );
 
+		if ( $this->request->display_entries_by_tag ) {
+			if ( count($this->include_tag) && count($this->exclude_tag) == 0 ) {
+				$this->tags_msg = _t('Displaying posts tagged: %s', array(Format::tag_and_list($this->include_tag)));
+			}
+			else if ( count($this->exclude_tag) && count($this->include_tag) == 0 ) {
+				$this->tags_msg = _t('Displaying posts not tagged: %s', array(Format::tag_and_list($this->exclude_tag)));
+			}
+			else {
+				$this->tags_msg = _t('Displaying posts tagged: %s and not %s', array(Format::tag_and_list($this->include_tag), Format::tag_and_list($this->exclude_tag)));
+			}
+		}
+
+
 		// Add FormUI template placing the input before the label
 		$this->add_template( 'charcoal_text', dirname( __FILE__ ) . '/formcontrol_text.php' );
 	}

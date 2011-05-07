@@ -58,6 +58,18 @@ class Mzingi extends Theme
 		//For Asides loop in sidebar.php
 		$this->assign( 'asides', Posts::get( array( 'vocabulary' => array( 'tags:term' => 'aside' ), 'limit' => 5 ) ) );	
 
+		if ( $this->request->display_entries_by_tag ) {
+			if ( count($this->include_tag) && count($this->exclude_tag) == 0 ) {
+				$this->tags_msg = _t('Posts tagged with %s', array(Format::tag_and_list($this->include_tag)));
+			}
+			else if ( count($this->exclude_tag) && count($this->include_tag) == 0 ) {
+				$this->tags_msg = _t('Posts not tagged with %s', array(Format::tag_and_list($this->exclude_tag)));
+			}
+			else {
+				$this->tags_msg = _t('Posts tagged with %s and not with %s', array(Format::tag_and_list($this->include_tag), Format::tag_and_list($this->exclude_tag)));
+			}
+		}
+
 		parent::add_template_vars();
 		
 	}
