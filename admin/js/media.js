@@ -113,10 +113,8 @@ habari.media = {
 	},
 	
 	resize_media_row: function() {
-		// Obtain the silo id we're working in so we can resize the correct silo's media_row
-		var silo_id = $('.mediasplitter:not(".ui-tabs-hide")').attr('id');
 		var dirswidth = 0;
-		$('#' + silo_id +' .media_dirlevel').each(function(){
+		$('.mediasplitter:visible .media_dirlevel').each(function(){
 			var maxw = 0;
 			$(this).find('.directory').each(function(){
 				maxw = Math.max(maxw, $(this).outerWidth());
@@ -124,7 +122,7 @@ habari.media = {
 			$(this).width(maxw);
 			dirswidth += maxw;
 		});
-		$('#' + silo_id +' .media_row').width(dirswidth + $('#' + silo_id +' .mediaphotos').outerWidth() + 33);
+		$('.mediasplitter:visible .media_row').width(dirswidth + $('.mediasplitter:visible .mediaphotos').outerWidth() + 33);
 	},
 
 	clickdir: function(el, path) {
