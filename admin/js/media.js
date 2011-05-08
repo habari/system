@@ -94,7 +94,7 @@ habari.media = {
 //					if ($('.mediaphotos .media', container).length == 0 && $('.media_dirlevel:first-child li.active', container).length == 0) {
 //						$('.media_dirlevel:last-child li:first-child', container).click();
 //					}
-
+	
 					$('.media img').addClass('loading');
 
 					// As each image loads
@@ -113,8 +113,10 @@ habari.media = {
 	},
 	
 	resize_media_row: function() {
+		// Obtain the silo id we're working in so we can resize the correct silo's media_row
+		var silo_id = $('.mediasplitter:not(".ui-tabs-hide")').attr('id');
 		var dirswidth = 0;
-		$('.media_dirlevel').each(function(){
+		$('#' + silo_id +' .media_dirlevel').each(function(){
 			var maxw = 0;
 			$(this).find('.directory').each(function(){
 				maxw = Math.max(maxw, $(this).outerWidth());
@@ -122,8 +124,7 @@ habari.media = {
 			$(this).width(maxw);
 			dirswidth += maxw;
 		});
-		$('.media_row').width(dirswidth + $('.mediaphotos').outerWidth() + 33);
-
+		$('#' + silo_id +' .media_row').width(dirswidth + $('#' + silo_id +' .mediaphotos').outerWidth() + 33);
 	},
 
 	clickdir: function(el, path) {
