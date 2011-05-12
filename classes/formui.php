@@ -1759,16 +1759,18 @@ class FormControlTree extends FormControlSelect
 	 * @param string $caption
 	 * @param array $options
 	 * @param string $template
+	 * @param array $config
 	 */
 	public function __construct()
 	{
 		$args = func_get_args();
-		list( $name, $storage, $caption, $template ) = array_merge( $args, array_fill( 0, 5, null ) );
+		list( $name, $storage, $caption, $template, $config ) = array_merge( $args, array_fill( 0, 5, null ) );
 
 		$this->name = $name;
 		$this->storage = $storage;
 		$this->caption = $caption;
 		$this->template = $template;
+		$this->config = empty($config) ? array() : $config;
 	}
 	
 		/**
