@@ -217,6 +217,9 @@ class Options extends Singleton
 			'pagination' => 10,
 			'comments_require_id' => false,
 		);
+		if(Config::exists('default_options')) {
+			$this->options = array_merge($this->options, Config::get('default_options'));
+		}
 		$results = DB::get_results( 'SELECT name, value, type FROM {options}', array(), 'QueryRecord' );
 		foreach ( $results as $result ) {
 			if ( $result->type == 1 ) {
@@ -225,6 +228,9 @@ class Options extends Singleton
 			else {
 				$this->options[$result->name] = $result->value;
 			}
+		}
+		if(Config::exists('static_options')) {
+			$this->options = array_merge($this->options, Config::get('static_options'));
 		}
 	}
 
