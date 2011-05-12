@@ -508,6 +508,33 @@ SQL;
 		return call_user_func_array( array( 'Plugins', 'filter' ), $args );
 	}
 
+	/**
+	 * Gets the term object by criteria.
+	 * @param mixed $term A Term object, a string (for a term slug or display), or an integer (for a Term ID).
+	 * @param string $term_class The class of the returned term object.
+	 * @return Term The Term object requested
+	 * @todo improve selective fetching by term slug vs term_display
+	 **/
+	public static function get( $term, $term_class = 'Term' )
+	{
+		$query = '';
+		if ( $term instanceof Term ) {
+			// This seems kind of silly, but by passing a different $term_class, the 
+			// database values are loaded into a different class instance and fire its constructor
+			$params[ 'term_id' ] = $term->id;
+			$query = 'SELECT * FROM {terms} WHERE id = ABS(:term_id)';
+		}
+		elseif ( is_string( $term ) ) {
+			$params[ 'term' ] = $term;
+			$query = 'SELECT * FROM {terms} WHERE (term = :term OR term_display = :term) ORDER BY term <> :term';
+		}
+		elseif ( is_int( $term ) ) {
+			$params[ 'term_id' ] = $term;
+			$query = 'SELECT * FROM {terms} WHERE id = ABS(:term_id)';
+		}
+		return DB::get_row( $query, $params, $term_class );
+	}
+
 }
 
 ?>
