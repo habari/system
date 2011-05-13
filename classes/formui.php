@@ -554,12 +554,12 @@ class FormUI extends FormContainer
 			else {
 				$forvalidation = true;
 				if ( !isset( $_SESSION['forms'][$this->salted_name()]['url'] ) ) {
-					$_SESSION['forms'][$this->salted_name()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . ( isset( $_SERVER['QUERY_STRING'] ) ? '?' . $_SERVER['QUERY_STRING'] : '' );
+					$_SESSION['forms'][$this->salted_name()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . ( empty( $_SERVER['QUERY_STRING'] ) ? '' : '?' . $_SERVER['QUERY_STRING'] );
 				}
 			}
 		}
 		else {
-			$_SESSION['forms'][$this->salted_name()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . ( isset( $_SERVER['QUERY_STRING'] ) ? '?' . $_SERVER['QUERY_STRING'] : '' );
+			$_SESSION['forms'][$this->salted_name()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . ( empty( $_SERVER['QUERY_STRING'] ) ? '' : '?' . $_SERVER['QUERY_STRING'] );
 		}
 		if ( isset( $_SESSION['forms'][$this->salted_name()]['error_data'] ) ) {
 			foreach ( $_SESSION['forms'][$this->salted_name()]['error_data'] as $key => $value ) {
