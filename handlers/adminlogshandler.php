@@ -56,7 +56,7 @@ class AdminLogsHandler extends AdminHandler
 		$date = Controller::get_var( 'date', 'any' );
 
 		if ( $date != 'any' ) {
-			$d = DateTime::createFromFormat( '!Y-m', $date );	// ! means fill any non-specified pieces with default Unix Epoch ones
+			$d = HabariDateTime::date_create( $date );	// ! means fill any non-specified pieces with default Unix Epoch ones
 			$arguments['year'] = $d->format( 'Y' );
 			$arguments['month'] = $d->format( 'm' );
 		}
