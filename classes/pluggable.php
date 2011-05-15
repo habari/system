@@ -90,25 +90,40 @@ abstract class Pluggable
 
 		return HabariLocale::load_pluggable_domain( $domain, $base_dir );
 	}
-
+	
 	/**
-	 * Called when a pluggable is loaded to register its actions and filters.
-	 * Registers all of this pluggables action_ and filter_ functions with the Plugins dispatcher
+	 * Registers all of this class' action_ and filter_ functions with the Plugins dispatcher
 	 * Registers xmlrpc_ functions with the Plugins dispatcher, and turns '__' into '.'
-	 * for the purposes of matching dotted XMLRPC requests.
-	 */
-	public function load()
+	 *   for the purposes of matching dotted XMLRPC requests.
+	 * If the class is an instance of Pluggable, registers the hooks with a plugin id also.
+	 * @param mixed $object The object or class name to register the hooks of
+	 **/
+	public static function load_hooks($object)
 	{
+		static $registered = array();
+		if(is_object($object)) {
+			$hash = spl_object_hash($object);
+			if(isset($registered[$hash])) {
+				return;
+			}
+			else {
+				$registered[$hash] = true;
+			}
+		}
+		else {
+			$registered[$object] = true;
+		}
+		
 		// combine the array so we can have hooks => function
-		$methods = get_class_methods( $this );
+		$methods = get_class_methods( $object );
 		$methods = array_combine( $methods, $methods );
 		// get the specific priority values for functions, as needed
-		if ( method_exists( $this, 'set_priorities' ) ) {
-			$priorities = $this->set_priorities();
+		if ( method_exists( $object, 'set_priorities' ) ) {
+			$priorities = $object->set_priorities();
 		}
 		// get the aliases.
-		if ( method_exists( $this, 'alias' ) ) {
-			$methods = array_merge_recursive( $methods, $this->alias() );
+		if ( method_exists( $object, 'alias' ) ) {
+			$methods = array_merge_recursive( $methods, $object->alias() );
 		}
 		// loop over all the methods in this class
 		foreach ( $methods as $fn => $hooks ) {
@@ -132,11 +147,21 @@ abstract class Pluggable
 					if ( $type === 'xmlrpc' ) {
 						$hook = str_replace( '__', '.', $hook );
 					}
-					Plugins::register( array( $this, $fn ), $type, $hook, $priority );
-					Plugins::register( array( $this, $fn ), $type, $hook . ':' . $this->plugin_id(), $priority );
+					Plugins::register( array( $object, $fn ), $type, $hook, $priority );
+					if($object instanceof Pluggable) {
+						Plugins::register( array( $object, $fn ), $type, $hook . ':' . $object->plugin_id(), $priority );
+					}
 				}
 			}
 		}
+	}
+
+	/**
+	 * Called when a pluggable is loaded to register its actions and filters.
+	 */
+	public function load()
+	{
+		self::load_hooks($this);
 		// look for help with this
 		if ( method_exists( $this, 'help' ) ) {
 			Plugins::register( array( $this, '_help_plugin_config' ), 'filter', 'plugin_config:' . $this->plugin_id(), 8 );
