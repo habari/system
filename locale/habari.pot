@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-08 00:00+0000\n"
+"POT-Creation-Date: 2011-05-15 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -84,8 +84,8 @@ msgstr ""
 #: system/admin/publish.php:15 system/admin/posts_items.php:29
 #: system/admin/group.php:127 system/handlers/admincommentshandler.php:453
 #: system/handlers/adminusershandler.php:170
-#: system/plugins/habarisilo/habarisilo.plugin.php:489
-#: system/plugins/habarisilo/habarisilo.plugin.php:506
+#: system/plugins/habarisilo/habarisilo.plugin.php:483
+#: system/plugins/habarisilo/habarisilo.plugin.php:500
 msgid "Delete"
 msgstr ""
 
@@ -737,8 +737,8 @@ msgid "Upload Plugin Package"
 msgstr ""
 
 #: system/admin/plugins.php:88
-#: system/plugins/habarisilo/habarisilo.plugin.php:422
-#: system/plugins/habarisilo/habarisilo.plugin.php:560
+#: system/plugins/habarisilo/habarisilo.plugin.php:416
+#: system/plugins/habarisilo/habarisilo.plugin.php:554
 msgid "Upload"
 msgstr ""
 
@@ -1172,7 +1172,7 @@ msgstr ""
 
 #: system/themes/charcoal/theme.php:221 system/themes/mzingi/theme.php:114
 #: system/themes/k2/theme.php:132 system/classes/post.php:1009
-#: system/plugins/habarisilo/habarisilo.plugin.php:471
+#: system/plugins/habarisilo/habarisilo.plugin.php:465
 msgid "Submit"
 msgstr ""
 
@@ -3611,83 +3611,83 @@ msgstr ""
 msgid "Delete files from media silos"
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:420
+#: system/plugins/habarisilo/habarisilo.plugin.php:414
 msgid "Browse"
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:425
+#: system/plugins/habarisilo/habarisilo.plugin.php:419
 msgid "Create Directory"
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:428
+#: system/plugins/habarisilo/habarisilo.plugin.php:422
 msgid "Delete Directory"
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:464
+#: system/plugins/habarisilo/habarisilo.plugin.php:458
 msgid "Parent Directory:"
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:469
+#: system/plugins/habarisilo/habarisilo.plugin.php:463
 msgid "What would you like to call the new directory?"
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:483
+#: system/plugins/habarisilo/habarisilo.plugin.php:477
 msgid "Directory:"
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:488
+#: system/plugins/habarisilo/habarisilo.plugin.php:482
 msgid "Are you sure you want to delete this directory?"
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:501
+#: system/plugins/habarisilo/habarisilo.plugin.php:495
 msgid "File:"
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:505
+#: system/plugins/habarisilo/habarisilo.plugin.php:499
 msgid "Are you sure you want to delete this file?"
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:516
+#: system/plugins/habarisilo/habarisilo.plugin.php:510
 msgid "File Uploaded: "
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:523
+#: system/plugins/habarisilo/habarisilo.plugin.php:517
 msgid "File added successfully."
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:526
+#: system/plugins/habarisilo/habarisilo.plugin.php:520
 msgid "File could not be added to the silo."
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:529
-#: system/plugins/habarisilo/habarisilo.plugin.php:638
+#: system/plugins/habarisilo/habarisilo.plugin.php:523
+#: system/plugins/habarisilo/habarisilo.plugin.php:632
 msgid "Browse the current silo path."
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:560
+#: system/plugins/habarisilo/habarisilo.plugin.php:554
 msgid "Upload to:"
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:578
+#: system/plugins/habarisilo/habarisilo.plugin.php:572
 #, php-format
 msgid "The directory name contains invalid characters: %s."
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:585
+#: system/plugins/habarisilo/habarisilo.plugin.php:579
 #, php-format
 msgid "Webserver does not have permission to create directory: %s."
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:588
+#: system/plugins/habarisilo/habarisilo.plugin.php:582
 #, php-format
 msgid "Directory: %s already exists."
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:633
+#: system/plugins/habarisilo/habarisilo.plugin.php:627
 msgid "File deleted successfully."
 msgstr ""
 
-#: system/plugins/habarisilo/habarisilo.plugin.php:635
+#: system/plugins/habarisilo/habarisilo.plugin.php:629
 msgid "Failed to delete file."
 msgstr ""
 
