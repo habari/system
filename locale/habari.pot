@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-15 00:00+0000\n"
+"POT-Creation-Date: 2011-05-22 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -171,7 +171,7 @@ msgstr ""
 msgid "Configure Block: %1s (%2s)"
 msgstr ""
 
-#: system/admin/block_instances.php:16 system/classes/pluggable.php:196
+#: system/admin/block_instances.php:16 system/classes/pluggable.php:221
 #: system/plugins/undelete/undelete.plugin.php:163
 #: system/plugins/undelete/undelete.plugin.php:175
 #: system/plugins/flickrsilo/flickrsilo.plugin.php:803
@@ -1919,7 +1919,7 @@ msgid_plural "Terms %1$s in the %2$s vocabulary have been renamed to %3$s."
 msgstr[0] ""
 msgstr[1] ""
 
-#: system/classes/plugin.php:62 system/classes/pluggable.php:162
+#: system/classes/plugin.php:62 system/classes/pluggable.php:187
 #: system/handlers/adminpluginshandler.php:56
 #: system/handlers/adminpluginshandler.php:106
 msgid "?"
