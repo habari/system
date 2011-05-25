@@ -1031,6 +1031,15 @@ body.page-publish .buttons input {
 	display:none;
 }
 
+/* Workaround Webkit's terrible rendering of file inputs on dark backgrounds */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	  .media_panel input[type="file"] {
+	  background-color: #F0F0F0;
+	  padding: 2px;
+	  -webkit-border-radius: 3px;
+	}
+}
+
 /*-- MEDIA ACTION DROPBUTTONS */
 
 .mediaactions.dropbutton {
