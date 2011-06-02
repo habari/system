@@ -65,6 +65,8 @@ class Posts extends ArrayObject implements IsContent
 	 * - after => a timestamp to compare post publication dates
 	 * - month_cts => return the number of posts published in each month
 	 * - criteria => a literal search string to match post content
+	 * - title => an exact case-insensitive match to a post title
+	 * - title_search => a search string that acts only on the post title
 	 * - has:info => a post info key or array of post info keys, which should be present
 	 * - all:info => a post info key and value pair or array of post info key and value pairs, which should all be present and match
 	 * - not:all:info => a post info key and value pair or array of post info key and value pairs, to exclude if all are present and match
@@ -92,7 +94,7 @@ class Posts extends ArrayObject implements IsContent
 	 * - having => for selecting posts based on an aggregate function
 	 * - where => manipulate the generated WHERE clause. Currently broken, see https://trac.habariproject.org/habari/ticket/1383
 	 * - add_select => an array of clauses to be added to the generated SELECT clause.
-	 * - fetch_fn => the function used to fetch data, one of 'get_results', 'get_row', 'get_value'
+	 * - fetch_fn => the function used to fetch data, one of 'get_results', 'get_row', 'get_value', 'get_query'
 	 *
 	 * Further description of parameters, including usage examples, can be found at
 	 * http://wiki.habariproject.org/en/Dev:Retrieving_Posts
@@ -349,6 +351,20 @@ class Posts extends ArrayObject implements IsContent
 						$where[] .= "( LOWER( {posts}.title ) LIKE ? OR  LOWER( {posts}.content ) LIKE ?)";
 						$params[] = '%' . MultiByte::strtolower( $word ) . '%';
 						$params[] = '%' . MultiByte::strtolower( $word ) . '%';  // Not a typo (there are two ? in the above statement)
+					}
+				}
+
+				if ( isset( $paramset['title'] ) ) {
+					$where[] .= "LOWER( {posts}.title ) LIKE ?";
+					$params[] = MultiByte::strtolower( $paramset['title'] );
+				}
+
+				if ( isset( $paramset['title_search'] ) ) {
+					// this regex matches any unicode letters (\p{L}) or numbers (\p{N}) inside a set of quotes (but strips the quotes) OR not in a set of quotes
+					preg_match_all( '/(?<=")([\p{L}\p{N}]+[^"]*)(?=")|([\p{L}\p{N}]+)/u', $paramset['title_search'], $matches );
+					foreach ( $matches[0] as $word ) {
+						$where[] .= " LOWER( {posts}.title ) LIKE ? ";
+						$params[] = '%' . MultiByte::strtolower( $word ) . '%';
 					}
 				}
 
