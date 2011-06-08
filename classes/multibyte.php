@@ -407,9 +407,18 @@ class MultiByte
 	 * @param string $str the string to check
 	 * @return bool
 	 */
-	public static function valid_data( $str )
+	public static function valid_data( $str, $use_enc = null )
 	{
-		return mb_check_encoding( $str, self::$hab_enc );
+		$enc = self::$hab_enc;
+		if ( $use_enc !== null ) {
+			$enc = $use_enc;
+		}
+		
+		if ( self::$use_library == self::USE_MBSTRING ) {
+			return mb_check_encoding( $str, $enc );
+		}
+		
+		return true;
 	}
 	
 	/**
