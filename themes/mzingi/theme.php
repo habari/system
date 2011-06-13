@@ -53,20 +53,20 @@ class Mzingi extends Theme
 	public function add_template_vars()
 	{
 		if ( !$this->template_engine->assigned( 'pages' ) ) {
-			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published') ) ) );
+			$this->assign( 'pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status( 'published' ) ) ) );
 		}
 		//For Asides loop in sidebar.php
 		$this->assign( 'asides', Posts::get( array( 'vocabulary' => array( 'tags:term' => 'aside' ), 'limit' => 5 ) ) );	
 
 		if ( $this->request->display_entries_by_tag ) {
-			if ( count($this->include_tag) && count($this->exclude_tag) == 0 ) {
-				$this->tags_msg = _t('Posts tagged with %s', array(Format::tag_and_list($this->include_tag)));
+			if ( count( $this->include_tag ) && count( $this->exclude_tag ) == 0 ) {
+				$this->tags_msg = _t( 'Posts tagged with %s', array( Format::tag_and_list( $this->include_tag ) ) );
 			}
-			else if ( count($this->exclude_tag) && count($this->include_tag) == 0 ) {
-				$this->tags_msg = _t('Posts not tagged with %s', array(Format::tag_and_list($this->exclude_tag)));
+			else if ( count( $this->exclude_tag ) && count( $this->include_tag ) == 0 ) {
+				$this->tags_msg = _t( 'Posts not tagged with %s', array( Format::tag_and_list( $this->exclude_tag ) ) );
 			}
 			else {
-				$this->tags_msg = _t('Posts tagged with %s and not with %s', array(Format::tag_and_list($this->include_tag), Format::tag_and_list($this->exclude_tag)));
+				$this->tags_msg = _t( 'Posts tagged with %s and not with %s', array( Format::tag_and_list( $this->include_tag ), Format::tag_and_list( $this->exclude_tag ) ) );
 			}
 		}
 
@@ -89,26 +89,26 @@ class Mzingi extends Theme
 		//move the fieldset before Name
 		$form->move_before( $form->cf_commenterinfo, $form->cf_commenter );
 		//move the Name ( cf_commenter) into the fieldset
-		$form->cf_commenter->move_into($form->cf_commenterinfo);
+		$form->cf_commenter->move_into( $form->cf_commenterinfo );
 		
-		$form->cf_commenter->caption = _t('Name:') . '<span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span></label>';
+		$form->cf_commenter->caption = _t( 'Name:' ) . '<span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? ' *' . _t( 'Required' ) : '' ) . '</span></label>';
 		//move the Email ( cf_email) into the Fieldset
 		$form->cf_email->move_into( $form->cf_commenterinfo );
 		
-		$form->cf_email->caption = _t( 'Email Address:' ) . '<span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span></label>'; 
+		$form->cf_email->caption = _t( 'Email Address:' ) . '<span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? ' *' . _t( 'Required' ) : '' ) . '</span></label>'; 
 		//move the URL into the fieldset
 		$form->cf_url->move_into( $form->cf_commenterinfo );
 		$form->cf_url->caption = _t( 'Web Address:' );
 		//add a disclaimer/message
-		$form->append('static','cf_disclaimer', _t( '<p><em><small>Email address is not published</small></em></p>') );
+		$form->append('static','cf_disclaimer', _t( '<p><em><small>Email address is not published</small></em></p>' ) );
 		//move the disclaimer into the fieldset
 		$form->cf_disclaimer->move_into( $form->cf_commenterinfo );
 		//create a second fieldset for the comment textarea
 		$form->append('fieldset', 'cf_contentbox', _t( 'Add to the Discussion' ) );
 		//move the fieldset befoer the textarea
-		$form->move_before($form->cf_contentbox, $form->cf_content);
+		$form->move_before( $form->cf_contentbox, $form->cf_content );
 		//move the textarea into the second fieldset
-		$form->cf_content->move_into($form->cf_contentbox);
+		$form->cf_content->move_into( $form->cf_contentbox );
 	        $form->cf_content->caption = _t( 'Message: (Required)' );
 
 		$form->cf_submit->caption = _t( 'Submit' );
