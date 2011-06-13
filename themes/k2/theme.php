@@ -17,15 +17,15 @@ class K2 extends Theme
 	 */
 	public function action_theme_activated()
 	{
-		$blocks = $this->get_blocks('nav', '', $this);
-		if(count($blocks) == 0) {
-			$block = new Block(array(
-				'title' => _t('K2 Menu'),
+		$blocks = $this->get_blocks( 'nav', '', $this );
+		if ( count( $blocks ) == 0 ) {
+			$block = new Block( array(
+				'title' => _t( 'K2 Menu' ),
 				'type' => 'k2_menu',
-			));
+			) );
 
-			$block->add_to_area('nav');
-			Session::notice(_t('Added K2 Menu block to Nav area.'));
+			$block->add_to_area( 'nav' );
+			Session::notice( _t( 'Added K2 Menu block to Nav area.' ) );
 		}
 	}
 
@@ -75,11 +75,11 @@ class K2 extends Theme
 		}
 		
 		if ( User::identify()->loggedin ) {
-			Stack::add( 'template_header_javascript', Site::get_url('scripts') . '/jquery.js', 'jquery' );
+			Stack::add( 'template_header_javascript', Site::get_url( 'scripts' ) . '/jquery.js', 'jquery' );
 		}
 		
 		if ( ( $this->request->display_entry || $this->request->display_page ) && isset( $this->post ) && $this->post->title != '' ) {
-			$this->page_title = $this->post->title . ' - ' . Options::get('title');
+			$this->page_title = $this->post->title . ' - ' . Options::get( 'title' );
 		}
 		else {
 			$this->page_title = Options::get('title');
@@ -113,7 +113,7 @@ class K2 extends Theme
 	{
 		if ( !$post->info->comments_disabled || $post->comments->approved->count > 0 ) {
 			$comment_count = $post->comments->approved->count;
-			echo "<span class=\"commentslink\"><a href=\"{$post->permalink}#comments\" title=\"" . _t('Comments on this post') . "\">{$comment_count} " . _n( 'Comment', 'Comments', $comment_count ) . "</a></span>";
+			echo "<span class=\"commentslink\"><a href=\"{$post->permalink}#comments\" title=\"" . _t( 'Comments on this post' ) . "\">{$comment_count} " . _n( 'Comment', 'Comments', $comment_count ) . "</a></span>";
 		}
 
 	}
@@ -122,11 +122,11 @@ class K2 extends Theme
 	 * Customize comment form layout. Needs thorough commenting.
 	 */
 	public function action_form_comment( $form ) { 
-		$form->cf_commenter->caption = '<small><strong>' . _t('Name') . '</strong></small><span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span>';
+		$form->cf_commenter->caption = '<small><strong>' . _t( 'Name' ) . '</strong></small><span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? ' *' . _t( 'Required' ) : '' ) . '</span>';
 		$form->cf_commenter->template = 'k2_text';
-		$form->cf_email->caption = '<small><strong>' . _t('Mail') . '</strong> ' . _t( '(will not be published)' ) .'</small><span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span>';
+		$form->cf_email->caption = '<small><strong>' . _t( 'Mail' ) . '</strong> ' . _t( '(will not be published)' ) .'</small><span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? ' *' . _t( 'Required' ) : '' ) . '</span>';
 		$form->cf_email->template = 'k2_text';
-		$form->cf_url->caption = '<small><strong>' . _t('Website') . '</strong></small>';
+		$form->cf_url->caption = '<small><strong>' . _t( 'Website' ) . '</strong></small>';
 		$form->cf_url->template = 'k2_text';
 	        $form->cf_content->caption = '';
 		$form->cf_submit->caption = _t( 'Submit' );
@@ -135,34 +135,34 @@ class K2 extends Theme
 	/**
 	 * Add a k2_menu block to the list of available blocks
 	 */
-	public function filter_block_list($block_list)
+	public function filter_block_list( $block_list )
 	{
-		$block_list['k2_menu'] = _t('K2 Menu');
+		$block_list['k2_menu'] = _t( 'K2 Menu' );
 		return $block_list;
 	}
 	
 	/**
 	 * Produce a menu for the K2 menu block from all of the available pages
 	 */
-	public function action_block_content_k2_menu($block, $theme)
+	public function action_block_content_k2_menu( $block, $theme )
 	{
-		$menus = array('home' => array(
+		$menus = array( 'home' => array(
 			'link' => Site::get_url( 'habari' ), 
 			'title' => Options::get( 'title' ), 
-			'caption' => _t('Blog'), 
+			'caption' => _t( 'Blog' ), 
 			'cssclass' => $theme->request->display_home ? 'current_page_item' : '',
-		));
-		$pages = Posts::get(array('content_type' => 'page', 'status' => Post::status('published')));
-		foreach($pages as $page) {
+		) );
+		$pages = Posts::get(array('content_type' => 'page', 'status' => Post::status( 'published' ) ) );
+		foreach( $pages as $page ) {
 			$menus[] = array(
 				'link' => $page->permalink, 
 				'title' => $page->title, 
 				'caption' => $page->title, 
-				'cssclass' => (isset($theme->post) && $theme->post->id == $page->id) ? 'current_page_item' : '',
+				'cssclass' => (isset( $theme->post ) && $theme->post->id == $page->id ) ? 'current_page_item' : '',
 			);
 		}
 		if ( User::identify()->loggedin ) {
-			$menus['admin'] = array('link' => Site::get_url( 'admin' ), 'title' => _t('Admin area'), 'caption' => _t('Admin'), 'cssclass' => 'admintab');
+			$menus['admin'] = array( 'link' => Site::get_url( 'admin' ), 'title' => _t( 'Admin area' ), 'caption' => _t( 'Admin' ), 'cssclass' => 'admintab' );
 		}
 		$block->menus = $menus;
 	}
