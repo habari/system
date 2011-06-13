@@ -23,7 +23,7 @@ class Charcoal extends Theme
 		if ( empty( $opts ) ) {
 			Options::set_group( __CLASS__, $this->defaults );
 		}
-		$blocks = $this->get_blocks( 'nav', '', $this );
+		$blocks = $this->get_blocks( 'nav', 0, $this );
 		if( count( $blocks ) == 0 ) {
 			$block = new Block( array(
 				'title' => _t( 'Charcoal Menu' ),

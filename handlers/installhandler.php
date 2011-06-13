@@ -730,6 +730,7 @@ class InstallHandler extends ActionHandler
 		Options::set( 'atom_entries', '5' );
 		Options::set( 'theme_name', 'k2' );
 		Options::set( 'theme_dir', 'k2' );
+		Themes::activate_theme( 'k2', 'k2' );
 		Options::set( 'comments_require_id', 1 );
 		Options::set( 'locale', $this->handler_vars['locale'] );
 		Options::set( 'timezone', 'UTC' );

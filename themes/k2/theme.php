@@ -17,7 +17,7 @@ class K2 extends Theme
 	 */
 	public function action_theme_activated()
 	{
-		$blocks = $this->get_blocks( 'nav', '', $this );
+		$blocks = $this->get_blocks( 'nav', 0, $this );
 		if ( count( $blocks ) == 0 ) {
 			$block = new Block( array(
 				'title' => _t( 'K2 Menu' ),
