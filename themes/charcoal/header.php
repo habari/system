@@ -32,8 +32,8 @@
 					</div>
 					<div id="navbar">
 						<ul>
-						<?php $theme->area('nav'); ?>
-						<?php if ($display_login): ?>
+						<?php $theme->area( 'nav' ); ?>
+						<?php if ( $display_login ): ?>
 							<li class="login">
 							<?php if ( $loggedin ) : ?>
 								<a href="<?php Site::out_url( 'admin' ); ?>" title="<?php _e( "Admin area" ); ?>"><?php _e( "Admin" ); ?></a>

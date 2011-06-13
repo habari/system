@@ -83,7 +83,7 @@ class Charcoal extends Theme
 	/**
 	 * Add some variables to the template output
 	 */
-	public function action_add_template_vars( $theme, $handler_vars )
+	public function add_template_vars()
 	{
 		// Use theme options to set values that can be used directly in the templates
 		$opts = Options::get_group( __CLASS__ );
@@ -96,6 +96,7 @@ class Charcoal extends Theme
 		$this->assign( 'post_class', 'post' . ( ! $opts['show_entry_paperclip'] ? ' alt' : '' ) );
 		$this->assign( 'page_class', 'post' . ( ! $opts['show_page_paperclip'] ? ' alt' : '' ) );
 		$this->assign( 'show_post_nav', $opts['show_post_nav'] );
+		$this->assign( 'loggedin', User::identify()->loggedin );
 		
 		$locale = Options::get( 'locale' );
 		if ( file_exists( Site::get_dir( 'theme', true ). $locale . '.css' ) ) {
@@ -111,14 +112,14 @@ class Charcoal extends Theme
 		$this->assign( 'post_id', ( isset( $this->post ) && $this->post->content_type == Post::type( 'page' ) ) ? $this->post->id : 0 );
 
 		if ( $this->request->display_entries_by_tag ) {
-			if ( count($this->include_tag) && count($this->exclude_tag) == 0 ) {
-				$this->tags_msg = _t('Displaying posts tagged: %s', array(Format::tag_and_list($this->include_tag)));
+			if ( count( $this->include_tag ) && count( $this->exclude_tag ) == 0 ) {
+				$this->tags_msg = _t( 'Displaying posts tagged: %s', array( Format::tag_and_list( $this->include_tag ) ) );
 			}
-			else if ( count($this->exclude_tag) && count($this->include_tag) == 0 ) {
-				$this->tags_msg = _t('Displaying posts not tagged: %s', array(Format::tag_and_list($this->exclude_tag)));
+			else if ( count( $this->exclude_tag ) && count( $this->include_tag ) == 0 ) {
+				$this->tags_msg = _t( 'Displaying posts not tagged: %s', array( Format::tag_and_list( $this->exclude_tag ) ) );
 			}
 			else {
-				$this->tags_msg = _t('Displaying posts tagged: %s and not %s', array(Format::tag_and_list($this->include_tag), Format::tag_and_list($this->exclude_tag)));
+				$this->tags_msg = _t( 'Displaying posts tagged: %s and not %s', array( Format::tag_and_list( $this->include_tag ), Format::tag_and_list( $this->exclude_tag ) ) );
 			}
 		}
 
