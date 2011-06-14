@@ -20,6 +20,7 @@ class Theme extends Pluggable
 	public $config_vars = array();
 	private $var_stack = array( array() );
 	private $current_var_stack = 0;
+	public $context = array();
 
 	/**
 	 * We build the Post filters by analyzing the handler_var
@@ -647,7 +648,27 @@ class Theme extends Pluggable
 		$fallback = array_unique( $fallback );
 
 		$this->content = $object;
-		return $this->display_fallback( $fallback, 'fetch' );
+		if(isset($context)) {
+			$this->context[] = $context;
+		}
+		$result = $this->display_fallback( $fallback, 'fetch' );
+		if(isset($context)) {
+			array_pop($this->context);
+		}
+		return $result;
+	}
+
+	/**
+	 * Check to see if the theme is currently rendering a specific context
+	 * @param string $context The context to check for.
+	 * @return bool True if the context is active.
+	 */
+	public function theme_has_context($theme, $context)
+	{
+		if(in_array($context, $theme->context)) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -1171,6 +1192,9 @@ class Theme extends Pluggable
 		$area_blocks = $this->get_blocks( $area, $active_scope, $theme );
 
 		$this->area = $area;
+		if(isset($context)) {
+			$this->context[] = $context;
+		}
 
 		// This is the block wrapper fallback template list
 		$fallback = array(
@@ -1240,7 +1264,9 @@ class Theme extends Pluggable
 		}
 
 		$this->area = '';
-
+		if(isset($context)) {
+			array_pop($this->context);
+		}
 		return $output;
 	}
 
