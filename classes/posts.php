@@ -550,18 +550,17 @@ class Posts extends ArrayObject implements IsContent
 			$read_tokens = isset( $paramset['read_tokens'] ) ? $paramset['read_tokens'] : ACL::user_tokens( User::identify(), 'read', true );
 			$deny_tokens = isset( $paramset['deny_tokens'] ) ? $paramset['deny_tokens'] : ACL::user_tokens( User::identify(), 'deny', true );
 
-			// If a user can read his own posts, let him
-			if ( User::identify()->can( 'own_posts', 'read' ) ) {
-				$perm_where['own_posts_id'] = '{posts}.user_id = ?';
-				$params_where[] = User::identify()->id;
-			}
-
-			$params_where = array();
 			// If a user can read any post type, let him
 			if ( User::identify()->can( 'post_any', 'read' ) ) {
 				$perm_where = array( 'post_any' => '(1=1)' );
 			}
 			else {
+				// If a user can read his own posts, let him
+				if ( User::identify()->can( 'own_posts', 'read' ) ) {
+					$perm_where['own_posts_id'] = '{posts}.user_id = ?';
+					$params_where[] = User::identify()->id;
+				}
+
 				// If a user can read specific post types, let him
 				$permitted_post_types = array();
 				foreach ( Post::list_active_post_types() as $name => $posttype ) {
