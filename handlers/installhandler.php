@@ -1693,8 +1693,18 @@ class InstallHandler extends ActionHandler
 		DB::exec( 'drop table {tags}' );
 		DB::exec( 'drop table {tag2post}' );
 		
-		// what about postgres and sqlite indexes?
-		
+		// what about postgres and sqlite indexes?	
+	}
+	
+	private function upgrade_db_post_5097()
+	{
+		/* Add the 'manage_dash_modules' token if it doesn't exist.  This is effectively 
+		   re-doing upgrade_db_post_3701() for those who didn't upgrade from a db_version 
+		   before 3701 or those who have performed a clean install as this token 
+		   wasn't set in the list of default tokens until r5142. */
+		if ( ! ACL::token_exists( 'manage_dash_modules' ) ) {
+			$this->upgrade_db_post_3701();
+		}
 	}
 	
 	/**

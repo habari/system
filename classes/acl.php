@@ -773,6 +773,7 @@ SQL;
 		self::create_token( 'manage_self', _t( 'Edit own profile' ), 'Administration' );
 		self::create_token( 'manage_groups', _t( 'Manage groups and permissions' ), 'Administration' );
 		self::create_token( 'manage_logs', _t( 'Manage logs' ), 'Administration' );
+		self::create_token( 'manage_dash_modules', _t( 'Manage dashboard modules' ), 'Administration' );
 
 		// content tokens
 		self::create_token( 'own_posts', _t( 'Permissions on one\'s own posts' ), _t( 'Content' ), true );
