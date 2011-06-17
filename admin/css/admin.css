@@ -2959,7 +2959,7 @@ body.login .humanMsg {
 }
 
 #page .hidden, #page ul.dropbutton li.nodisplay {
-	display: none;
+	display: none !important;
 }
 
 body.modal {
