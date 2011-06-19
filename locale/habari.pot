@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-12 00:00+0000\n"
+"POT-Creation-Date: 2011-06-19 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -859,7 +859,7 @@ msgstr ""
 msgid "Login to %s"
 msgstr ""
 
-#: system/admin/login.php:40 system/themes/charcoal/theme.php:214
+#: system/admin/login.php:40 system/themes/charcoal/theme.php:215
 #: system/themes/k2/theme.php:125
 msgid "Name"
 msgstr ""
@@ -925,7 +925,7 @@ msgstr ""
 
 #: system/themes/charcoal/tag.php:21 system/themes/charcoal/home.php:24
 #: system/themes/charcoal/multiple.php:20 system/themes/charcoal/search.php:22
-#: system/themes/charcoal/entry.single.php:30 system/classes/theme.php:867
+#: system/themes/charcoal/entry.single.php:30 system/classes/theme.php:888
 msgid "No Comments"
 msgstr ""
 
@@ -941,7 +941,7 @@ msgstr[1] ""
 
 #: system/themes/charcoal/tag.php:21 system/themes/charcoal/home.php:24
 #: system/themes/charcoal/multiple.php:20 system/themes/charcoal/search.php:22
-#: system/themes/charcoal/entry.single.php:30 system/classes/acl.php:786
+#: system/themes/charcoal/entry.single.php:30 system/classes/acl.php:787
 #: system/handlers/adminhandler.php:329
 msgid "Comments"
 msgstr ""
@@ -1025,7 +1025,7 @@ msgstr ""
 msgid "Atom Comments"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:29 system/themes/charcoal/theme.php:229
+#: system/themes/charcoal/theme.php:29 system/themes/charcoal/theme.php:230
 msgid "Charcoal Menu"
 msgstr ""
 
@@ -1110,73 +1110,73 @@ msgstr ""
 msgid "Options saved"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:115
+#: system/themes/charcoal/theme.php:116
 #, php-format
 msgid "Displaying posts tagged: %s"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:118
+#: system/themes/charcoal/theme.php:119
 #, php-format
 msgid "Displaying posts not tagged: %s"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:121
+#: system/themes/charcoal/theme.php:122
 #, php-format
 msgid "Displaying posts tagged: %s and not %s"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:160
+#: system/themes/charcoal/theme.php:161
 msgid "Search for "
 msgstr ""
 
-#: system/themes/charcoal/theme.php:165 system/themes/charcoal/theme.php:171
+#: system/themes/charcoal/theme.php:166 system/themes/charcoal/theme.php:172
 #, php-format
 msgid "Search results for '%s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:168
+#: system/themes/charcoal/theme.php:169
 #, php-format
 msgid "No results found for your search '%1$s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:168
+#: system/themes/charcoal/theme.php:169
 #, php-format
 msgid "You can try searching for '%2$s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:174
+#: system/themes/charcoal/theme.php:175
 #, php-format
 msgid "No results found for your search '%s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:214
+#: system/themes/charcoal/theme.php:215
 msgid "(Required)"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:216 system/themes/k2/theme.php:127
+#: system/themes/charcoal/theme.php:217 system/themes/k2/theme.php:127
 msgid "Mail"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:216
+#: system/themes/charcoal/theme.php:217
 msgid "(will not be published"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:216
+#: system/themes/charcoal/theme.php:217
 msgid "- Required)"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:218 system/themes/k2/theme.php:129
+#: system/themes/charcoal/theme.php:219 system/themes/k2/theme.php:129
 #: system/classes/post.php:989
 msgid "Website"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:221 system/themes/mzingi/theme.php:114
+#: system/themes/charcoal/theme.php:222 system/themes/mzingi/theme.php:114
 #: system/themes/k2/theme.php:132 system/classes/post.php:1009
 #: system/plugins/habarisilo/habarisilo.plugin.php:465
 msgid "Submit"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:241 system/themes/k2/theme.php:152
+#: system/themes/charcoal/theme.php:242 system/themes/k2/theme.php:152
 msgid "Blog"
 msgstr ""
 
@@ -1480,7 +1480,7 @@ msgstr ""
 msgid "Add, remove, and edit users"
 msgstr ""
 
-#: system/classes/acl.php:773 system/handlers/installhandler.php:1568
+#: system/classes/acl.php:773 system/handlers/installhandler.php:1569
 msgid "Edit own profile"
 msgstr ""
 
@@ -1492,43 +1492,47 @@ msgstr ""
 msgid "Manage logs"
 msgstr ""
 
-#: system/classes/acl.php:778 system/handlers/installhandler.php:1519
+#: system/classes/acl.php:776 system/handlers/installhandler.php:1574
+msgid "Manage dashboard modules"
+msgstr ""
+
+#: system/classes/acl.php:779 system/handlers/installhandler.php:1520
 msgid "Permissions on one's own posts"
 msgstr ""
 
-#: system/classes/acl.php:778 system/classes/acl.php:779
-#: system/classes/acl.php:780 system/classes/acl.php:782
+#: system/classes/acl.php:779 system/classes/acl.php:780
+#: system/classes/acl.php:781 system/classes/acl.php:783
 #: system/classes/post.php:246 system/classes/post.php:831
-#: system/handlers/installhandler.php:1673
+#: system/handlers/installhandler.php:1674
 msgid "Content"
 msgstr ""
 
-#: system/classes/acl.php:779
+#: system/classes/acl.php:780
 msgid "Permissions to all posts"
 msgstr ""
 
-#: system/classes/acl.php:780 system/handlers/installhandler.php:1673
+#: system/classes/acl.php:781 system/handlers/installhandler.php:1674
 msgid "Permissions to other users' unpublished posts"
 msgstr ""
 
-#: system/classes/acl.php:782 system/classes/post.php:246
+#: system/classes/acl.php:783 system/classes/post.php:246
 #, php-format
 msgid "Permissions to posts of type \"%s\""
 msgstr ""
 
-#: system/classes/acl.php:803 system/classes/acl.php:805
+#: system/classes/acl.php:804 system/classes/acl.php:806
 #: system/handlers/installhandler.php:697
 msgid "admin"
 msgstr ""
 
-#: system/classes/acl.php:808 system/classes/acl.php:810
+#: system/classes/acl.php:809 system/classes/acl.php:811
 #: system/handlers/installhandler.php:708
 msgid "anonymous"
 msgstr ""
 
-#: system/classes/acl.php:839 system/classes/acl.php:841
-#: system/handlers/installhandler.php:1530
-#: system/handlers/installhandler.php:1532
+#: system/classes/acl.php:840 system/classes/acl.php:842
+#: system/handlers/installhandler.php:1531
+#: system/handlers/installhandler.php:1533
 msgid "authenticated"
 msgstr ""
 
@@ -2308,23 +2312,23 @@ msgstr ""
 msgid "Remove this item?"
 msgstr ""
 
-#: system/classes/theme.php:249
+#: system/classes/theme.php:250
 msgid "Whoops! 404. The page you were trying to access is not really there. Please try again."
 msgstr ""
 
-#: system/classes/theme.php:793
+#: system/classes/theme.php:814
 msgid "Previous"
 msgstr ""
 
-#: system/classes/theme.php:820
+#: system/classes/theme.php:841
 msgid "Next"
 msgstr ""
 
-#: system/classes/theme.php:846
+#: system/classes/theme.php:867
 msgid "Read Comments"
 msgstr ""
 
-#: system/classes/theme.php:872
+#: system/classes/theme.php:893
 #, php-format
 msgid "%s Comment"
 msgid_plural "%s Comments"
@@ -2535,8 +2539,8 @@ msgid "Password mis-match."
 msgstr ""
 
 #: system/handlers/installhandler.php:153
-#: system/handlers/installhandler.php:1729
-#: system/handlers/installhandler.php:1800
+#: system/handlers/installhandler.php:1740
+#: system/handlers/installhandler.php:1811
 msgid "Allowed characters are A-Z, a-z and \"_\"."
 msgstr ""
 
@@ -2596,33 +2600,33 @@ msgstr ""
 
 #: system/handlers/installhandler.php:536
 #: system/handlers/installhandler.php:569
-#: system/handlers/installhandler.php:1744
-#: system/handlers/installhandler.php:1815
+#: system/handlers/installhandler.php:1755
+#: system/handlers/installhandler.php:1826
 msgid "Access denied. Make sure these credentials are valid."
 msgstr ""
 
 #: system/handlers/installhandler.php:539
 #: system/handlers/installhandler.php:572
-#: system/handlers/installhandler.php:1748
-#: system/handlers/installhandler.php:1819
+#: system/handlers/installhandler.php:1759
+#: system/handlers/installhandler.php:1830
 msgid "That database does not exist."
 msgstr ""
 
 #: system/handlers/installhandler.php:542
 #: system/handlers/installhandler.php:575
-#: system/handlers/installhandler.php:1752
-#: system/handlers/installhandler.php:1823
+#: system/handlers/installhandler.php:1763
+#: system/handlers/installhandler.php:1834
 msgid "Could not connect to host."
 msgstr ""
 
 #: system/handlers/installhandler.php:603
-#: system/handlers/installhandler.php:1871
+#: system/handlers/installhandler.php:1882
 #, php-format
 msgid "Cannot write to %s. The SQLite data file is not writable by the web server."
 msgstr ""
 
 #: system/handlers/installhandler.php:607
-#: system/handlers/installhandler.php:1864
+#: system/handlers/installhandler.php:1875
 #, php-format
 msgid "Cannot write to %s directory. SQLite requires that the directory that holds the DB file be writable by the web server."
 msgstr ""
@@ -2632,64 +2636,60 @@ msgstr ""
 msgid "Cannot write to %s directory. The SQLite data file does not exist, and it cannot be created in the specified directory. SQLite requires that the directory containing the database file be writable by the web server."
 msgstr ""
 
-#: system/handlers/installhandler.php:754
-#: system/handlers/installhandler.php:1650
+#: system/handlers/installhandler.php:755
+#: system/handlers/installhandler.php:1651
 msgid "Trim the log table"
 msgstr ""
 
-#: system/handlers/installhandler.php:757
-#: system/handlers/installhandler.php:1658
+#: system/handlers/installhandler.php:758
+#: system/handlers/installhandler.php:1659
 msgid "Perform a check for plugin updates."
 msgstr ""
 
-#: system/handlers/installhandler.php:801
+#: system/handlers/installhandler.php:802
 msgid "This site is running <a href=\"http://habariproject.org/\">Habari</a>, a state-of-the-art publishing platform!  Habari is a community-driven project created and supported by people from all over the world.  Please visit <a href=\"http://habariproject.org/\">http://habariproject.org/</a> to find out more!"
 msgstr ""
 
-#: system/handlers/installhandler.php:864
+#: system/handlers/installhandler.php:865
 msgid "currently unsupported."
 msgstr ""
 
-#: system/handlers/installhandler.php:978
+#: system/handlers/installhandler.php:979
 msgid "No admin user found"
 msgstr ""
 
-#: system/handlers/installhandler.php:1380
+#: system/handlers/installhandler.php:1381
 msgid "Site Maintenance"
 msgstr ""
 
-#: system/handlers/installhandler.php:1381
+#: system/handlers/installhandler.php:1382
 msgid "Habari is currently being upgraded."
 msgstr ""
 
-#: system/handlers/installhandler.php:1382
+#: system/handlers/installhandler.php:1383
 msgid "Try again in a little while."
 msgstr ""
 
-#: system/handlers/installhandler.php:1395
+#: system/handlers/installhandler.php:1396
 msgid "Truncate the log table"
 msgstr ""
 
-#: system/handlers/installhandler.php:1573
-msgid "Manage dashboard modules"
-msgstr ""
-
-#: system/handlers/installhandler.php:1711
-#: system/handlers/installhandler.php:1782
+#: system/handlers/installhandler.php:1722
+#: system/handlers/installhandler.php:1793
 msgid "The database host field was left empty."
 msgstr ""
 
-#: system/handlers/installhandler.php:1717
-#: system/handlers/installhandler.php:1788
+#: system/handlers/installhandler.php:1728
+#: system/handlers/installhandler.php:1799
 msgid "The database name field was left empty."
 msgstr ""
 
-#: system/handlers/installhandler.php:1723
-#: system/handlers/installhandler.php:1794
+#: system/handlers/installhandler.php:1734
+#: system/handlers/installhandler.php:1805
 msgid "The database user field was left empty."
 msgstr ""
 
-#: system/handlers/installhandler.php:1854
+#: system/handlers/installhandler.php:1865
 msgid "The database file was left empty."
 msgstr ""
 
