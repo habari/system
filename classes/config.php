@@ -17,6 +17,7 @@ class Config
 	 * Registry of configuration data
 	 */
 	protected static $registry = array();
+	protected static $prefix = 'habari_';
 
 	/**
 	 * Static; private constructor
@@ -33,7 +34,14 @@ class Config
 	 */
 	public static function exists( $key )
 	{
-		return isset( self::$registry[ $key ] );
+		$result = isset( self::$registry[ $key ] ) || array_key_exists(self::$prefix . $key, $_SERVER);
+		// If asking for the db_connection and a connection_string exists, the db_connection does, too.
+		if($key == 'db_connection') {
+			if(self::exists('connection_string')) {
+				$result = true;
+			}
+		}
+		return $result;
 	}
 
 	/**
@@ -44,10 +52,26 @@ class Config
 	 */
 	public static function get( $key, $default = null )
 	{
-		if ( !self::exists( $key ) ) {
-			return $default;
+		$result = null;
+		// If asking for the db_connection, but it's not stored that way...
+		if($key == 'db_connection' && !isset( self::$registry[ 'db_connection' ] ) && self::exists('connection_string')) {
+			$result = array(
+				'connection_string' => self::get('connection_string'),
+				'username' => self::get('username', ''),
+				'password' => self::get('password', ''),
+				'prefix' => self::get('prefix', ''),
+			);
+			$result = (object)$result;
 		}
-		return self::$registry[ $key ];
+		// If the key doesn't exist, return the default
+		elseif ( !self::exists( $key ) ) {
+			$result = $default;
+		}
+		// Return the key value that is stored
+		else {
+			$result = isset(self::$registry[ $key ]) ? self::$registry[ $key ] : $_SERVER[self::$prefix . $key];
+		}
+		return $result;
 	}
 
 	/**
@@ -66,6 +90,7 @@ class Config
 			self::$registry[ $key ] = $val;
 		}
 		else {
+			$val = (object)$val;
 			self::$registry[ $key ] = (object)$val;
 		}
 		return $new;

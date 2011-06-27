@@ -75,19 +75,16 @@ $config = Site::get_dir( 'config_file' );
  */
 if ( file_exists( $config ) ) {
 	require_once( $config );
+}
 
+// Make sure we have a DSN string and database credentials.
+// db_connection is an array with necessary informations to connect to the database.
+if ( Config::exists('db_connection') ) {
 	// Set the default locale.
 	HabariLocale::set( isset( $locale ) ? $locale : 'en-us' );
 
 	if ( !defined( 'DEBUG' ) ) {
 		define( 'DEBUG', false );
-	}
-
-	// Make sure we have a DSN string and database credentials.
-	// db_connection is an array with necessary informations to connect to the database.
-	if ( !Config::exists( 'db_connection' ) ) {
-		$installer = new InstallHandler();
-		$installer->begin_install();
 	}
 
 	// The connection details are registered. Try to connect to the database.
