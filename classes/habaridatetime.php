@@ -120,7 +120,7 @@ class HabariDateTime extends DateTime
 		elseif ( $time instanceOf DateTime ) {
 			$time = $time->format( 'U' );
 		}
-		elseif ( $time == null ) {
+		elseif ( $time === null ) {
 			$time = 'now';
 		}
 		elseif ( is_numeric( $time ) ) {
