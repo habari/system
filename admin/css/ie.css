@@ -67,6 +67,10 @@
 	overflow: hidden;
 }
 
+/* setting width in ie to correspond to min-width style other A-grade browsers will receive */
+
+#menu { width: 180px; }
+
 /* Fix delete button spacing */
 
 *+html .comments .button.delete {
