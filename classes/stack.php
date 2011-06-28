@@ -246,12 +246,14 @@ class Stack
 	 * A callback for Stack::get() that outputs scripts as reference or inline depending on their content
 	 *
 	 * @param string $element The script element in the stack
+	 * @param mixed $attrib Additional attributes, like 'defer' or 'async' allowed for <script src=...> tags
 	 * @return string The resulting script tag
 	 */
-	public static function scripts( $element )
+	public static function scripts( $element, $attrib = null )
 	{
 		if ( ( strpos( $element, 'http://' ) === 0 || strpos( $element, 'https://' ) === 0 ) && strpos( $element, "\n" ) === false ) {
-			$output = sprintf( '<script src="%s" type="text/javascript"></script>'."\r\n", $element );
+			$attrib = ( is_array( $attrib ) ) ? implode( ' ', $attrib ) : $attrib;
+			$output = sprintf( '<script %s src="%s" type="text/javascript"></script>'."\r\n", $attrib, $element );
 		}
 		else {
 			$output = sprintf( '<script type="text/javascript">%s</script>'."\r\n", $element );
