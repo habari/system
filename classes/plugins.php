@@ -426,7 +426,7 @@ class Plugins
 			libxml_use_internal_errors( $old_error );
 			
 		}
-		
+
 		return $info;
 	}
 
@@ -439,6 +439,7 @@ class Plugins
 	 */
 	public static function load( $class, $activate = true )
 	{
+		if($class =='') return false;
 		$plugin = new $class;
 		if ( $activate ) {
 			self::$plugins[$plugin->plugin_id] = $plugin;
@@ -492,14 +493,25 @@ class Plugins
 	{
 		$ok = true;
 		// strip base path from stored path
+
+		
 		$short_file = MultiByte::substr( $file, strlen( HABARI_PATH ) );
 		$activated = Options::get( 'active_plugins' );
 		if ( !is_array( $activated ) || !in_array( $short_file, $activated ) ) {
 			include_once( $file );
 			$class = Plugins::class_from_filename( $file );
 			$plugin = Plugins::load( $class );
-			$ok = Plugins::filter( 'activate_plugin', $ok, $file ); // Allow plugins to reject activation
-		}
+
+            if( Plugins::plugin_preactivate($file,$plugin->info()) )
+            {
+                $ok = Plugins::filter( 'activate_plugin', $ok, $file ); // Allow plugins to reject activation 
+            }
+            else
+            {
+                $ok = FALSE;
+            }
+        }
+
 		else if ( is_array( $activated) && in_array( $short_file, $activated ) ) {
 			$ok = false;
 		}
@@ -682,6 +694,66 @@ class Plugins
 		Plugins::act( 'plugin_ui_any_' . $configaction, $configure, $configaction );
 		Plugins::act_id( 'plugin_ui', $configure, $configure, $configaction );
 		Plugins::act( 'plugin_ui_any', $configure, $configaction );
+	}
+	
+    /**
+     * Verify plugin xml file contains required information
+     * if not valid, force deactivate
+     */
+	public static function plugin_preactivate($file,$info)
+	{   
+	    $return = TRUE;
+        
+        $valid = Plugins::validate_info($info);
+        
+        if( !$valid )
+        {
+            Plugins::deactivate_plugin( $file, TRUE );
+            $return = FALSE;
+        }
+        
+        return $return;
+	}
+	
+	/**
+	 * Throw session error to prevent plugin developers from checking in plugin with missing info
+	 *  - if an optional node is missing, init to an empty string to prevent error spam
+	 * 
+	 * @param object $info The simpleXmlElement generated from plugin.info.xml file
+	 **/
+	public static function validate_info($info)
+	{   
+	    $return = TRUE;
+	    $required = array('required' => array('name','version','url','author','license','description'), 'optional' => array('authorurl'));
+	    
+	    foreach ( $required['required'] as $key )
+	    {
+	        //make sure node is present
+	        if(isset($info->$key))
+	        {
+	            $test_value = (string) $info->$key;
+	            //make sure value is not an empty string or spaces
+	            if( trim(strlen($test_value))  == 0 )
+	            {
+	                $return = FALSE;
+                    Eventlog::log( sprintf( _t( 'Plugin "%s", is missing the following required information. <div class="reveal">%s</div>' ), $info->name, $info->$key ), 'err', 'plugin' );
+	            }
+	        }
+	        else
+	        {
+	            $return = FALSE;
+	            Eventlog::log( sprintf( _t( 'Plugin "%s", is missing the following required information. <div class="reveal">%s</div>' ), $info->name, $info->$key ), 'err', 'plugin' );
+	        }
+	    }
+	    
+	    foreach( $required['optional'] as $key )
+	    {
+	        if(!isset($info->$key))
+	        {
+	            $info->$key = '';
+	        }
+	    }
+	    return $return;
 	}
 }
 
