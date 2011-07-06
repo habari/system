@@ -107,7 +107,7 @@ class Charcoal extends Theme
 		}
 		
 		if ( !$this->template_engine->assigned( 'pages' ) ) {
-			$this->assign( 'pages', Posts::get( array( 'content_type' => 'page', 'status' => 'published', 'nolimit' => 1 ) ) );
+			$this->assign( 'pages', Posts::get( 'page_list' ) );
 		}
 		$this->assign( 'post_id', ( isset( $this->post ) && $this->post->content_type == Post::type( 'page' ) ) ? $this->post->id : 0 );
 
@@ -242,7 +242,7 @@ class Charcoal extends Theme
 			'caption' => _t('Blog'), 
 			'cssclass' => $theme->request->display_home ? 'current_page_item' : '',
 		));
-		$pages = Posts::get(array('content_type' => 'page', 'status' => Post::status('published')));
+		$pages = Posts::get( 'page_list' );
 		foreach($pages as $page) {
 			$menus[] = array(
 				'link' => $page->permalink, 
