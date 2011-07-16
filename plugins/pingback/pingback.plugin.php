@@ -1,4 +1,4 @@
-<?php
+<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 /**
  * Habari Pingback plugin, enables pingback support between sites.
  * @link http://www.hixie.ch/specs/pingback/pingback The Pingback spec

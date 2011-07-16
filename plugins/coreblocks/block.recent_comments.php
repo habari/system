@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); } ?>
 <ul id="recent_comments">
 	<?php $comments = $content->recent_comments; foreach( $comments as $comment): ?>
 		<li>

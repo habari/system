@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); } ?>
 	<ul class="items">
 
 		<?php foreach ( $latestcomments_posts as $post ): ?>

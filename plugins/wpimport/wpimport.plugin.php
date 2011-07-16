@@ -1,4 +1,4 @@
-<?php
+<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 	
 	// define IMPORT_BATCH in your config.php to limit each batch of DB results
 	if ( !defined('IMPORT_BATCH') ) {
