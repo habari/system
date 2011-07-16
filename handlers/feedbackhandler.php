@@ -59,7 +59,7 @@ class FeedbackHandler extends ActionHandler
 				foreach ( $form->validate() as $error ) {
 					Session::error( $error );
 				}
-				$form->bounce();
+				Utils::redirect( $post->permalink . '#respond' );
 			}
 		}
 	}
