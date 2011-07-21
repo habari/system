@@ -2,7 +2,7 @@
 <?php include('header.php');?>
 
 <div class="container navigator">
-	<input type="search" id="search" placeholder="<?php _e('Type and wait to search tags'); ?>">
+	<input type="search" id="search" placeholder="<?php _e('Type and wait to search tags'); ?>" >
 </div>
 
 <!--<div class="instructions"><span>Click to select</span> &middot; <span>Double-click to open</span></div>-->
@@ -38,6 +38,7 @@ itemManage.update = function( action, id ) {
 	selected = $('.tag.selected');
 	if ( selected.length == 0 ) {
 		human_msg.display_msg( "<?php _e('Error: No tags selected.'); ?>" );
+		spinner.stop();
 		return;
 	}
 	var query = {}
@@ -58,13 +59,10 @@ itemManage.update = function( action, id ) {
 			spinner.stop();
 			//TODO When there's a loupe, update it
 			//timelineHandle.updateLoupeInfo();
-			$('#tag_collection').html(result['tags']);
+			$('#tag_collection').html(result['data']);
+			human_msg.display_msg( result['message'] );
 			itemManage.selected = {};
-			itemManage.changeItem();
 			itemManage.initItems();
-			jQuery.each( result['msg'], function( index, value ) {
-				human_msg.display_msg( value );
-			});
 		},
 		'json'
 	);
@@ -113,13 +111,10 @@ itemManage.rename = function() {
 			//TODO When there's a loupe, update it
 			//timelineHandle.updateLoupeInfo();
 			$('.controls input.renametext').val('').blur();
-			$('#tag_collection').html(result['tags']);
-			jQuery.each( result['msg'], function( index, value ) {
-				human_msg.display_msg( value );
-			});
+			$('#tag_collection').html(result['data']);
+			human_msg.display_msg( result['message'] );
 
 			itemManage.selected = {};
-
 			itemManage.initItems();
 		},
 		'json'
