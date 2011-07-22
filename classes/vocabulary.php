@@ -541,11 +541,12 @@ class Vocabulary extends QueryRecord
 	 * @param string $search The string to search for
 	 * @return Terms The Term objects that match the search term
 	 */
-	public function get_search( $search )
+	public function get_search( $search, $orderby = 'mptt_left ASC' )
 	{
 		$search = '%' . $search . '%';
-		return new Terms( DB::get_results( "SELECT * FROM {terms} WHERE vocabulary_id = ? and LOWER(term_display) LIKE LOWER(?)", array( $this->id, $search ), 'Term' ) );
+		return new Terms( DB::get_results( "SELECT * FROM {terms} WHERE vocabulary_id = :vid and LOWER(term_display) LIKE LOWER(:crit) ORDER BY {$orderby}", array( 'vid' => $this->id, 'crit' => $search ), 'Term' ) );
 	}
+
 	/**
 	 * Retrieve the vocabulary as an associative array suitable for FormUI select controls
 	 * @return Array The Term objects in the vocabulary, in tree order
