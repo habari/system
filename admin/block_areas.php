@@ -1,5 +1,5 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-<label><?php _e("Scope:"); ?> <select id="scope_id" onchange="change_scope();">
+<label><?php _e("Scope:"); ?> <select id="scope_id" onchange="themeManage.change_scope();">
 	<option value="0"><?php _e('Default'); ?></option>
 <?php foreach($scopes as $scope): ?>
 	<option value="<?php echo $scope->id; ?>"

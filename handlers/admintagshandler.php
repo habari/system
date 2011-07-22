@@ -25,17 +25,46 @@ class AdminTagsHandler extends AdminHandler
 	}
 
 	/**
+	 * Handles ajax searching from admin/tags
+	 * @param type $handler_vars The variables passed to the page by the server
+	 * @return AjaxResponse The updated data for the tags page, with any messages
+	 */
+	public function ajax_get_tags( $handler_vars )
+	{
+		Utils::check_request_method( array( 'GET', 'HEAD' ) );
+		$response = new AjaxResponse();
+
+		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
+		if ( $handler_vars['digest'] != $wsse['digest'] ) {
+			$response->message = _t( 'WSSE authentication failed.' );
+			$response->out();
+			return;
+		}
+
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
+		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+
+		$search = $handler_vars['search'];
+
+		$this->theme->tags = Tags::vocabulary()->get_search( $search, 'term_display asc' );
+		$this->theme->max = Tags::vocabulary()->max_count();
+		$response->data = $this->theme->fetch( 'tag_collection' );
+		$response->out();
+	}
+
+	/**
 	 * Handles AJAX from /admin/tags
 	 * Used to delete and rename tags
 	 */
 	public function ajax_tags( $handler_vars )
 	{
 		Utils::check_request_method( array( 'POST' ) );
+		$response = new AjaxResponse();
 
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
-			Session::error( _t( 'WSSE authentication failed.' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
+			$response->message = _t( 'WSSE authentication failed.' );
+			$response->out();
 			return;
 		}
 
@@ -54,14 +83,13 @@ class AdminTagsHandler extends AdminHandler
 						Tags::vocabulary()->delete_term( $tag );
 					}
 				}
-				$msg_status = _n( _t( 'Tag %s has been deleted.', array( implode( '', $tag_names ) ) ), _t( '%d tags have been deleted.', array( count( $tag_names ) ) ), count( $tag_names ) );
-				Session::notice( $msg_status );
+				$response->message = _n( _t( 'Tag %s has been deleted.', array( implode( '', $tag_names ) ) ), _t( '%d tags have been deleted.', array( count( $tag_names ) ) ), count( $tag_names ) );
 				break;
 
 			case 'rename':
 				if ( !isset( $this->handler_vars['master'] ) ) {
-					Session::error( _t( 'Error: New name not specified.' ) );
-					echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
+					$response->message = _t( 'Error: New name not specified.' );
+					$response->out();
 					return;
 				}
 				$master = $this->handler_vars['master'];
@@ -75,22 +103,19 @@ class AdminTagsHandler extends AdminHandler
 					}
 				}
 				Tags::vocabulary()->merge( $master, $tag_names );
-				$msg_status = sprintf(
+				$response->message = sprintf(
 					_n('Tag %1$s has been renamed to %2$s.',
 						'Tags %1$s have been renamed to %2$s.',
 							count( $tag_names )
 					), implode( $tag_names, ', ' ), $master
 				);
-				Session::notice( $msg_status );
 				break;
 
 		}
 		$this->theme->tags = Tags::vocabulary()->get_tree();
 		$this->theme->max = Tags::vocabulary()->max_count();
-		echo json_encode( array(
-			'msg' => Session::messages_get( true, 'array' ),
-			'tags' => $this->theme->fetch( 'tag_collection' ),
-		) );
+		$response->data = $this->theme->fetch( 'tag_collection' );
+		$response->out();
 	}
 
 }

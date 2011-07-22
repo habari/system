@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); } ?>
 <ul id="monthly_archives">
 	<?php $months = $content->months; foreach( $months as $month ): ?>
 		<li>

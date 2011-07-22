@@ -1,4 +1,4 @@
-<?php
+<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 class flickrAPI
 {
 	function __construct()

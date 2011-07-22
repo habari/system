@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); } ?>
 <form id="month_archive_form" action="">
 <fieldset><legend>Browse Archives</legend>
 

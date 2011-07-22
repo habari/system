@@ -71,7 +71,7 @@ class K2 extends Theme
 		$this->add_template( 'k2_text', dirname( __FILE__ ) . '/formcontrol_text.php' );
 		
 		if ( !isset( $this->pages ) ) {
-			$this->pages = Posts::get( array( 'content_type' => 'page', 'status' => 'published', 'nolimit' => true ) );
+			$this->pages = Posts::get( 'page_list' );
 		}
 		
 		if ( User::identify()->loggedin ) {
@@ -152,7 +152,7 @@ class K2 extends Theme
 			'caption' => _t( 'Blog' ), 
 			'cssclass' => $theme->request->display_home ? 'current_page_item' : '',
 		) );
-		$pages = Posts::get(array('content_type' => 'page', 'status' => Post::status( 'published' ) ) );
+		$pages = Posts::get('page_list');
 		foreach( $pages as $page ) {
 			$menus[] = array(
 				'link' => $page->permalink, 

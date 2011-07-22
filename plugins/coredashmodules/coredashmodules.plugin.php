@@ -1,4 +1,4 @@
-<?php
+<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 
 /**
  * CoreDashModules - Provides a core set of dashboard modules for the dashboard.
