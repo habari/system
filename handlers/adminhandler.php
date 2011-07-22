@@ -448,6 +448,7 @@ class AdminHandler extends ActionHandler
 
 			case 'tags':
 			case 'ajax_tags':
+			case 'ajax_get_tags':
 				$require_any = array( 'manage_tags' => true );
 				break;
 			case 'options':

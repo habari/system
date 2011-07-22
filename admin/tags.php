@@ -2,7 +2,7 @@
 <?php include('header.php');?>
 
 <div class="container navigator">
-	<input type="search" id="search" placeholder="<?php _e('Type and wait to search tags'); ?>" >
+	<span class="search pct100"><input type="search" id="search" placeholder="<?php _e('Type and wait to search tags'); ?>" ></span>
 </div>
 
 <!--<div class="instructions"><span>Click to select</span> &middot; <span>Double-click to open</span></div>-->
@@ -32,6 +32,28 @@
 </div>
 
 <script type="text/javascript">
+itemManage.fetch = function(offset, limit, resetTimeline, silent) {
+	query = {};
+	query['timestamp'] = $('input#timestamp').attr('value');
+	query['nonce'] = $('input#nonce').attr('value');
+	query['digest'] = $('input#password_digest').attr('value');
+	query['search'] = liveSearch.getSearchText();
+
+	$.get(
+		"<?php echo URL::get('admin_ajax', array('context' => 'get_tags')); ?>",
+		query,
+		function(result) {
+			spinner.stop();
+			//TODO When there's a loupe, update it
+			//timelineHandle.updateLoupeInfo();
+			$('#tag_collection').html(result['data']);
+			itemManage.selected = {};
+			itemManage.initItems();
+		},
+		'json'
+	);
+};
+
 itemManage.update = function( action, id ) {
 	spinner.start();
 
