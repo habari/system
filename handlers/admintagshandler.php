@@ -112,7 +112,7 @@ class AdminTagsHandler extends AdminHandler
 				break;
 
 		}
-		$this->theme->tags = Tags::vocabulary()->get_tree();
+		$this->theme->tags = Tags::vocabulary()->get_tree( 'term_display ASC' );
 		$this->theme->max = Tags::vocabulary()->max_count();
 		$response->data = $this->theme->fetch( 'tag_collection' );
 		$response->out();
