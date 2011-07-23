@@ -176,8 +176,13 @@ class QueryWhere {
 				$paramname = Query::new_param_name();
 			}
 
-			$expression .= ':' . $paramname;
-			$this->parameters[$paramname] = $values;
+			if(is_callable($validator)) {
+				$expression .= $validator($values);
+			}
+			else {
+				$expression .= ':' . $paramname;
+				$this->parameters[$paramname] = $values;
+			}
 		}
 
 		$this->expressions[] = $expression;
