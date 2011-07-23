@@ -522,9 +522,9 @@ class Post extends QueryRecord implements IsContent
 		$this->setguid();
 
 		$allow = true;
-		$userid = $this->fields['user_id'];
-		$newuserid = $this->newfields['user_id'];
-		if((empty($userid) || $userid == 0) && (empty($newuserid) || $newuserid == 0)) return; // don't allow creating posts without an author, for example by plugins
+		if(isset($this->fields['user_id'])) $userid = $this->fields['user_id'];
+		if(isset($this->newfields['user_id'])) $newuserid = $this->newfields['user_id'];
+		if((!isset($userid) || empty($userid) || $userid == 0) && (!isset($newuserid) || empty($newuserid) || $newuserid == 0)) return; // don't allow creating posts without an author, for example by plugins
 		$allow = Plugins::filter( 'post_insert_allow', $allow, $this );
 		if ( ! $allow ) {
 			return;
