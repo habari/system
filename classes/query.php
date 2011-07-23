@@ -123,9 +123,9 @@ class QueryWhere {
 	 * @param array $parameters An associative array of values to use as named parameters in the added expression
 	 * @return QueryWhere Returns $this, for fluid interface.
 	 */
-	public function add($expression, $parameters = array())
+	public function add($expression, $parameters = array(), $name = null)
 	{
-		$this->expressions[] = $expression;
+		$this->expressions[$name] = $expression;
 		$this->parameters = array_merge($this->parameters, $parameters);
 		return $this;
 	}
