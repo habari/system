@@ -9,6 +9,7 @@ class Query {
 	protected $join_params = array();
 	protected $limit = null;
 	protected $offset = null;
+	protected $orderby = null;
 
 	/**
 	 * Construct a Query
@@ -74,14 +75,22 @@ class Query {
 		return $this->where;
 	}
 
+	public function orderby($value)
+	{
+		$this->orderby = empty($value) ? null : $value;
+		return $this;
+	}
+
 	public function limit($value)
 	{
 		$this->limit = is_int($value) ? $value : null;
+		return $this;
 	}
 
 	public function offset($value)
 	{
 		$this->offset = is_int($value) ? $value : null;
+		return $this;
 	}
 
 	/**
@@ -101,7 +110,14 @@ class Query {
 		foreach($this->joins as $join) {
 			$sql .= "\n" . $join;
 		}
-		$sql .= "\nWHERE\n" . $this->where()->get();
+		$where = $this->where()->get();
+		if(isset($where)) {
+			$sql .= "\nWHERE\n" . $this->where()->get();
+		}
+
+		if(isset($this->orderby)) {
+			$sql .= "\nORDER BY " . $this->orderby;
+		}
 
 		if(isset($this->limit)) {
 			$sql .= "\nLIMIT " . $this->limit;
@@ -109,6 +125,7 @@ class Query {
 				$sql .= "\nOFFSET " . $this->offset;
 			}
 		}
+
 		return $sql;
 	}
 
@@ -280,6 +297,9 @@ class QueryWhere {
 	{
 		$outputs = array();
 		$indents = str_repeat("\t", $level);
+		if(count($this->expressions) == 0) {
+			return null;
+		}
 		foreach($this->expressions as $expression) {
 			if($expression instanceof QueryWhere) {
 				$outputs[] = $expression->get($level + 1);
@@ -288,6 +308,7 @@ class QueryWhere {
 				$outputs[] = $indents . "\t" .  $expression;
 			}
 		}
+		$outputs = array_filter($outputs);
 		$output = implode("\n" . $indents . $this->operator . "\n", $outputs);
 		if($level == 0) {
 			return $output;

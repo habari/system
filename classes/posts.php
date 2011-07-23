@@ -103,27 +103,9 @@ class Posts extends ArrayObject implements IsContent
 	 */
 	public static function get( $paramarray = array() )
 	{
-		static $presets;
-
-		// If $paramarray is a string, use it as a Preset
-		if(is_string($paramarray)) {
-			$paramarray = array('preset' => $paramarray);
-		}
 
 		// If $paramarray is a querystring, convert it to an array
 		$paramarray = Utils::get_params( $paramarray );
-
-		// If a preset is defined, get the named array and merge it with the provided parameters,
-		// allowing the additional $paramarray settings to override the preset
-		if(isset($paramarray['preset'])) {
-			if(!isset($presets)) {
-				$presets = Plugins::filter('posts_get_all_presets', $presets, $paramarray['preset']);
-			}
-			if(isset($presets[$paramarray['preset']])) {
-				$preset = Plugins::filter('posts_get_update_preset', $presets[$paramarray['preset']], $paramarray['preset'], $paramarray);
-				$paramarray = array_merge($paramarray, $preset);
-			}
-		}
 
 		// let plugins alter the param array before we use it. could be useful for modifying search results, etc.
 		$paramarray = Plugins::filter( 'posts_get_paramarray', $paramarray );
@@ -650,6 +632,7 @@ class Posts extends ArrayObject implements IsContent
 		
 		
 		// If the orderby has a function in it, try to create a select field for it with an alias
+		// TODO: Move this to the Query class
 		if ( strpos( $orderby, '(' ) !== false ) {
 			$orders = explode( ',', $orderby );
 			$ob_index = 0;
@@ -714,13 +697,17 @@ class Posts extends ArrayObject implements IsContent
 			$limit = '';
 		}
 
-		// Define the LIMIT and add the OFFSET if it exists
+		// Define the LIMIT, OFFSET, ORDER BY if they exist
 		if(isset($limit)) {
 			$query->limit($limit);
 		}
 		if(isset($offset)) {
 			$query->offset($offset);
 		}
+		if(isset($orderby)) {
+			$query->orderby($orderby);
+		}
+
 
 		/* All SQL parts are constructed, on to real business! */
 
@@ -742,11 +729,8 @@ class Posts extends ArrayObject implements IsContent
 		 */
 		DB::set_fetch_mode( PDO::FETCH_CLASS );
 		DB::set_fetch_class( 'Post' );
+		//Utils::debug($query, $query->get());
 		$results = DB::$fetch_fn( $query->get(), $query->params(), 'Post' );
-//		if($fetch_fn == 'get_row') {
-//			Utils::debug($query->get());
-//			die();
-//		}
 		//Utils::debug( $paramarray, $fetch_fn, $query, $params, $results );
 		//var_dump( $query );
 
@@ -1191,29 +1175,7 @@ class Posts extends ArrayObject implements IsContent
 		return $return;
 		
 	}
-
-	/**
-	 * Register some plugin hooks
-	 * @static
-	 */
-	static function __static()
-	{
-		Pluggable::load_hooks('Posts');
-	}
-
-	/**
-	 * Provide some default presets
-	 * @static
-	 * @param array $presets List of presets that other classes might provide
-	 * @return array List of presets this class provides
-	 */
-	public static function filter_posts_get_all_presets($presets)
-	{
-		$presets['page_list'] = array( 'content_type' => 'page', 'status' => 'published', 'nolimit' => true );
-		$presets['asides'] = array( 'vocabulary' => array( 'tags:term' => 'aside' ), 'limit' => 5 );
-
-		return $presets;
-	}
+	
 }
 
 ?>
