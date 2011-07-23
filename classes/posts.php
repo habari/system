@@ -156,42 +156,30 @@ class Posts extends ArrayObject implements IsContent
 				if ( isset( $paramset['not:id'] ) ) {
 					$where->in('{posts}.id', $paramset['id'], 'posts_not_id', 'intval', false);
 				}
+
 				if ( isset( $paramset['status'] ) && ( $paramset['status'] != 'any' ) && ( 0 !== $paramset['status'] ) ) {
-					// remove 'any' from the list if we have an array
 					$where->in('{posts}.status', $paramset['status'], 'posts_status', create_function( '$a', 'return Post::status( $a );' ) );
 				}
+
 				if ( isset( $paramset['content_type'] ) && ( $paramset['content_type'] != 'any' ) && ( 0 !== $paramset['content_type'] ) ) {
 					$where->in('{posts}.content_type', $paramset['content_type'], 'posts_content_type', create_function( '$a', 'return Post::type( $a );' ) );
 				}
 				if ( isset( $paramset['not:content_type'] ) ) {
 					$where->in('{posts}.content_type', $paramset['content_type'], 'posts_not_content_type', create_function( '$a', 'return Post::type( $a );' ), false );
 				}
+
 				if ( isset( $paramset['slug'] ) ) {
 					$where->in('{posts}.slug', $paramset['slug'], 'posts_slug');
 				}
-				
 				if ( isset( $paramset['not:slug'] ) ) {
-					if ( is_array( $paramset['not:slug'] ) ) {
-						$where[] = "{posts}.slug NOT IN (" . implode( ',', array_fill( 0, count( $paramset['not:slug'] ), '?' ) ) . ")";
-						$params = array_merge( $params, $paramset['not:slug'] );
-					}
-					else {
-						$where[] = "{posts}.slug != ?";
-						$params[] = (string) $paramset['not:slug'];
-					}
+					$where->in('{posts}.slug', $paramset['slug'], 'posts_not_slug', null, false);
 				}
 				
 				if ( isset( $paramset['user_id'] ) && 0 !== $paramset['user_id'] ) {
-					if ( is_array( $paramset['user_id'] ) ) {
-						array_walk( $paramset['user_id'], create_function( '&$a,$b', '$a = intval( $a );' ) );
-						$where[] = "{posts}.user_id IN (" . implode( ',', array_fill( 0, count( $paramset['user_id'] ), '?' ) ) . ")";
-						$params = array_merge( $params, $paramset['user_id'] );
-					}
-					else {
-						$where[] = "{posts}.user_id = ?";
-						$params[] = (int) $paramset['user_id'];
-					}
-
+					$where->in('{posts}.user_id', $paramset['user_id'], 'posts_user_id', 'intval');
+				}
+				if ( isset( $paramset['not:user_id'] ) && 0 !== $paramset['not:user_id'] ) {
+					$where->in('{posts}.user_id', $paramset['not:user_id'], 'posts_user_id', 'intval', false);
 				}
 
 				if ( isset( $paramset['vocabulary'] ) ) {
@@ -300,23 +288,21 @@ class Posts extends ArrayObject implements IsContent
 					// this regex matches any unicode letters (\p{L}) or numbers (\p{N}) inside a set of quotes (but strips the quotes) OR not in a set of quotes
 					preg_match_all( '/(?<=")([\p{L}\p{N}]+[^"]*)(?=")|([\p{L}\p{N}]+)/u', $paramset['criteria'], $matches );
 					foreach ( $matches[0] as $word ) {
-						$where[] .= "( LOWER( {posts}.title ) LIKE ? OR  LOWER( {posts}.content ) LIKE ?)";
-						$params[] = '%' . MultiByte::strtolower( $word ) . '%';
-						$params[] = '%' . MultiByte::strtolower( $word ) . '%';  // Not a typo (there are two ? in the above statement)
+						$crit_placeholder = $query->new_param_name('criteria');
+						$where->add("( LOWER( {posts}.title ) LIKE :{$crit_placeholder} OR LOWER( {posts}.content ) LIKE :{$crit_placeholder})", array($crit_placeholder => '%' . MultiByte::strtolower( $word ) . '%'));
 					}
 				}
 
 				if ( isset( $paramset['title'] ) ) {
-					$where[] .= "LOWER( {posts}.title ) LIKE ?";
-					$params[] = MultiByte::strtolower( $paramset['title'] );
+					$where->add("LOWER( {posts}.title ) LIKE :title_match", array('title_match' => MultiByte::strtolower( $paramset['title'] )));
 				}
 
 				if ( isset( $paramset['title_search'] ) ) {
 					// this regex matches any unicode letters (\p{L}) or numbers (\p{N}) inside a set of quotes (but strips the quotes) OR not in a set of quotes
 					preg_match_all( '/(?<=")([\p{L}\p{N}]+[^"]*)(?=")|([\p{L}\p{N}]+)/u', $paramset['title_search'], $matches );
 					foreach ( $matches[0] as $word ) {
-						$where[] .= " LOWER( {posts}.title ) LIKE ? ";
-						$params[] = '%' . MultiByte::strtolower( $word ) . '%';
+						$crit_placeholder = $query->new_param_name('title_search');
+						$where->add("LOWER( {posts}.title ) LIKE :{$crit_placeholder}", array($crit_placeholder => '%' . MultiByte::strtolower( $word ) . '%'));
 					}
 				}
 
@@ -414,26 +400,17 @@ class Posts extends ArrayObject implements IsContent
 				}
 
 				if ( isset( $paramset['not:any:info'] ) ) {
-
 					if ( Utils::is_traversable( $paramset['not:any:info'] ) ) {
+						$subquery = Query::create('{postinfo}')->select('post_id');
 
 						foreach ( $paramset['not:any:info'] as $info_key => $info_value ) {
-
-							$the_ins[] = ' ({postinfo}.name = ? AND {postinfo}.value = ? ) ';
-							$params[] = $info_key;
-							$params[] = $info_value;
-
+							$infokey_field = $query->new_param_name('info_key');
+							$infovalue_field = $query->new_param_name('info_value');
+							$subquery->where()->add(" ({postinfo}.name = :{$infokey_field} AND {postinfo}.value = :{$infovalue_field} ) ", array($infokey_field => $info_key, $infovalue_field => $info_value));
 						}
 
-						$where[] = '
-							{posts}.id NOT IN (
-								SELECT post_id FROM {postinfo}
-								WHERE ( ' . implode( ' OR ', $the_ins ) . ' )
-							)
-						';
-
+						$where->in('{posts}.id', $subquery, 'posts_not_any_info', false);
 					}
-
 				}
 
 				/**
@@ -443,41 +420,27 @@ class Posts extends ArrayObject implements IsContent
 				 * If we've only got the year, get the whole year.
 				 */
 				if ( isset( $paramset['day'] ) && isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
-					$where[] = 'pubdate BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
 					$start_date = HabariDateTime::date_create( $start_date );
-					$params[] = $start_date->sql;
-					$params[] = $start_date->modify( '+1 day' )->sql;
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 day' )->sql));
 				}
 				elseif ( isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
-					$where[] = 'pubdate BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
 					$start_date = HabariDateTime::date_create( $start_date );
-					$params[] = $start_date->sql;
-					$params[] = $start_date->modify( '+1 month' )->sql;
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
+					$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 month' )->sql));
 				}
 				elseif ( isset( $paramset['year'] ) ) {
-					$where[] = 'pubdate BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
 					$start_date = HabariDateTime::date_create( $start_date );
-					$params[] = $start_date->sql;
-					$params[] = $start_date->modify( '+1 year' )->sql;
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
+					$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 year' )->sql));
 				}
 
 				if ( isset( $paramset['after'] ) ) {
-					$where[] = 'pubdate > ?';
-					$params[] = HabariDateTime::date_create( $paramset['after'] )->sql;
+					$where->add('pubdate > :after_date', array('after_date' => HabariDateTime::date_create( $paramset['after'] )->sql));
 				}
 
 				if ( isset( $paramset['before'] ) ) {
-					$where[] = 'pubdate < ?';
-					$params[] = HabariDateTime::date_create( $paramset['before'] )->sql;
+					$where->add('pubdate < :before_date', array('before_date' => HabariDateTime::date_create( $paramset['before'] )->sql));
 				}
 
 				// Concatenate the WHERE clauses
@@ -669,7 +632,7 @@ class Posts extends ArrayObject implements IsContent
 		 * Remove the GROUP BY (tag search added it)
 		 */
 		if ( isset( $count ) ) {
-			$select = "COUNT($count)";
+			$select = "COUNT({$count})";
 			$fetch_fn = 'get_value';
 			$orderby = '';
 			$groupby = '';
@@ -679,10 +642,10 @@ class Posts extends ArrayObject implements IsContent
 		// If the month counts are requested, replaced the select clause
 		if ( isset( $paramset['month_cts'] ) ) {
 			if ( isset( $paramset['vocabulary'] ) ) {
-				$select = 'MONTH(FROM_UNIXTIME(pubdate)) AS month, YEAR(FROM_UNIXTIME(pubdate)) AS year, COUNT(DISTINCT {posts}.id) AS ct';
+				$query->set_select('MONTH(FROM_UNIXTIME(pubdate)) AS month, YEAR(FROM_UNIXTIME(pubdate)) AS year, COUNT(DISTINCT {posts}.id) AS ct');
 			}
 			else {
-				$select = 'MONTH(FROM_UNIXTIME(pubdate)) AS month, YEAR(FROM_UNIXTIME(pubdate)) AS year, COUNT(*) AS ct';
+				$query->set_select('MONTH(FROM_UNIXTIME(pubdate)) AS month, YEAR(FROM_UNIXTIME(pubdate)) AS year, COUNT(*) AS ct');
 			}
 			$groupby = 'year, month';
 			if ( !isset( $paramarray['orderby'] ) ) {
@@ -697,7 +660,7 @@ class Posts extends ArrayObject implements IsContent
 			$limit = '';
 		}
 
-		// Define the LIMIT, OFFSET, ORDER BY if they exist
+		// Define the LIMIT, OFFSET, ORDER BY, GROUP BY if they exist
 		if(isset($limit)) {
 			$query->limit($limit);
 		}
@@ -706,6 +669,9 @@ class Posts extends ArrayObject implements IsContent
 		}
 		if(isset($orderby)) {
 			$query->orderby($orderby);
+		}
+		if(isset($groupby)) {
+			$query->groupby($groupby);
 		}
 
 

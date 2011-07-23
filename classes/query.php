@@ -10,6 +10,7 @@ class Query {
 	protected $limit = null;
 	protected $offset = null;
 	protected $orderby = null;
+	protected $groupby = null;
 
 	/**
 	 * Construct a Query
@@ -38,6 +39,12 @@ class Query {
 	public function select($fields)
 	{
 		$this->fields = array_merge($this->fields, Utils::single_array($fields));
+		return $this;
+	}
+
+	public function set_select($fields)
+	{
+		$this->fields = Utils::single_array($fields);
 		return $this;
 	}
 
@@ -73,6 +80,12 @@ class Query {
 			$this->where = new QueryWhere($operator);
 		}
 		return $this->where;
+	}
+
+	public function groupby($value)
+	{
+		$this->groupby = empty($value) ? null : $value;
+		return $this;
 	}
 
 	public function orderby($value)
@@ -115,6 +128,10 @@ class Query {
 			$sql .= "\nWHERE\n" . $this->where()->get();
 		}
 
+		if(isset($this->groupby)) {
+			$sql .= "\nGROUP BY " . $this->groupby;
+		}
+
 		if(isset($this->orderby)) {
 			$sql .= "\nORDER BY " . $this->orderby;
 		}
@@ -145,11 +162,11 @@ class Query {
 		if(!isset($prefix)) {
 			$prefix = 'param';
 		}
-		if(!isset($param_names[$param])) {
-			$param_names[$param] = 0;
+		if(!isset($param_names[$prefix])) {
+			$param_names[$prefix] = 0;
 		}
-		$param_names[$param]++;
-		return $prefix . '_' . $param_names[$param];
+		$param_names[$prefix]++;
+		return $prefix . '_' . $param_names[$prefix];
 	}
 
 }
@@ -201,7 +218,10 @@ class QueryWhere {
 	public function in($field, $values, $paramname = null, $validator = null, $positive = true)
 	{
 		$expression = $field . ' ';
-		if(is_array($values) && count($values) > 1) {
+		if($values instanceof Query) {
+			$expression = $values;
+		}
+		elseif(is_array($values) && count($values) > 1) {
 			$in_elements = array();
 			if(is_callable($validator)) {
 				foreach($values as $value) {
@@ -260,6 +280,9 @@ class QueryWhere {
 	{
 		$parameters = $this->parameters;
 		foreach($this->expressions as $expression) {
+			if($expression instanceof Query) {
+				$parameters = array_merge($parameters, $expression->params());
+			}
 			if($expression instanceof QueryWhere) {
 				$parameters = array_merge($parameters, $expression->params());
 			}
@@ -301,6 +324,9 @@ class QueryWhere {
 			return null;
 		}
 		foreach($this->expressions as $expression) {
+			if($expression instanceof Query) {
+				$outputs[] = $expression->get();
+			}
 			if($expression instanceof QueryWhere) {
 				$outputs[] = $expression->get($level + 1);
 			}
