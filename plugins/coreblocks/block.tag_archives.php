@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); } ?>
 <ul id="tag_archives">
 	<?php $tags = $content->tags; foreach( $tags as $tag ): ?>
 		<li>

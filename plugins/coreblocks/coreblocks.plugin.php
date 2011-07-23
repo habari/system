@@ -1,4 +1,4 @@
-<?php
+<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 
 /**
  * Create blocks commonly used by site owners.

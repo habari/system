@@ -180,7 +180,7 @@ class AtomHandler extends ActionHandler
 			$title = ( $this->is_auth() ) ? Utils::htmlspecialchars( $post->title ) : Utils::htmlspecialchars( $post->title_atom );
 			$content = ( $this->is_auth() ) ? Utils::htmlspecialchars( $post->content ) : Utils::htmlspecialchars( $post->content_atom );
 
-			$content = Plugins::filter( 'atom_add_post', $content );
+			$content = Plugins::filter( 'atom_add_post', $content, $post );
 
 			$feed_entry = $xml->addChild( 'entry' );
 			$entry_title = $feed_entry->addChild( 'title', $title );
@@ -231,7 +231,7 @@ class AtomHandler extends ActionHandler
 		foreach ( $comments as $comment ) {
 			$content = ( $this->is_auth() ) ? Utils::htmlspecialchars( $comment->content ) : Utils::htmlspecialchars( $comment->content_atom );
 
-			$content = Plugins::filter( 'atom_add_comment', $content );
+			$content = Plugins::filter( 'atom_add_comment', $content, $comment );
 
 			$item = $xml->addChild( 'entry' );
 			$title = $item->addChild( 'title', Utils::htmlspecialchars( sprintf( _t( '%1$s on "%2$s"' ), $comment->name, $comment->post->title ) ) );
