@@ -45,12 +45,14 @@ $(document).ready(function(){
 
 	$('.check-change').each(function() {
 		$(this).data('checksum', crc32($(this).val()));
+		$(this).data('oldvalue', $(this).val());
 	});
 
 	window.onbeforeunload = function(){
 		changed = false;
 		$('.check-change').each(function() {
 			if ($(this).data('checksum') != crc32($(this).val())) {
+				console.log([$(this).data('oldvalue'), $(this).val()]);
 				changed = true;
 			}
 		});

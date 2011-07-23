@@ -137,75 +137,35 @@ class Posts extends ArrayObject implements IsContent
 		$wheres = array();
 		$joins = array();
 
+		$query = Query::create('{posts}');
+		$query->select(array_keys(Post::default_fields()));
+
 		// If the request as a textual WHERE clause, skip the processing of the $wheresets since it's empty
 		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
-			$wheres[] = $paramarray['where'];
+			$query->where()->add($paramarray['where']);
 		}
 		else {
 			foreach ( $wheresets as $paramset ) {
-				// Safety mechanism to prevent empty queries
-				$where = array();
+				$where = new QueryWhere();
+
 				$paramset = array_merge( (array) $paramarray, (array) $paramset );
-				// $nots= preg_grep( '%^not:(\w+)$%iu', (array) $paramset );
+				Utils::debug($paramset);
 
 				if ( isset( $paramset['id'] ) ) {
-					if ( is_array( $paramset['id'] ) ) {
-						array_walk( $paramset['id'], create_function( '&$a,$b', '$a = intval( $a );' ) );
-						$where[] = "{posts}.id IN (" . implode( ',', array_fill( 0, count( $paramset['id'] ), '?' ) ) . ")";
-						$params = array_merge( $params, $paramset['id'] );
-					}
-					else {
-						$where[] = "{posts}.id = ?";
-						$params[] = (int) $paramset['id'];
-					}
+					$where->in('{posts}.id', $paramset['id'], 'posts_id', 'intval');
 				}
 				if ( isset( $paramset['not:id'] ) ) {
-					if ( is_array( $paramset['not:id'] ) ) {
-						array_walk( $paramset['not:id'], create_function( '&$a,$b', '$a = intval( $a );' ) );
-						$where[] = "{posts}.id NOT IN (" . implode( ',', array_fill( 0, count( $paramset['not:id'] ), '?' ) ) . ")";
-						$params = array_merge( $params, $paramset['not:id'] );
-					}
-					else {
-						$where[] = "{posts}.id != ?";
-						$params[] = (int) $paramset['not:id'];
-					}
+					$where->in('{posts}.id', $paramset['id'], 'posts_not_id', 'intval', false);
 				}
 				if ( isset( $paramset['status'] ) && ( $paramset['status'] != 'any' ) && ( 0 !== $paramset['status'] ) ) {
-					if ( is_array( $paramset['status'] ) ) {
-						// remove 'any' from the list if we have an array
-						$paramset['status'] = array_diff( $paramset['status'], array( 'any' ) );
-						array_walk( $paramset['status'], create_function( '&$a,$b', '$a = Post::status( $a );' ) );
-						$where[] = "{posts}.status IN (" . implode( ',', array_fill( 0, count( $paramset['status'] ), '?' ) ) . ")";
-						$params = array_merge( $params, $paramset['status'] );
-					}
-					else {
-						$where[] = "{posts}.status = ?";
-						$params[] = (int) Post::status( $paramset['status'] );
-					}
+					// remove 'any' from the list if we have an array
+					$where->in('{posts}.status', $paramset['status'], 'posts_status', create_function( '$a', 'return Post::status( $a );' ) );
 				}
 				if ( isset( $paramset['content_type'] ) && ( $paramset['content_type'] != 'any' ) && ( 0 !== $paramset['content_type'] ) ) {
-					if ( is_array( $paramset['content_type'] ) ) {
-						// remove 'any' from the list if we have an array
-						$paramset['content_type'] = array_diff( $paramset['content_type'], array( 'any' ) );
-						array_walk( $paramset['content_type'], create_function( '&$a,$b', '$a = Post::type( $a );' ) );
-						$where[] = "{posts}.content_type IN (" . implode( ',', array_fill( 0, count( $paramset['content_type'] ), '?' ) ) . ")";
-						$params = array_merge( $params, $paramset['content_type'] );
-					}
-					else {
-						$where[] = "{posts}.content_type = ?";
-						$params[] = (int) Post::type( $paramset['content_type'] );
-					}
+					$where->in('{posts}.content_type', $paramset['content_type'], 'posts_content_type', create_function( '$a', 'return Post::type( $a );' ) );
 				}
 				if ( isset( $paramset['not:content_type'] ) ) {
-					if ( is_array( $paramset['not:content_type'] ) ) {
-						array_walk( $paramset['not:content_type'], create_function( '&$a,$b', '$a = Post::type( $a );' ) );
-						$where[] = "{posts}.content_type NOT IN (" . implode( ',', array_fill( 0, count( $paramset['not:content_type'] ), '?' ) ) . ")";
-						$params = array_merge( $params, $paramset['not:content_type'] );
-					}
-					else {
-						$where[] = "{posts}.content_type != ?";
-						$params[] = (int) Post::type( $paramset['not:content_type'] );
-					}
+					$where->in('{posts}.content_type', $paramset['content_type'], 'posts_not_content_type', create_function( '$a', 'return Post::type( $a );' ), false );
 				}
 				if ( isset( $paramset['slug'] ) ) {
 					if ( is_array( $paramset['slug'] ) ) {
@@ -529,17 +489,13 @@ class Posts extends ArrayObject implements IsContent
 				}
 
 				// Concatenate the WHERE clauses
-				if ( count( $where ) > 0 ) {
-					$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
-				}
+				$query->where()->add($where);
 			}
 		}
+		Utils::debug($query->get(), $query->params());die();
 
 		// Only show posts to which the current user has permission
-		if ( isset( $paramset['ignore_permissions'] ) ) {
-			$master_perm_where = '';
-		}
-		else {
+		if ( !isset( $paramset['ignore_permissions'] ) ) {
 			// This set of wheres will be used to generate a list of post_ids that this user can read
 			$perm_where = array();
 			$perm_where_denied = array();
