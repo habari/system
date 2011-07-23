@@ -149,7 +149,6 @@ class Posts extends ArrayObject implements IsContent
 				$where = new QueryWhere();
 
 				$paramset = array_merge( (array) $paramarray, (array) $paramset );
-				Utils::debug($paramset);
 
 				if ( isset( $paramset['id'] ) ) {
 					$where->in('{posts}.id', $paramset['id'], 'posts_id', 'intval');
@@ -168,14 +167,7 @@ class Posts extends ArrayObject implements IsContent
 					$where->in('{posts}.content_type', $paramset['content_type'], 'posts_not_content_type', create_function( '$a', 'return Post::type( $a );' ), false );
 				}
 				if ( isset( $paramset['slug'] ) ) {
-					if ( is_array( $paramset['slug'] ) ) {
-						$where[] = "{posts}.slug IN (" . implode( ',', array_fill( 0, count( $paramset['slug'] ), '?' ) ) . ")";
-						$params = array_merge( $params, $paramset['slug'] );
-					}
-					else {
-						$where[] = "{posts}.slug = ?";
-						$params[] = (string) $paramset['slug'];
-					}
+					$where->in('{posts}.slug', $paramset['slug'], 'posts_slug');
 				}
 				
 				if ( isset( $paramset['not:slug'] ) ) {
@@ -492,12 +484,12 @@ class Posts extends ArrayObject implements IsContent
 				$query->where()->add($where);
 			}
 		}
-		Utils::debug($query->get(), $query->params());die();
 
 		// Only show posts to which the current user has permission
 		if ( !isset( $paramset['ignore_permissions'] ) ) {
+			$master_perm_where = new QueryWhere();
 			// This set of wheres will be used to generate a list of post_ids that this user can read
-			$perm_where = array();
+			$perm_where = new QueryWhere('OR');
 			$perm_where_denied = array();
 			$params_where = array();
 			$where = array();
@@ -508,13 +500,12 @@ class Posts extends ArrayObject implements IsContent
 
 			// If a user can read any post type, let him
 			if ( User::identify()->can( 'post_any', 'read' ) ) {
-				$perm_where = array( 'post_any' => '(1=1)' );
+				$perm_where->add( '(1=1)' );
 			}
 			else {
 				// If a user can read his own posts, let him
 				if ( User::identify()->can( 'own_posts', 'read' ) ) {
-					$perm_where['own_posts_id'] = '{posts}.user_id = ?';
-					$params_where[] = User::identify()->id;
+					$perm_where->add('{posts}.user_id = :own_posts_id', array('own_posts_id' => User::identify()->id));
 				}
 
 				// If a user can read specific post types, let him
@@ -525,13 +516,13 @@ class Posts extends ArrayObject implements IsContent
 					}
 				}
 				if ( count( $permitted_post_types ) > 0 ) {
-					$perm_where[] = '{posts}.content_type IN (' . implode( ',', $permitted_post_types ) . ')';
+					$perm_where->in('{posts}.content_type', $permitted_post_types, 'posts_permitted_types', 'intval');
 				}
 
 				// If a user can read posts with specific tokens, let him
 				if ( count( $read_tokens ) > 0 ) {
-					$joins['post_tokens__allowed'] = ' LEFT JOIN {post_tokens} pt_allowed ON {posts}.id= pt_allowed.post_id AND pt_allowed.token_id IN ('.implode( ',', $read_tokens ).')';
-					$perm_where['perms_join_null'] = 'pt_allowed.post_id IS NOT NULL';
+					$query->join('LEFT JOIN {post_tokens} pt_allowed ON {posts}.id= pt_allowed.post_id AND pt_allowed.token_id IN ('.implode( ',', $read_tokens ).')', array(), 'post_tokens__allowed');
+					$perm_where->add('pt_allowed.post_id IS NOT NULL', array(), 'perms_join_null');
 				}
 
 				// If a user has access to read other users' unpublished posts, let him
@@ -570,22 +561,15 @@ class Posts extends ArrayObject implements IsContent
 			}
 
 			// This doesn't work yet because you can't pass these arrays by reference
-			Plugins::act( 'post_get_perm_where', $perm_where, $params_where, $paramarray );
-			Plugins::act( 'post_get_perm_where_denied', $perm_where_denied, $params_where_denied, $paramarray );
+			Plugins::act( 'post_get_perm_where', $perm_where, $paramarray );
+			Plugins::act( 'post_get_perm_where_denied', $perm_where_denied, $paramarray );
 						
-			// Set up the merge params
-			$merge_params = array( $join_params, $params );
-			
 			// If there are granted permissions to check, add them to the where clause
-			if ( count( $perm_where ) == 0 && !isset( $joins['post_tokens__allowed'] ) ) {
-				// You have no grants.  You get no posts.
-				$where['perms_granted'] = '(1=0)';
+			if($perm_where->count() == 0 && !$query->joined('post_tokens__allowed')) {
+				$master_perm_where->add('(1=0)', array(), 'perms_granted');
 			}
-			elseif ( count( $perm_where ) > 0 ) {
-				$where['perms_granted'] = '
-					(' . implode( ' OR ', $perm_where ) . ')
-				';
-				$merge_params[] = $params_where;
+			else {
+				$master_perm_where->add($perm_where, array(), 'perms_granted');
 			}
 
 			if ( count( $deny_tokens ) > 0 ) {
@@ -601,13 +585,9 @@ class Posts extends ArrayObject implements IsContent
 				$merge_params[] = $params_where_denied;
 			}
 			
-			// Merge the params
-			$params = call_user_func_array( 'array_merge', $merge_params );
-
-			// AND the separate permission-related WHERE clauses
-			$master_perm_where = implode( ' AND ', $where );
 		}
-
+		$query->where()->add($master_perm_where);
+		
 		// Extract the remaining parameters which will be used onwards
 		// For example: page number, fetch function, limit
 		$paramarray = new SuperGlobal( $paramarray );
@@ -676,14 +656,9 @@ class Posts extends ArrayObject implements IsContent
 
 		// Add arbitrary fields to the select clause for sorting and output
 		if ( isset( $add_select ) ) {
-			$select_ary = array_merge( $select_ary, $add_select );
+			$query->select($add_select);
 		}
-		
 
-		/**
-		 * Turn the requested fields into a comma-separated SELECT field clause
-		 */
-		$select = implode( ', ', $select_ary );
 
 		/**
 		 * If a count is requested:
@@ -722,35 +697,16 @@ class Posts extends ArrayObject implements IsContent
 		}
 
 		// Define the LIMIT and add the OFFSET if it exists
-		if ( !empty( $limit ) ) {
-			$limit = " LIMIT $limit";
-			if ( isset( $offset ) ) {
-				$limit .= " OFFSET $offset";
-			}
+		if(isset($limit)) {
+			$query->limit($limit);
 		}
-		else {
-			$limit = '';
+		if(isset($offset)) {
+			$query->offset($offset);
 		}
 
 		/* All SQL parts are constructed, on to real business! */
 
-		/**
-		 * Build the final SQL statement
-		 */
-		$query = '
-			SELECT DISTINCT ' . $select . '
-			FROM {posts} ' . "\n " . implode( "\n ", $joins ) . "\n";
-
-		if ( count( $wheres ) > 0 ) {
-			$query .= ' WHERE (' . implode( " \nOR\n ", $wheres ) . ')';
-			$query .= ( $master_perm_where == '' ) ? '' : ' AND (' . $master_perm_where . ')';
-		}
-		elseif ( $master_perm_where != '' ) {
-			$query .= ' WHERE (' . $master_perm_where . ')';
-		}
-		$query .= ( ! isset( $groupby ) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
-		$query .= ( ! isset( $having ) || $having == '' ) ? '' : ' HAVING ' . $having;
-		$query .= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
+		//Utils::debug($query->where(), $query->get(), $query->params());
 
 		/**
 		 * DEBUG: Uncomment the following line to display everything that happens in this function
@@ -760,10 +716,7 @@ class Posts extends ArrayObject implements IsContent
 		//Session::notice($query);
 
 		if ( 'get_query' == $fetch_fn ) {
-			return array(
-				$query,
-				$params
-			);
+			return $query;
 		}
 		
 		/**
@@ -771,8 +724,11 @@ class Posts extends ArrayObject implements IsContent
 		 */
 		DB::set_fetch_mode( PDO::FETCH_CLASS );
 		DB::set_fetch_class( 'Post' );
-		$results = DB::$fetch_fn( $query, $params, 'Post' );
-
+		$results = DB::$fetch_fn( $query->get(), $query->params(), 'Post' );
+//		if($fetch_fn == 'get_row') {
+//			Utils::debug($query->get());
+//			die();
+//		}
 		//Utils::debug( $paramarray, $fetch_fn, $query, $params, $results );
 		//var_dump( $query );
 

@@ -5,6 +5,10 @@ class Query {
 	private $where = null;
 	public $primary_table = null;
 	protected $fields = array();
+	protected $joins = array();
+	protected $join_params = array();
+	protected $limit = null;
+	protected $offset = null;
 
 	/**
 	 * Construct a Query
@@ -42,6 +46,21 @@ class Query {
 		return $this;
 	}
 
+	public function join($join, $parameters = array(), $alias = null)
+	{
+		if(empty($alias)) {
+			$alias = md5($join);
+		}
+		$this->joins[$alias] = $join;
+		$this->join_params = array_merge($this->join_params, $parameters);
+		return $this;
+	}
+
+	public function joined($alias)
+	{
+		return array_key_exists($alias, $this->joins);
+	}
+
 	/**
 	 * Create and/or return a QueryWhere object representing the where clause of this query
 	 * @param string $operator The operator (AND/OR) to use between expressions in this clause
@@ -55,21 +74,41 @@ class Query {
 		return $this->where;
 	}
 
+	public function limit($value)
+	{
+		$this->limit = is_int($value) ? $value : null;
+	}
+
+	public function offset($value)
+	{
+		$this->offset = is_int($value) ? $value : null;
+	}
+
 	/**
 	 * Obtain the SQL used to execute this query
 	 * @return string The SQL to execute
 	 */
 	public function get()
 	{
-		$sql = "SELECT ";
+		$sql = "SELECT \n\t";
 		if(count($this->fields) > 0) {
-			$sql .= implode(', ', $this->fields);
+			$sql .= implode(",\n\t", $this->fields);
 		}
 		else {
 			$sql .= "*";
 		}
-		$sql .= " FROM " . $this->primary_table;
-		$sql .= " WHERE " . $this->where()->get();
+		$sql .= "\nFROM\n\t" . $this->primary_table;
+		foreach($this->joins as $join) {
+			$sql .= "\n" . $join;
+		}
+		$sql .= "\nWHERE\n" . $this->where()->get();
+
+		if(isset($this->limit)) {
+			$sql .= "\nLIMIT " . $this->limit;
+			if(isset($this->offset)) {
+				$sql .= "\nOFFSET " . $this->offset;
+			}
+		}
 		return $sql;
 	}
 
@@ -79,7 +118,7 @@ class Query {
 	 */
 	public function params()
 	{
-		return $this->where()->params();
+		return array_merge($this->where()->params(), $this->join_params);
 	}
 
 	public static function new_param_name($prefix = null)
@@ -125,6 +164,9 @@ class QueryWhere {
 	 */
 	public function add($expression, $parameters = array(), $name = null)
 	{
+		if(empty($name)) {
+			$name = count($this->expressions) + 1;
+		}
 		$this->expressions[$name] = $expression;
 		$this->parameters = array_merge($this->parameters, $parameters);
 		return $this;
@@ -185,7 +227,11 @@ class QueryWhere {
 			}
 		}
 
-		$this->expressions[] = $expression;
+		if(empty($paramname)) {
+			$paramname = count($this->expressions) + 1;
+		}
+
+		$this->expressions[$paramname] = $expression;
 		return $this;
 	}
 
@@ -230,18 +276,28 @@ class QueryWhere {
 	 * Obtain the where clause as a string to use in a query
 	 * @return string The where clause represented by this object
 	 */
-	public function get()
+	public function get($level = 0)
 	{
 		$outputs = array();
+		$indents = str_repeat("\t", $level);
 		foreach($this->expressions as $expression) {
 			if($expression instanceof QueryWhere) {
-				$outputs[] = $expression->get();
+				$outputs[] = $expression->get($level + 1);
 			}
 			else {
-				$outputs[] = $expression;
+				$outputs[] = $indents . "\t" .  $expression;
 			}
 		}
-		return '(' . implode(' ' . $this->operator . ' ', $outputs) . ')';
+		$output = implode("\n" . $indents . $this->operator . "\n", $outputs);
+		if($level == 0) {
+			return $output;
+		}
+		return $indents . "(\n" . $output . "\n" . $indents . ")";
+	}
+
+	public function count()
+	{
+		return count($this->expressions);
 	}
 
 }
