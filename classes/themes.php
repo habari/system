@@ -97,13 +97,19 @@ class Themes
 		$theme_dir = self::get_theme_dir( $nopreview );
 		$themes = Themes::get_all();
 
+		// If our active theme directory has gone missing, iterate through the others until we find one we can use and activate it.
 		if ( !isset( $themes[$theme_dir] ) ) {
 			$theme_exists = false;
 			foreach ( $themes as $themedir ) {
 				if ( file_exists( Utils::end_in_slash( $themedir ) . 'theme.xml' ) ) {
 					$theme_dir = basename( $themedir );
+					EventLog::log( _t( "Active theme directory no longer available.  Falling back to '{$theme_dir}'" ), 'err', 'theme', 'habari' );
 					Options::set( 'theme_dir', basename( $themedir ) );
+					$fallback_theme = Themes::create();
+					Plugins::act_id( 'theme_activated', $fallback_theme->plugin_id(), $theme_dir, $fallback_theme );
 					$theme_exists = true;
+					// Refresh to the newly "activated" theme to ensure it takes the options that have just been set above and doesn't produce any errors.
+					Utils::redirect();
 					break;
 				}
 			}
