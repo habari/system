@@ -97,12 +97,17 @@ class Themes
 		$theme_dir = self::get_theme_dir( $nopreview );
 		$themes = Themes::get_all();
 
+		// If our active theme has gone missing, iterate through the others until we find one we can use and activate it.
 		if ( !isset( $themes[$theme_dir] ) ) {
 			$theme_exists = false;
 			foreach ( $themes as $themedir ) {
 				if ( file_exists( Utils::end_in_slash( $themedir ) . 'theme.xml' ) ) {
 					$theme_dir = basename( $themedir );
+					EventLog::log( 'Previously activated theme directory no longer available.  Falling back to "'.$theme_dir.'"' );
 					Options::set( 'theme_dir', basename( $themedir ) );
+					// TODO: This needs to happen, but doesn't work at the moment quite right.
+					$fallback_theme = Themes::create();
+					Plugins::act_id( 'theme_activated', $fallback_theme->plugin_id(), $theme_dir, $fallback_theme );
 					$theme_exists = true;
 					break;
 				}
@@ -110,7 +115,7 @@ class Themes
 			if ( !$theme_exists ) {
 				die( _t( 'There is no valid theme currently installed.' ) );
 			}
-		}
+		} 		
 		return $themes[$theme_dir];
 	}
 
@@ -210,6 +215,7 @@ class Themes
 	{
 		if ( isset( $_SESSION['user_theme_name'] ) ) {
 			// Execute the theme's deactivated action
+			$preview_theme = Themes::create();
 			Plugins::act_id( 'theme_deactivated', $preview_theme->plugin_id(), $theme_name, $preview_theme );
 			EventLog::log( _t( 'Canceled Theme Preview: %s', array( $_SESSION['user_theme_name'] ) ), 'notice', 'theme', 'habari' );
 			unset( $_SESSION['user_theme_name'] );
