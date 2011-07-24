@@ -216,7 +216,7 @@ class Themes
 		if ( isset( $_SESSION['user_theme_name'] ) ) {
 			// Execute the theme's deactivated action
 			$preview_theme = Themes::create();
-			Plugins::act_id( 'theme_deactivated', $preview_theme->plugin_id(), $theme_name, $preview_theme );
+			Plugins::act_id( 'theme_deactivated', $preview_theme->plugin_id() );
 			EventLog::log( _t( 'Canceled Theme Preview: %s', array( $_SESSION['user_theme_name'] ) ), 'notice', 'theme', 'habari' );
 			unset( $_SESSION['user_theme_name'] );
 			unset( $_SESSION['user_theme_dir'] );
