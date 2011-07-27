@@ -1634,8 +1634,6 @@ $(document).ready(function(){
 			$('.tabs').removeClass('ui-widget-header');
 		}
 	});
-//	$('.pagesplitter').removeClass('ui-tabs ui-widget-content');
-//	$('.tabs').removeClass( 'ui-widget-header' );
 
 	// LOGIN: Focus cursor on 'Name'.
 	$('body.login #habari_username').focus();
