@@ -1622,7 +1622,20 @@ $(document).ready(function(){
 	$('.resizable').resizeable();
 
 	/* Init Tabs, using jQuery UI Tabs */
-	$('.tabcontrol').parent().tabs({ fx: { height: 'toggle', opacity: 'toggle' }, selected: -1, collapsible: true });
+	$('.tabcontrol').parent().tabs({ 
+		fx: { height: 'toggle', opacity: 'toggle' }, 
+		selected: -1, 
+		collapsible: true,
+		select: function(event, ui) {
+			$(ui.panel).removeClass('ui-tabs-panel ui-widget-content ui-corner-bottom');
+		},
+		create: function() {
+			$(this).removeClass('ui-tabs ui-widget-content');
+			$('.tabs').removeClass('ui-widget-header');
+		}
+	});
+//	$('.pagesplitter').removeClass('ui-tabs ui-widget-content');
+//	$('.tabs').removeClass( 'ui-widget-header' );
 
 	// LOGIN: Focus cursor on 'Name'.
 	$('body.login #habari_username').focus();

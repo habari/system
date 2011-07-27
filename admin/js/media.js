@@ -258,6 +258,14 @@ $(document).ready(function(){
 				habari.media.unqueueLoad();
 			}
 			return true;
+		},
+		select: function(event, ui) {
+			$(ui.panel).removeClass('ui-tabs-panel ui-widget-content ui-corner-bottom');
+		},
+		create: function() {
+			$(this).removeClass('ui-tabs ui-widget-content');
+			$('.tabs').removeClass('ui-widget-header');
 		}
 	});
+
 });
