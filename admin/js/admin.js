@@ -1330,7 +1330,6 @@ var theMenu = {
 		});
 	},
 	blinkCarrot: function(owner) {
-		spinner.start();
 		var blinkSpeed = 100;
 		$(owner).addClass('carrot').addClass('blinking').fadeOut(blinkSpeed).fadeIn(blinkSpeed).fadeOut(blinkSpeed).fadeIn(blinkSpeed, function() {
 			dropButton.hideMenu();
