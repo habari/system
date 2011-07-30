@@ -1631,7 +1631,11 @@ class FormControlTextMulti extends FormControl
 					},
 					remove: function(e){
 						if (confirm("' . _t( 'Remove this item?' ) . '")) {
-							$(e).parent().prev().remove();
+							if ( $(e).parent().parent().find("input").length == 1) {
+								field = $(e).parent().prev().attr("name");
+								$(e).parent().prev().before("<input type=\"hidden\" name=\"" + field + "\" value=\"\">");
+							}
+							$(e).parent().prev("input").remove();
 							$(e).parent().remove();
 						}
 						return false;
