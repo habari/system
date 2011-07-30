@@ -1447,7 +1447,7 @@ $.fn.rangeSelect = function() {
 			$spec.slice(
 				Math.min($spec.index(lastCheckbox), $spec.index(e.target)),
 				Math.max($spec.index(lastCheckbox), $spec.index(e.target)) + 1)
-			.attr({checked: e.target.checked ? "checked" : ""});
+			.attr({checked: e.target.checked ? "checked" : ""}).change();
 		}
 		lastCheckbox = e.target;
 	});
