@@ -39,18 +39,16 @@ itemManage.fetch = function(offset, limit, resetTimeline, silent) {
 	query['digest'] = $('input#password_digest').attr('value');
 	query['search'] = liveSearch.getSearchText();
 
-	$.get(
+	habari_ajax.get(
 		"<?php echo URL::get('admin_ajax', array('context' => 'get_tags')); ?>",
 		query,
 		function(result) {
-			spinner.stop();
 			//TODO When there's a loupe, update it
 			//timelineHandle.updateLoupeInfo();
 			$('#tag_collection').html(result['data']);
 			itemManage.selected = {};
 			itemManage.initItems();
-		},
-		'json'
+		}
 	);
 };
 
@@ -74,19 +72,16 @@ itemManage.update = function( action, id ) {
 	query['nonce'] = $('input#nonce').attr('value');
 	query['digest'] = $('input#password_digest').attr('value');
 
-	$.post(
+	habari_ajax.post(
 		"<?php echo URL::get('admin_ajax', array('context' => 'tags')); ?>",
 		query,
 		function(result) {
-			spinner.stop();
 			//TODO When there's a loupe, update it
 			//timelineHandle.updateLoupeInfo();
-			$('#tag_collection').html(result['data']);
-			human_msg.display_msg( result['message'] );
+			$('#tag_collection').html(result);
 			itemManage.selected = {};
 			itemManage.initItems();
-		},
-		'json'
+		}
 	);
 };
 
@@ -125,21 +120,18 @@ itemManage.rename = function() {
 	query['timestamp'] = $('input#timestamp').attr('value');
 	query['nonce'] = $('input#nonce').attr('value');
 	query['digest'] = $('input#password_digest').attr('value');
-	$.post(
+	habari_ajax.post(
 		"<?php echo URL::get('admin_ajax', array('context' => 'tags')); ?>",
 		query,
 		function(result) {
-			spinner.stop();
 			//TODO When there's a loupe, update it
 			//timelineHandle.updateLoupeInfo();
 			$('.controls input.renametext').val('').blur();
-			$('#tag_collection').html(result['data']);
-			human_msg.display_msg( result['message'] );
+			$('#tag_collection').html(result);
 
 			itemManage.selected = {};
 			itemManage.initItems();
-		},
-		'json'
+		}
 	);
 };
 

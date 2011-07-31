@@ -1385,7 +1385,7 @@ body.page-logs .item input[type=checkbox] {
 	margin-left: 10px;
 }
 
-body.page-logs .item .message {
+body.page-logs .item .less, body.page-logs .item.expanded {
 	cursor: help;
 }
 
