@@ -872,6 +872,7 @@ class Post extends QueryRecord implements IsContent
 
 		$settings->append( 'text', 'pubdate', 'null:null', _t( 'Publication Time' ), 'tabcontrol_text' );
 		$settings->pubdate->value = $this->pubdate->format( 'Y-m-d H:i:s' );
+		$settings->pubdate->helptext = 'YYYY-MM-DD HH:MM:SS';
 
 		$settings->append( 'hidden', 'updated', 'null:null' );
 		$settings->updated->value = $this->updated->int;
