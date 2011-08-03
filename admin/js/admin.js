@@ -1631,6 +1631,14 @@ $(document).ready(function(){
 		create: function() {
 			$(this).removeClass('ui-tabs ui-widget-content');
 			$('.tabs').removeClass('ui-widget-header');
+		},
+		show: function(event, ui) {
+			var panelHeight = $(ui.panel).height();
+			$('html, body').animate({
+				scrollTop: panelHeight
+				},
+				400
+			);
 		}
 	});
 
