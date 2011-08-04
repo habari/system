@@ -135,7 +135,7 @@ class InstallHandler extends ActionHandler
 		if ( $db_type == 'mysql' || $db_type == 'pgsql' ) {
 			$this->handler_vars['db_host'] = $_POST["{$db_type}_db_host"];
 			$this->handler_vars['db_user'] = $_POST["{$db_type}_db_user"];
-			$this->handler_vars['db_pass'] = $_POST["{$db_type}_db_pass"];
+			$this->handler_vars['db_pass'] = $_POST->raw( "{$db_type}_db_pass" );
 			$this->handler_vars['db_schema'] = $_POST["{$db_type}_db_schema"];
 		}
 
@@ -1743,7 +1743,7 @@ class InstallHandler extends ActionHandler
 			// Can we connect to the DB?
 			$pdo = 'mysql:host=' . $_POST['host'] . ';dbname=' . $_POST['database'];
 			try {
-				$connect = DB::connect( $pdo, $_POST['user'], $_POST['pass'] );
+				$connect = DB::connect( $pdo, $_POST['user'], $_POST->raw( 'pass' ) );
 				$xml->addChild( 'status', 1 );
 			}
 			catch( Exception $e ) {
@@ -1814,7 +1814,7 @@ class InstallHandler extends ActionHandler
 			// Can we connect to the DB?
 			$pdo = 'pgsql:host=' . $_POST['host'] . ' dbname=' . $_POST['database'];
 			try {
-				$connect = DB::connect( $pdo, $_POST['user'], $_POST['pass'] );
+				$connect = DB::connect( $pdo, $_POST['user'], $_POST->raw( 'pass' ) );
 				$xml->addChild( 'status', 1 );
 			}
 			catch( Exception $e ) {
