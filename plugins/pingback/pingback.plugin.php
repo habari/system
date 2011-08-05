@@ -134,6 +134,7 @@ class Pingback extends Plugin
 					throw new XMLRPCException( 16 );
 				}
 				$source_contents = $rr->get_response_body();
+				$headers = $rr->get_response_headers();
 			}
 			catch ( XMLRPCException $e ) {
 				// catch our special type of exception and re-throw it
@@ -143,11 +144,27 @@ class Pingback extends Plugin
 				throw new XMLRPCException( -32300 );
 			}
 
-			// encoding is converted into internal encoding.
-			// @todo check BOM at beginning of file before checking for a charset attribute
-			$habari_encoding = MultiByte::hab_encoding();
-			if ( preg_match( "/<meta[^>]+charset=([A-Za-z0-9\-\_]+)/i", $source_contents, $matches ) && strtolower( $habari_encoding ) != strtolower( $matches[1] ) ) {
-				$ret = MultiByte::convert_encoding( $source_contents, $habari_encoding, $matches[1] );
+			// Encoding is converted into internal encoding.
+			// First, detect the source string's encoding
+			$habari_encoding = strtoupper( MultiByte::hab_encoding() );
+			$source_encoding = 'UTF-8';
+			// Is the charset in the headers?
+			if ( isset( $headers['Content-Type'] ) && strpos( $headers['Content-Type'], 'charset' ) !== false ) {
+				if ( preg_match("/+charset=([A-Za-z0-9\-\_]+)/i", $headers['Content-Type'], $matches ) ) {
+					$source_encoding = strtoupper( $matches[1] );
+				}
+			}
+			// Can we tell the charset from the stream itself?
+			else if ( ( $enc = MultiByte::detect_bom_encoding( $source_contents ) ) !== false ) {
+				$source_encoding = $enc;
+			}
+			// Is the charset in a meta tag?
+			else if ( preg_match( "/<meta[^>]+charset=([A-Za-z0-9\-\_]+)/i", $source_contents, $matches ) ) {
+				$source_encoding = strtoupper( $matches[1] );
+			}
+			// Then, convert the string, if needed
+			if( $habari_encoding != $source_encoding ) {
+				$ret = MultiByte::convert_encoding( $source_contents, $habari_encoding, $source_encoding );
 				if ( $ret !== false ) {
 					$source_contents = $ret;
 				}
