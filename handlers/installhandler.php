@@ -528,7 +528,7 @@ class InstallHandler extends ActionHandler
 			Config::set( 'db_connection', array( 'prefix' => $this->handler_vars['table_prefix'], ) );
 		}
 		try {
-			$connect = DB::connect( $pdo, $this->handler_vars['db_user'], $this->handler_vars['db_pass'] );
+			$connect = DB::connect( $pdo, $this->handler_vars['db_user'], html_entity_decode( $this->handler_vars['db_pass'] ) );
 			return true;
 		}
 		catch( PDOException $e ) {
@@ -561,7 +561,7 @@ class InstallHandler extends ActionHandler
 			Config::set( 'db_connection', array( 'prefix' => $this->handler_vars['table_prefix'], ) );
 		}
 		try {
-			$connect = DB::connect( $pdo, $this->handler_vars['db_user'], $this->handler_vars['db_pass'] );
+			$connect = DB::connect( $pdo, $this->handler_vars['db_user'], html_entity_decode( $this->handler_vars['db_pass'] ) );
 			return true;
 		}
 		catch( PDOException $e ) {
@@ -947,7 +947,7 @@ class InstallHandler extends ActionHandler
 		if ( ! ( $file_contents = file_get_contents( HABARI_PATH . "/system/schema/" . $this->handler_vars['db_type'] . "/config.php" ) ) ) {
 			return false;
 		}
-		if ( $file_contents = $this->get_config_file() ) {
+		if ( $file_contents = html_entity_decode( $this->get_config_file() ) ) {
 			if ( $file = @fopen( Site::get_dir( 'config_file' ), 'w' ) ) {
 				if ( fwrite( $file, $file_contents, strlen( $file_contents ) ) ) {
 					fclose( $file );
@@ -1743,7 +1743,7 @@ class InstallHandler extends ActionHandler
 			// Can we connect to the DB?
 			$pdo = 'mysql:host=' . $_POST['host'] . ';dbname=' . $_POST['database'];
 			try {
-				$connect = DB::connect( $pdo, $_POST['user'], $_POST['pass'] );
+				$connect = DB::connect( $pdo, $_POST['user'], $_POST->raw( 'pass' ) );
 				$xml->addChild( 'status', 1 );
 			}
 			catch( Exception $e ) {
@@ -1814,7 +1814,7 @@ class InstallHandler extends ActionHandler
 			// Can we connect to the DB?
 			$pdo = 'pgsql:host=' . $_POST['host'] . ' dbname=' . $_POST['database'];
 			try {
-				$connect = DB::connect( $pdo, $_POST['user'], $_POST['pass'] );
+				$connect = DB::connect( $pdo, $_POST['user'], $_POST->raw( 'pass' ) );
 				$xml->addChild( 'status', 1 );
 			}
 			catch( Exception $e ) {
