@@ -497,12 +497,13 @@ class AdminPostsHandler extends AdminHandler
 			}
 		}
 
-		$output = array(
+		$ar = new AjaxResponse();
+		$ar->data = array(
 			'items' => $items,
 			'item_ids' => $item_ids,
 			'timeline' => $timeline,
 		);
-		echo json_encode( $output );
+		$ar->out();
 	}
 
 	/**
