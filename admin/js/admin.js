@@ -375,12 +375,10 @@ var itemManage = {
 		silent = ( silent === undefined ) ? false: silent;
 		spinner.start();
 
-		$.ajax({
-			type: 'GET',
-			url: itemManage.fetchURL,
-			data: '&search=' + liveSearch.getSearchText() + '&offset=' + offset + '&limit=' + limit,
-			dataType: 'json',
-			success: function(json) {
+		habari_ajax.get(
+			itemManage.fetchURL,
+			'&search=' + liveSearch.getSearchText() + '&offset=' + offset + '&limit=' + limit,
+			function(json) {
 				if (silent) {
 					itemManage.selected = json.item_ids;
 					itemManage.initItems();
@@ -390,7 +388,6 @@ var itemManage = {
 					if ( resetTimeline && $('.timeline').length !== 0 ) {
 						// we hide and show the timeline to fix a firefox display bug
 						$('.years').html(json.timeline).hide();
-						spinner.stop();
 						itemManage.initItems();
 						setTimeout( function() {
 							$('.years').show();
@@ -399,7 +396,6 @@ var itemManage = {
 						$('input.checkbox').rangeSelect();
 					}
 					else {
-						spinner.stop();
 						itemManage.initItems();
 						$('input.checkbox').rangeSelect();
 					}
@@ -409,11 +405,8 @@ var itemManage = {
 					}
 					findChildren();
 				}
-
-				spinner.stop();
-
 			}
-		});
+		);
 	}
 };
 

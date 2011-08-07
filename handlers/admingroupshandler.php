@@ -207,9 +207,11 @@ class AdminGroupsHandler extends AdminHandler
 			$output .= $this->theme->fetch( 'groups_item' );
 		}
 
-		echo json_encode( array(
+		$ar = new AjaxResponse();
+		$ar->data = array(
 			'items' => $output
-		) );
+		);
+		$ar->out();
 	}
 
 	/**
