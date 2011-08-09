@@ -11,7 +11,6 @@
 				<div class="media_controls">
 					<ul>
 					</ul>
-					<?php /*<div class="upload"><input type="file"><input type="submit" value="<?php _e('Upload'); ?>"></div>*/ ?>
 				</div>
 				<div class="media_browser">
 					<div class="media_row">
