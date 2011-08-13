@@ -147,11 +147,12 @@ class Pingback extends Plugin
 			// Encoding is converted into internal encoding.
 			// First, detect the source string's encoding
 			$habari_encoding = strtoupper( MultiByte::hab_encoding() );
-			$source_encoding = 'UTF-8';
+			$source_encoding = 'Windows-1252';
 			// Is the charset in the headers?
 			if ( isset( $headers['Content-Type'] ) && strpos( $headers['Content-Type'], 'charset' ) !== false ) {
-				if ( preg_match("/+charset=([A-Za-z0-9\-\_]+)/i", $headers['Content-Type'], $matches ) ) {
-					$source_encoding = strtoupper( $matches[1] );
+				// This regex should be changed to meet the HTTP spec at some point
+				if ( preg_match("/charset[\x09\x0A\x0C\x0D\x20]*=[\x09\x0A\x0C\x0D\x20]*('?)([A-Za-z0-9\-\_]+)\1/i", $headers['Content-Type'], $matches ) ) {
+					$source_encoding = strtoupper( $matches[2] );
 				}
 			}
 			// Can we tell the charset from the stream itself?
@@ -159,15 +160,16 @@ class Pingback extends Plugin
 				$source_encoding = $enc;
 			}
 			// Is the charset in a meta tag?
-			else if ( preg_match( "/<meta[^>]+charset=([A-Za-z0-9\-\_]+)/i", $source_contents, $matches ) ) {
-				$source_encoding = strtoupper( $matches[1] );
-			}
-			// Then, convert the string, if needed
-			if( $habari_encoding != $source_encoding ) {
-				$ret = MultiByte::convert_encoding( $source_contents, $habari_encoding, $source_encoding );
-				if ( $ret !== false ) {
-					$source_contents = $ret;
+			else if ( preg_match( "/<meta[^>]+charset[\x09\x0A\x0C\x0D\x20]*=[\x09\x0A\x0C\x0D\x20]*([\"']?)([A-Za-z0-9\-\_]+)\1/i", $source_contents, $matches ) ) {
+				$source_encoding = strtoupper( $matches[2] );
+				if (in_array($source_encoding, array("UTF-16", "UTF-16BE", "UTF-16LE"))) {
+					$source_encoding = "UTF-8";
 				}
+			}
+			// Then, convert the string
+			$ret = MultiByte::convert_encoding( $source_contents, $habari_encoding, $source_encoding );
+			if ( $ret !== false ) {
+				$source_contents = $ret;
 			}
 
 			// Find the page's title

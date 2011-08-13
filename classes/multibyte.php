@@ -162,21 +162,18 @@ class MultiByte
 	*/
 	public static function detect_bom_encoding( $str )
 	{
-		if( strlen( $str ) > 1 ) {
-			if ( pack( 'CC', 0xFE, 0xFF ) == substr( 0, 2, $source_contents ) ) {
-				return 'UTF-16BE';
-			}
-			else if ( pack( 'CC', 0xFF, 0xFE ) == substr( 0, 2, $source_contents ) ) {
-				return 'UTF-16LE';
-			}
+		$ret = false;
+		if ( "\xFE\xFF" == substr( 0, 2, $source_contents ) ) {
+			$ret = 'UTF-16BE';
 		}
-		if( strlen( $str ) > 2 ) {
-			if ( pack( 'CCC', 0xEF, 0xBB, 0xBF ) == substr( 0, 3, $source_contents ) ) {
-				return 'UTF-8';
-			}
+		else if ( "\xFF\xFE" == substr( 0, 2, $source_contents ) ) {
+			$ret = 'UTF-16LE';
+		}
+		else if ( "\xEF\xBB\xBF" == substr( 0, 3, $source_contents ) ) {
+			$ret = 'UTF-8';
 		}
 
-		return false;
+		return $ret;
 	}
 
 	/*
