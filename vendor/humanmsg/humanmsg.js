@@ -47,14 +47,24 @@ var human_msg = {
 		
 		// bind the events to show the log pane
 		jQuery('#' + human_msg.log_id + ' p').click( function() {
-			jQuery('ul', '#' + human_msg.log_id).slideToggle();
-			jQuery('#' + human_msg.log_id).toggleClass('logisopen');
+			if ( jQuery('#' + human_msg.log_id).hasClass('logisopen') ) {
+				// only remove the class once the animation has finished to ensure smooth consistent behaviour when closing
+				jQuery('ul', '#' + human_msg.log_id).slideToggle('400', function() { jQuery('#' + human_msg.log_id).toggleClass('logisopen'); });
+			} else {
+				jQuery('ul', '#' + human_msg.log_id).slideToggle();
+				jQuery('#' + human_msg.log_id).toggleClass('logisopen');
+			}
 		} );
 		
 		// bind the events to hide the log pane
 		jQuery('#' + human_msg.log_id + ' ul').click( function() {
-			jQuery(this).slideToggle();
-			jQuery('#' + human_msg.log_id).toggleClass('logisopen');
+			if ( jQuery('#' + human_msg.log_id).hasClass('logisopen') ) {
+				// only remove the class once the animation has finished to ensure smooth consistent behaviour when closing
+				jQuery(this).slideToggle('400', function() { jQuery('#' + human_msg.log_id).toggleClass('logisopen'); });
+			} else {
+				jQuery(this).slideToggle();
+				jQuery('#' + human_msg.log_id).toggleClass('logisopen');
+			}
 		} );
 		
 	},
