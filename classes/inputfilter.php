@@ -150,6 +150,17 @@ class InputFilter
 	);
 	private static $character_entities_re = '';
 
+	public static function __static ( ) {
+		
+		self::$whitelist_elements = Plugins::filter( 'inputfilter_whitelist_elements', self::$whitelist_elements );
+		self::$whitelist_attributes = Plugins::filter( 'inputfilter_whitelist_attributes', self::$whitelist_attributes );
+		self::$elements_empty = Plugins::filter( 'inputfilter_elements_empty', self::$elements_empty );
+		self::$whitelist_protocols = Plugins::filter( 'inputfilter_whitelist_protocols', self::$whitelist_protocols );
+		self::$character_entities = Plugins::filter( 'inputfilter_character_entities', self::$character_entities );
+		self::$character_entities_re = Plugins::filter( 'inputfilter_character_entities_re', self::$character_entities_re );
+		
+	}
+
 	/**
 	 * Perform all filtering, return new string.
 	 * @param string $str Input string.
