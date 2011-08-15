@@ -624,6 +624,7 @@ class Comments extends ArrayObject
 			case 'comments':
 			case 'pingbacks':
 			case 'trackbacks':
+			case 'spam':
 				return new Comments( $this->only( $name ) );
 		}
 	}
