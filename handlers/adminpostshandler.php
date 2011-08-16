@@ -179,11 +179,6 @@ class AdminPostsHandler extends AdminHandler
 			$post = Post::create( $postdata );
 		}
 
-		// REFACTOR: this should handled in the Post::insert() code, which is called by Post::create() above. should also apply to updating posts, presumably in Post::update()
-		if ( $post->pubdate->int > HabariDateTime::date_create()->int && $post->status == Post::status( 'published' ) ) {
-			$post->status = Post::status( 'scheduled' );
-		}
-
 		$post->info->comments_disabled = !$form->comments_enabled->value;
 
 		// REFACTOR: admin should absolutely not have a hook for this here

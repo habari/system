@@ -23,11 +23,13 @@ class Bitmask
 	public function __construct( $flags = null, $value = null )
 	{
 		if ( ! is_array( $flags ) ) {
+			// @locale Habari tried to create a Bitmask with the wrong arguments
 			throw new InvalidArgumentException( _t( 'Bitmask constructor expects either no arguments or an array as a first argument' ) );
 		}
 		
 		if ( count( $flags ) > ( PHP_INT_MAX >> 1 ) ) {
-			throw new InvalidArgumentException( _t( 'Bitmask can have max PHP_INT_MAX >> 1 flags' ) );
+			// @locale Habari tried to create a new Bitmask with too many flags
+			throw new InvalidArgumentException( _t( 'Bitmask can have a maximum of PHP_INT_MAX >> 1 flags' ) );
 		}
 
 		$this->flags = $flags;
@@ -46,6 +48,7 @@ class Bitmask
 				$this->__set( $value, true );
 			}
 			else {
+				// @locale Habari tried to create a new Bitmask object with invalid values in the second argument
 				throw new InvalidArgumentException( _t( 'Bitmask constructor second argument must either be an integer within the valid range, the name of a flag, or full' ) );
 			}
 		}
@@ -63,6 +66,7 @@ class Bitmask
 		switch ( $bit ) {
 			case 'full':
 				if ( ! is_bool( $on ) ) {
+					// @locale Habari tried to set the wrong type of value
 					throw new InvalidArgumentException( _t( 'Bitmask full toggle must be boolean' ) );
 				}
 					
@@ -76,11 +80,13 @@ class Bitmask
 			case 'value':
 				if ( is_array( $on ) ) {
 					if ( count( $on ) !== count( $this->flags ) ) {
+						// @locale Habari tried to set the wrong kind of value
 						throw new InvalidArgumentException( _t( 'Setting bitmask value by array must use array with same length as number of flags' ) );
 					}
 					$this->value = 0;
 					foreach ( $on as $flag ) {
 						if ( ! is_bool( $flag ) ) {
+							// @locale Habari tried to set the wrong kind of value
 							throw new InvalidArgumentException( _t( 'Bitmask values must be boolean' ) );
 						}
 						$this->value <<= 1;
@@ -94,17 +100,20 @@ class Bitmask
 					$this->value = 0;
 				}
 				else {
+					// @locale Habari tried to set the wrong kind of value
 					throw new InvalidArgumentException( _t( 'Bitmask value must either be an integer within the valid range or an array of booleans' ) );
 				}
 				break;
 			default:
 				if ( ! is_bool( $on ) ) {
+					// @locale Habari tried to set the wrong kind of value
 					throw new InvalidArgumentException( _t( 'Bitmask values must be boolean' ) );
 				}
 					
 				$bit = array_search( $bit, $this->flags );
 				
 				if ( $bit === false ) {
+					// @locale Habari tried to set a value that doesn't exist
 					throw new InvalidArgumentException( _t( 'Bitmask cannot set non-existent flag' ) );
 				}
 				
@@ -137,6 +146,7 @@ class Bitmask
 			return ( intval( $this->value ) & ( 1 << $bit ) ) !== 0;
 		}
 		else {
+			// @locale Habari tried to get a flag that doesn't exist
 			throw new InvalidArgumentException( _t( 'Bitmask cannot get non-existent flag' ) );
 		}
 	}

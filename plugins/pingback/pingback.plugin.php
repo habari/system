@@ -180,6 +180,19 @@ class Pingback extends Plugin
 			preg_match( '/<body[^>]*>(.+)<\/body>/is', $source_contents, $matches );
 			$source_contents_filtered = preg_replace( '/\s{2,}/is', ' ', strip_tags( $matches[1], '<a>' ) );
 
+			// Get rid of all the non-recriprocal links
+			$ht = new HTMLTokenizer( trim( $source_contents_filtered ) );
+			$set = $ht->parse();
+			$all_links = $set->slice( 'a', array() );
+			$keep_links = $set->slice( 'a', array( 'href' => $target_uri ) );
+			$bad_links = array_diff( $all_links, $keep_links );
+			foreach( $bad_links as $link ) {
+				$link->tokenize_replace( '' );
+				$set->replace_slice( $link );
+			}
+			$source_contents_filtered = (string)$set;
+
+			// Get the excerpt
 			if ( !preg_match( '%.{0,100}?<a[^>]*?href\\s*=\\s*("|\'|)' . $target_uri . '\\1[^>]*?'.'>(.+?)</a>.{0,100}%s', $source_contents_filtered, $source_excerpt ) ) {
 				throw new XMLRPCException( 17 );
 			}

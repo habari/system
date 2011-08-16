@@ -655,6 +655,10 @@ class Theme extends Pluggable
 		if(isset($context)) {
 			array_pop($this->context);
 		}
+		if( !$result ) {
+			$fallback_list = implode( ', ', $fallback );
+			$result = '<p>' . _t( 'Content could not be displayed. One of the following templates - %s - has to be present in the active theme.', array( $fallback_list ) ) . '</p>';
+		}
 		return $result;
 	}
 

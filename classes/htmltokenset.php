@@ -30,6 +30,13 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 		return $out;
 	}
 
+	/**
+	 * Convert a token to a string
+	 *
+	 * @param array $token The token to convert
+	 * @param bool $escape Whether to escape the string that is returned
+	 * @return string The string representation of the token
+	 */
 	public static function token_to_string( array $token, $escape = true )
 	{
 		switch ( $token['type'] ) {
@@ -82,6 +89,11 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 		return $out;
 	}
 
+	/**
+	 * Get the offset of the last token in this HTMLTokenSet
+	 *
+	 * @return integer the offset of the last token in this HTMLTokenSet
+	 */
 	public function get_end_offset()
 	{
 		return $this->sliceOffsetBegin + $this->sliceOffsetLength;
@@ -89,6 +101,10 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 
 	/**
 	 * Fetch a section of the tokens, based on passed criteria
+	 *
+	 * @param mixed $names The name of an html tag, or an array of names of html tags to get the tokens of
+	 * @param array $attr Any attributes for the token that you want to filter by
+	 * @return array An array of the HTMLTokenSets that were found
 	 */
 	public function slice( $names, array $attr = null )
 	{
@@ -101,7 +117,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 				$slices[] = $slice;
 				$offset = $slice->get_end_offset();
 			}
-			// Meed to reverse this because we need to splice the last chunks first
+			// Need to reverse this because we need to splice the last chunks first
 			// if we splice the earlier chunks first, then the offsets get all
 			// messed up. Trust me.
 			$ret = array_merge( $ret, array_reverse( $slices ) );
@@ -109,6 +125,14 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 		return $ret;
 	}
 
+	/**
+	 * This is a support function for HTMLTokenSet::slice(). It finds a specific slice
+	 * @param integer $offset The offset at which to start looking for relevant tokens
+	 * @param string $name The name of the html tag being searched for
+	 * @param array $attr The attributes of the html tag being searched for
+	 *
+	 * @return HTMLTokenSet
+	 */
 	protected function find_slice( $offset, $name, array $attr )
 	{
 		// find start:
@@ -183,11 +207,22 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 		return $slice;
 	}
 
+	/**
+	 * Remove the first and last tokens from this HTMLTokenSet
+	 *
+	 * @return nothing
+	 */
 	public function trim_container()
 	{
 		$this->tokens = array_slice( $this->tokens, 1, -1 );
 	}
 
+	/**
+	 * Replace a set of tokens in this HTMLTokenSet
+	 *
+	 * @param HTMLTokenSet $slice The tokens to insert in place of the old tokens
+	 * @return nothing
+	 */
 	public function replace_slice( HTMLTokenSet $slice )
 	{
 		array_splice(
@@ -198,6 +233,13 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 		);
 	}
 
+	/**
+	 * Replace a full set of tokens with new tokens. The tokens are replaced
+	 * in place as well as being returned
+	 *
+	 * @param string $source The text to create the new set of tokens from
+	 * @return HTMLTokenSet The new set of tokens created
+	 */
 	public function tokenize_replace( $source )
 	{
 		$ht = new HTMLTokenizer( $source, $this->escape );
@@ -207,8 +249,9 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 
 	/**
 	 * Insert an HTMLTokenset before the given position
+	 *
 	 * @param HTMLTokenset $set. The HTMLTokenset to insert
-	 * @param <type> $pos. The position to insert the HTMLTokenset before
+	 * @param integer $pos. The position to insert the HTMLTokenset before
 	 * @return Nothing
 	 */
 	public function insert( HTMLTokenset $set, $pos = 0 )
