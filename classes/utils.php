@@ -1151,5 +1151,34 @@ class Utils
 		}
 		return $out;
 	}
+
+	/**
+	 * Get a list of the PHP ini settings relevant to Habari
+	 *
+	 * @return Array The relevant PHP ini settings as array of strings
+	 */
+	public static function get_ini_settings()
+	{
+		$settings = array();
+		$keys = array(
+			'safe_mode',
+			'open_basedir',
+			'display_errors',
+			'session.gc_probability',
+			'session.gc_maxlifetime',
+			'error_reporting',
+			'memory_limit',
+		);
+		foreach($keys as $key ) {
+			$val = ini_get( $key );
+			if ( $val === false ) {
+				$settings[] = $key . ': ' . _t( 'Not set' );
+			}
+			else {
+				$settings[] = $key . ': ' . ( strlen( $val ) ? $val : '0' );
+			}
+		}
+		return $settings;
+	}
 }
 ?>
