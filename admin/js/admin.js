@@ -13,16 +13,16 @@ var habari_ajax = {
 		$.ajax({
 			url: url,
 			data: data,
-		  success: function(json_data) {
+		success: function(json_data) {
 				if($.isPlainObject(ahah_target)) {
 					for(var i in ahah_target) {
 						$(ahah_target[i]).html(json_data.html[i]);
 					}
 				}
-		  	var cb = ($.isFunction(ahah_target) && local_cb == undefined) ? ahah_target : local_cb;
+				var cb = ($.isFunction(ahah_target) && local_cb == undefined) ? ahah_target : local_cb;
 				habari_ajax.success(json_data, cb);
 			},
-			error: habari_ajax.error,
+		error: habari_ajax.error,
 		  dataType: 'json',
 			type: type
 		});
@@ -35,6 +35,9 @@ var habari_ajax = {
 		if ( json_data.response_code == 200 && json_data.message != null && json_data.message != '' ) {
 			human_msg.display_msg( json_data.message );	
 		}
+		if ( json_data.response_code >= 400 ) {
+			habari_ajax.error(null, json_data.message, json_data.response_code)
+		}
 		if(json_data.habari_callback != null && json_data.habari_callback != '') {
 			json_data.habari_callback = eval(json_data.habari_callback);
 			if($.isFunction(json_data.habari_callback)) {
@@ -46,8 +49,21 @@ var habari_ajax = {
 	},
 	
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
+		var msg;
+		if ( XMLHttpRequest == null ) {
+			switch( errorThrown ) {
+				case 408:
+					msg = textStatus;
+					break;
+				default:
+					msg = 'Uh Oh. An error has occurred. Please try again later.';
+			}
+		}
+		else {
+			msg = 'Uh Oh. An error has occurred. Please try again later.';
+		}
 		spinner.stop();
-		human_msg.display_msg ("Uh Oh. An error has occured. Please try again later.");
+		human_msg.display_msg(msg);
 	}
 }
 
