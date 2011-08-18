@@ -431,7 +431,9 @@ class AdminPostsHandler extends AdminHandler
 		}
 		$output['controls'] = $controls_out;
 
-		echo json_encode( $output );
+		$ar = new AjaxResponse();
+		$ar->data = $output;
+		$ar->out();
 	}
 
 	/**
@@ -465,7 +467,9 @@ class AdminPostsHandler extends AdminHandler
 			'panel' => $panel,
 		);
 
-		echo json_encode( $output );
+		$ar = new AjaxResponse();
+		$ar->data = $output;
+		$ar->out();
 	}
 
 	/**
