@@ -209,6 +209,7 @@ class AdminHandler extends ActionHandler
 		$sysinfo[ _t( 'Server Software' ) ] = $_SERVER['SERVER_SOFTWARE'];
 		$sysinfo[ _t( 'Database' ) ] = DB::get_driver_name() . ' - ' . DB::get_driver_version();
 		$sysinfo[ _t( 'PHP Extensions' ) ] = implode( ', ', get_loaded_extensions() );
+		$sysinfo[ _t( 'PHP Configuration Settings' ) ] = implode( "<br>", Utils::get_ini_settings() );
 		if ( defined( 'PCRE_VERSION' ) ) {
 			$sysinfo[ _t( 'PCRE Version' ) ] = PCRE_VERSION;
 		}
