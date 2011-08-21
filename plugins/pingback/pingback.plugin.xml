@@ -19,7 +19,7 @@
 		]]></value>
 	</help>
 	<provides>
-		<feature>pingback</feature>
+		<feature url="http://wiki.habariproject.org/en/Feature/pingback">pingback</feature>
 	</provides>
 	
 </pluggable>
