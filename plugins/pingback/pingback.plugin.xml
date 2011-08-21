@@ -18,5 +18,8 @@
 			<p>Pingbacks are generally less spam-prone than Trackbacks (which are not implemented in this plugin), because when the ping is received, Habari visits the pinging site to ensure that the provided link to your post does actually exist.</p>
 		]]></value>
 	</help>
+	<provides>
+		<feature>pingback</feature>
+	</provides>
 	
 </pluggable>
