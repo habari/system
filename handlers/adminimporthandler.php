@@ -16,7 +16,36 @@ class AdminImportHandler extends AdminHandler
 	 */
 	public function get_import()
 	{
+		// First check for troublesome plugins
+		$bad_features = array(
+		    'ping',
+		    'pingback',
+		    'spamcheck',
+		);
+		$troublemakers = array();
+		$plugins = Plugins::list_active();
+		foreach( $plugins as $plugin ) {
+			$info = Plugins::load_info( $plugin );
+			$provides = array();
+			if( isset($info->provides ) ) {
+				foreach( $info->provides->feature as $feature ) {
+					$provides[] = $feature;
+				}
+			}
+			$has_bad = array_intersect( $bad_features, $provides );
+			if( count( $has_bad ) ) {
+				$troublemakers[] = $info->name;
+			}
+		}
+		if( count( $troublemakers ) ) {
+			$troublemakers = implode( ', ', $troublemakers );
+			$msg = _t( 'Plugins that conflict with importing are active. To prevent undesirable consequences, please de-activate the following plugins until the import is finished: ' ) . '<br>';
+			$msg .= $troublemakers;
+			$this->theme->conflicting_plugins = $msg;
+			Session::error( $msg );
+		}
 
+		// Now get on with creating the page
 		$importer = isset( $_POST['importer'] ) ? $_POST['importer'] : '';
 		$stage = isset( $_POST['stage'] ) ? $_POST['stage'] : '1';
 		$step = isset( $_POST['step'] ) ? $_POST['step'] : '1';
