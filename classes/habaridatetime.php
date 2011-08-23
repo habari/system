@@ -262,11 +262,12 @@ class HabariDateTime extends DateTime
 		$nodes = $this->parse_format( $format );
 		$result = '';
 		foreach( $nodes as $node ) {
-			if( $node['func'] == '_t' ) {
-				$result .= $day_months[parent::format( $node['str'] )];
+			$formatted = parent::format( $node['str'] );
+			if( ! $formatted ) {
+				return false;
 			}
 			else {
-				$result .= parent::format( $node['str'] );
+				$result .= ( $node['func'] == '_t' ? _t( $formatted ) : $formatted );
 			}
 		}
 		return $result;
