@@ -413,6 +413,14 @@ class Plugins
 				if ( $info->getName() != 'pluggable' ) {
 					$info = 'legacy';
 				}
+
+				// Translate the plugin description
+				HabariLocale::translate_xml( $info, $info->description );
+
+				// Translate the plugin help
+				foreach( $info->help as $help ) {
+					HabariLocale::translate_xml( $help, $help->value );
+				}
 				
 			}
 			catch ( Exception $e ) {
@@ -459,7 +467,7 @@ class Plugins
 	}
 
 	/**
-	 * Instatiate and load all active plugins
+	 * Instantiate and load all active plugins
 	 */
 	public static function load_active()
 	{
