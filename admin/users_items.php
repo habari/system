@@ -28,8 +28,8 @@
 
 					$last_login_message = _t( 'was last seen %1$s at %2$s' );
 					$last_login_message = sprintf( $last_login_message,
-						'<strong>' . date('M j, Y', strtotime( $user->info->authenticate_time ) ) . '</strong>',
-						'<strong>' . date('H:i', strtotime( $user->info->authenticate_time ) ) . '</strong>'
+						'<strong>' . date( HabariDateTime::get_default_date_format(), strtotime( $user->info->authenticate_time ) ) . '</strong>',
+						'<strong>' . date( HabariDateTime::get_default_time_format(), strtotime( $user->info->authenticate_time ) ) . '</strong>'
 					);
 
 				}
