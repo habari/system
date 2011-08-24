@@ -37,7 +37,6 @@ class HabariDateTime extends DateTime
 	 */
 	public static function __static()
 	{
-
 		if ( Options::get( 'timezone' ) ) {
 			self::set_default_timezone( Options::get( 'timezone' ) );
 		}
@@ -215,10 +214,63 @@ class HabariDateTime extends DateTime
 	 */
 	public function format( $format = null )
 	{
+		$day_months = array(
+			'January' => _t( 'January' ),
+			'February' => _t( 'February' ),
+			'March' => _t( 'March' ),
+			'April' => _t( 'April' ),
+			'May' => _t( 'May' ),
+			'June' => _t( 'June' ),
+			'July' => _t( 'July' ),
+			'August' => _t( 'August' ),
+			'September' => _t( 'September' ),
+			'October' => _t( 'October' ),
+			'November' => _t( 'November' ),
+			'December' => _t( 'December' ),
+			'Jan' => _t( 'Jan' ),
+			'Feb' => _t( 'Feb' ),
+			'Mar' => _t( 'Mar' ),
+			'Apr' => _t( 'Apr' ),
+			'May' => _t( 'May' ),
+			'Jun' => _t( 'Jun' ),
+			'Jul' => _t( 'Jul' ),
+			'Aug' => _t( 'Aug' ),
+			'Sep' => _t( 'Sep' ),
+			'Oct' => _t( 'Oct' ),
+			'Nov' => _t( 'Nov' ),
+			'Dec' => _t( 'Dec' ),
+			'Sunday' => _t( 'Sunday' ),
+			'Monday' => _t( 'Monday' ),
+			'Tuesday' => _t( 'Tuesday' ),
+			'Wednesday' => _t( 'Wednesday' ),
+			'Thursday' => _t( 'Thursday' ),
+			'Friday' => _t( 'Friday' ),
+			'Saturday' => _t( 'Saturday' ),
+			'Sun' => _t( 'Sun' ),
+			'Mon' => _t( 'Mon' ),
+			'Tue' => _t( 'Tue' ),
+			'Wed' => _t( 'Wed' ),
+			'Thu' => _t( 'Thu' ),
+			'Fri' => _t( 'Fri' ),
+			'Sat' => _t( 'Sat' ),
+		);
+
 		if ( $format === null ) {
 			$format = self::$default_datetime_format;
 		}
-		return parent::format( $format );
+
+		$nodes = $this->parse_format( $format );
+		$result = '';
+		foreach( $nodes as $node ) {
+			$formatted = parent::format( $node['str'] );
+			if( ! $formatted ) {
+				return false;
+			}
+			else {
+				$result .= ( $node['func'] == '_t' ? $day_months[$formatted] : $formatted );
+			}
+		}
+		return $result;
 	}
 
 	/**
@@ -546,6 +598,89 @@ class HabariDateTime extends DateTime
 		return $result;
 		
 	}
+
+	/**
+	 * Returns date format string as an array of segments ready for localization
+	 *
+	 * @param string $format Format accepted by {@link http://php.net/date date()}.
+	 * @return array The segments of the format string.
+	 */
+	private function parse_format( $format )
+	{
+		// Predefined formats
+		$predefined_formats = array(
+		    DateTime::ATOM => 'Y-m-d\TH:i:sP',
+		    DATE_ATOM => 'Y-m-d\TH:i:sP',
+		    DateTime::COOKIE => 'l, d-M-y H:i:s T',
+		    DATE_COOKIE => 'l, d-M-y H:i:s T',
+		    DateTime::ISO8601 => 'Y-m-d\TH:i:sO',
+		    DATE_ISO8601 => 'Y-m-d\TH:i:sO',
+		    DateTime::RFC822 => 'D, d M y H:i:s O',
+		    DATE_RFC822 => 'D, d M y H:i:s O',
+		    DateTime::RFC850 => 'l, d-M-y H:i:s T',
+		    DATE_RFC850 => 'l, d-M-y H:i:s T',
+		    DateTime::RFC1036 => 'D, d M y H:i:s O',
+		    DATE_RFC1036 => 'D, d M y H:i:s O',
+		    DateTime::RFC1123 => 'D, d M Y H:i:s O',
+		    DATE_RFC1123 => 'D, d M Y H:i:s O',
+		    DateTime::RFC2822 => 'D, d M Y H:i:s O',
+		    DATE_RFC2822 => 'D, d M Y H:i:s O',
+		    DateTime::RFC3339 => 'Y-m-d\TH:i:sP',
+		    DATE_RFC3339 => 'Y-m-d\TH:i:sP',
+		    DateTime::RSS => 'D, d M Y H:i:s O',
+		    DATE_RSS => 'D, d M Y H:i:s O',
+		    DateTime::W3C => 'Y-m-d\TH:i:sP',
+		    DATE_W3C => 'Y-m-d\TH:i:sP',
+		);
+		$predefined_keys = array_keys( $predefined_formats );
+		if( in_array( $format, $predefined_keys ) ) {
+			$format = $predefined_formats[$format];
+		}
+
+		$len = MultiByte::strlen( $format );
+		$segs = array();
+		$node = array( 'func' => '', 'str' => '' );
+		for( $i = 0; $i < $len; $i++ ) {
+			$cur = MultiByte::substr( $format, $i, 1 );
+			if ( $cur == '\\' ) {
+				if ( $node['func'] == '_t' ) {
+					$segs[] = $node;
+				}
+				$node['func'] = 'date';
+				$node['str'] = $cur;
+				$i++;
+				if ( $i < $len ) {
+					$cur = MultiByte::substr( $format, $i, 1 );
+					$node['str'] .= $cur;
+				}
+			}
+			else if ( in_array( $cur, array( 'D', 'l', 'F', 'M' ) ) ) {
+				if( $node['func'] == 'date' ) {
+					$segs[] = $node;
+				}
+				$node['func'] = '_t';
+				$node['str'] = $cur;
+			}
+			else {
+				if ( $node['func'] == 'date' ) {
+					$node['str'] .= $cur;
+				}
+				else {
+					if ( $node['func'] == '_t' ) {
+						$segs[] = $node;
+					}
+					$node['func'] = 'date';
+					$node['str'] = $cur;
+				}
+			}
+		}
+		if( strlen( $node['func'] ) ) {
+			$segs[] = $node;
+		}
+
+		return $segs;
+	}
+
 }
 
 ?>
