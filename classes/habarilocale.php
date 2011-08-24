@@ -203,7 +203,7 @@ class HabariLocale
 
 	private static function get_plural_function( $header )
 	{
-		if ( preg_match( '/plural-forms: (.*?)$/i', $header, $matches ) && preg_match( '/^\s*nplurals\s*=\s*(\d+)\s*;\s*plural=(.*)$/u', $matches[1], $matches ) ) {
+		if ( preg_match( '/plural-forms: (.*?)\n/i', $header, $matches ) && preg_match( '/^\s*nplurals\s*=\s*(\d+)\s*;\s*plural=(.*)$/u', $matches[1], $matches ) ) {
 			// sanitize
 			$nplurals = preg_replace( '/[^0-9]/', '', $matches[1] );
 			$plural = preg_replace( '#[^n0-9:\(\)\?\|\&=!<>+*/\%-]#', '', $matches[2] );
