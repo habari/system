@@ -72,6 +72,10 @@ class HabariDateTime extends DateTime
 	 */
 	public static function get_default_datetime_format()
 	{
+		$user_datetime_format = User::identify()->info->locale_date_format . ' ' . User::identify()->info->locale_time_format;
+		if ( $user_datetime_format != self::$default_datetime_format ) {
+			self::set_default_datetime_format( $user_datetime_format );
+		}
 		return self::$default_datetime_format;
 	}
 
@@ -393,7 +397,22 @@ class HabariDateTime extends DateTime
 	 **/
 	public static function get_default_date_format()
 	{
+		if ( User::identify()->info->locale_date_format != Options::get( 'dateformat' ) ) {
+			self::set_default_date_format( User::identify()->info->locale_date_format );
+		}
 		return self::$default_date_format;
+	}
+	
+	/**
+	 * Set default date format. The format is the same as the
+	 * internal php {@link http://ca.php.net/date date() function}.
+	 *
+	 * @static
+	 * @param string $format The date format.
+	 */
+	public static function set_default_date_format( $format )
+	{
+		self::$default_date_format = $format;
 	}
 
 	/**
@@ -403,7 +422,22 @@ class HabariDateTime extends DateTime
 	 **/
 	public static function get_default_time_format()
 	{
+		if ( User::identify()->info->locale_time_format != Options::get( 'timeformat' ) ) {
+			self::set_default_time_format( User::identify()->info->locale_time_format );
+		}
 		return self::$default_time_format;
+	}
+	
+	/**
+	 * Set default time format. The format is the same as the
+	 * internal php {@link http://ca.php.net/date date() function}.
+	 *
+	 * @static
+	 * @param string $format The time format.
+	 */
+	public static function set_default_time_format( $format )
+	{
+		self::$default_time_format = $format;
 	}
 
 	/**
