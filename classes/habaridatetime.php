@@ -267,7 +267,7 @@ class HabariDateTime extends DateTime
 				return false;
 			}
 			else {
-				$result .= ( $node['func'] == '_t' ? _t( $formatted ) : $formatted );
+				$result .= ( $node['func'] == '_t' ? $day_months[$formatted] : $formatted );
 			}
 		}
 		return $result;
