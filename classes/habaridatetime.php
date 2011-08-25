@@ -673,38 +673,64 @@ class HabariDateTime extends DateTime
 
 		$len = MultiByte::strlen( $format );
 		$segs = array();
+		$translate = array( 'D', 'l', 'F', 'M' );
 		$node = array( 'func' => '', 'str' => '' );
 		for( $i = 0; $i < $len; $i++ ) {
 			$cur = MultiByte::substr( $format, $i, 1 );
+			// An escaped literal
 			if ( $cur == '\\' ) {
-				if ( $node['func'] == '_t' ) {
-					$segs[] = $node;
+				switch( $node['func'] ) {
+					case 'date':
+						$node['str'] .= $cur;
+						break;
+					case '_t':
+						$nodes[] = $node;
+						$node['func'] = 'date';
+						$node['str'] = $cur;
+						break;
+					case '':
+						$node['func'] = 'date';
+						$node['str'] = $cur;
+						break;
 				}
-				$node['func'] = 'date';
-				$node['str'] = $cur;
 				$i++;
 				if ( $i < $len ) {
 					$cur = MultiByte::substr( $format, $i, 1 );
 					$node['str'] .= $cur;
 				}
 			}
-			else if ( in_array( $cur, array( 'D', 'l', 'F', 'M' ) ) ) {
-				if( $node['func'] == 'date' ) {
-					$segs[] = $node;
-				}
-				$node['func'] = '_t';
-				$node['str'] = $cur;
-			}
-			else {
-				if ( $node['func'] == 'date' ) {
-					$node['str'] .= $cur;
-				}
-				else {
-					if ( $node['func'] == '_t' ) {
+			// A format code that is to be localized
+			else if ( in_array( $cur, $translate ) ) {
+				switch( $node['func'] ) {
+					case 'date':
 						$segs[] = $node;
-					}
-					$node['func'] = 'date';
-					$node['str'] = $cur;
+						$node['func'] = '_t';
+						$node['str'] = $cur;
+						break;
+					case '_t':
+						$node['str'] .= $cur;
+						break;
+					case '':
+						$node['func'] = '_t';
+						$node['str'] = $cur;
+						break;
+				}
+			}
+			// A format code that doesn't have to be localized
+			else {
+				switch( $node['func'] ) {
+					case 'date':
+						$node['str'] .= $cur;
+						break;
+					case '_t':
+						$segs[] = $node;
+						$node['func'] = 'date';
+						$node['str'] = $cur;
+						break;
+					case '':
+						$node['func'] = 'date';
+						$node['str'] = $cur;
+						break;
 				}
 			}
 		}

@@ -308,13 +308,7 @@ class Format
 		if ( !( $date instanceOf HabariDateTime ) ) {
 			$date = HabariDateTime::date_create( $date );
 		}
-		preg_match_all( '%\{(\w)\}%iu', $format, $matches );
-
-		$components = array();
-		foreach ( $matches[1] as $format_component ) {
-			$components['{'.$format_component.'}'] = $date->format( $format_component );
-		}
-		return strtr( $format, $components );
+		return $date->text_format( $format );
 	}
 
 	/**
