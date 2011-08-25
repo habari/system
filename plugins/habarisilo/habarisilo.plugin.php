@@ -546,7 +546,7 @@ function simple_uploaded() {
 	}
 }
 function simple_uploaded_complete() {
-	habari.media.jsonpanel(responsedata);
+	habari.media.jsonpanel(responsedata.data);
 }
 </script>
 UPLOAD_FORM;
