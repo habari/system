@@ -142,10 +142,10 @@ class Charcoal extends Theme
 		return $out;
 	}
 
-	public function theme_post_comments_link( $theme, $post, $zero, $one, $more )
+	public function theme_post_comments_link( $theme, $post )
 	{
 		$c = $post->comments->approved->count;
-		return 0 == $c ? $zero : sprintf( '%1$d %2$s', $c, _n( $one, $more, $c ) );
+		return 0 == $c ? _t( 'No Comments' ) : sprintf( _n( '%1$d Comment', '%1$d Comments', $c ), $c );
 	}
 
 	public function filter_post_content_excerpt( $return )
