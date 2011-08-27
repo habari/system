@@ -611,18 +611,16 @@ UPLOAD_FORM;
 			case 'rmdir':
 				$dir = $this->root . ( $path == '' ? '' : '/' ) . $path;
 				rmdir( $dir );
-				$msg = 'Directory Deleted:';
-				$what = $path;
+				$msg = _t( 'Directory Deleted: %s', array( $path ) );
 				break;
 			case 'mkdir':
 				$dir = $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
 				mkdir( $dir, 0755 );
-				$msg = 'Directory Created:';
-				$what = $path . '/' . $form->directory->value;
+				$msg = _t ( 'Directory Created: %s', array( $path . '/' . $form->directory->value ) );
 				break;
 		}
 
-		return '<div class="span-18"style="padding-top:30px;color: #e0e0e0;margin: 0px auto;"><p>' . _t( $msg ) . ' ' . $what . '</p></div>';
+		return '<div class="span-18"style="padding-top:30px;color: #e0e0e0;margin: 0px auto;"><p>' . $msg . '</p></div>';
 	}
 
 	/**
