@@ -627,11 +627,14 @@ class FormUI extends FormContainer
 	{
 		$out = '';
 		if ( !FormUI::$outpre ) {
-			FormUI::$outpre = true;
-			$out .= '<script type="text/javascript">var controls = Object();</script>';
+			$out .= '<script type="text/javascript">if(controls==undefined){var controls = {init:function(fn){if(fn!=undefined){controls.inits.push(fn);}else{for(var i in controls.inits){controls.inits[i]();}}},inits:[]};}</script>';
 		}
 		foreach ( $this->controls as $control ) {
 			$out .= $control->pre_out( );
+		}
+		if ( !FormUI::$outpre ) {
+			FormUI::$outpre = true;
+			$out .= '<script type="text/javascript">$(function(){controls.init();});</script>';
 		}
 		return $out;
 	}
@@ -1788,7 +1791,7 @@ class FormControlTree extends FormControlSelect
 			FormControlTree::$outpre = true;
 			$out = <<<  CUSTOM_TREE_JS
 				<script type="text/javascript">
-$(document).ready(function(){
+controls.init(function(){
 	$('ol.tree').nestedSortable({
 		disableNesting: 'no-nest',
 		forcePlaceholderSize: true,
