@@ -764,12 +764,7 @@ class AtomHandler extends ActionHandler
 
 		$xml = $this->create_atom_wrapper( $alternate, $self, $id, $updated );
 
-		if ( $this->is_auth() ) {
-			$xml = $this->add_pagination_links( $xml, Posts::count_total() );
-		}
-		else {
-			$xml = $this->add_pagination_links( $xml, Posts::count_total( Post::status( 'published' ) ) );
-		}
+		$xml = $this->add_pagination_links( $xml, $posts->count_all() );
 
 		$xml = $this->add_posts( $xml, $posts );
 

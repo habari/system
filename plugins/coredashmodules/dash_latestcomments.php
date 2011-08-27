@@ -12,7 +12,9 @@
 					$comment_count++;
 					$opa = 'opa' . (100 - $comment_count * 15);
 				?>
-				<li><a href="<?php echo $comment->post->permalink; ?>#comment-<?php echo $comment->id; ?>" title="<?php printf(_t('Posted at %1$s'), $comment->date->get( 'g:m a \o\n F jS, Y' ) ); ?>" class="<?php echo $opa; ?>"><?php echo $comment->name; ?></a></li>
+				<?php /* @locale Time formats according to http://php.net/manual/en/function.date.php */ $ctime = $comment->date->get( _t( 'g:ia' ) ); ?>
+				<?php /* @locale Date formats according to http://php.net/manual/en/function.date.php */ $cdate = $comment->date->get( _t( 'F jS, Y' ) ); ?>
+				<li><a href="<?php echo $comment->post->permalink; ?>#comment-<?php echo $comment->id; ?>" title="<?php printf( _t( 'Posted at %1$s on %2$s' ), $ctime, $cdate ); ?>" class="<?php echo $opa; ?>"><?php echo $comment->name; ?></a></li>
 				<?php endforeach; ?>
 			</ul>
 		</li>

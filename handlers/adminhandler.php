@@ -26,9 +26,9 @@ class AdminHandler extends ActionHandler
 		$user = User::identify();
 		if ( !$user->loggedin ) {
 			Session::add_to_set( 'login', $_SERVER['REQUEST_URI'], 'original' );
-			if ( URL::get_matched_rule()->name == 'admin_ajax' && isset( $_SERVER['HTTP_REFERER'] ) ) {
-				header( 'Content-Type: text/javascript;charset=utf-8' );
-				echo '{callback: function(){location.href="'.$_SERVER['HTTP_REFERER'].'"} }';
+			if ( URL::get_matched_rule()->action == 'admin_ajax' && isset( $_SERVER['HTTP_REFERER'] ) ) {
+				 $ar = new AjaxResponse(408, _t('Your session has ended, please log in and try again.') );
+				 $ar->out();
 			}
 			else {
 				$post_raw = $_POST->get_array_copy_raw();
@@ -209,6 +209,7 @@ class AdminHandler extends ActionHandler
 		$sysinfo[ _t( 'Server Software' ) ] = $_SERVER['SERVER_SOFTWARE'];
 		$sysinfo[ _t( 'Database' ) ] = DB::get_driver_name() . ' - ' . DB::get_driver_version();
 		$sysinfo[ _t( 'PHP Extensions' ) ] = implode( ', ', get_loaded_extensions() );
+		$sysinfo[ _t( 'PHP Configuration Settings' ) ] = implode( "<br>", Utils::get_ini_settings() );
 		if ( defined( 'PCRE_VERSION' ) ) {
 			$sysinfo[ _t( 'PCRE Version' ) ] = PCRE_VERSION;
 		}

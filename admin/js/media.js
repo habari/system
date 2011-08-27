@@ -10,16 +10,11 @@ habari.media = {
 			container = $(el).parents('.mediasplitter');
 		}
 		if ( $('.pathstore', container).html() != path || $('.pathstore.toload', container).size() ) {
-			$.ajax({
-				type: "POST",
-				url: habari.url.habari + '/admin_ajax/media',
-				data: {path: path},
-				dataType: 'json',
-				beforeSend: function() {
-					spinner.start();
-				},
-				success: function(result) {
-
+			spinner.start();
+			habari_ajax.post(
+				habari.url.habari + '/admin_ajax/media',
+				{path: path},
+				function(result) {
 					habari.media.unqueueLoad();
 					$('.pathstore', container).html(result.path);
 
@@ -88,8 +83,6 @@ habari.media = {
 					$('.media_controls ul', container).append(result.controls);
 					labeler.init();
 
-					spinner.stop();
-
 					// When first opened, load the first directory automatically, but only if there are no files in the root
 //					if ($('.mediaphotos .media', container).length == 0 && $('.media_dirlevel:first-child li.active', container).length == 0) {
 //						$('.media_dirlevel:last-child li:first-child', container).click();
@@ -107,7 +100,7 @@ habari.media = {
 					});
 
 					findChildren();
-				}}
+				}
 			);
 		}
 	},
@@ -136,14 +129,13 @@ habari.media = {
 	},
 
 	showpanel: function (path, panel) {
-		$.post(
+		habari_ajax.post(
 			habari.url.habari + '/admin_ajax/media_panel',
 			{
 				path: path,
 				panel: panel
 			},
-			habari.media.jsonpanel,
-			'json'
+			habari.media.jsonpanel
 		);
 	},
 
@@ -196,7 +188,7 @@ habari.media = {
 		query.push({name: 'path', value: path});
 		query.push({name: 'panel', value: panel});
 
-		$.post(
+		habari_ajax.post(
 			habari.url.habari + '/admin_ajax/media_panel',
 			query,
 			function(result) {
@@ -204,8 +196,8 @@ habari.media = {
 				if (callback != '') {
 					eval(callback);
 				}
-			},
-			'json');
+			}
+		);
 	},
 
 	insertAsset: function(asset) {
@@ -258,6 +250,14 @@ $(document).ready(function(){
 				habari.media.unqueueLoad();
 			}
 			return true;
+		},
+		select: function(event, ui) {
+			$(ui.panel).removeClass('ui-tabs-panel ui-widget-content ui-corner-bottom');
+		},
+		create: function() {
+			$(this).removeClass('ui-tabs ui-widget-content');
+			$('.tabs').removeClass('ui-widget-header');
 		}
 	});
+
 });

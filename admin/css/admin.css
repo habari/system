@@ -1385,7 +1385,7 @@ body.page-logs .item input[type=checkbox] {
 	margin-left: 10px;
 }
 
-body.page-logs .item .message {
+body.page-logs .item .less, body.page-logs .item.expanded {
 	cursor: help;
 }
 
@@ -2862,8 +2862,9 @@ body.login .humanMsg {
 	color: white;
 	position: fixed;
 	bottom: 0;
-	left: 0;
-	width: 100%;
+	left: 50%;
+	width: 200px;
+	margin-left: -100px;
 	max-height: 200px;
 	display: none;
 	z-index: 10000;
@@ -2898,6 +2899,12 @@ body.login .humanMsg {
 
 #humanMsgLog.logisopen p {
 	opacity: 1;
+}
+
+#humanMsgLog.logisopen {
+	width: 100%;
+	left: 0;
+	margin-left: 0;
 }
 
 #humanMsgLog ul {

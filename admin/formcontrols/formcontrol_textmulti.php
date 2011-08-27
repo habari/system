@@ -11,9 +11,11 @@ if (!is_array($value)) {
 $i = 0;
 foreach($value as $value_1) :
 $i++;
+	if ( $value_1 ) :
 ?>
 	<input type="text" name="<?php echo $field; ?>[]" id="<?php echo $field . '_' . $i; ?>" value="<?php echo Utils::htmlspecialchars($value_1); ?>"> <label for="<?php echo $field . '_' . $i; ?>"><a href="#" onclick="return controls.textmulti.remove(this);">[<?php _e('remove'); ?>]</a></label>
 <?php
+	endif;
 endforeach;
 ?>
 <a href="#" onclick="return controls.textmulti.add(this, '<?php echo $field; ?>');">[<?php _e('add'); ?>]</a>

@@ -165,6 +165,8 @@ class AdminPluginsHandler extends AdminHandler
 		$this->theme->assign( 'configaction', Controller::get_var( 'configaction' ) );
 		$this->theme->assign( 'helpaction', Controller::get_var( 'help' ) );
 		$this->theme->assign( 'configure', Controller::get_var( 'configure' ) );
+		uasort($sort_active_plugins, array( $this, 'compare_names' ) );
+		uasort($sort_inactive_plugins, array( $this, 'compare_names' ) );
 		$this->theme->active_plugins = $sort_active_plugins;
 		$this->theme->inactive_plugins = $sort_inactive_plugins;
 
@@ -226,6 +228,18 @@ class AdminPluginsHandler extends AdminHandler
 			}
 		}
 		Utils::redirect( URL::get( 'admin', 'page=plugins' ) );
+	}
+
+	/*
+	 * Compare function for uasort()
+	 * @param array $a The first element to compare
+	 * @param array $b The second element to compare
+	 * @return integer. 0 if the strings are equal, <0 if the first parameter is less than the second,
+	 * and >0 if the first parameter is greater than the second
+	 */
+	protected function compare_names( $a, $b )
+	{
+		return strcmp( MultiByte::strtolower( $a['info']->name), MultiByte::strtolower( $b['info']->name ) );
 	}
 
 }

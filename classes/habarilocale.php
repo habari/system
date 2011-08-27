@@ -203,7 +203,7 @@ class HabariLocale
 
 	private static function get_plural_function( $header )
 	{
-		if ( preg_match( '/plural-forms: (.*?)$/i', $header, $matches ) && preg_match( '/^\s*nplurals\s*=\s*(\d+)\s*;\s*plural=(.*)$/u', $matches[1], $matches ) ) {
+		if ( preg_match( '/plural-forms: (.*?)\n/i', $header, $matches ) && preg_match( '/^\s*nplurals\s*=\s*(\d+)\s*;\s*plural=(.*)$/u', $matches[1], $matches ) ) {
 			// sanitize
 			$nplurals = preg_replace( '/[^0-9]/', '', $matches[1] );
 			$plural = preg_replace( '#[^n0-9:\(\)\?\|\&=!<>+*/\%-]#', '', $matches[2] );
@@ -371,6 +371,41 @@ class HabariLocale
 		}
 		// fall-through else for both cases
 		return ( $count == 1 ? $singular : $plural );
+	}
+
+	/**
+	 * Return a translated value of a SimpleXml object value based on the locale and namespace
+	 *
+	 * @param SimpleXMLElement $parent The parent node of the node we are translating
+	 * @param SimpleXMLElement $child The child node we're trying to translate
+	 * @param string The namespace to use for the lang attribute of the node to be translated
+	 * @param string $locale The locale we want to translate into
+	 * @return nothing. Translations are done in place
+	 * @todo These defaults may need tweaked. It seems there should be a better way to do this whole thing
+	 */
+	public static function translate_xml( $parent, $child, $ns = 'http://www.w3.org/XML/1998/namespace', $locale = null )
+	{
+		$use = null;
+		// Set the locale
+		if( !isset( $locale ) ) {
+			$locale = self::$locale;
+		}
+		// Loop through the child elements
+		foreach( $child as $el ) {
+			$attr = $el->attributes( $ns );
+			foreach( $attr as $key => $value ) {
+				// Found one with the language of the current locale
+				if ( $key == 'lang' && $value == $locale ) {
+					$use = (string)$el;
+				}
+			}
+		}
+		// If a translation for the element is found, use it instead of the default value
+		if ( ! empty( $use ) ) {
+			$name = $child->getName();
+			unset( $parent->$name );
+			$parent->addChild( $name, $use );
+		}
 	}
 }
 

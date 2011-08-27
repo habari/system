@@ -215,12 +215,13 @@ class AdminLogsHandler extends AdminHandler
 			$item_ids['p' . $log->id] = 1;
 		}
 
-		$output = array(
+		$ar = new AjaxResponse();
+		$ar->data = array(
 			'items' => $items,
 			'item_ids' => $item_ids,
 			'timeline' => $timeline,
 		);
-		echo json_encode( $output );
+		$ar->out();
 	}
 
 	/**

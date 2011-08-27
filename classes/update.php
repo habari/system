@@ -33,7 +33,8 @@ class Update extends Singleton
 	public static function add( $name, $beaconid, $current_version )
 	{
 		if ( empty( $name ) || empty( $beaconid ) || empty( $current_version ) ) {
-			throw new Exception( _t( 'Invalid Beacon information added' ) );
+			// @locale Signifies the plugin or theme is missing needed information to check for an update
+			throw new Exception( _t( 'Invalid Update Beacon information added. The plugin or theme cannot be identified' ) );
 		}
 		
 		self::instance()->beacons[ (string) $beaconid] = array( 'name' => (string) $name, 'version' => (string) $current_version );

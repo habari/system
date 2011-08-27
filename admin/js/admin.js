@@ -13,16 +13,16 @@ var habari_ajax = {
 		$.ajax({
 			url: url,
 			data: data,
-		  success: function(json_data) {
+		success: function(json_data) {
 				if($.isPlainObject(ahah_target)) {
 					for(var i in ahah_target) {
 						$(ahah_target[i]).html(json_data.html[i]);
 					}
 				}
-		  	var cb = ($.isFunction(ahah_target) && local_cb == undefined) ? ahah_target : local_cb;
+				var cb = ($.isFunction(ahah_target) && local_cb == undefined) ? ahah_target : local_cb;
 				habari_ajax.success(json_data, cb);
 			},
-			error: habari_ajax.error,
+		error: habari_ajax.error,
 		  dataType: 'json',
 			type: type
 		});
@@ -35,6 +35,9 @@ var habari_ajax = {
 		if ( json_data.response_code == 200 && json_data.message != null && json_data.message != '' ) {
 			human_msg.display_msg( json_data.message );	
 		}
+		if ( json_data.response_code >= 400 ) {
+			habari_ajax.error(null, json_data.message, json_data.response_code)
+		}
 		if(json_data.habari_callback != null && json_data.habari_callback != '') {
 			json_data.habari_callback = eval(json_data.habari_callback);
 			if($.isFunction(json_data.habari_callback)) {
@@ -46,8 +49,21 @@ var habari_ajax = {
 	},
 	
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
+		var msg;
+		if ( XMLHttpRequest == null ) {
+			switch( errorThrown ) {
+				case 408:
+					msg = textStatus;
+					break;
+				default:
+					msg = 'Uh Oh. An error has occurred. Please try again later.';
+			}
+		}
+		else {
+			msg = 'Uh Oh. An error has occurred. Please try again later.';
+		}
 		spinner.stop();
-		human_msg.display_msg ("Uh Oh. An error has occured. Please try again later.");
+		human_msg.display_msg(msg);
 	}
 }
 
@@ -375,12 +391,10 @@ var itemManage = {
 		silent = ( silent === undefined ) ? false: silent;
 		spinner.start();
 
-		$.ajax({
-			type: 'GET',
-			url: itemManage.fetchURL,
-			data: '&search=' + liveSearch.getSearchText() + '&offset=' + offset + '&limit=' + limit,
-			dataType: 'json',
-			success: function(json) {
+		habari_ajax.get(
+			itemManage.fetchURL,
+			'&search=' + liveSearch.getSearchText() + '&offset=' + offset + '&limit=' + limit,
+			function(json) {
 				if (silent) {
 					itemManage.selected = json.item_ids;
 					itemManage.initItems();
@@ -390,7 +404,6 @@ var itemManage = {
 					if ( resetTimeline && $('.timeline').length !== 0 ) {
 						// we hide and show the timeline to fix a firefox display bug
 						$('.years').html(json.timeline).hide();
-						spinner.stop();
 						itemManage.initItems();
 						setTimeout( function() {
 							$('.years').show();
@@ -399,7 +412,6 @@ var itemManage = {
 						$('input.checkbox').rangeSelect();
 					}
 					else {
-						spinner.stop();
 						itemManage.initItems();
 						$('input.checkbox').rangeSelect();
 					}
@@ -409,11 +421,8 @@ var itemManage = {
 					}
 					findChildren();
 				}
-
-				spinner.stop();
-
 			}
-		});
+		);
 	}
 };
 
@@ -1330,7 +1339,6 @@ var theMenu = {
 		});
 	},
 	blinkCarrot: function(owner) {
-		spinner.start();
 		var blinkSpeed = 100;
 		$(owner).addClass('carrot').addClass('blinking').fadeOut(blinkSpeed).fadeIn(blinkSpeed).fadeOut(blinkSpeed).fadeIn(blinkSpeed, function() {
 			dropButton.hideMenu();
@@ -1448,7 +1456,7 @@ $.fn.rangeSelect = function() {
 			$spec.slice(
 				Math.min($spec.index(lastCheckbox), $spec.index(e.target)),
 				Math.max($spec.index(lastCheckbox), $spec.index(e.target)) + 1)
-			.attr({checked: e.target.checked ? "checked" : ""});
+			.attr({checked: e.target.checked ? "checked" : ""}).change();
 		}
 		lastCheckbox = e.target;
 	});
@@ -1622,7 +1630,26 @@ $(document).ready(function(){
 	$('.resizable').resizeable();
 
 	/* Init Tabs, using jQuery UI Tabs */
-	$('.tabcontrol').parent().tabs({ fx: { height: 'toggle', opacity: 'toggle' }, selected: -1, collapsible: true });
+	$('.tabcontrol').parent().tabs({ 
+		fx: { height: 'toggle', opacity: 'toggle' }, 
+		selected: -1, 
+		collapsible: true,
+		select: function(event, ui) {
+			$(ui.panel).removeClass('ui-tabs-panel ui-widget-content ui-corner-bottom');
+		},
+		create: function() {
+			$(this).removeClass('ui-tabs ui-widget-content');
+			$('.tabs').removeClass('ui-widget-header');
+		},
+		show: function(event, ui) {
+			var panelHeight = $(ui.panel).height();
+			$('html, body').animate({
+				scrollTop: panelHeight
+				},
+				400
+			);
+		}
+	});
 
 	// LOGIN: Focus cursor on 'Name'.
 	$('body.login #habari_username').focus();

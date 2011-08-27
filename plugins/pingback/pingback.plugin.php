@@ -134,6 +134,7 @@ class Pingback extends Plugin
 					throw new XMLRPCException( 16 );
 				}
 				$source_contents = $rr->get_response_body();
+				$headers = $rr->get_response_headers();
 			}
 			catch ( XMLRPCException $e ) {
 				// catch our special type of exception and re-throw it
@@ -143,14 +144,32 @@ class Pingback extends Plugin
 				throw new XMLRPCException( -32300 );
 			}
 
-			// encoding is converted into internal encoding.
-			// @todo check BOM at beginning of file before checking for a charset attribute
-			$habari_encoding = MultiByte::hab_encoding();
-			if ( preg_match( "/<meta[^>]+charset=([A-Za-z0-9\-\_]+)/i", $source_contents, $matches ) && strtolower( $habari_encoding ) != strtolower( $matches[1] ) ) {
-				$ret = MultiByte::convert_encoding( $source_contents, $habari_encoding, $matches[1] );
-				if ( $ret !== false ) {
-					$source_contents = $ret;
+			// Encoding is converted into internal encoding.
+			// First, detect the source string's encoding
+			$habari_encoding = strtoupper( MultiByte::hab_encoding() );
+			$source_encoding = 'Windows-1252';
+			// Is the charset in the headers?
+			if ( isset( $headers['Content-Type'] ) && strpos( $headers['Content-Type'], 'charset' ) !== false ) {
+				// This regex should be changed to meet the HTTP spec at some point
+				if ( preg_match("/charset[\x09\x0A\x0C\x0D\x20]*=[\x09\x0A\x0C\x0D\x20]*('?)([A-Za-z0-9\-\_]+)\1/i", $headers['Content-Type'], $matches ) ) {
+					$source_encoding = strtoupper( $matches[2] );
 				}
+			}
+			// Can we tell the charset from the stream itself?
+			else if ( ( $enc = MultiByte::detect_bom_encoding( $source_contents ) ) !== false ) {
+				$source_encoding = $enc;
+			}
+			// Is the charset in a meta tag?
+			else if ( preg_match( "/<meta[^>]+charset[\x09\x0A\x0C\x0D\x20]*=[\x09\x0A\x0C\x0D\x20]*([\"']?)([A-Za-z0-9\-\_]+)\1/i", $source_contents, $matches ) ) {
+				$source_encoding = strtoupper( $matches[2] );
+				if (in_array($source_encoding, array("UTF-16", "UTF-16BE", "UTF-16LE"))) {
+					$source_encoding = "UTF-8";
+				}
+			}
+			// Then, convert the string
+			$ret = MultiByte::convert_encoding( $source_contents, $habari_encoding, $source_encoding );
+			if ( $ret !== false ) {
+				$source_contents = $ret;
 			}
 
 			// Find the page's title
@@ -161,6 +180,19 @@ class Pingback extends Plugin
 			preg_match( '/<body[^>]*>(.+)<\/body>/is', $source_contents, $matches );
 			$source_contents_filtered = preg_replace( '/\s{2,}/is', ' ', strip_tags( $matches[1], '<a>' ) );
 
+			// Get rid of all the non-recriprocal links
+			$ht = new HTMLTokenizer( trim( $source_contents_filtered ) );
+			$set = $ht->parse();
+			$all_links = $set->slice( 'a', array() );
+			$keep_links = $set->slice( 'a', array( 'href' => $target_uri ) );
+			$bad_links = array_diff( $all_links, $keep_links );
+			foreach( $bad_links as $link ) {
+				$link->tokenize_replace( '' );
+				$set->replace_slice( $link );
+			}
+			$source_contents_filtered = (string)$set;
+
+			// Get the excerpt
 			if ( !preg_match( '%.{0,100}?<a[^>]*?href\\s*=\\s*("|\'|)' . $target_uri . '\\1[^>]*?'.'>(.+?)</a>.{0,100}%s', $source_contents_filtered, $source_excerpt ) ) {
 				throw new XMLRPCException( 17 );
 			}

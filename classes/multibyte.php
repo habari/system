@@ -128,9 +128,9 @@ class MultiByte
 	*
 	* Detects the encoding being used for a string
 	*
-	* @param $str string. The string who's encoding is being detected
+	* @param $str string. The string whose encoding is being detected
 	*
-	* @return mixed The  source string's detected encoding, or boolean false.
+	* @return mixed The source string's detected encoding, or boolean false.
 	*/
 	public static function detect_encoding( $str )
 	{
@@ -148,6 +148,32 @@ class MultiByte
 		}
 
 		return $enc;
+	}
+
+	/*
+	* function detect_bom_encoding
+	*
+	* Detects the encoding being used for a string using the existence
+	* of a byte order mark
+	*
+	* @param $str string. The string whose encoding is being detected
+	*
+	* @return mixed The source string's detected encoding, or boolean false.
+	*/
+	public static function detect_bom_encoding( $str )
+	{
+		$ret = false;
+		if ( "\xFE\xFF" == substr( 0, 2, $source_contents ) ) {
+			$ret = 'UTF-16BE';
+		}
+		else if ( "\xFF\xFE" == substr( 0, 2, $source_contents ) ) {
+			$ret = 'UTF-16LE';
+		}
+		else if ( "\xEF\xBB\xBF" == substr( 0, 3, $source_contents ) ) {
+			$ret = 'UTF-8';
+		}
+
+		return $ret;
 	}
 
 	/*

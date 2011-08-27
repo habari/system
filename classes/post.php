@@ -520,12 +520,17 @@ class Post extends QueryRecord implements IsContent
 		$this->newfields['updated'] = HabariDateTime::date_create();
 		$this->newfields['modified'] = $this->newfields['updated'];
 		$this->setguid();
+		
+		if ( $this->pubdate->int > HabariDateTime::date_create()->int && $this->status == Post::status( 'published' ) ) {
+			$this->status = Post::status( 'scheduled' );
+		}
 
 		$allow = true;
 		$allow = Plugins::filter( 'post_insert_allow', $allow, $this );
 		if ( ! $allow ) {
 			return;
 		}
+		
 		Plugins::act( 'post_insert_before', $this );
 
 		// Invoke plugins for all fields, since they're all "changed" when inserted
@@ -567,6 +572,10 @@ class Post extends QueryRecord implements IsContent
 
 		if ( isset( $this->fields['guid'] ) ) {
 			unset( $this->newfields['guid'] );
+		}
+		
+		if ( $this->pubdate->int > HabariDateTime::date_create()->int && $this->status == Post::status( 'published' ) ) {
+			$this->status = Post::status( 'scheduled' );
 		}
 
 		$allow = true;
@@ -872,6 +881,7 @@ class Post extends QueryRecord implements IsContent
 
 		$settings->append( 'text', 'pubdate', 'null:null', _t( 'Publication Time' ), 'tabcontrol_text' );
 		$settings->pubdate->value = $this->pubdate->format( 'Y-m-d H:i:s' );
+		$settings->pubdate->helptext = _t( 'YYYY-MM-DD HH:MM:SS' );
 
 		$settings->append( 'hidden', 'updated', 'null:null' );
 		$settings->updated->value = $this->updated->int;

@@ -251,7 +251,9 @@ class Plugins
 			if ( is_array( $plugins ) ) {
 				foreach ( $plugins as $class => $filename ) {
 					// add base path to stored path
-					$filename = HABARI_PATH . $filename;
+					if(!preg_match('#^([^:]+://)#i', $filename, $matches)) {
+						$filename = HABARI_PATH . $filename;
+					}
 
 					// if class is somehow empty we'll throw an error when trying to load it - deactivate the plugin instead
 					if ( $class == '' ) {
@@ -325,6 +327,18 @@ class Plugins
 					array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), $dirfiles )
 				);
 				$plugins = array_merge( $plugins, $dirfiles );
+			}
+			$dirfiles = Utils::glob( $dir . '*.phar' );
+			foreach($dirfiles as $filename) {
+				if(preg_match('/\.phar$/i', $filename)) {
+					$d = new DirectoryIterator('phar://' . $filename);
+					foreach ($d as $fileinfo) {
+						if ($fileinfo->isFile() && preg_match('/\.plugin.php$/i', $fileinfo->getFilename())) {
+							$plugins[$fileinfo->getFilename()] = str_replace('\\', '/', $fileinfo->getPathname());
+						}
+					}
+
+				}
 			}
 		}
 		ksort( $plugins );
@@ -413,6 +427,14 @@ class Plugins
 				if ( $info->getName() != 'pluggable' ) {
 					$info = 'legacy';
 				}
+
+				// Translate the plugin description
+				HabariLocale::translate_xml( $info, $info->description );
+
+				// Translate the plugin help
+				foreach( $info->help as $help ) {
+					HabariLocale::translate_xml( $help, $help->value );
+				}
 				
 			}
 			catch ( Exception $e ) {
@@ -459,7 +481,7 @@ class Plugins
 	}
 
 	/**
-	 * Instatiate and load all active plugins
+	 * Instantiate and load all active plugins
 	 */
 	public static function load_active()
 	{
@@ -491,8 +513,16 @@ class Plugins
 	public static function activate_plugin( $file )
 	{
 		$ok = true;
-		// strip base path from stored path
-		$short_file = MultiByte::substr( $file, strlen( HABARI_PATH ) );
+		// Keep stream handler and strip base path from stored path
+		$stream = '';
+		if(preg_match('#^([^:]+://)#i', $file, $matches)) {
+			$stream = $matches[1];
+			$short_file = $file; //$stream . MultiByte::substr( preg_replace('#^([^:]+://)#i', '', $file), strlen( HABARI_PATH ) );
+		}
+		else {
+			$short_file = MultiByte::substr( $file, strlen( HABARI_PATH ) );
+		}
+//Utils::debug($stream, $file);die();
 		$activated = Options::get( 'active_plugins' );
 		if ( !is_array( $activated ) || !in_array( $short_file, $activated ) ) {
 			include_once( $file );
