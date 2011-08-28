@@ -20,6 +20,7 @@ class CoreDashModules extends Plugin
 			Modules::add( 'Latest Entries' );
 			Modules::add( 'Latest Comments' );
 			Modules::add( 'Latest Log Activity' );
+			Modules::add( 'Post Types and Statuses' );
 		}
 	}
 
@@ -34,6 +35,7 @@ class CoreDashModules extends Plugin
 			Modules::remove_by_name( 'Latest Entries' );
 			Modules::remove_by_name( 'Latest Comments' );
 			Modules::remove_by_name( 'Latest Log Activity' );
+			Modules::remove_by_name( 'Post Types and Statuses' );
 		}
 	}
 
@@ -50,10 +52,11 @@ class CoreDashModules extends Plugin
 		if (User::identify()->can('manage_logs')) {
 			$modules[] = 'Latest Log Activity';
 		}
-		
+		$modules[] = 'Post Types and Statuses';
 		$this->add_template( 'dash_logs', dirname( __FILE__ ) . '/dash_logs.php' );
 		$this->add_template( 'dash_latestentries', dirname( __FILE__ ) . '/dash_latestentries.php' );
 		$this->add_template( 'dash_latestcomments', dirname( __FILE__ ) . '/dash_latestcomments.php' );
+		$this->add_template( 'dash_posttypes', dirname( __FILE__ ) . '/dash_posttypes.php' );
 		
 		return $modules;
 	}
@@ -133,6 +136,72 @@ class CoreDashModules extends Plugin
 		
 		$module['title'] = ( User::identify()->can( 'manage_comments' ) ? '<a href="' . Site::get_url('admin') . '/comments">' . _t('Latest Comments') . '</a>' : _t('Latest Comments') );
 		$module['content'] = $theme->fetch( 'dash_latestcomments' );
+		return $module;
+	}
+
+	/**
+	 * filter_dash_module_post_types
+	 * Function used to set theme variables to the post types dashboard widget
+	 * @param string $module_id
+	 * @return string The contents of the module
+	 */
+	public function filter_dash_module_post_types_and_statuses( $module, $module_id, $theme )
+	{
+		$messages = array();
+		$user = User::identify();
+
+		$post_types = Post::list_active_post_types();
+		array_shift( $post_types );
+		$post_statuses = array_values( Post::list_post_statuses() );
+		array_shift( $post_statuses );
+
+		foreach( $post_types as $type => $type_id ) {
+			foreach( $post_statuses as $status => $status_id ) {
+				if( $user->cannot( 'post_unpublished' ) && Post::status_name( $status_id ) != 'published' ) {
+					continue;
+				}
+				$plural = Plugins::filter( 'post_type_display', $type, 'plural' );
+				$count = Posts::get( array( 'content_type' => $type_id, 'count' => true, 'status' => $status_id ) );
+				if( ! $count ) {
+					continue;
+				}
+				$message['count'] = $count;
+				// @locale First variable is the post status, second is the post type
+				$message['label'] = _t( 'Site %1$s %2$s ', array( ucfirst( Post::status_name( $status_id ) ), $plural ) );
+				$perms = array(
+					'post_any' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+					'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+					'post_' . $type => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+				);
+				if ( $user->can_any( $perms ) ) {
+					$message['label'] = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( $type ), 'status' => $status_id ) ) ) . '">' . Utils::htmlspecialchars( $message['label'] ) . '</a>';
+				}
+				$messages[] = $message;
+			}
+
+			foreach( $post_statuses as $status => $status_id ) {
+				$count = Posts::get( array( 'content_type' => $type_id, 'count' => true, 'status' => $status_id, 'user_id' => $user->id ) );
+				if( ! $count ) {
+					continue;
+				}
+				$message['count'] = $count;
+				// @locale First variable is the post status, second is the post type
+				$message['label'] = _t( 'Your %1$s %2$s', array( ucfirst( Post::status_name( $status_id ) ), $plural )  );
+				$perms = array(
+					'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+					'post_' . $type => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+				);
+				if ( $user->can_any( $perms ) ) {
+					$message['label'] = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( $type ), 'status' => $status_id, 'user_id' => $user->id ) ) ) . '">' . Utils::htmlspecialchars( $message['label'] ) . '</a>';
+				}
+				$messages[] = $message;
+			}
+		}
+
+		$theme->type_messages = $messages;
+
+		$module['title'] = _t( 'Post Types and Statuses' );
+		$module['content'] = $theme->fetch( 'dash_posttypes' );
 		return $module;
 	}
 }
