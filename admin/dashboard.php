@@ -21,27 +21,14 @@
 		<?php
 		$content_type_msg = array();
 		$user = User::identify();
-		if ( !empty( $stats['page_count'] ) ) {
-			$message = sprintf( _n( '%d page', '%d pages', $stats['page_count'] ), $stats['page_count'] );
+		if ( !empty( $stats['post_count'] ) ) {
+			$message = sprintf( _n( '%d post', '%d posts', $stats['post_count'] ), $stats['post_count'] );
 			$perms = array(
 				'post_any' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
 				'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
-				'post_page' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
 			);
 			if ( $user->can_any( $perms ) ) {
-				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'page' ), 'status' => Post::status( 'published' ) ) ) ) . '">' . $message . '</a>';
-			}
-			$content_type_msg[] = $message;
-		}
-		if ( !empty( $stats['entry_count'] ) ) {
-			$message = sprintf( _n( '%d entry', '%d entries', $stats['entry_count'] ), $stats['entry_count'] );
-			$perms = array(
-				'post_any' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
-				'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
-				'post_entry' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
-			);
-			if ( $user->can_any( $perms ) ) {
-				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'published' ) ) ) ) . '">' . $message . '</a>';
+				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'any' ), 'status' => Post::status( 'published' ) ) ) ) . '">' . $message . '</a>';
 			}
 			$content_type_msg[] = $message;
 		}
@@ -50,15 +37,15 @@
 		if ( !empty( $stats['comment_count'] ) ) {
 			$message = sprintf( _n( '%d comment', '%d comments', $stats['comment_count'] ), $stats['comment_count'] );
 			$perms = array( 'manage_all_comments' => true, 'manage_own_post_comments' => true );
-			if ( $user->can_any( $perms ) ) {
+			if ( $user->can( 'manage_all_comments' ) ) {
 				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_APPROVED ) ) ) . '">' . $message . '</a>';
 			}
 			$comment_tag_msg[] = $message;
 		}
+
 		if ( !empty( $stats['tag_count'] ) ) {
 			$message = sprintf( _n( '%d tag', '%d tags', $stats['tag_count'] ), $stats['tag_count'] );
-			$perms = array( 'manage_tags' => true );
-			if ( $user->can_any( $perms ) ) {
+			if ( $user->can( 'manage_tags' ) ) {
 				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'tags' ) ) ) . '">' . $message . '</a>';
 			}
 			$comment_tag_msg[] = $message;
@@ -85,39 +72,25 @@
 		<p><?php
 		$message_bits = array();
 		$user= User::identify();
-		if ( !empty( $stats['entry_draft_count'] ) ) {
-			$message = sprintf( _n( '%d entry draft', '%d entry drafts', $stats['entry_draft_count'] ), $stats['entry_draft_count'] );
+		if ( !empty( $stats['user_draft_count'] ) ) {
+			$message = sprintf( _n( '%d draft', '%d drafts', $stats['user_draft_count'] ), $stats['user_draft_count'] );
 			$perms = array(
 				'post_any' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
 				'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
-				'post_entry' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
 			);
 			if ( $user->can_any( $perms ) ) {
-				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'draft' ), 'user_id' => $user->id ) ) ) . '">' . $message . '</a>';
+				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'any' ), 'status' => Post::status( 'draft' ), 'user_id' => $user->id ) ) ) . '">' . $message . '</a>';
 			}
 			$message_bits[] = $message;
 		}
-		if ( !empty( $stats['user_entry_scheduled_count'] ) ) {
-			$message = sprintf( _n( '%d scheduled post' , '%d scheduled posts' , $stats['user_entry_scheduled_count'] ), $stats['user_entry_scheduled_count' ] );
+		if ( !empty( $stats['user_scheduled_count'] ) ) {
+			$message = sprintf( _n( '%d scheduled post' , '%d scheduled posts' , $stats['user_scheduled_count'] ), $stats['user_scheduled_count' ] );
 			$perms = array(
 				'post_any' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
 				'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
-				'post_entry' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
 			);
 			if ( $user->can_any( $perms ) ) {
 				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'status' => Post::status( 'scheduled' ) ) ) ) . '">' . $message . '</a>';
-			}
-			$message_bits[] = $message;
-		}
-		if ( !empty( $stats['page_draft_count'] ) ) {
-			$message = sprintf( _n( '%d page draft', '%d page drafts', $stats['page_draft_count'] ), $stats['page_draft_count'] );
-			$perms = array(
-				'post_any' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
-				'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
-				'post_page' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
-			);
-			if ( $user->can_any( $perms ) ) {
-				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'page' ), 'status' => Post::status( 'draft' ) ) ) ) . '">' . $message . '</a>';
 			}
 			$message_bits[] = $message;
 		}
@@ -129,9 +102,9 @@
 				$message_bits[] = $message;
 			}
 
-			if ( !empty(  $stats['spam_comment_count'] ) && User::identify()->info->dashboard_hide_spam_count != true ) {
+			if ( !empty(  $stats['spam_comment_count'] ) && $user->info->dashboard_hide_spam_count != true ) {
 				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_SPAM ) ) ) . '">';
-				$message .= sprintf( _n( '%d spam comment awaiting moderation', '%d spam comments awaiting moderation', $stats['spam_comment_count'] ), $stats['spam_comment_count'] );
+				$message .= sprintf( _n( '%d spam comment', '%d spam comments', $stats['spam_comment_count'] ), $stats['spam_comment_count'] );
 				$message .= '</a>';
 				$message_bits[] = $message;
 			}
