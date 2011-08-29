@@ -156,45 +156,50 @@ class CoreDashModules extends Plugin
 		array_shift( $post_statuses );
 
 		foreach( $post_types as $type => $type_id ) {
+			$plural = Plugins::filter( 'post_type_display', $type, 'plural' );
 			foreach( $post_statuses as $status => $status_id ) {
-				if( $user->cannot( 'post_unpublished' ) && Post::status_name( $status_id ) != 'published' ) {
-					continue;
-				}
-				$plural = Plugins::filter( 'post_type_display', $type, 'plural' );
-				$count = Posts::get( array( 'content_type' => $type_id, 'count' => true, 'status' => $status_id ) );
-				if( ! $count ) {
-					continue;
-				}
-				$message['count'] = $count;
+				$site_count = Posts::get( array( 'content_type' => $type_id, 'count' => true, 'status' => $status_id ) );
+				$user_count = Posts::get( array( 'content_type' => $type_id, 'count' => true, 'status' => $status_id, 'user_id' => $user->id ) );
+
 				// @locale First variable is the post status, second is the post type
-				$message['label'] = _t( 'Site %1$s %2$s ', array( ucfirst( Post::status_name( $status_id ) ), $plural ) );
+				$message['label'] = _t( '%1$s %2$s ', array( ucfirst( Post::status_name( $status_id ) ), $plural ) );
+
+				if( ! $site_count ) {
+					$message['site_count'] = '';
+				}
+				if( $user->cannot( 'post_unpublished' ) && Post::status_name( $status_id ) != 'published' ) {
+					$message['site_count'] = '';
+				}
+				else {
+					$message['site_count'] = $site_count;
+				}
 				$perms = array(
 					'post_any' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
 					'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
 					'post_' . $type => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
 				);
-				if ( $user->can_any( $perms ) ) {
-					$message['label'] = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( $type ), 'status' => $status_id ) ) ) . '">' . Utils::htmlspecialchars( $message['label'] ) . '</a>';
+				if ( $user->can_any( $perms ) && $message['site_count'] ) {
+					$message['site_count'] = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( $type ), 'status' => $status_id ) ) ) . '">' . Utils::htmlspecialchars( $message['site_count'] ) . '</a>';
 				}
-				$messages[] = $message;
-			}
 
-			foreach( $post_statuses as $status => $status_id ) {
-				$count = Posts::get( array( 'content_type' => $type_id, 'count' => true, 'status' => $status_id, 'user_id' => $user->id ) );
-				if( ! $count ) {
-					continue;
+				if( ! $user_count ) {
+					$message['user_count'] = '';
 				}
-				$message['count'] = $count;
+				else {
+					$message['user_count'] = $user_count;
+				}
 				// @locale First variable is the post status, second is the post type
-				$message['label'] = _t( 'Your %1$s %2$s', array( ucfirst( Post::status_name( $status_id ) ), $plural )  );
 				$perms = array(
 					'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
 					'post_' . $type => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
 				);
-				if ( $user->can_any( $perms ) ) {
-					$message['label'] = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( $type ), 'status' => $status_id, 'user_id' => $user->id ) ) ) . '">' . Utils::htmlspecialchars( $message['label'] ) . '</a>';
+				if ( $user->can_any( $perms )  && $message['user_count'] ) {
+					$message['user_count'] = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( $type ), 'status' => $status_id, 'user_id' => $user->id ) ) ) . '">' . Utils::htmlspecialchars( $message['user_count'] ) . '</a>';
 				}
-				$messages[] = $message;
+
+				if( $message['site_count'] || $message['user_count'] ) {
+					$messages[] = $message;
+				}
 			}
 		}
 
@@ -204,6 +209,28 @@ class CoreDashModules extends Plugin
 		$module['content'] = $theme->fetch( 'dash_posttypes' );
 		return $module;
 	}
+
+	/**
+	* Adds the podcast stylesheet to the admin header,
+	* Adds menu items to the Habari silo for mp3 files
+	* for each feed so the mp3 can be added to multiple 
+	* feeds.
+	*
+	* @param Theme $theme The current theme being used.
+	*/
+	public function action_admin_header( $theme )
+	{
+		$vars = Controller::get_handler_vars();
+		if( 'dashboard' == $theme->page ) {
+			$css = <<< MODULE_CSS
+.dashboard .post-types-and-statuses-module .modulecore{
+	overflow: auto;
+}
+MODULE_CSS;
+			Stack::add( 'admin_stylesheet', array( $css, 'screen' ), 'dash_modules', array( 'admin' ) );
+		}
+	}
+
 }
 
 ?>
