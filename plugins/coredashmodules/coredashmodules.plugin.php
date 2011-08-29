@@ -167,7 +167,7 @@ class CoreDashModules extends Plugin
 				if( ! $site_count ) {
 					$message['site_count'] = '';
 				}
-				if( $user->cannot( 'post_unpublished' ) && Post::status_name( $status_id ) != 'published' ) {
+				else if( $user->cannot( 'post_unpublished' ) && Post::status_name( $status_id ) != 'published' ) {
 					$message['site_count'] = '';
 				}
 				else {
@@ -222,12 +222,7 @@ class CoreDashModules extends Plugin
 	{
 		$vars = Controller::get_handler_vars();
 		if( 'dashboard' == $theme->page ) {
-			$css = <<< MODULE_CSS
-.dashboard .post-types-and-statuses-module .modulecore{
-	overflow: auto;
-}
-MODULE_CSS;
-			Stack::add( 'admin_stylesheet', array( $css, 'screen' ), 'dash_modules', array( 'admin' ) );
+			Stack::add( 'admin_stylesheet', array( $this->get_url() . '/coredashmodules.css', 'screen' ), 'coredashmodules', array( 'admin' ) );
 		}
 	}
 
