@@ -31,17 +31,16 @@ class AdminDashboardHandler extends AdminHandler
 		$this->theme->updates = Options::get( 'updates_available', array() );
 
 		// collect all the stats we display on the dashboard
+		$user = User::identify();
 		$this->theme->stats = array(
 			'author_count' => Users::get( array( 'count' => 1 ) ),
-			'page_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'page' ), 'status' => Post::status( 'published' ) ) ),
-			'entry_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'entry' ), 'status' => Post::status( 'published' ) ) ),
+			'post_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'any' ), 'status' => Post::status( 'published' ) ) ),
 			'comment_count' => Comments::count_total( Comment::STATUS_APPROVED, false ),
 			'tag_count' => Tags::vocabulary()->count_total(),
-			'page_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'page' ), 'status' => Post::status( 'draft' ), 'user_id' => User::identify()->id ) ),
-			'entry_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'entry' ), 'status' => Post::status( 'draft' ), 'user_id' => User::identify()->id ) ),
+			'user_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'any' ), 'status' => Post::status( 'draft' ), 'user_id' => $user->id ) ),
 			'unapproved_comment_count' => User::identify()->can( 'manage_all_comments' ) ? Comments::count_total( Comment::STATUS_UNAPPROVED, false ) : Comments::count_by_author( User::identify()->id, Comment::STATUS_UNAPPROVED ),
-			'spam_comment_count' => User::identify()->can( 'manage_all_comments' ) ? Comments::count_total( Comment::STATUS_SPAM, false ) : Comments::count_by_author( User::identify()->id, Comment::STATUS_SPAM ),
-			'user_entry_scheduled_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'any' ), 'status' => Post::status( 'scheduled' ), 'user_id' => User::identify()->id ) ),
+			'spam_comment_count' => $user->can( 'manage_all_comments' ) ? Comments::count_total( Comment::STATUS_SPAM, false ) : Comments::count_by_author( $user->id, Comment::STATUS_SPAM ),
+			'user_scheduled_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'any' ), 'status' => Post::status( 'scheduled' ), 'user_id' => $user->id ) ),
 		);
 
 		$this->fetch_dashboard_modules();
