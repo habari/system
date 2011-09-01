@@ -20,7 +20,7 @@
 			if (type == 'select' && ret !== false) {
 				// When a selection is made, replace everything after the last "," with the selection instead of replacing everything
 				var val=this.element.val();
-				this.element.val(val.replace(/[^,]+$/,(val.indexOf(',') != -1 ?' ':'')+data.item.value + ', '));
+				this.element.val(val.replace(/[^,]+$/,(val.indexOf(',') != -1 ?' ':'')+data.item.value));
 				ret = false;
 			}
 			// Force false when its the focus event - parent should never set the value on focus
