@@ -251,7 +251,7 @@ class Stack
 	 */
 	public static function scripts( $element, $attrib = null )
 	{
-		if ( self::is_url($element) ) {
+		if ( self::is_url( $element ) ) {
 			$attrib = ( is_array( $attrib ) ) ? implode( ' ', $attrib ) : $attrib;
 			$output = sprintf( '<script %s src="%s" type="text/javascript"></script>'."\r\n", $attrib, $element );
 		}
@@ -270,7 +270,7 @@ class Stack
 	 */
 	public static function styles( $element, $typename )
 	{
-		if ( self::is_url($element) ) {
+		if ( self::is_url( $element ) ) {
 			$output = sprintf( '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n", $element, $typename );
 		}
 		else {
@@ -280,8 +280,7 @@ class Stack
 	}
 	
 	/**
-	 * Check if the passed string looks like a URL. This is used to decide whether
-	 * styles or scripts are external or not.
+	 * Check if the passed string looks like a URL or an absolute path to a file.
 	 * 
 	 * @todo There's a good chance this can be done in a better or more generic  
 	 * way.
@@ -289,8 +288,9 @@ class Stack
 	 * @param string $url The string to check.
 	 * @return boolean TRUE if the passed string looks like a URL.
 	 */
-	private static function is_url( $url ) {
-		return ( ( strpos( $url, 'http://' ) === 0 || strpos( $url, 'https://' ) === 0 || strpos( $url, '//' ) === 0 ) && strpos( $url, "\n" ) === false );
+	private static function is_url( $url ) 
+	{
+		return ( ( strpos( $url, 'http://' ) === 0 || strpos( $url, 'https://' ) === 0 || strpos( $url, '//' ) === 0 || strpos( $url, '/' ) == 0 ) && strpos( $url, "\n" ) === false );
 	}
 }
 
