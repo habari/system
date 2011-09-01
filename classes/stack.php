@@ -290,7 +290,7 @@ class Stack
 	 * @return boolean TRUE if the passed string looks like a URL.
 	 */
 	private static function is_url( $url ) {
-		return ( ( strpos( $url, 'http://' ) === 0 || strpos( $url, 'https://' ) === 0 || strpos( $url, '//' ) === 0 ) && strpos( $element, "\n" ) === false );
+		return ( ( strpos( $url, 'http://' ) === 0 || strpos( $url, 'https://' ) === 0 || strpos( $url, '//' ) === 0 ) && strpos( $url, "\n" ) === false );
 	}
 }
 
