@@ -251,7 +251,7 @@ class Stack
 	 */
 	public static function scripts( $element, $attrib = null )
 	{
-		if ( ( strpos( $element, 'http://' ) === 0 || strpos( $element, 'https://' ) === 0 ) && strpos( $element, "\n" ) === false ) {
+		if ( self::is_url($element) ) {
 			$attrib = ( is_array( $attrib ) ) ? implode( ' ', $attrib ) : $attrib;
 			$output = sprintf( '<script %s src="%s" type="text/javascript"></script>'."\r\n", $attrib, $element );
 		}
@@ -270,13 +270,27 @@ class Stack
 	 */
 	public static function styles( $element, $typename )
 	{
-		if ( ( strpos( $element, 'http://' ) === 0 || strpos( $element, 'https://' ) === 0 ) && strpos( $element, "\n" ) === false ) {
+		if ( self::is_url($element) ) {
 			$output = sprintf( '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n", $element, $typename );
 		}
 		else {
 			$output = sprintf( '<style type="text/css" media="%s">%s</style>'."\r\n", $typename, $element );
 		}
 		return $output;
+	}
+	
+	/**
+	 * Check if the passed string looks like a URL. This is used to decide whether
+	 * styles or scripts are external or not.
+	 * 
+	 * @todo There's a good chance this can be done in a better or more generic  
+	 * way.
+	 * 
+	 * @param string $url The string to check.
+	 * @return boolean TRUE if the passed string looks like a URL.
+	 */
+	private static function is_url( $url ) {
+		return ( ( strpos( $url, 'http://' ) === 0 || strpos( $url, 'https://' ) === 0 || strpos( $url, '//' ) === 0 ) && strpos( $url, "\n" ) === false );
 	}
 }
 

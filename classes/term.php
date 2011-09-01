@@ -447,7 +447,7 @@ SQL;
 				break;
 			case 'tag_text_searchable':
 				// if it's got spaces, then quote it.
-				if ( strpos( $this->term_display, ' ' ) !== false ) {
+				if ( strpos( $this->term_display, ' ' ) !== false || strpos( $this->term_display, ',' ) !== false ) {
 					$out = '\'' . str_replace( "'", "\'", $this->term_display ) . '\'';
 				}
 				else {

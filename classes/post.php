@@ -849,7 +849,9 @@ class Post extends QueryRecord implements IsContent
 		$form->tags->class = 'check-change';
 		$form->tags->tabindex = 3;
 
-		$form->tags->value = implode( ', ', (array)$this->get_tags() );
+		$tags = (array)$this->get_tags();
+		array_map( create_function( '$a', '$a->term_display = $a->tag_text_searchable;' ), $tags );
+		$form->tags->value = implode( ', ', $tags );
 
 		// Create the splitter
 		$publish_controls = $form->append( 'tabs', 'publish_controls' );
