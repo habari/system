@@ -86,6 +86,10 @@ class AdminHandler extends ActionHandler
 			Stack::add( 'admin_stylesheet', array( Site::get_url( 'admin_theme' ) . '/css/admin.css', 'screen' ), 'admin' );
 			Stack::add( 'admin_stylesheet', array( Site::get_url( 'admin_theme' ) . '/css/jqueryui.css', 'screen' ), 'jqueryui' );
 
+			// Prepare theme for translation
+			Plugins::register( array( $this, 'default_post_type_display' ), 'filter', 'post_type_display', 4 );
+			Plugins::register( array( $this, 'default_post_status_display' ), 'filter', 'post_status_display', 4 );
+
 			// Add some default template variables
 			$this->set_admin_template_vars( $this->theme );
 			$this->theme->admin_type = $type;
@@ -116,7 +120,7 @@ class AdminHandler extends ActionHandler
 		else {
 			$type = '';
 		}
-		//$type = ( isset( $this->handler_vars['content_type'] ) && !empty( $this->handler_vars['content_type'] ) ) ? $this->handler_vars['content_type'] : '';
+
 		$this->setup_admin_theme( $page, $type );
 
 		// Access check to see if the user is allowed the requested page
@@ -172,6 +176,10 @@ class AdminHandler extends ActionHandler
 		header( 'Content-Type: text/javascript;charset=utf-8' );
 		$context = $this->handler_vars['context'];
 		if ( method_exists( $this, 'ajax_' . $context ) ) {
+			// Prepare theme for translation
+			Plugins::register( array( $this, 'default_post_type_display' ), 'filter', 'post_type_display', 4 );
+			Plugins::register( array( $this, 'default_post_status_display' ), 'filter', 'post_status_display', 4 );
+
 			$type = ( isset( $this->handler_vars['content_type'] ) && !empty( $this->handler_vars['content_type'] ) ) ? $this->handler_vars['content_type'] : '';
 			// Access check to see if the user is allowed the requested page
 			if ( $this->access_allowed( 'ajax_' . $context, $type ) ) {
@@ -279,8 +287,6 @@ class AdminHandler extends ActionHandler
 		$managemenu = array();
 		$createperms = array();
 		$manageperms = array();
-
-		Plugins::register( array( $this, 'default_post_type_display' ), 'filter', 'post_type_display', 4 );
 
 		$i = 1;
 		foreach ( Post::list_active_post_types() as $type => $typeint ) {
@@ -582,6 +588,19 @@ class AdminHandler extends ActionHandler
 			),
 		);
 		return isset( $names[$type][$foruse] ) ? $names[$type][$foruse] : $type;
+	}
+
+	/**
+	 * How to display the built-in post statuses.
+	 */
+	public static function default_post_status_display( $status )
+	{
+		$names = array(
+			'draft' => _t( 'draft' ),
+			'published' => _t( 'published' ),
+			'scheduled' => _t( 'scheduled' ),
+		);
+		return isset( $names[$status] ) ? $names[$status] : $status;
 	}
 
 	/**
