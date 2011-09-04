@@ -211,23 +211,27 @@ class AdminCommentsHandler extends AdminHandler
 	{
 		// Get special search statuses
 		$statuses = Comment::list_comment_statuses();
-		$statuses = array_combine(
-			$statuses,
-			array_map(
-				create_function( '$a', 'return "status:{$a}";' ),
-				$statuses
-			)
-		);
+		$labels = array_map(
+			create_function( '$a', 'return MultiByte::ucfirst(Plugins::filter("comment_status_display", $a));' ),
+			$statuses
+			);
+		$terms = array_map(
+			create_function( '$a', 'return "status:{$a}";' ),
+			$statuses
+			);
+		$statuses = array_combine( $terms, $labels );
 
 		// Get special search types
 		$types = Comment::list_comment_types();
-		$types = array_combine(
-			$types,
-			array_map(
-				create_function( '$a', 'return "type:{$a}";' ),
-				$types
-			)
+		$labels = array_map(
+			create_function( '$a', 'return MultiByte::ucfirst(Plugins::filter("comment_type_display", $a, "singular")) ;' ),
+			$types
 		);
+		$terms = array_map(
+			create_function( '$a', 'return "type:{$a}";' ),
+			$types
+		);
+		$types = array_combine( $terms, $labels );
 
 		$this->theme->special_searches = array_merge( $statuses, $types );
 

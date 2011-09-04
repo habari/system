@@ -163,7 +163,7 @@ class CoreDashModules extends Plugin
 				$user_count = Posts::get( array( 'content_type' => $type_id, 'count' => true, 'status' => $status_id, 'user_id' => $user->id ) );
 
 				// @locale First variable is the post status, second is the post type
-				$message['label'] = _t( '%1$s %2$s ', array( $status_display, $plural ) );
+				$message['label'] = _t( '%1$s %2$s', array( $status_display, $plural ) );
 
 				if( ! $site_count ) {
 					$message['site_count'] = '';
