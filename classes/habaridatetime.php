@@ -269,11 +269,11 @@ class HabariDateTime extends DateTime
 		
 		$result = parent::format( $format );
 		
-		if ( false == $result ) {
+		if ( ! $result ) {
 			return false;
 		}
 		
-		$result = Multibyte::str_replace( array_keys( $day_months), array_values($day_months), $result );
+		$result = Multibyte::str_replace( array_keys( $day_months ), array_values( $day_months ), $result );
 		
 		return $result;
 	}
