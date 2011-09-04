@@ -89,8 +89,8 @@ class AdminHandler extends ActionHandler
 			// Prepare theme for translation
 			Plugins::register( array( 'Post', 'default_post_type_display' ), 'filter', 'post_type_display', 4 );
 			Plugins::register( array( 'Post', 'default_post_status_display' ), 'filter', 'post_status_display', 4 );
-			Plugins::register( array( 'Comment', 'default_comment_type_display' ), 'filter', 'post_type_display', 4 );
-			Plugins::register( array( 'Comment', 'default_comment_status_display' ), 'filter', 'post_status_display', 4 );
+			Plugins::register( array( 'Comment', 'default_comment_type_display' ), 'filter', 'comment_type_display', 4 );
+			Plugins::register( array( 'Comment', 'default_comment_status_display' ), 'filter', 'comment_status_display', 4 );
 
 			// Add some default template variables
 			$this->set_admin_template_vars( $this->theme );
@@ -181,8 +181,8 @@ class AdminHandler extends ActionHandler
 			// Prepare theme for translation
 			Plugins::register( array( 'Post', 'default_post_type_display' ), 'filter', 'post_type_display', 4 );
 			Plugins::register( array( 'Post', 'default_post_status_display' ), 'filter', 'post_status_display', 4 );
-			Plugins::register( array( 'Comment', 'default_comment_type_display' ), 'filter', 'post_type_display', 4 );
-			Plugins::register( array( 'Comment', 'default_comment_status_display' ), 'filter', 'post_status_display', 4 );
+			Plugins::register( array( 'Comment', 'default_comment_type_display' ), 'filter', 'comment_type_display', 4 );
+			Plugins::register( array( 'Comment', 'default_comment_status_display' ), 'filter', 'comment_status_display', 4 );
 
 			$type = ( isset( $this->handler_vars['content_type'] ) && !empty( $this->handler_vars['content_type'] ) ) ? $this->handler_vars['content_type'] : '';
 			// Access check to see if the user is allowed the requested page
