@@ -17,7 +17,7 @@
 				<?php echo ($post->title == '') ? '&nbsp;' : Utils::htmlspecialchars( $post->title ); ?>
 			<?php } ?>
 		</span>
-		<span class="state pct10"><a href="<?php URL::out('admin', array('page' => 'posts', 'type' => $post->content_type, 'status' => $post->status ) ); ?>" title="<?php _e('Search for other %s items', array( $post->statusname ) ); ?>"><?php echo $post->statusname; ?></a></span>
+		<span class="state pct10"><a href="<?php URL::out('admin', array('page' => 'posts', 'type' => $post->content_type, 'status' => $post->status ) ); ?>" title="<?php _e('Search for other %s items', array( MultiByte::ucfirst( Plugins::filter( "post_status_display", $post->statusname ) ) ) ); ?>"><?php echo MultiByte::ucfirst( Plugins::filter( "post_status_display", $post->statusname ) ); ?></a></span>
 		<span class="author pct20"><span class="dim"><?php _e('by'); ?></span> <a href="<?php URL::out('admin', array('page' => 'posts', 'user_id' => $post->user_id, 'type' => $post->content_type, 'status' => 'any') ); ?>" title="<?php _e('Search for other items by %s', array( $post->author->displayname ) ) ?>"><?php echo $post->author->displayname; ?></a></span>
 		<span class="date pct15"><span class="dim"><?php _e('on'); ?></span> <a href="<?php URL::out('admin', array('page' => 'posts', 'type' => $post->content_type, 'year_month' => $post->pubdate->get('Y-m') ) ); ?>" title="<?php _e('Search for other items from %s', array( $post->pubdate->get( 'M, Y' ) ) ); ?>"><?php $post->pubdate->out( HabariDateTime::get_default_date_format() ); ?></a></span>
 		<span class="time pct10"><span class="dim"><?php _e('at'); ?> <?php $post->pubdate->out( HabariDateTime::get_default_time_format()); ?></span></span>

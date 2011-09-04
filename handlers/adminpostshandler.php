@@ -368,24 +368,29 @@ class AdminPostsHandler extends AdminHandler
 		// Get special search statuses
 		$statuses = array_keys( Post::list_post_statuses() );
 		array_shift( $statuses );
-		$statuses = array_combine(
-			$statuses,
-			array_map(
+		$labels = array_map(
+			create_function( '$a', 'return MultiByte::ucfirst(Plugins::filter("post_status_display", $a));' ),
+			$statuses
+		);
+		$terms = array_map(
 				create_function( '$a', 'return "status:{$a}";' ),
 				$statuses
-			)
 		);
+		$statuses = array_combine( $terms, $labels );
 
 		// Get special search types
 		$types = array_keys( Post::list_active_post_types() );
 		array_shift( $types );
-		$types = array_combine(
-			$types,
-			array_map(
-				create_function( '$a', 'return "type:{$a}";' ),
-				$types
-			)
+		$labels = array_map(
+			create_function( '$a', 'return Plugins::filter("post_type_display", $a, "singular");' ),
+			$types
 		);
+		$terms = array_map(
+			create_function( '$a', 'return "type:{$a}";' ),
+			$types
+		);
+		$types = array_combine( $terms, $labels );
+
 		$this->theme->admin_page = _t( 'Manage Posts' );
 		$this->theme->admin_title = _t( 'Manage Posts' );
 		$this->theme->special_searches = Plugins::filter( 'special_searches', array_merge( $statuses, $types ) );
