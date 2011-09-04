@@ -1370,5 +1370,35 @@ class Post extends QueryRecord implements IsContent
 		return ACL::get_bitmask( Utils::array_or( $token_accesses ) );
 	}
 
+	/**
+	 * How to display the built-in post types.
+	 */
+	public static function default_post_type_display( $type, $foruse )
+	{
+		$names = array(
+			'entry' => array(
+				'singular' => _t( 'Entry' ),
+				'plural' => _t( 'Entries' ),
+			),
+			'page' => array(
+				'singular' => _t( 'Page' ),
+				'plural' => _t( 'Pages' ),
+			),
+		);
+		return isset( $names[$type][$foruse] ) ? $names[$type][$foruse] : $type;
+	}
+
+	/**
+	 * How to display the built-in post statuses.
+	 */
+	public static function default_post_status_display( $status )
+	{
+		$names = array(
+			'draft' => _t( 'draft' ),
+			'published' => _t( 'published' ),
+			'scheduled' => _t( 'scheduled' ),
+		);
+		return isset( $names[$status] ) ? $names[$status] : $status;
+	}
 }
 ?>

@@ -87,8 +87,8 @@ class AdminHandler extends ActionHandler
 			Stack::add( 'admin_stylesheet', array( Site::get_url( 'admin_theme' ) . '/css/jqueryui.css', 'screen' ), 'jqueryui' );
 
 			// Prepare theme for translation
-			Plugins::register( array( $this, 'default_post_type_display' ), 'filter', 'post_type_display', 4 );
-			Plugins::register( array( $this, 'default_post_status_display' ), 'filter', 'post_status_display', 4 );
+			Plugins::register( array( 'Post', 'default_post_type_display' ), 'filter', 'post_type_display', 4 );
+			Plugins::register( array( 'Post', 'default_post_status_display' ), 'filter', 'post_status_display', 4 );
 
 			// Add some default template variables
 			$this->set_admin_template_vars( $this->theme );
@@ -177,8 +177,8 @@ class AdminHandler extends ActionHandler
 		$context = $this->handler_vars['context'];
 		if ( method_exists( $this, 'ajax_' . $context ) ) {
 			// Prepare theme for translation
-			Plugins::register( array( $this, 'default_post_type_display' ), 'filter', 'post_type_display', 4 );
-			Plugins::register( array( $this, 'default_post_status_display' ), 'filter', 'post_status_display', 4 );
+			Plugins::register( array( 'Post', 'default_post_type_display' ), 'filter', 'post_type_display', 4 );
+			Plugins::register( array( 'Post', 'default_post_status_display' ), 'filter', 'post_status_display', 4 );
 
 			$type = ( isset( $this->handler_vars['content_type'] ) && !empty( $this->handler_vars['content_type'] ) ) ? $this->handler_vars['content_type'] : '';
 			// Access check to see if the user is allowed the requested page
@@ -570,37 +570,6 @@ class AdminHandler extends ActionHandler
 		$result = Plugins::filter( 'admin_access', $result, $page, $type );
 
 		return $result;
-	}
-
-	/**
-	 * How to display the built-in post types.
-	 */
-	public function default_post_type_display( $type, $foruse )
-	{
-		$names = array(
-			'entry' => array(
-				'singular' => _t( 'Entry' ),
-				'plural' => _t( 'Entries' ),
-			),
-			'page' => array(
-				'singular' => _t( 'Page' ),
-				'plural' => _t( 'Pages' ),
-			),
-		);
-		return isset( $names[$type][$foruse] ) ? $names[$type][$foruse] : $type;
-	}
-
-	/**
-	 * How to display the built-in post statuses.
-	 */
-	public static function default_post_status_display( $status )
-	{
-		$names = array(
-			'draft' => _t( 'draft' ),
-			'published' => _t( 'published' ),
-			'scheduled' => _t( 'scheduled' ),
-		);
-		return isset( $names[$status] ) ? $names[$status] : $status;
 	}
 
 	/**
