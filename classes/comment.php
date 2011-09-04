@@ -581,6 +581,10 @@ class Comment extends QueryRecord implements IsContent
 				'singular' => _t( 'pingback' ),
 				'plural' => _t( 'pingbacks' ),
 			),
+			'trackback' => array(
+				'singular' => _t( 'trackback' ),
+				'plural' => _t( 'trackbacks' ),
+			),
 		);
 		return isset( $names[$type][$foruse] ) ? $names[$type][$foruse] : $type;
 	}
