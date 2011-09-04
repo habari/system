@@ -262,18 +262,14 @@ class HabariDateTime extends DateTime
 		if ( $format === null ) {
 			$format = self::$default_datetime_format;
 		}
-
-		$nodes = $this->parse_format( $format );
-		$result = '';
-		foreach( $nodes as $node ) {
-			$formatted = parent::format( $node['str'] );
-			if( ! $formatted ) {
-				return false;
-			}
-			else {
-				$result .= ( $node['func'] == '_t' ? $day_months[$formatted] : $formatted );
-			}
+		
+		$result = parent::format( $format );
+		
+		foreach( $day_months as $english => $translated )
+		{
+			$result = str_replace( $english, $translated, $result );
 		}
+		
 		return $result;
 	}
 
