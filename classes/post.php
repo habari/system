@@ -367,6 +367,15 @@ class Post extends QueryRecord implements IsContent
 	}
 
 	/**
+	 * Register plugin hooks
+	 * @static
+	 */
+	public static function __static()
+	{
+		Pluggable::load_hooks('Post');
+	}
+
+	/**
 	 * Return a single requested post.
 	 *
 	 * <code>
@@ -1391,8 +1400,12 @@ class Post extends QueryRecord implements IsContent
 
 	/**
 	 * How to display the built-in post types.
+	 *
+	 * @param string $status The built-in type name
+	 * @param string $foruse Either 'singular' or 'plural'
+	 * @return string The translated type name, or the built-in name if there is no translation
 	 */
-	public static function default_post_type_display( $type, $foruse )
+	public static function filter_post_type_display_4( $type, $foruse )
 	{
 		$names = array(
 			'entry' => array(
@@ -1409,8 +1422,11 @@ class Post extends QueryRecord implements IsContent
 
 	/**
 	 * How to display the built-in post statuses.
+	 *
+	 * @param string $status The built-in status name
+	 * @return string The translated status name, or the built-in name if there is no translation
 	 */
-	public static function default_post_status_display( $status )
+	public static function filter_post_status_display_4( $status )
 	{
 		$names = array(
 			'draft' => _t( 'draft' ),
