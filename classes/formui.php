@@ -634,7 +634,7 @@ class FormUI extends FormContainer
 		}
 		if ( !FormUI::$outpre ) {
 			FormUI::$outpre = true;
-			$out .= '<script type="text/javascript">$(function(){controls.init();});</script>';
+			$out .= '<script type="text/javascript">controls.init();</script>';
 		}
 		return $out;
 	}
