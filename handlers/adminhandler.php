@@ -7,11 +7,6 @@
 /**
  * Habari AdminHandler Class
  * Backbone of the admin area, handles requests and functionality.
- *
- * @todo Split into page-specific controllers.
- * Discussion: See http://groups.google.com/group/habari-dev/browse_thread/thread/9c469a4fcb61c814
- * Branch: https://trac.habariproject.org/habari/browser/branches/adminhandler
- * Related branch: http://trac.habariproject.org/habari/browser/branches/handlers
  */
 class AdminHandler extends ActionHandler
 {
