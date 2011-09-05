@@ -290,7 +290,7 @@ class Stack
 	 */
 	private static function is_url( $url ) 
 	{
-		return ( ( strpos( $url, 'http://' ) === 0 || strpos( $url, 'https://' ) === 0 || strpos( $url, '//' ) === 0 || strpos( $url, '/' ) == 0 ) && strpos( $url, "\n" ) === false );
+		return ( ( strpos( $url, 'http://' ) === 0 || strpos( $url, 'https://' ) === 0 || strpos( $url, '//' ) === 0 || strpos( $url, '/' ) === 0 ) && strpos( $url, "\n" ) === false );
 	}
 }
 

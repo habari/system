@@ -36,13 +36,13 @@
 						echo '<li><a class="url" href="' . $comment->url . '">' . $comment->url . '</a></li>'."\r\n";
 					}
 					else {
-						echo '<li class="empty">no url given</li>';
+						echo '<li class="empty">' . _t( 'no url given' ) . '</li>';
 					} ?>
 				<?php if ( $comment->email != '' ) {
 						echo '<li><a class="email" href="mailto:' . $comment->email . '">' . $comment->email . '</a></li>'."\r\n";
 					}
 					else {
-						echo '<li class="empty">no email provided</li>';
+						echo '<li class="empty">' . _t( 'no email provided' ) . '</li>';
 					} ?>
 				<?php if ( $comment->ip ): ?>
 					<li><?php echo long2ip($comment->ip); ?></li>
@@ -54,7 +54,7 @@
 
 			<?php Plugins::act('comment_info', $comment); ?>
 
-			<p class="comment-type"><?php echo Comment::type_name( $comment->type ); ?></p>
+			<p class="comment-type"><?php echo Plugins::filter( 'comment_type_display', $comment->typename, 'singular' ); ?></p>
 		</div>
 		<span class="content pct75"><?php
 			if ( MultiByte::valid_data( $comment->content ) ) {
