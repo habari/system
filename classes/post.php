@@ -850,7 +850,11 @@ class Post extends QueryRecord implements IsContent
 		$form->tags->tabindex = 3;
 
 		$tags = (array)$this->get_tags();
-		array_map( create_function( '$a', '$a->term_display = $a->tag_text_searchable;' ), $tags );
+		array_map(
+			create_function( '$a',
+				'$a->term_display = MultiByte::strpos( $a->term_display, \',\' ) === false ? $a->term_display : $a->tag_text_searchable;' ),
+			$tags
+		);
 		$form->tags->value = implode( ', ', $tags );
 
 		// Create the splitter
