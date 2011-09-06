@@ -24,10 +24,11 @@
 	$post_statuses = Post::list_post_statuses();
 	unset( $post_statuses[array_search( 'any', $post_statuses )] );
 	foreach ( $post_statuses as $status_name => $status_id ) {
+		$status_name = Plugins::filter( 'post_status_display', $status_name );
 		$count = Posts::count_by_author( $edit_user->id, $status_id );
 		if ( $count > 0 ) {
 			$message = '<strong><a href="' . URL::get( 'admin', array( 'page' => 'posts', 'user_id' => $edit_user->id, 'type' => Post::type( 'any' ), 'status' => $status_id ) ) . '">';
-			$message .= sprintf( '%d ' . _n( _t( $status_name . ' post' ), _t( $status_name . ' posts' ), $count ), $count ) ;
+			$message .= _n( _t( '%1$d %2$s post', array( $count, $status_name ) ), _t( '%1$d %2$s posts', array( $count, $status_name ) ), $count );
 			$message .= '</a></strong>';
 			$message_bits[] = $message;
 		}
