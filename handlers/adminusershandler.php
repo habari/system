@@ -175,6 +175,7 @@ class AdminUsersHandler extends AdminHandler
 		Plugins::act( 'form_user', $form, $edit_user );
 
 		$this->theme->form = $form->get();
+		$this->theme->admin_page = _t( 'user' );
 
 		$this->theme->display( 'user' );
 
