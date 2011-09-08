@@ -268,13 +268,20 @@ class Stack
 	 * @param string $typename The media disposition of the content
 	 * @return string The resulting style or link tag
 	 */
-	public static function styles( $element, $typename )
+	public static function styles( $element, $typename = null )
 	{
-		if ( self::is_url( $element ) ) {
-			$output = sprintf( '<link rel="stylesheet" type="text/css" href="%1$s" media="%2$s">'."\r\n", $element, $typename );
+		if ( empty( $typename ) ) {
+			$media = '';
 		}
 		else {
-			$output = sprintf( '<style type="text/css" media="%2$s">%1$s</style>'."\r\n", $element, $typename );
+			$media = 'media="' . $typename . '"';
+		}
+		
+		if ( self::is_url( $element ) ) {
+			$output = sprintf( '<link rel="stylesheet" type="text/css" href="%1$s" %2$s>'."\r\n", $element, $media );
+		}
+		else {
+			$output = sprintf( '<style type="text/css" %2$s>%1$s</style>'."\r\n", $element, $media );
 		}
 		return $output;
 	}
