@@ -391,9 +391,13 @@ class AdminPostsHandler extends AdminHandler
 		);
 		$types = array_combine( $terms, $labels );
 
+		$special_searches = array_merge( $statuses, $types );
+		// Add a filter to get the only the user's posts
+		$special_searches["author:" . User::identify()->username] = _t( 'My Posts' );
+
 		$this->theme->admin_page = _t( 'Manage Posts' );
 		$this->theme->admin_title = _t( 'Manage Posts' );
-		$this->theme->special_searches = Plugins::filter( 'special_searches', array_merge( $statuses, $types ) );
+		$this->theme->special_searches = Plugins::filter( 'special_searches', $special_searches );
 		$this->display( 'posts' );
 	}
 

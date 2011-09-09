@@ -1251,7 +1251,9 @@ class Post extends QueryRecord implements IsContent
 	 */
 	public function content_type()
 	{
-		return array( Post::type_name( $this->content_type ), 'Post' );
+		$defaults = array( Post::type_name( $this->content_type ), 'Post' );
+		$result = Plugins::filter('content_type', $defaults, $this);
+		return $result;
 	}
 
 	/**
