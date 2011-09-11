@@ -95,7 +95,6 @@ class AdminLogsHandler extends AdminHandler
 
 		// filter by severity
 		$severity = Controller::get_var( 'severity', 'any' );
-
 		if ( $severity != 'any' ) {
 			$arguments['severity'] = $severity;
 		}
@@ -124,7 +123,7 @@ class AdminLogsHandler extends AdminHandler
 		$this->theme->severities = $severities;
 
 		// next the filter criteria we used
-		$this->theme->search = $search;
+		$this->theme->search_args = $search;
 		$this->theme->date = $date;
 		$this->theme->user = $user;
 		$this->theme->address = $ip;
