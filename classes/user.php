@@ -544,7 +544,7 @@ class User extends QueryRecord
 		// get token IDs
 		$tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
 		foreach ( $tokens as $token ) {
-			ACL::revoke_user_permission( $this->id, $token );
+			ACL::revoke_user_token( $this->id, $token );
 			EventLog::log( _t( 'User %1$s: Permission to %2$s revoked.', array( $this->username, ACL::token_name( $token ) ) ), 'notice', 'user', 'habari' );
 		}
 	}

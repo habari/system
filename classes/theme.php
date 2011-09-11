@@ -72,10 +72,17 @@ class Theme extends Pluggable
 	{
 		$this->name = $themedata->name;
 		$this->version = $themedata->version;
-		$this->theme_dir = $themedata->theme_dir;
+		$theme_dir = Utils::single_array($themedata->theme_dir);
 		// Set up the corresponding engine to handle the templating
 		$this->template_engine = new $themedata->template_engine();
-		$this->template_engine->set_template_dir( $themedata->theme_dir );
+
+		if(isset($themedata->parent)) {
+			$parent = Themes::create($themedata->parent);
+			$parent_theme_dir = Utils::single_array($parent->theme_dir);
+			$theme_dir = array_merge($theme_dir, $parent_theme_dir);
+		}
+		$this->theme_dir = $theme_dir;
+		$this->template_engine->set_template_dir( $theme_dir );
 		$this->plugin_id = $this->plugin_id();
 		$this->load();
 	}
