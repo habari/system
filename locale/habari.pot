@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-04 00:00+0000\n"
+"POT-Creation-Date: 2011-09-11 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -409,7 +409,7 @@ msgstr ""
 msgid "Current Theme"
 msgstr ""
 
-#: admin/themes.php:20 classes/post.php:865
+#: admin/themes.php:20 classes/post.php:869
 #: handlers/admincommentshandler.php:73
 msgid "Settings"
 msgstr ""
@@ -427,7 +427,7 @@ msgstr ""
 msgid "%1$s is licensed under the %2$s"
 msgstr ""
 
-#: admin/themes.php:68 themes/charcoal/theme.php:66 classes/post.php:904
+#: admin/themes.php:68 themes/charcoal/theme.php:66 classes/post.php:908
 #: handlers/adminthemeshandler.php:141
 #: plugins/undelete/undelete.plugin.php:178
 #: plugins/flickrsilo/flickrsilo.plugin.php:876
@@ -1120,12 +1120,12 @@ msgstr ""
 msgid "- Required)"
 msgstr ""
 
-#: themes/charcoal/theme.php:219 themes/k2/theme.php:129 classes/post.php:1001
+#: themes/charcoal/theme.php:219 themes/k2/theme.php:129 classes/post.php:1005
 msgid "Website"
 msgstr ""
 
 #: themes/charcoal/theme.php:222 themes/mzingi/theme.php:114
-#: themes/k2/theme.php:132 classes/post.php:1021
+#: themes/k2/theme.php:132 classes/post.php:1025
 #: plugins/habarisilo/habarisilo.plugin.php:465
 msgid "Submit"
 msgstr ""
@@ -1175,7 +1175,7 @@ msgid "Feed for this Entry"
 msgstr ""
 
 #: themes/mzingi/commentform.php:28 themes/k2/theme.php:116
-#: classes/post.php:1013 handlers/admincommentshandler.php:49
+#: classes/post.php:1017 handlers/admincommentshandler.php:49
 msgid "Comment"
 msgid_plural "Comments"
 msgstr[0] ""
@@ -1572,55 +1572,55 @@ msgstr ""
 msgid "Tags, separated by, commas"
 msgstr ""
 
-#: classes/post.php:867
+#: classes/post.php:871
 msgid "Content State"
 msgstr ""
 
-#: classes/post.php:876
+#: classes/post.php:880
 msgid "Minor Edit"
 msgstr ""
 
-#: classes/post.php:881
+#: classes/post.php:885
 msgid "Comments Allowed"
 msgstr ""
 
-#: classes/post.php:884
+#: classes/post.php:888
 msgid "Publication Time"
 msgstr ""
 
-#: classes/post.php:886
+#: classes/post.php:890
 msgid "YYYY-MM-DD HH:MM:SS"
 msgstr ""
 
-#: classes/post.php:891
+#: classes/post.php:895
 msgid "Content Address"
 msgstr ""
 
-#: classes/post.php:973
+#: classes/post.php:977
 msgid "Name <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: classes/post.php:975
+#: classes/post.php:979
 msgid "The Name field value is required"
 msgstr ""
 
-#: classes/post.php:985 handlers/adminusershandler.php:96
+#: classes/post.php:989 handlers/adminusershandler.php:96
 msgid "Email"
 msgstr ""
 
-#: classes/post.php:987 classes/post.php:991
+#: classes/post.php:991 classes/post.php:995
 msgid "The Email field value must be a valid email address"
 msgstr ""
 
-#: classes/post.php:992
+#: classes/post.php:996
 msgid "Email <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: classes/post.php:1003
+#: classes/post.php:1007
 msgid "The Web Site field value must be a valid URL"
 msgstr ""
 
-#: classes/post.php:1015
+#: classes/post.php:1019
 msgid "The Content field value is required"
 msgstr ""
 
@@ -1960,19 +1960,25 @@ msgid "Unable to fetch response body for a pending request."
 msgstr ""
 
 #. @locale Signifies the plugin or theme is missing needed information to check for an update
-#: classes/update.php:37
-msgid "Invalid Update Beacon information added. The plugin or theme cannot be identified"
+#: classes/update.php:41
+#, php-format
+msgid "Invalid Beacon updater information added for %s. The plugin or theme cannot be identified. Check your plugin's or theme's XML."
 msgstr ""
 
-#: classes/update.php:199
+#: classes/update.php:48
+#, php-format
+msgid "Beacon updater failed! %s"
+msgstr ""
+
+#: classes/update.php:211
 msgid "Updates check CronJob completed successfully."
 msgstr ""
 
-#: classes/update.php:207
+#: classes/update.php:219
 msgid "Updates check CronJob failed!"
 msgstr ""
 
-#: classes/update.php:275
+#: classes/update.php:287
 msgid "Perform a single check for plugin updates, the plugin set has changed."
 msgstr ""
 
@@ -4493,14 +4499,4 @@ msgstr ""
 
 #: installer/header.php:29
 msgid "Read the Habari wiki"
-msgstr ""
-
-#: installer/header.php:30
-msgid "Ask the community"
-msgstr ""
-
-#: installer/header.php:30
-msgid "Mailing List"
-msgstr ""
-
-#: installer/sq
+msgstr

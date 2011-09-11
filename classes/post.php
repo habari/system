@@ -367,6 +367,15 @@ class Post extends QueryRecord implements IsContent
 	}
 
 	/**
+	 * Register plugin hooks
+	 * @static
+	 */
+	public static function __static()
+	{
+		Pluggable::load_hooks('Post');
+	}
+
+	/**
 	 * Return a single requested post.
 	 *
 	 * <code>
@@ -418,33 +427,52 @@ class Post extends QueryRecord implements IsContent
 	{
 		// determine the base value from:
 		// - the new slug
+		// If the slug is new and has a length
 		if ( isset( $this->newfields['slug'] ) && $this->newfields['slug'] != '' ) {
 			$value = $this->newfields['slug'];
 		}
-		// - the new empty slug whilst in draft or progressing directly to published or scheduled from draft. Also allow changing of slug whilst in scheduled state
+		// - the new empty slug whilst in draft or progressing directly to published or scheduled from draft.
+		// - Also allow changing of slug whilst in scheduled state
+		//
+		// This happens when a draft is being updated, or a post is being directly published or scheduled,
+		// or an existing scheduled or published post is being updated, but not made into a draft
+		//
+		// If a new slug is set, and it doesn't have a length
 		elseif ( isset( $this->newfields['slug'] ) && $this->newfields['slug'] == '' ) {
-			if ( $this->fields['status'] == Post::status( 'draft' ) || ( $this->fields['status'] != Post::status( 'draft' ) && $this->newfields['status'] != Post::status( 'draft' ) ) ) {
+			// If the existing status of the post is draft, no matter what status it is being changed to
+			if ( $this->fields['status'] == Post::status( 'draft' )
+				|| (
+					// or the existing status is not draft and the new status is not draft
+					$this->fields['status'] != Post::status( 'draft' ) && $this->newfields['status'] != Post::status( 'draft' )
+				)
+			) {
+				// And a new title is set, use the new title
 				if ( isset( $this->newfields['title'] ) && $this->newfields['title'] != '' ) {
 					$value = $this->newfields['title'];
 				}
+				// Otherwise, use the existing title
 				else {
 					$value = $this->fields['title'];
 				}
 			}
 		}
 		// - the existing slug
+		//  If there is an existing slug, and it has a length
 		elseif ( $this->fields['slug'] != '' ) {
 			$value = $this->fields['slug'];
 		}
 		// - the new post title
+		// If there is a new title, and it has a length
 		elseif ( isset( $this->newfields['title'] ) && $this->newfields['title'] != '' ) {
 			$value = $this->newfields['title'];
 		}
 		// - the existing post title
+		// If there is an existing title, and it has a length
 		elseif ( $this->fields['title'] != '' ) {
 			$value = $this->fields['title'];
 		}
 		// - default
+		//Nothing else worked. Default to 'Post'
 		else {
 			$value = 'Post';
 		}
@@ -1223,7 +1251,9 @@ class Post extends QueryRecord implements IsContent
 	 */
 	public function content_type()
 	{
-		return array( Post::type_name( $this->content_type ), 'Post' );
+		$defaults = array( Post::type_name( $this->content_type ), 'Post' );
+		$result = Plugins::filter('content_type', $defaults, $this);
+		return $result;
 	}
 
 	/**
@@ -1370,5 +1400,42 @@ class Post extends QueryRecord implements IsContent
 		return ACL::get_bitmask( Utils::array_or( $token_accesses ) );
 	}
 
+	/**
+	 * How to display the built-in post types.
+	 *
+	 * @param string $status The built-in type name
+	 * @param string $foruse Either 'singular' or 'plural'
+	 * @return string The translated type name, or the built-in name if there is no translation
+	 */
+	public static function filter_post_type_display_4( $type, $foruse )
+	{
+		$names = array(
+			'entry' => array(
+				'singular' => _t( 'Entry' ),
+				'plural' => _t( 'Entries' ),
+			),
+			'page' => array(
+				'singular' => _t( 'Page' ),
+				'plural' => _t( 'Pages' ),
+			),
+		);
+		return isset( $names[$type][$foruse] ) ? $names[$type][$foruse] : $type;
+	}
+
+	/**
+	 * How to display the built-in post statuses.
+	 *
+	 * @param string $status The built-in status name
+	 * @return string The translated status name, or the built-in name if there is no translation
+	 */
+	public static function filter_post_status_display_4( $status )
+	{
+		$names = array(
+			'draft' => _t( 'draft' ),
+			'published' => _t( 'published' ),
+			'scheduled' => _t( 'scheduled' ),
+		);
+		return isset( $names[$status] ) ? $names[$status] : $status;
+	}
 }
 ?>

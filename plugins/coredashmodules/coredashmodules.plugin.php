@@ -158,11 +158,12 @@ class CoreDashModules extends Plugin
 		foreach( $post_types as $type => $type_id ) {
 			$plural = Plugins::filter( 'post_type_display', $type, 'plural' );
 			foreach( $post_statuses as $status => $status_id ) {
+				$status_display = MultiByte::ucfirst( Plugins::filter( 'post_status_display', Post::status_name( $status_id ) ) );
 				$site_count = Posts::get( array( 'content_type' => $type_id, 'count' => true, 'status' => $status_id ) );
 				$user_count = Posts::get( array( 'content_type' => $type_id, 'count' => true, 'status' => $status_id, 'user_id' => $user->id ) );
 
 				// @locale First variable is the post status, second is the post type
-				$message['label'] = _t( '%1$s %2$s ', array( ucfirst( Post::status_name( $status_id ) ), $plural ) );
+				$message['label'] = _t( '%1$s %2$s', array( $status_display, $plural ) );
 
 				if( ! $site_count ) {
 					$message['site_count'] = '';

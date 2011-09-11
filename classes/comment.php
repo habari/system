@@ -77,6 +77,15 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
+	 * Register plugin hooks
+	 * @static
+	 */
+	public static function __static()
+	{
+		Pluggable::load_hooks('Comment');
+	}
+
+	/**
 	 * static function get
 	 * Returns a single comment, by ID
 	 *
@@ -560,6 +569,50 @@ class Comment extends QueryRecord implements IsContent
 
 		return implode( ' ', $classes );
 		
+	}
+
+	/**
+	 * How to display the built-in comment types.
+	 *
+	 * @param string $type The type of comment
+	 * @param string $foruse Can be 'singular' or 'plural'
+	 * @return string The translated type name. This is always lowercase.
+	 *	It is up to the caller to uppercase it
+	 */
+	public static function filter_comment_type_display_4( $type, $foruse )
+	{
+		$names = array(
+			'comment' => array(
+				'singular' => _t( 'comment' ),
+				'plural' => _t( 'comments' ),
+			),
+			'pingback' => array(
+				'singular' => _t( 'pingback' ),
+				'plural' => _t( 'pingbacks' ),
+			),
+			'trackback' => array(
+				'singular' => _t( 'trackback' ),
+				'plural' => _t( 'trackbacks' ),
+			),
+		);
+		return isset( $names[$type][$foruse] ) ? $names[$type][$foruse] : $type;
+	}
+
+	/**
+	 * How to display the built-in comment statuses.
+	 *
+	 * @param string The name of the status we want to translate
+	 * @return string The translated status name. This is always lowercase.
+	 *	It is up to the caller to uppercase it.
+	 */
+	public static function filter_comment_status_display_4( $status )
+	{
+		$names = array(
+			'unapproved' => _t( 'unapproved' ),
+			'approved' => _t( 'approved' ),
+			'spam' => _t( 'spam' ),
+		);
+		return isset( $names[$status] ) ? $names[$status] : $status;
 	}
 }
 
