@@ -76,9 +76,9 @@ class K2 extends Theme
 		
 		parent::add_template_vars();
 		
-		$this->assign( 'display_login', Options::get( __CLASS__ . '__login_display_location' ) );
-		$this->assign( 'show_author', Options::get( __CLASS__ . '__show_author' ) );
-		$this->assign( 'home_label' , Options::get( __CLASS__ . '__home_label') );
+		$this->assign( 'display_login', Options::get( __CLASS__ . '__login_display_location', 'sidebar' ) );
+		$this->assign( 'show_author', Options::get( __CLASS__ . '__show_author', false ) );
+		$this->assign( 'home_label' , Options::get( __CLASS__ . '__home_label', _t( 'Blog' ) ) );
 
 		$this->add_template( 'k2_text', dirname( __FILE__ ) . '/formcontrol_text.php' );
 		
@@ -105,6 +105,11 @@ class K2 extends Theme
 	 **/
 	public function action_theme_ui()
 	{
+		$opts = Options::get_group( __CLASS__ );
+		if ( empty( $opts ) ) {
+			Options::set_group( __CLASS__, $this->defaults );
+		}
+
 		$controls = array();
 		$controls['home_label'] = array(
 			'label' => _t('Home tab label:'),
