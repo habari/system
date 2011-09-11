@@ -12,11 +12,22 @@
  */
 class K2 extends Theme
 {
+	protected $defaults = array(
+		'login_display_location' => 'sidebar',
+		'home_label' => 'Blog',
+		'show_author' => false,
+	);
+
 	/**
 	 * Add the K2 menu block to the nav area upon theme activation if there's nothing already there
 	 */
 	public function action_theme_activated()
 	{
+		$opts = Options::get_group( __CLASS__ );
+		if ( empty( $opts ) ) {
+			Options::set_group( __CLASS__, $this->defaults );
+		}
+
 		$blocks = $this->get_blocks( 'nav', 0, $this );
 		if ( count( $blocks ) == 0 ) {
 			$block = new Block( array(
@@ -65,9 +76,10 @@ class K2 extends Theme
 		
 		parent::add_template_vars();
 		
-		$this->home_tab = 'Blog';
-		$this->show_author = false;
-		
+		$this->assign( 'display_login', Options::get( __CLASS__ . '__login_display_location' ) );
+		$this->assign( 'show_author', Options::get( __CLASS__ . '__show_author' ) );
+		$this->assign( 'home_label' , Options::get( __CLASS__ . '__home_label') );
+
 		$this->add_template( 'k2_text', dirname( __FILE__ ) . '/formcontrol_text.php' );
 		
 		if ( !isset( $this->pages ) ) {
@@ -85,6 +97,58 @@ class K2 extends Theme
 			$this->page_title = Options::get('title');
 		}
 		
+	}
+
+	/**
+	 * function action_theme_ui
+	 * Create and display the Theme configuration
+	 **/
+	public function action_theme_ui()
+	{
+		$controls = array();
+		$controls['home_label'] = array(
+			'label' => _t('Home tab label:'),
+			'type' => 'text'
+		);
+		$controls['login_display_location'] = array(
+			'label' => _t('Login display:'),
+			'type' => 'select',
+			'options' => array(
+				'nowhere' => _t( 'Nowhere' ),
+				'header' => _t( 'As a navigation tab' ),
+				'sidebar' => _t( 'In the sidebar' )
+			)
+		);
+		$controls['show_author'] = array(
+			'label' => _t( 'Display author:' ),
+			'type' => 'checkbox',
+		);
+
+		$ui = new FormUI( strtolower( get_class( $this ) ) );
+		$wrapper = $ui->append( 'wrapper', 'k2config', 'k2config' );
+		$wrapper->class = "settings clear";
+
+		foreach ( $controls as $option_name => $option ) {
+			$field = $wrapper->append( $option['type'], $option_name, __CLASS__. '__' . $option_name, $option['label'] );
+			$field->template = 'optionscontrol_' . $option['type'];
+			$field->class = "item clear";
+			if ( $option['type'] === 'select' and isset( $option['options'] ) ) {
+				$field->options = $option['options'];
+			}
+		}
+		$ui->append( 'submit', 'save', _t( 'Save' ) );
+		$ui->on_success( array( $this, 'config_updated') );
+		$ui->out();
+	}
+
+	/**
+	 * function config_updated
+	 * Return a success message
+	 **/
+	public function config_updated( $ui )
+	{
+		Session::notice( _t( 'K2 configuration updated' ) );
+		$ui->save();
 	}
 
 	public function k2_comment_class( $comment, $post )
@@ -149,7 +213,7 @@ class K2 extends Theme
 		$menus = array( 'home' => array(
 			'link' => Site::get_url( 'habari' ), 
 			'title' => Options::get( 'title' ), 
-			'caption' => _t( 'Blog' ), 
+			'caption' => $theme->home_label,
 			'cssclass' => $theme->request->display_home ? 'current_page_item' : '',
 		) );
 		$pages = Posts::get('page_list');
@@ -163,6 +227,11 @@ class K2 extends Theme
 		}
 		if ( User::identify()->loggedin ) {
 			$menus['admin'] = array( 'link' => Site::get_url( 'admin' ), 'title' => _t( 'Admin area' ), 'caption' => _t( 'Admin' ), 'cssclass' => 'admintab' );
+		}
+		else {
+			if( $theme->display_login == 'header' ) {
+				$menus['admin'] = array( 'link' => Site::get_url( 'login' ), 'title' => _t( 'Login' ), 'caption' => _t( 'Login' ), 'cssclass' => 'admintab' );
+			}
 		}
 		$block->menus = $menus;
 	}
