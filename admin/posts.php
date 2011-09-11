@@ -54,7 +54,6 @@
 	itemManage.updateURL = habari.url.ajaxUpdatePosts;
 	itemManage.fetchURL = "<?php echo URL::get('admin_ajax', array('context' => 'posts')) ?>";
 	itemManage.fetchReplace = $('.posts');
-	itemManage.inEdit = false;
 </script>
 
 <?php include('footer.php');?>
