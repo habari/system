@@ -1,32 +1,9 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php include_once( 'header.php' ); ?>
 
+<?php include( 'navigator.php' ); ?>
 
 <form method="post" action="<?php URL::out('admin', array( 'page' => 'logs' ) ); ?>" class="buttonform">
-
-
-<div class="container navigator">
-	<span class="older pct10"><a href="#" onclick="timeline.skipLoupeLeft();return false">&laquo; <?php _e('Older'); ?></a></span>
-	<span class="currentposition pct15 minor"><?php _e('0-0 of 0'); ?></span>
-	<span class="search pct50"><input type="search" name='search' placeholder="<?php _e('Type and wait to search any log entry component'); ?>" value="<?php echo Utils::htmlspecialchars($search); ?>"></span>
-	<span class="nothing pct15">&nbsp;</span>
-	<span class="newer pct10"><a href="#" onclick="timeline.skipLoupeRight();return false"><?php _e('Newer'); ?> &raquo;</a></span>
-
-	<?php if ( isset($years) ) { ?><div class="timeline">
-		<div class="years">
-			<?php $theme->display( 'timeline_items' )?>
-		</div>
-
-		<div class="track">
-			<div class="handle">
-				<span class="resizehandleleft"></span>
-				<span class="resizehandleright"></span>
-			</div>
-		</div>
-
-	</div><?php } ?>
-
-</div>
 
 <div class="container transparent item controls">
 
@@ -120,7 +97,6 @@
 itemManage.updateURL = habari.url.ajaxLogDelete;
 itemManage.fetchURL = "<?php echo URL::get('admin_ajax', array('context' => 'logs')) ?>";
 itemManage.fetchReplace = $('.logs');
-itemManage.inEdit = false;
 
 </script>
 

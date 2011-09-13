@@ -513,7 +513,7 @@ class Posts extends ArrayObject implements IsContent
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
 					$start_date = HabariDateTime::date_create( $start_date );
 					$params[] = $start_date->sql;
-					$params[] = $start_date->modify( '+1 day' )->sql;
+					$params[] = $start_date->modify( '+1 day -1 second' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 				}
@@ -522,7 +522,7 @@ class Posts extends ArrayObject implements IsContent
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
 					$start_date = HabariDateTime::date_create( $start_date );
 					$params[] = $start_date->sql;
-					$params[] = $start_date->modify( '+1 month' )->sql;
+					$params[] = $start_date->modify( '+1 month -1 second' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
 				}
@@ -531,7 +531,7 @@ class Posts extends ArrayObject implements IsContent
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
 					$start_date = HabariDateTime::date_create( $start_date );
 					$params[] = $start_date->sql;
-					$params[] = $start_date->modify( '+1 year' )->sql;
+					$params[] = $start_date->modify( '+1 year -1 second' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
 				}

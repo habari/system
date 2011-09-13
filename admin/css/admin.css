@@ -137,12 +137,11 @@ a img {
 }
 a#site {
 	color: #2B2B2B;
-	text-shadow: 1px 1px white;
+	text-shadow: 1px 1px #dbdbdb;
 }
 a#site:hover {
-	color: white;
-	text-decoration: none;
-	text-shadow: -1px -1px #666666;
+	color: #2b2b2b;
+	text-shadow: 1px 1px #dbdbdb;
 }
 
 /*- THE MENU */
