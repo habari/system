@@ -2518,7 +2518,6 @@ ul.tabs li {
 	background: url('../images/tabsbg.png') center top;
 	color: #333;
 	cursor: pointer;
-	border-right: 1px solid #bdbdbd;
 }
 
 * html .tabs li { display: inline; }  /* for IE 6 */
@@ -2543,6 +2542,16 @@ ul.tabs li.first-child.last-child a {
 
 ul.tabs li.first-child {
 	background-position: left top;
+}
+
+ul.tabs li.ui-state-default {
+	border: none;
+	border-right: 1px solid #bdbdbd;
+}
+
+ul.tabs li.ui-corner-top {
+	border-top-right-radius: 0;
+	border-top-left-radius: 0;
 }
 
 ul.tabs li.last-child {
