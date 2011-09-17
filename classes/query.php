@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Base Query class for building new queries
+ * @see Posts::get
+ */
 class Query {
 
 	private $where = null;
@@ -36,24 +40,46 @@ class Query {
 		return new Query($primary_table);
 	}
 
+	/**
+	 * Adds fields to the SELECT statement
+	 * @param array|string $fields A field or list of fields to add to existing select'ed fields
+	 * @return Query Returns $this for fluid interface
+	 */
 	public function select($fields)
 	{
 		$this->fields = array_merge($this->fields, Utils::single_array($fields));
 		return $this;
 	}
 
+	/**
+	 * Sets fields for the SELECT statement
+	 * @param array|string $fields A field or list of fields to set as the fields to select, replaces existing selected fields
+	 * @return Query Returns $this for fluid interface
+	 */
 	public function set_select($fields)
 	{
 		$this->fields = Utils::single_array($fields);
 		return $this;
 	}
 
+	/**
+	 * Sets the primary table for the FROM statement
+	 * @param string $primary_table The primary table from which to select
+	 * @return Query Returns $this for fluid interface
+	 */
 	public function from($primary_table)
 	{
 		$this->primary_table = $primary_table;
 		return $this;
 	}
 
+	/**
+	 * Adds a JOIN table
+	 * @param string $join The table to create a join with
+	 * @param array $parameters An array of parameters on which the JOIN is built
+	 * @param string $alias An optional alias for the joined table
+	 * @return Query Returns $this for fluid interface
+	 */
 	public function join($join, $parameters = array(), $alias = null)
 	{
 		if(empty($alias)) {
@@ -64,6 +90,11 @@ class Query {
 		return $this;
 	}
 
+	/**
+	 * Discover if a table alias is already JOINed to this query
+	 * @param string $alias The name of a JOIN table alias
+	 * @return bool true if the alias was used for a join
+	 */
 	public function joined($alias)
 	{
 		return array_key_exists($alias, $this->joins);
@@ -82,24 +113,44 @@ class Query {
 		return $this->where;
 	}
 
+	/**
+	 * Set the GROUP BY clause
+	 * @param string $value The GROUP BY clause
+	 * @return Query Returns $this for fluid interface
+	 */
 	public function groupby($value)
 	{
 		$this->groupby = empty($value) ? null : $value;
 		return $this;
 	}
 
+	/**
+	 * Set the ORDER BY clause
+	 * @param string $value The ORDER BY clause
+	 * @return Query Returns $this for fluid interface
+	 */
 	public function orderby($value)
 	{
 		$this->orderby = empty($value) ? null : $value;
 		return $this;
 	}
 
+	/**
+	 * Sets the LIMIT
+	 * @param integer $value The LIMIT
+	 * @return Query Returns $this for fluid interface
+	 */
 	public function limit($value)
 	{
 		$this->limit = is_int($value) ? $value : null;
 		return $this;
 	}
 
+	/**
+	 * Sets the OFFSET
+	 * @param integer $value The OFFSET
+	 * @return Query Returns $this for fluid interface
+	 */
 	public function offset($value)
 	{
 		$this->offset = is_int($value) ? $value : null;
@@ -155,13 +206,16 @@ class Query {
 		return array_merge($this->where()->params(), $this->join_params);
 	}
 
-	public static function new_param_name($prefix = null)
+	/**
+	 * Obtain a parameter name with an optionally specified prefix that has not yet been used
+	 * @static
+	 * @param string $prefix An optional prefix to use for a new parameter
+	 * @return string the new parameter
+	 */
+	public static function new_param_name($prefix = 'param')
 	{
 		static $param_names = array();
 
-		if(!isset($prefix)) {
-			$prefix = 'param';
-		}
 		if(!isset($param_names[$prefix])) {
 			$param_names[$prefix] = 0;
 		}
@@ -194,6 +248,7 @@ class QueryWhere {
 	 * @param string|QueryWhere $expression A string expression to use as part of the query's where clause or
 	 *                                      a compound expression represented by an additional QueryWhere instance
 	 * @param array $parameters An associative array of values to use as named parameters in the added expression
+	 * @param string $name Name of the expression
 	 * @return QueryWhere Returns $this, for fluid interface.
 	 */
 	public function add($expression, $parameters = array(), $name = null)
@@ -210,10 +265,10 @@ class QueryWhere {
 	 * Shortcut to implementing an IN or equality test for one or more values as a new expression
 	 * @param $field
 	 * @param $values
-	 * @param null $paramname
-	 * @param null $validator
+	 * @param string $paramname
+	 * @param callback $validator
 	 * @param boolean $positive
-	 * @return QueryWhere Retruns $this, for fluid interface
+	 * @return QueryWhere Returns $this, for fluid interface
 	 */
 	public function in($field, $values, $paramname = null, $validator = null, $positive = true)
 	{
@@ -314,6 +369,7 @@ class QueryWhere {
 
 	/**
 	 * Obtain the where clause as a string to use in a query
+	 * @param int $level Used internally to retain indenting
 	 * @return string The where clause represented by this object
 	 */
 	public function get($level = 0)
@@ -342,6 +398,10 @@ class QueryWhere {
 		return $indents . "(\n" . $output . "\n" . $indents . ")";
 	}
 
+	/**
+	 * Get the number of expressions contained in this QueryWhere
+	 * @return int Number of expressions.
+	 */
 	public function count()
 	{
 		return count($this->expressions);

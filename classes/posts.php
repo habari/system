@@ -172,7 +172,7 @@ class Posts extends ArrayObject implements IsContent
 					$where->in('{posts}.slug', $paramset['slug'], 'posts_slug');
 				}
 				if ( isset( $paramset['not:slug'] ) ) {
-					$where->in('{posts}.slug', $paramset['slug'], 'posts_not_slug', null, false);
+					$where->in('{posts}.slug', $paramset['not:slug'], 'posts_not_slug', null, false);
 				}
 				
 				if ( isset( $paramset['user_id'] ) && 0 !== $paramset['user_id'] ) {
@@ -695,7 +695,7 @@ class Posts extends ArrayObject implements IsContent
 		 */
 		DB::set_fetch_mode( PDO::FETCH_CLASS );
 		DB::set_fetch_class( 'Post' );
-		//Utils::debug($query, $query->get());
+//Utils::debug($query, $query->get());
 		$results = DB::$fetch_fn( $query->get(), $query->params(), 'Post' );
 		//Utils::debug( $paramarray, $fetch_fn, $query, $params, $results );
 		//var_dump( $query );
