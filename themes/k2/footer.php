@@ -12,7 +12,7 @@
 <small><a href="<?php URL::out( 'atom_feed', array( 'index' => '1' ) ); ?>"><?php _e('Atom Entries'); ?></a> <?php _e('and'); ?> <a href="<?php URL::out( 'atom_feed_comments' ); ?>"><?php _e('Atom Comments'); ?></a></small>
 </p>
 
-<?php $theme->footer(); ?>
+<?php echo $theme->footer(); ?>
 
 <?php
 /* In order to see DB profiling information:
