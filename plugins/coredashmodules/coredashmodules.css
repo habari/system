@@ -1,0 +1,61 @@
+/*
+ * Name: CoreDashModules Stylesheet
+ * Author: Habari Community
+ * License: Apache License 2.0
+ */
+
+
+/*-- DASHBOARD - LATEST COMMENTS MODULE */
+
+.dashboard .latest-comments-module .item {
+
+}
+
+.dashboard .latest-comments-module .item > span {
+	float: left;
+}
+
+.dashboard .latest-comments-module .titleanddate {
+	margin-top: 5px;
+	line-height: 16px;
+	color: #999;
+}
+
+.dashboard .latest-comments-module ul {
+	margin-bottom: 5px;
+	line-height: 13px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.dashboard .latest-comments-module ul.commentauthors li {
+	display: inline;
+}
+
+.dashboard .latest-comments-module ul li:after {
+	content: ', ';
+}
+
+.dashboard .latest-comments-module ul li.last-child:after {
+	content: '';
+}
+
+.dashboard .latest-comments-module .commentauthors a:hover {
+	opacity: 1;
+}
+
+.dashboard .latest-comments-module .item span.comments {
+	float: right;
+}
+
+.dashboard .latest-comments-module .comments {
+	line-height: 34px;
+	font-size: 24px;
+}
+
+/*-- DASHBOARD - POST TYPES AND STATUSES MODULE */
+.dashboard .post-types-and-statuses-module .modulecore{
+	overflow: auto;
+}
+

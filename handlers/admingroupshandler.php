@@ -60,8 +60,6 @@ class AdminGroupsHandler extends AdminHandler
 				$grouped_tokens[$token->token_group][( $token->token_type ) ? 'crud' : 'bool'][] = $token;
 			}
 
-			$group = UserGroup::get_by_id( $this->handler_vars['id'] );
-
 			$potentials = array();
 
 			$users = Users::get_all();

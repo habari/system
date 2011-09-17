@@ -422,17 +422,17 @@ class Posts extends ArrayObject implements IsContent
 				if ( isset( $paramset['day'] ) && isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
 					$start_date = HabariDateTime::date_create( $start_date );
-					$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 day' )->sql));
+					$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 day -1 second' )->sql));
 				}
 				elseif ( isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
 					$start_date = HabariDateTime::date_create( $start_date );
-					$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 month' )->sql));
+					$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 month -1 second' )->sql));
 				}
 				elseif ( isset( $paramset['year'] ) ) {
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
 					$start_date = HabariDateTime::date_create( $start_date );
-					$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 year' )->sql));
+					$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 year -1 second' )->sql));
 				}
 
 				if ( isset( $paramset['after'] ) ) {

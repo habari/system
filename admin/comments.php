@@ -1,37 +1,7 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php include('header.php'); ?>
 
-<div class="container navigator">
-	<span class="older pct10"><a href="#" onclick="timeline.skipLoupeLeft();return false">&laquo; <?php _e('Older'); ?></a></span>
-	<span class="currentposition pct15 minor"><?php _e('0 of 0'); ?></span>
-	<span class="search pct50">
-		<input id="search" type="search" placeholder="<?php _e('Type and wait to search'); ?>" value="<?php echo Utils::htmlspecialchars($search_args); ?>">
-	</span>
-	<div class="filters pct15">
-		<ul class="dropbutton special_search">
-			<?php foreach($special_searches as $text => $term): ?>
-			<li><a href="#<?php echo $term; ?>" title="<?php printf( _t('Filter results for \'%s\''), $text ); ?>"><?php echo $text; ?></a></li>
-			<?php endforeach; ?>
-		</ul>
-	</div>
-	<span class="newer pct10"><a href="#" onclick="timeline.skipLoupeRight();return false"><?php _e('Newer'); ?> &raquo;</a></span>
-
-
-	<div class="timeline">
-		<div class="years">
-			<?php $theme->display( 'timeline_items' )?>
-		</div>
-
-		<div class="track">
-			<div class="handle">
-				<span class="resizehandleleft"></span>
-				<span class="resizehandleright"></span>
-			</div>
-		</div>
-
-	</div>
-
-</div>
+<?php include( 'navigator.php' ); ?>
 
 <form method="post" name="moderation" action="<?php URL::out( 'admin', array( 'page' => 'comments', 'status' => $status ) ); ?>">
 	<input type="hidden" name="search" value="<?php echo Utils::htmlspecialchars($search); ?>">

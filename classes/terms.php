@@ -51,6 +51,7 @@ class Terms extends ArrayObject implements FormStorage
 			if ( '' === $terms ) {
 				return new Terms();
 			}
+			$terms = trim( MultiByte::str_replace( '&quot;', '"', $terms ) );
 			// dirrty ;)
 			$rez = array( '\\"'=>':__unlikely_quote__:', '\\\''=>':__unlikely_apos__:' );
 			$zer = array( ':__unlikely_quote__:'=>'"', ':__unlikely_apos__:'=>"'" );

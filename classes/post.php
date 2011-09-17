@@ -367,6 +367,15 @@ class Post extends QueryRecord implements IsContent
 	}
 
 	/**
+	 * Register plugin hooks
+	 * @static
+	 */
+	public static function __static()
+	{
+		Pluggable::load_hooks('Post');
+	}
+
+	/**
 	 * Return a single requested post.
 	 *
 	 * <code>
@@ -418,33 +427,52 @@ class Post extends QueryRecord implements IsContent
 	{
 		// determine the base value from:
 		// - the new slug
+		// If the slug is new and has a length
 		if ( isset( $this->newfields['slug'] ) && $this->newfields['slug'] != '' ) {
 			$value = $this->newfields['slug'];
 		}
-		// - the new empty slug whilst in draft or progressing directly to published or scheduled from draft. Also allow changing of slug whilst in scheduled state
+		// - the new empty slug whilst in draft or progressing directly to published or scheduled from draft.
+		// - Also allow changing of slug whilst in scheduled state
+		//
+		// This happens when a draft is being updated, or a post is being directly published or scheduled,
+		// or an existing scheduled or published post is being updated, but not made into a draft
+		//
+		// If a new slug is set, and it doesn't have a length
 		elseif ( isset( $this->newfields['slug'] ) && $this->newfields['slug'] == '' ) {
-			if ( $this->fields['status'] == Post::status( 'draft' ) || ( $this->fields['status'] != Post::status( 'draft' ) && $this->newfields['status'] != Post::status( 'draft' ) ) ) {
+			// If the existing status of the post is draft, no matter what status it is being changed to
+			if ( $this->fields['status'] == Post::status( 'draft' )
+				|| (
+					// or the existing status is not draft and the new status is not draft
+					$this->fields['status'] != Post::status( 'draft' ) && $this->newfields['status'] != Post::status( 'draft' )
+				)
+			) {
+				// And a new title is set, use the new title
 				if ( isset( $this->newfields['title'] ) && $this->newfields['title'] != '' ) {
 					$value = $this->newfields['title'];
 				}
+				// Otherwise, use the existing title
 				else {
 					$value = $this->fields['title'];
 				}
 			}
 		}
 		// - the existing slug
+		//  If there is an existing slug, and it has a length
 		elseif ( $this->fields['slug'] != '' ) {
 			$value = $this->fields['slug'];
 		}
 		// - the new post title
+		// If there is a new title, and it has a length
 		elseif ( isset( $this->newfields['title'] ) && $this->newfields['title'] != '' ) {
 			$value = $this->newfields['title'];
 		}
 		// - the existing post title
+		// If there is an existing title, and it has a length
 		elseif ( $this->fields['title'] != '' ) {
 			$value = $this->fields['title'];
 		}
 		// - default
+		//Nothing else worked. Default to 'Post'
 		else {
 			$value = 'Post';
 		}
@@ -849,7 +877,13 @@ class Post extends QueryRecord implements IsContent
 		$form->tags->class = 'check-change';
 		$form->tags->tabindex = 3;
 
-		$form->tags->value = implode( ', ', (array)$this->get_tags() );
+		$tags = (array)$this->get_tags();
+		array_map(
+			create_function( '$a',
+				'$a->term_display = MultiByte::strpos( $a->term_display, \',\' ) === false ? $a->term_display : $a->tag_text_searchable;' ),
+			$tags
+		);
+		$form->tags->value = implode( ', ', $tags );
 
 		// Create the splitter
 		$publish_controls = $form->append( 'tabs', 'publish_controls' );
@@ -913,12 +947,135 @@ class Post extends QueryRecord implements IsContent
 		$form->append( 'hidden', 'slug', 'null:null' );
 		$form->slug->value = $this->slug;
 
+		$form->on_success(array($this, 'form_publish_success'));
+
 		// Let plugins alter this form
 		Plugins::act( 'form_publish', $form, $this, $context );
 
 		// Return the form object
 		return $form;
 	}
+
+	public function form_publish_success( FormUI $form )
+	{
+		$post_id = 0;
+		if ( isset( $this->handler_vars['id'] ) ) {
+			$post_id = intval( $this->handler_vars['id'] );
+		}
+		// If an id has been passed in, we're updating an existing post, otherwise we're creating one
+		if ( 0 !== $post_id ) {
+			$post = Post::get( array( 'id' => $post_id, 'status' => Post::status( 'any' ) ) );
+
+			// Verify that the post hasn't already been updated since the form was loaded
+			if ( $post->modified != $form->modified->value ) {
+				Session::notice( _t( 'The post %1$s was updated since you made changes.  Please review those changes before overwriting them.', array( sprintf( '<a href="%1$s">\'%2$s\'</a>', $post->permalink, Utils::htmlspecialchars( $post->title ) ) ) ) );
+				Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
+				exit;
+			}
+
+			// REFACTOR: this is duplicated in the insert code below, move it outside of the conditions
+			// Don't try to update form values that have been removed by plugins
+			$expected = array('title', 'tags', 'content');
+
+			foreach ( $expected as $field ) {
+				if ( isset( $form->$field ) ) {
+					$post->$field = $form->$field->value;
+				}
+			}
+			if ( $form->newslug->value == '' && $post->status == Post::status( 'published' ) ) {
+				Session::notice( _t( 'A post slug cannot be empty. Keeping old slug.' ) );
+			}
+			elseif ( $form->newslug->value != $form->slug->value ) {
+				$post->slug = $form->newslug->value;
+			}
+
+			// REFACTOR: the permissions checks should go before any of this other logic
+
+			// sorry, we just don't allow changing posts you don't have rights to
+			if ( ! ACL::access_check( $post->get_access(), 'edit' ) ) {
+				Session::error( _t( 'You don\'t have permission to edit that post' ) );
+				$this->get_blank();
+			}
+			// sorry, we just don't allow changing content types to types you don't have rights to
+			$user = User::identify();
+			$type = 'post_' . Post::type_name( $form->content_type->value );
+			if ( $form->content_type->value != $post->content_type && ( $user->cannot( $type ) || ! $user->can_any( array( 'own_posts' => 'edit', 'post_any' => 'edit', $type => 'edit' ) ) ) ) {
+				Session::error( _t( 'Changing content types is not allowed' ) );
+				$this->get_blank();
+			}
+			$post->content_type = $form->content_type->value;
+
+			// if not previously published and the user wants to publish now, change the pubdate to the current date/time unless a date has been explicitly set
+			if ( ( $post->status != Post::status( 'published' ) )
+				&& ( $form->status->value == Post::status( 'published' ) )
+				&& ( HabariDateTime::date_create( $form->pubdate->value )->int == $form->updated->value )
+				) {
+				$post->pubdate = HabariDateTime::date_create();
+			}
+			// else let the user change the publication date.
+			//  If previously published and the new date is in the future, the post will be unpublished and scheduled. Any other status, and the post will just get the new pubdate.
+			// This will result in the post being scheduled for future publication if the date/time is in the future and the new status is published.
+			else {
+				$post->pubdate = HabariDateTime::date_create( $form->pubdate->value );
+			}
+			$minor = $form->minor_edit->value && ( $post->status != Post::status( 'draft' ) );
+			$post->status = $form->status->value;
+		}
+		else {
+			// REFACTOR: don't do this here, it's duplicated in Post::create()
+			$post = new Post();
+
+			// check the user can create new posts of the set type.
+			$user = User::identify();
+			$type = 'post_'  . Post::type_name( $form->content_type->value );
+			if ( ACL::user_cannot( $user, $type ) || ( ! ACL::user_can( $user, 'post_any', 'create' ) && ! ACL::user_can( $user, $type, 'create' ) ) ) {
+				Session::error( _t( 'Creating that post type is denied' ) );
+				$this->get_blank();
+			}
+
+			// REFACTOR: why is this on_success here? We don't even display a form
+			$form->on_success( array( $this, 'form_publish_success' ) );
+			if ( HabariDateTime::date_create( $form->pubdate->value )->int != $form->updated->value ) {
+				$post->pubdate = HabariDateTime::date_create( $form->pubdate->value );
+			}
+
+			$postdata = array(
+				'slug' => $form->newslug->value,
+				'user_id' => User::identify()->id,
+				'pubdate' => $post->pubdate,
+				'status' => $form->status->value,
+				'content_type' => $form->content_type->value,
+			);
+
+			// Don't try to add form values that have been removed by plugins
+			$expected = array( 'title', 'tags', 'content' );
+
+			foreach ( $expected as $field ) {
+				if ( isset( $form->$field ) ) {
+					$postdata[$field] = $form->$field->value;
+				}
+			}
+
+			$minor = false;
+
+			// REFACTOR: consider using new Post( $postdata ) instead and call ->insert() manually
+			$post = Post::create( $postdata );
+		}
+
+		$post->info->comments_disabled = !$form->comments_enabled->value;
+
+		// REFACTOR: admin should absolutely not have a hook for this here
+		Plugins::act( 'publish_post', $post, $form );
+
+		// REFACTOR: we should not have to update a post we just created, this should be moved to the post-update functionality above and only called if changes have been made
+		// alternately, perhaps call ->update() or ->insert() as appropriate here, so things that apply to each operation (like comments_disabled) can still be included once outside the conditions above
+		$post->update( $minor );
+
+		$permalink = ( $post->status != Post::status( 'published' ) ) ? $post->permalink . '?preview=1' : $post->permalink;
+		Session::notice( sprintf( _t( 'The post %1$s has been saved as %2$s.' ), sprintf( '<a href="%1$s">\'%2$s\'</a>', $permalink, Utils::htmlspecialchars( $post->title ) ), Post::status_name( $post->status ) ) );
+		Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
+	}
+
 
 	/**
 	 * Manage this post's comment form
@@ -1217,7 +1374,9 @@ class Post extends QueryRecord implements IsContent
 	 */
 	public function content_type()
 	{
-		return array( Post::type_name( $this->content_type ), 'Post' );
+		$defaults = array( Post::type_name( $this->content_type ), 'Post' );
+		$result = Plugins::filter('content_type', $defaults, $this);
+		return $result;
 	}
 
 	/**
@@ -1364,5 +1523,42 @@ class Post extends QueryRecord implements IsContent
 		return ACL::get_bitmask( Utils::array_or( $token_accesses ) );
 	}
 
+	/**
+	 * How to display the built-in post types.
+	 *
+	 * @param string $status The built-in type name
+	 * @param string $foruse Either 'singular' or 'plural'
+	 * @return string The translated type name, or the built-in name if there is no translation
+	 */
+	public static function filter_post_type_display_4( $type, $foruse )
+	{
+		$names = array(
+			'entry' => array(
+				'singular' => _t( 'Entry' ),
+				'plural' => _t( 'Entries' ),
+			),
+			'page' => array(
+				'singular' => _t( 'Page' ),
+				'plural' => _t( 'Pages' ),
+			),
+		);
+		return isset( $names[$type][$foruse] ) ? $names[$type][$foruse] : $type;
+	}
+
+	/**
+	 * How to display the built-in post statuses.
+	 *
+	 * @param string $status The built-in status name
+	 * @return string The translated status name, or the built-in name if there is no translation
+	 */
+	public static function filter_post_status_display_4( $status )
+	{
+		$names = array(
+			'draft' => _t( 'draft' ),
+			'published' => _t( 'published' ),
+			'scheduled' => _t( 'scheduled' ),
+		);
+		return isset( $names[$status] ) ? $names[$status] : $status;
+	}
 }
 ?>

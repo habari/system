@@ -6,11 +6,11 @@
  *
  * We look for the undefined class in the following folders:
  * - /system/classes/*.php
- * - /system/handlers/*.php 
- * - /user/classes/*.php 
- * - /user/handlers/*.php 
- * - /user/sites/x.y.z/classes/*.php 
- * - /user/sites/x.y.z/handlers/*.php 
+ * - /system/handlers/*.php
+ * - /user/classes/*.php
+ * - /user/handlers/*.php
+ * - /user/sites/x.y.z/classes/*.php
+ * - /user/sites/x.y.z/handlers/*.php
  *
  * @param string $class_name Class called by the user
  */

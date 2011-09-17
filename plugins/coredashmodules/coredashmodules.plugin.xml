@@ -5,7 +5,7 @@
 	
 	<author url="http://habariproject.org/">The Habari Community</author>
 	
-	<version>1.0</version>
+	<version>1.1</version>
 	<url>http://habariproject.org/</url>
 	<description><![CDATA[Provides a core set of dashboard modules for the dashboard.]]></description>
 
@@ -13,7 +13,7 @@
 	
 	<help>
 	<value><![CDATA[
-	<p>Provides <strong>Latest Entries</strong>, <strong>Latest Log Activity</strong>, and <strong>Latest Comments</strong> blocks which can be arranged on your admin dashboard.</p>
+	<p>Provides <strong>Latest Entries</strong>, <strong>Latest Log Activity</strong>, <strong>Latest Comments</strong>, and <strong>Post Types and Statuses</strong> blocks which can be arranged on your admin dashboard.</p>
 	]]></value>
 	</help>
 </pluggable>

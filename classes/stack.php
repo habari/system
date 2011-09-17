@@ -140,18 +140,35 @@ class Stack
 				$after = array( $after );
 			}
 			foreach ( $after as $a ) {
-				if ( !isset( self::$stack_sort[$stack_name] ) ) {
-					self::$stack_sort[$stack_name] = array();
-				}
-				if ( !isset( self::$stack_sort[$stack_name][$a] ) ) {
-					self::$stack_sort[$stack_name][$a] = array();
-				}
-				self::$stack_sort[$stack_name][$a][$value_name] = $value_name;
+				self::depend($stack_name, $value_name, $a);
 			}
 		}
 		$stack[$value_name] = $value;
 		self::$stacks[$stack_name] = $stack;
 		return $stack;
+	}
+
+	/**
+	 * Add a named stack item to the list of things it depends on
+	 * @static
+	 * @param string $stack_name The name of the stack
+	 * @param string $value_name The item name in the stack
+	 * @param string $value_name_on The item name on which this item depends
+	 */
+	public static function depend( $stack_name, $value_name, $value_name_on )
+	{
+		if ( !isset( self::$stack_sort[$stack_name] ) ) {
+			self::$stack_sort[$stack_name] = array();
+		}
+		if ( !isset( self::$stack_sort[$stack_name][$value_name_on] ) ) {
+			self::$stack_sort[$stack_name][$value_name_on] = array();
+		}
+		foreach(self::$stack_sort[$stack_name] as $parent_key => $parent_stack) {
+			if(isset($parent_stack[$value_name_on])) {
+				self::depend($stack_name, $value_name, $parent_key);
+			}
+		}
+		self::$stack_sort[$stack_name][$value_name_on][$value_name] = $value_name;
 	}
 
 	/**
@@ -182,28 +199,45 @@ class Stack
 		$stack = self::get_named_stack( $stack_name );
 
 		uksort( $stack, array( 'Stack', 'sort_stack_cmp' ) );
+		//$stack = array_reverse( $stack );
 		return $stack;
 	}
 
 	public static function sort_stack_cmp( $a, $b )
 	{
-		$aa = isset( self::$stack_sort[self::$sorting][$a] ) ? self::$stack_sort[self::$sorting][$a] : array();
-		$ba = isset( self::$stack_sort[self::$sorting][$b] ) ? self::$stack_sort[self::$sorting][$b] : array();
-		$acb = isset( $aa[$b] );
-		$bca = isset( $ba[$a] );
-		$ac = count( $aa );
-		$bc = count( $ba );
-		if ( ( $acb && $bca ) || !( $acb || $bca ) ) {
-			if ( $ac == $bc ) {
-				// they are equal in 'bias', so go with the order in which they were added.
-				return 1;
-			}
-			return $ac > $bc ? -1 : 1;
+		// get the array of sorting values for the first key, or an empty array if there aren't any dependencies
+		if ( isset( self::$stack_sort[ self::$sorting ][ $a ] ) ) {
+			$a_dependents = self::$stack_sort[ self::$sorting ][ $a ];
 		}
-		elseif ( $acb ) {
+		else {
+			$a_dependents = array();
+		}
+
+		// as above, but for the second key
+		if ( isset( self::$stack_sort[ self::$sorting ][ $b ] ) ) {
+			$b_dependents = self::$stack_sort[ self::$sorting ][ $b ];
+		}
+		else {
+			$b_dependents = array();
+		}
+
+		$b_depends_on_a = isset( $a_dependents[ $b ] );
+		$a_depends_on_b = isset( $b_dependents[ $a ] );
+
+		if ( $a_depends_on_b && $b_depends_on_a ) {
+			// They depend on each other?  How'd this happen?
+			return 0;
+		}
+		elseif ( $a_depends_on_b ) {
+			// a depends on b, b must come first, reverse their order
+			return 1;
+		}
+		elseif ( $b_depends_on_a ) {
+			// b depends on a, a must come first, keep their order
 			return -1;
 		}
-		elseif ( $bca ) {
+		else {
+			// neither depends on the other, force their natural order
 			return 1;
 		}
 	}
@@ -251,7 +285,7 @@ class Stack
 	 */
 	public static function scripts( $element, $attrib = null )
 	{
-		if ( ( strpos( $element, 'http://' ) === 0 || strpos( $element, 'https://' ) === 0 ) && strpos( $element, "\n" ) === false ) {
+		if ( self::is_url( $element ) ) {
 			$attrib = ( is_array( $attrib ) ) ? implode( ' ', $attrib ) : $attrib;
 			$output = sprintf( '<script %s src="%s" type="text/javascript"></script>'."\r\n", $attrib, $element );
 		}
@@ -268,15 +302,36 @@ class Stack
 	 * @param string $typename The media disposition of the content
 	 * @return string The resulting style or link tag
 	 */
-	public static function styles( $element, $typename )
+	public static function styles( $element, $typename = null )
 	{
-		if ( ( strpos( $element, 'http://' ) === 0 || strpos( $element, 'https://' ) === 0 ) && strpos( $element, "\n" ) === false ) {
-			$output = sprintf( '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n", $element, $typename );
+		if ( empty( $typename ) ) {
+			$media = '';
 		}
 		else {
-			$output = sprintf( '<style type="text/css" media="%s">%s</style>'."\r\n", $typename, $element );
+			$media = 'media="' . $typename . '"';
+		}
+		
+		if ( self::is_url( $element ) ) {
+			$output = sprintf( '<link rel="stylesheet" type="text/css" href="%1$s" %2$s>'."\r\n", $element, $media );
+		}
+		else {
+			$output = sprintf( '<style type="text/css" %2$s>%1$s</style>'."\r\n", $element, $media );
 		}
 		return $output;
+	}
+	
+	/**
+	 * Check if the passed string looks like a URL or an absolute path to a file.
+	 * 
+	 * @todo There's a good chance this can be done in a better or more generic  
+	 * way.
+	 * 
+	 * @param string $url The string to check.
+	 * @return boolean TRUE if the passed string looks like a URL.
+	 */
+	private static function is_url( $url ) 
+	{
+		return ( ( strpos( $url, 'http://' ) === 0 || strpos( $url, 'https://' ) === 0 || strpos( $url, '//' ) === 0 || strpos( $url, '/' ) === 0 ) && strpos( $url, "\n" ) === false );
 	}
 }
 

@@ -137,12 +137,11 @@ a img {
 }
 a#site {
 	color: #2B2B2B;
-	text-shadow: 1px 1px white;
+	text-shadow: 1px 1px #dbdbdb;
 }
 a#site:hover {
-	color: white;
-	text-decoration: none;
-	text-shadow: -1px -1px #666666;
+	color: #2b2b2b;
+	text-shadow: 1px 1px #dbdbdb;
 }
 
 /*- THE MENU */
@@ -1276,56 +1275,6 @@ body.page-publish .buttons input {
 #page .dashboard .module.viewingoptions .optionswindow h2 {
 	background: url('../images/dashboardh2bgdark.png') right center no-repeat;
 	color: #eee;
-}
-
-
-/*-- DASHBOARD - LATEST COMMENTS MODULE */
-
-.dashboard .latest-comments-module .item {
-
-}
-
-.dashboard .latest-comments-module .item > span {
-	float: left;
-}
-
-.dashboard .latest-comments-module .titleanddate {
-	margin-top: 5px;
-	line-height: 16px;
-	color: #999;
-}
-
-.dashboard .latest-comments-module ul {
-	margin-bottom: 5px;
-	line-height: 13px;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	overflow: hidden;
-}
-
-.dashboard .latest-comments-module ul.commentauthors li {
-	display: inline;
-}
-
-.dashboard .latest-comments-module ul li:after {
-	content: ', ';
-}
-
-.dashboard .latest-comments-module ul li.last-child:after {
-	content: '';
-}
-
-.dashboard .latest-comments-module .commentauthors a:hover {
-	opacity: 1;
-}
-
-.dashboard .latest-comments-module .item span.comments {
-	float: right;
-}
-
-.dashboard .latest-comments-module .comments {
-	line-height: 34px;
-	font-size: 24px;
 }
 
 /* Dashmodules Tables */
@@ -2569,7 +2518,6 @@ ul.tabs li {
 	background: url('../images/tabsbg.png') center top;
 	color: #333;
 	cursor: pointer;
-	border-right: 1px solid #bdbdbd;
 }
 
 * html .tabs li { display: inline; }  /* for IE 6 */
@@ -2594,6 +2542,16 @@ ul.tabs li.first-child.last-child a {
 
 ul.tabs li.first-child {
 	background-position: left top;
+}
+
+ul.tabs li.ui-state-default {
+	border: none;
+	border-right: 1px solid #bdbdbd;
+}
+
+ul.tabs li.ui-corner-top {
+	border-top-right-radius: 0;
+	border-top-left-radius: 0;
 }
 
 ul.tabs li.last-child {

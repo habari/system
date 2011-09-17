@@ -257,23 +257,24 @@ class HabariDateTime extends DateTime
 			'Thu' => _t( 'Thu' ),
 			'Fri' => _t( 'Fri' ),
 			'Sat' => _t( 'Sat' ),
+			'am' => _t( 'am' ),
+			'pm' => _t( 'pm' ),
+			'AM' => _t( 'AM' ),
+			'PM' => _t( 'PM' ),
 		);
 
 		if ( $format === null ) {
 			$format = self::$default_datetime_format;
 		}
-
-		$nodes = $this->parse_format( $format );
-		$result = '';
-		foreach( $nodes as $node ) {
-			$formatted = parent::format( $node['str'] );
-			if( ! $formatted ) {
-				return false;
-			}
-			else {
-				$result .= ( $node['func'] == '_t' ? $day_months[$formatted] : $formatted );
-			}
+		
+		$result = parent::format( $format );
+		
+		if ( ! $result ) {
+			return false;
 		}
+		
+		$result = Multibyte::str_replace( array_keys( $day_months ), array_values( $day_months ), $result );
+		
 		return $result;
 	}
 
@@ -631,114 +632,6 @@ class HabariDateTime extends DateTime
 		
 		return $result;
 		
-	}
-
-	/**
-	 * Returns date format string as an array of segments ready for localization
-	 *
-	 * @param string $format Format accepted by {@link http://php.net/date date()}.
-	 * @return array The segments of the format string.
-	 */
-	private function parse_format( $format )
-	{
-		// Predefined formats
-		$predefined_formats = array(
-		    DateTime::ATOM => 'Y-m-d\TH:i:sP',
-		    DATE_ATOM => 'Y-m-d\TH:i:sP',
-		    DateTime::COOKIE => 'l, d-M-y H:i:s T',
-		    DATE_COOKIE => 'l, d-M-y H:i:s T',
-		    DateTime::ISO8601 => 'Y-m-d\TH:i:sO',
-		    DATE_ISO8601 => 'Y-m-d\TH:i:sO',
-		    DateTime::RFC822 => 'D, d M y H:i:s O',
-		    DATE_RFC822 => 'D, d M y H:i:s O',
-		    DateTime::RFC850 => 'l, d-M-y H:i:s T',
-		    DATE_RFC850 => 'l, d-M-y H:i:s T',
-		    DateTime::RFC1036 => 'D, d M y H:i:s O',
-		    DATE_RFC1036 => 'D, d M y H:i:s O',
-		    DateTime::RFC1123 => 'D, d M Y H:i:s O',
-		    DATE_RFC1123 => 'D, d M Y H:i:s O',
-		    DateTime::RFC2822 => 'D, d M Y H:i:s O',
-		    DATE_RFC2822 => 'D, d M Y H:i:s O',
-		    DateTime::RFC3339 => 'Y-m-d\TH:i:sP',
-		    DATE_RFC3339 => 'Y-m-d\TH:i:sP',
-		    DateTime::RSS => 'D, d M Y H:i:s O',
-		    DATE_RSS => 'D, d M Y H:i:s O',
-		    DateTime::W3C => 'Y-m-d\TH:i:sP',
-		    DATE_W3C => 'Y-m-d\TH:i:sP',
-		);
-		$predefined_keys = array_keys( $predefined_formats );
-		if( in_array( $format, $predefined_keys ) ) {
-			$format = $predefined_formats[$format];
-		}
-
-		$len = MultiByte::strlen( $format );
-		$segs = array();
-		$translate = array( 'D', 'l', 'F', 'M' );
-		$node = array( 'func' => '', 'str' => '' );
-		for( $i = 0; $i < $len; $i++ ) {
-			$cur = MultiByte::substr( $format, $i, 1 );
-			// An escaped literal
-			if ( $cur == '\\' ) {
-				switch( $node['func'] ) {
-					case 'date':
-						$node['str'] .= $cur;
-						break;
-					case '_t':
-						$nodes[] = $node;
-						$node['func'] = 'date';
-						$node['str'] = $cur;
-						break;
-					case '':
-						$node['func'] = 'date';
-						$node['str'] = $cur;
-						break;
-				}
-				$i++;
-				if ( $i < $len ) {
-					$cur = MultiByte::substr( $format, $i, 1 );
-					$node['str'] .= $cur;
-				}
-			}
-			// A format code that is to be localized
-			else if ( in_array( $cur, $translate ) ) {
-				switch( $node['func'] ) {
-					case 'date':
-						$segs[] = $node;
-						$node['func'] = '_t';
-						$node['str'] = $cur;
-						break;
-					case '_t':
-						$node['str'] .= $cur;
-						break;
-					case '':
-						$node['func'] = '_t';
-						$node['str'] = $cur;
-						break;
-				}
-			}
-			// A format code that doesn't have to be localized
-			else {
-				switch( $node['func'] ) {
-					case 'date':
-						$node['str'] .= $cur;
-						break;
-					case '_t':
-						$segs[] = $node;
-						$node['func'] = 'date';
-						$node['str'] = $cur;
-						break;
-					case '':
-						$node['func'] = 'date';
-						$node['str'] = $cur;
-						break;
-				}
-			}
-		}
-		if( strlen( $node['func'] ) ) {
-			$segs[] = $node;
-		}
-
-		return $segs;
 	}
 
 }
