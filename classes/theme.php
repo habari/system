@@ -185,7 +185,7 @@ class Theme extends Pluggable
 		}
 
 		$where_filters = array();
-		$where_filters = Controller::get_handler()->handler_vars->filter_keys( $this->valid_filters );
+		$where_filters = Controller::get_handler_vars()->filter_keys( $this->valid_filters );
 		$where_filters['vocabulary'] = array();
 
 		if ( array_key_exists( 'tag', $where_filters ) ) {

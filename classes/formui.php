@@ -951,17 +951,17 @@ class FormValidators
  */
 class FormControl
 {
-	protected $caption;
+	public $caption;
 	protected $default = null;
 	protected $validators = array();
 	protected $storage;
 	protected $store_user = false;
 	protected $theme_obj;
-	protected $container = null;
+	public $container = null;
 	public $id = null;
 	public $class = array( 'formcontrol' );
 	public $name;
-	protected $properties = array();
+	public $properties = array();
 	protected $template = null;
 	protected $raw = false;
 	public $errors = array();
