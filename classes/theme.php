@@ -185,7 +185,7 @@ class Theme extends Pluggable
 		}
 
 		$where_filters = array();
-		$where_filters = Controller::get_handler()->handler_vars->filter_keys( $this->valid_filters );
+		$where_filters = Controller::get_handler_vars()->filter_keys( $this->valid_filters );
 		$where_filters['vocabulary'] = array();
 
 		if ( array_key_exists( 'tag', $where_filters ) ) {
@@ -662,7 +662,7 @@ class Theme extends Pluggable
 		if(isset($context)) {
 			array_pop($this->context);
 		}
-		if( !$result ) {
+		if( $result === false && DEBUG ) {
 			$fallback_list = implode( ', ', $fallback );
 			$result = '<p>' . _t( 'Content could not be displayed. One of the following templates - %s - has to be present in the active theme.', array( $fallback_list ) ) . '</p>';
 		}
