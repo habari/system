@@ -1050,7 +1050,7 @@ class Theme extends Pluggable
 		}
 		else {
 			$purposed = 'output';
-			if ( preg_match( '/^(.*)_(return|end)$/', $function, $matches ) ) {
+			if ( preg_match( '/^(.*)_(return|end|echo)$/', $function, $matches ) ) {
 				$purposed = $matches[2];
 				$function = $matches[1];
 			}
@@ -1060,11 +1060,13 @@ class Theme extends Pluggable
 				case 'return':
 					return $result;
 				case 'end':
-					echo end( $result );
 					return end( $result );
-				default:
-					$output = implode( '', ( array ) $result );
+				case 'echo':
+					$output = implode( '', (array) $result );
 					echo $output;
+					return $output;
+				default:
+					$output = implode( '', (array) $result );
 					return $output;
 			}
 		}
