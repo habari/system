@@ -8,17 +8,17 @@
 
 <link rel="stylesheet" type="text/css" media="screen" href="<?php Site::out_url( 'theme' ); ?>/style.css">
 
-<?php $theme->header(); ?>
+<?php echo $theme->header(); ?>
 </head>
 
-<body class="<?php $theme->body_class(); ?>">
+<body class="<?php echo $theme->body_class(); ?>">
 <div id="page">
 	<div id="header">
 
 	<h1><a href="<?php Site::out_url( 'habari' ); ?>"><?php Options::out( 'title' ); ?></a></h1>
 	<p class="description"><?php Options::out( 'tagline' ); ?></p>
 
-	<?php $theme->area('nav'); ?>
+	<?php echo $theme->area('nav'); ?>
 
 	</div>
 

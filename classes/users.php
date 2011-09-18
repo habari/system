@@ -81,6 +81,32 @@ class Users extends ArrayObject
 					}
 				}
 
+				if ( isset( $paramset['criteria'] ) ) {
+					if ( isset( $paramset['criteria_fields'] ) ) {
+						// Support 'criteria_fields' => 'author,ip' rather than 'criteria_fields' => array( 'author', 'ip' )
+						if ( !is_array( $paramset['criteria_fields'] ) && is_string( $paramset['criteria_fields'] ) ) {
+							$paramset['criteria_fields'] = explode( ',', $paramset['criteria_fields'] );
+						}
+					}
+					else {
+						$paramset['criteria_fields'] = array( 'username' );
+					}
+					$paramset['criteria_fields'] = array_unique( $paramset['criteria_fields'] );
+
+					// this regex matches any unicode letters (\p{L}) or numbers (\p{N}) inside a set of quotes (but strips the quotes) OR not in a set of quotes
+					preg_match_all( '/(?<=")([\p{L}\p{N}]+[^"]*)(?=")|([\p{L}\p{N}]+)/u', $paramset['criteria'], $matches );
+					$where_search = array();
+					foreach ( $matches[0] as $word ) {
+						foreach ( $paramset['criteria_fields'] as $criteria_field ) {
+							$where_search[] .= "( LOWER( {users}.$criteria_field ) LIKE ? )";
+							$params[] = '%' . MultiByte::strtolower( $word ) . '%';
+						}
+					}
+					if ( count( $where_search ) > 0 ) {
+						$where[] = '(' . implode( " \nOR\n ", $where_search ).')';
+					}
+				}
+
 				if ( count( $where ) > 0 ) {
 					$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
 				}

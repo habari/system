@@ -72,10 +72,17 @@ class Theme extends Pluggable
 	{
 		$this->name = $themedata->name;
 		$this->version = $themedata->version;
-		$this->theme_dir = $themedata->theme_dir;
+		$theme_dir = Utils::single_array($themedata->theme_dir);
 		// Set up the corresponding engine to handle the templating
 		$this->template_engine = new $themedata->template_engine();
-		$this->template_engine->set_template_dir( $themedata->theme_dir );
+
+		if(isset($themedata->parent)) {
+			$parent = Themes::create($themedata->parent);
+			$parent_theme_dir = Utils::single_array($parent->theme_dir);
+			$theme_dir = array_merge($theme_dir, $parent_theme_dir);
+		}
+		$this->theme_dir = $theme_dir;
+		$this->template_engine->set_template_dir( $theme_dir );
 		$this->plugin_id = $this->plugin_id();
 		$this->load();
 	}
@@ -178,7 +185,7 @@ class Theme extends Pluggable
 		}
 
 		$where_filters = array();
-		$where_filters = Controller::get_handler()->handler_vars->filter_keys( $this->valid_filters );
+		$where_filters = Controller::get_handler_vars()->filter_keys( $this->valid_filters );
 		$where_filters['vocabulary'] = array();
 
 		if ( array_key_exists( 'tag', $where_filters ) ) {
@@ -655,7 +662,7 @@ class Theme extends Pluggable
 		if(isset($context)) {
 			array_pop($this->context);
 		}
-		if( !$result ) {
+		if( $result === false && DEBUG ) {
 			$fallback_list = implode( ', ', $fallback );
 			$result = '<p>' . _t( 'Content could not be displayed. One of the following templates - %s - has to be present in the active theme.', array( $fallback_list ) ) . '</p>';
 		}
@@ -1043,7 +1050,7 @@ class Theme extends Pluggable
 		}
 		else {
 			$purposed = 'output';
-			if ( preg_match( '/^(.*)_(return|end)$/', $function, $matches ) ) {
+			if ( preg_match( '/^(.*)_(return|end|echo)$/', $function, $matches ) ) {
 				$purposed = $matches[2];
 				$function = $matches[1];
 			}
@@ -1053,11 +1060,13 @@ class Theme extends Pluggable
 				case 'return':
 					return $result;
 				case 'end':
-					echo end( $result );
 					return end( $result );
-				default:
-					$output = implode( '', ( array ) $result );
+				case 'echo':
+					$output = implode( '', (array) $result );
 					echo $output;
+					return $output;
+				default:
+					$output = implode( '', (array) $result );
 					return $output;
 			}
 		}

@@ -69,7 +69,6 @@
 	itemManage.updateURL = habari.url.ajaxUpdateGroups;
 	itemManage.fetchURL = "<?php echo URL::get('admin_ajax', array('context' => 'groups')) ?>";
 	itemManage.fetchReplace = $('#groups');
-	itemManage.inEdit = false;
 </script>
 
 <?php include('footer.php');?>

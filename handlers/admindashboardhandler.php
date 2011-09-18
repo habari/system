@@ -21,12 +21,6 @@ class AdminDashboardHandler extends AdminHandler
 		$firstpostdate = DB::get_value( 'SELECT min(pubdate) FROM {posts} WHERE status = ?', array( Post::status( 'published' ) ) );
 		$this->theme->active_time = HabariDateTime::date_create( $firstpostdate );
 
-
-		// get the active theme, so we can check it
-		// @todo this should be worked into the main Update::check() code for registering beacons
-		$active_theme = Themes::get_active();
-		$active_theme = $active_theme->name . ':' . $active_theme->version;
-
 		// check to see if we have updates to display
 		$this->theme->updates = Options::get( 'updates_available', array() );
 

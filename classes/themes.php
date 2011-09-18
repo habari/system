@@ -43,10 +43,11 @@ class Themes
 	public static function get_all_data()
 	{
 		if ( !isset( self::$all_data ) ) {
-			$themedata = array();
 			foreach ( self::get_all() as $theme_dir => $theme_path ) {
+				$themedata = array();
 				$themedata['dir'] = $theme_dir;
 				$themedata['path'] = $theme_path;
+				$themedata['theme_dir'] = $theme_path;
 
 				$themedata['info'] = simplexml_load_file( $theme_path . '/theme.xml' );
 				if ( $themedata['info']->getName() != 'pluggable' || (string) $themedata['info']->attributes()->type != 'theme' ) {
@@ -55,6 +56,10 @@ class Themes
 					$themedata['info']->license = '';
 				}
 				else {
+					foreach ( $themedata['info'] as $name=>$value ) {
+						$themedata[$name] = (string) $value;
+					}
+
 					if ( $screenshot = Utils::glob( $theme_path . '/screenshot.{png,jpg,gif}', GLOB_BRACE ) ) {
 						$themedata['screenshot'] = Site::get_url( 'habari' ) . dirname( str_replace( HABARI_PATH, '', $theme_path ) ) . '/' . basename( $theme_path ) . "/" . basename( reset( $screenshot ) );
 					}
@@ -123,18 +128,18 @@ class Themes
 	/**
 	 * Returns the active theme information from the database
 	 * @params boolean $nopreview If true, return the real active theme, not the preview
-	 * @return array An array of Theme data
+	 * @return QueryRecord An array of Theme data
 	 **/
 	public static function get_active( $nopreview = false )
 	{
-		$theme = new QueryRecord();
-		$theme->theme_dir = Themes::get_active_theme_dir( $nopreview );
+		$theme = array();
+		$theme['theme_dir'] = Themes::get_active_theme_dir( $nopreview );
 
-		$data = simplexml_load_file( Utils::end_in_slash( $theme->theme_dir ) . 'theme.xml' );
+		$data = simplexml_load_file( Utils::end_in_slash( $theme['theme_dir'] ) . 'theme.xml' );
 		foreach ( $data as $name=>$value ) {
-			$theme->$name = (string) $value;
+			$theme[$name] = (string) $value;
 		}
-		$theme->xml = $data;
+		$theme['xml'] = $data;
 		return $theme;
 	}
 
@@ -142,7 +147,8 @@ class Themes
 		$themes = self::get_all_data();
 		foreach($themes as $theme) {
 			if($name == $theme['info']->name) {
-				return $theme;			}
+				return $theme;
+			}
 		}
 		return false;
 	}
@@ -235,43 +241,32 @@ class Themes
 	 * @param template_engine ( optional ) specify a template engine
 	 * @param theme_dir       ( optional ) specify a theme directory
 	 **/
-	public static function create( $name = '', $template_engine = '', $theme_dir = '' )
+	public static function create( $name = null, $template_engine = null, $theme_dir = null )
 	{
-		if ( $name != '' ) {
-			/*
-			 * A theme name ( or more information ) was supplied.  This happens when we
-			 * want to use a pre-installed theme ( for instance, the
-			 * installer theme. )
-			 */
-			if ( $template_engine != '' ) {
-				/* we load template engine from specified args, not DB */
-				$themedata = new QueryRecord();
-				$themedata->name = func_get_arg( 0 );
-				$themedata->template_engine = $template_engine;
-				$themedata->theme_dir = $themedata->name;
-				$themedata->version = 0;
-				if ( $theme_dir != '' ) {
-					$themedata->theme_dir = $theme_dir;
-				}
-				else {
-					$themedata->theme_dir = HABARI_PATH . '/user/themes/' . $themedata->theme_dir . '/';
-				}
-			}
-			else {
-				/* lookup in DB for template engine info. */
-				$themedata = self::get_by_name( $name );
-				if ( empty( $themedata ) ) {
-					die( _t( 'Theme not installed.' ) );
-				}
-				$themedata->theme_dir = HABARI_PATH . '/user/themes/' . $themedata->theme_dir . '/';
-			}
-		}
-		else {
-			// Grab the theme from the database
+		// If the name is not supplied, load the active theme
+		if(empty($name)) {
 			$themedata = self::get_active();
 			if ( empty( $themedata ) ) {
 				die( _t( 'Theme not installed.' ) );
 			}
+		}
+		// Otherwise, try to load the named theme from user themes that are present
+		else {
+			$themedata = self::get_by_name( $name );
+		}
+		// If a theme wasn't found by name, create a blank object
+		if(!$themedata) {
+			$themedata = array();
+			$themedata['name'] = $name;
+			$themedata['version'] = 0;
+		}
+		// If a specific template engine was supplied, use it
+		if(!empty($template_engine)) {
+			$themedata['template_engine'] = $template_engine;
+		}
+		// If a theme directory was supplied, use the directory that was supplied
+		if(!empty($theme_dir)) {
+			$themedata['theme_dir'] = $theme_dir;
 		}
 
 		// Set the default theme file
@@ -279,6 +274,10 @@ class Themes
 		if(isset($themedata->class['file']) && (string)$themedata->xml->class['file'] != '') {
 			$themefile = (string)$themedata->xml->class['file'];
 		}
+
+		// Convert themedata to QueryRecord for legacy purposes
+		// @todo: Potentially break themes by sending an array to the constructor instead of this QueryRecord
+		$themedata = new QueryRecord($themedata);
 
 		if ( file_exists( $themedata->theme_dir . $themefile ) ) {
 			include_once( $themedata->theme_dir . $themefile );

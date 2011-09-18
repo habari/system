@@ -415,10 +415,6 @@ var itemManage = {
 						itemManage.initItems();
 						$('input.checkbox').rangeSelect();
 					}
-					if ( itemManage.inEdit === true ) {
-						inEdit.init();
-						inEdit.deactivate();
-					}
 					findChildren();
 				}
 			}
