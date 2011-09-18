@@ -63,7 +63,7 @@ class AjaxResponse
 			$ret_array['html'] = $this->html;
 		}
 		
-		header( 'Content-type: text/javascript;charset=utf-8' );
+		header( 'Content-type: text/plain' );
 		echo json_encode( $ret_array );
 	}
 
