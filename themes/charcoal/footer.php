@@ -1,7 +1,7 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 	</div>
 	<div id="bottom-secondary">
-		<div id="tags"><?php if (Plugins::is_loaded('tagcloud')) $theme->tag_cloud(); else $theme->show_tags();?></div>
+		<div id="tags"><?php (Plugins::is_loaded('tagcloud')) ? $theme->tag_cloud() : $theme->show_tags();?></div>
 	</div>
 	<div id="footer">
 		<p>
