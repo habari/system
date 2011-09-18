@@ -15,9 +15,9 @@
 	<script src="<?php Site::out_url( 'theme' ); ?>/scripts/jquery.pngfix.js" type="text/javascript" charset="utf-8"></script>
 	<script src="<?php Site::out_url( 'theme' ); ?>/scripts/fixpngs.js" type="text/javascript" charset="utf-8"></script>
 	<![endif]-->
-	<?php $theme->header(); ?>
+	<?php echo $theme->header(); ?>
 </head>
-<body class="<?php $theme->body_class(); ?>">
+<body class="<?php echo $theme->body_class(); ?>">
 	<div id="page-top">
 		<div id="wrapper-top">
 			<div id="top-primary">
