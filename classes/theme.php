@@ -1050,7 +1050,7 @@ class Theme extends Pluggable
 		}
 		else {
 			$purposed = 'output';
-			if ( preg_match( '/^(.*)_(return|end|echo)$/', $function, $matches ) ) {
+			if ( preg_match( '/^(.*)_(return|end|out)$/', $function, $matches ) ) {
 				$purposed = $matches[2];
 				$function = $matches[1];
 			}
@@ -1061,7 +1061,7 @@ class Theme extends Pluggable
 					return $result;
 				case 'end':
 					return end( $result );
-				case 'echo':
+				case 'out':
 					$output = implode( '', (array) $result );
 					echo $output;
 					return $output;
