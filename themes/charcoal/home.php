@@ -3,7 +3,7 @@
 
 			<div id="main-posts">
             <?php $posts = (array) $posts; ?>
-			<?php if ( sizeof( $posts ) ): ?>
+			<?php if ( count( $posts ) ): ?>
 				<?php $post =reset($posts); ?>
 				<div class="<?php echo $post_class?>">
 				<?php if ( count( $post->tags ) ) : ?>
