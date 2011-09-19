@@ -138,7 +138,8 @@ class Posts extends ArrayObject implements IsContent
 		$joins = array();
 
 		$query = Query::create('{posts}');
-		$query->select(array_keys(Post::default_fields()));
+//		$query->select(array_keys(Post::default_fields()));
+		$query->select($select_ary);
 
 		// If the request as a textual WHERE clause, skip the processing of the $wheresets since it's empty
 		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
@@ -207,7 +208,7 @@ class Posts extends ArrayObject implements IsContent
 					if ( isset( $paramset['vocabulary']['not'] ) ) {
 						$not = $paramset['vocabulary']['not'];
 					}
-					
+
 					foreach ( $all as $vocab => $value ) {
 						
 						foreach ( $value as $field => $terms ) {
@@ -217,19 +218,20 @@ class Posts extends ArrayObject implements IsContent
 								continue;
 							}
 							
-							$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
-							$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
-							$joins['terms_vocabulary'] = ' JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id';
-							
-							$where[] = '{vocabularies}.name = ? AND {terms}.' . $field . ' IN ( ' . Utils::placeholder_string( $terms ) . ' ) AND {object_terms}.object_type_id = ?';
-							$params[] = $vocab;
-							$params = array_merge( $params, $terms );
-							$params[] = $object_id;
-							
+							$query->join( 'JOIN {object_terms} ON {posts}.id = {object_terms}.object_id', array(), 'term2post_posts' );
+							$query->join( 'JOIN {terms} ON {object_terms}.term_id = {terms}.id', array(), 'terms_term2post' );
+							$query->join( 'JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id', array(), 'terms_vocabulary' );
+
+							$vocab_name = Query::new_param_name( 'vocab_any');
+							$obid_name = Query::new_param_name( 'oid_any' );
+
+							$where->add( "{vocabularies}.name = :{$vocab_name}", array( $vocab_name => $vocab ) );
+							$where->in( "{terms}.{$field}", $terms );
+							$where->add( "{object_terms}.object_type_id = :{$obid_name}", array( $obid_name => $object_id ) );
 						}
 						
 						// this causes no posts to match if combined with 'any' below and should be re-thought... somehow
-						$groupby = implode( ',', $select_distinct );
+                                                $groupby = implode( ',', $select_distinct );
 						$having = 'count(*) = ' . count( $terms );
 						
 					}
@@ -243,15 +245,16 @@ class Posts extends ArrayObject implements IsContent
 								continue;
 							}
 							
-							$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
-							$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
-							$joins['terms_vocabulary'] = ' JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id';
-							
-							$where[] = '{vocabularies}.name = ? AND {terms}.' . $field . ' IN ( ' . Utils::placeholder_string( $terms ) . ' ) AND {object_terms}.object_type_id = ?';
-							$params[] = $vocab;
-							$params = array_merge( $params, $terms );
-							$params[] = $object_id;
-							
+							$query->join( 'JOIN {object_terms} ON {posts}.id = {object_terms}.object_id', array(), 'term2post_posts' );
+							$query->join( 'JOIN {terms} ON {object_terms}.term_id = {terms}.id', array(), 'terms_term2post' );
+							$query->join( 'JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id', array(), 'terms_vocabulary' );
+
+							$vocab_name = Query::new_param_name( 'vocab_any');
+							$obid_name = Query::new_param_name( 'oid_any' );
+
+							$where->add( "{vocabularies}.name = :{$vocab_name}", array( $vocab_name => $vocab ) );
+							$where->in( "{terms}.{$field}", $terms );
+							$where->add( "{object_terms}.object_type_id = :{$obid_name}", array( $obid_name => $object_id ) );
 						}
 						
 					}
@@ -264,20 +267,27 @@ class Posts extends ArrayObject implements IsContent
 							if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
 								continue;
 							}
-							
-							$where[] = 'NOT EXISTS ( SELECT 1
-								FROM {object_terms} 
-								JOIN {terms} ON {terms}.id = {object_terms}.term_id 
-								JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id  
-								WHERE {terms}.' . $field . ' IN (' . Utils::placeholder_string( $terms ) . ')
-								AND {object_terms}.object_id = {posts}.id 
-								AND {object_terms}.object_type_id = ? 
-								AND {vocabularies}.name = ?
-							)';
-							$params = array_merge( $params, array_values( $terms ) );
-							$params[] = $object_id;
-							$params[] = $vocab;
-							
+
+							$nt_query = Query::create( '{object_terms}' );
+							$nt_query->select( '1' );
+							$nt_query->join( 'JOIN {terms} ON {terms}.id = {object_terms}.term_id' );
+							$nt_query->join( 'JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id' );
+
+							$nt_query->where()->in( "{terms}.{$field}", $terms );
+
+							$nt_query->where()->add( '{object_terms}.object_id = {posts}.id' );
+
+							$nt_2_name = Query::new_param_name( 'otd_name' );
+							$nt_query->where()->add( "{object_terms}.object_type_id = :{$nt_2_name}", array( $nt_2_name => $object_id ) );
+
+							$nt_3_name = Query::new_param_name( 'nt_3_vocab_name' );
+							$nt_query->where()->add( "{vocabularies}.name = :{$nt_3_name}", array( $nt_3_name => $vocab ) );
+
+							$nt_where = new QueryWhere( '' );
+							$nt_where->add( 'NOT EXISTS (');
+							$nt_where->add( $nt_query->get() . ')', $nt_query->params() );
+
+							$where->add( $nt_where );
 						}
 						
 					}
@@ -632,11 +642,11 @@ class Posts extends ArrayObject implements IsContent
 		 * Remove the GROUP BY (tag search added it)
 		 */
 		if ( isset( $count ) ) {
-			$select = "COUNT({$count})";
+			$query->set_select( "COUNT({$count})" );
 			$fetch_fn = 'get_value';
-			$orderby = '';
-			$groupby = '';
-			$having = '';
+			$orderby = null;
+			$groupby = null;
+			$having = null;
 		}
 
 		// If the month counts are requested, replaced the select clause
@@ -657,7 +667,7 @@ class Posts extends ArrayObject implements IsContent
 		// Remove the LIMIT if 'nolimit'
 		// Doing this first should allow OFFSET to work
 		if ( isset( $nolimit ) ) {
-			$limit = '';
+			$limit = null;
 		}
 
 		// Define the LIMIT, OFFSET, ORDER BY, GROUP BY if they exist
@@ -672,6 +682,9 @@ class Posts extends ArrayObject implements IsContent
 		}
 		if(isset($groupby)) {
 			$query->groupby($groupby);
+		}
+		if(isset($having)) {
+			$query->having($having);
 		}
 
 
@@ -699,6 +712,7 @@ class Posts extends ArrayObject implements IsContent
 		$results = DB::$fetch_fn( $query->get(), $query->params(), 'Post' );
 		//Utils::debug( $paramarray, $fetch_fn, $query, $params, $results );
 		//var_dump( $query );
+//		Utils::debug( $query->get(), $query->params(), count($results), $results );
 
 		/**
 		 * Return the results

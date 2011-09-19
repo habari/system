@@ -15,6 +15,7 @@ class Query {
 	protected $offset = null;
 	protected $orderby = null;
 	protected $groupby = null;
+	protected $having = null;
 
 	/**
 	 * Construct a Query
@@ -135,6 +136,12 @@ class Query {
 		return $this;
 	}
 
+	public function having($value)
+	{
+		$this->having = empty($value) ? null : $value;
+		return $this;
+	}
+
 	/**
 	 * Sets the LIMIT
 	 * @param integer $value The LIMIT
@@ -183,6 +190,9 @@ class Query {
 			$sql .= "\nGROUP BY " . $this->groupby;
 		}
 
+		if(isset($this->having)) {
+			$sql .= "\nHAVING " . $this->having;
+		}
 		if(isset($this->orderby)) {
 			$sql .= "\nORDER BY " . $this->orderby;
 		}
