@@ -175,7 +175,7 @@ class Posts extends ArrayObject implements IsContent
 				if ( isset( $paramset['not:slug'] ) ) {
 					$where->in('{posts}.slug', $paramset['not:slug'], 'posts_not_slug', null, false);
 				}
-				
+
 				if ( isset( $paramset['user_id'] ) && 0 !== $paramset['user_id'] ) {
 					$where->in('{posts}.user_id', $paramset['user_id'], 'posts_user_id', 'intval');
 				}
@@ -184,114 +184,98 @@ class Posts extends ArrayObject implements IsContent
 				}
 
 				if ( isset( $paramset['vocabulary'] ) ) {
-					
+
 					if ( is_string( $paramset['vocabulary'] ) ) {
 						$paramset['vocabulary'] = Utils::get_params( $paramset['vocabulary'] );
 					}
-					
+
 					// parse out the different formats we accept arguments in into a single mutli-dimensional array of goodness
 					$paramset['vocabulary'] = self::vocabulary_params( $paramset['vocabulary'] );
 					$object_id = Vocabulary::object_type_id( 'post' );
-					
+
 					$all = array();
 					$any = array();
 					$not = array();
-					
+
 					if ( isset( $paramset['vocabulary']['all'] ) ) {
 						$all = $paramset['vocabulary']['all'];
 					}
-					
+
 					if ( isset( $paramset['vocabulary']['any'] ) ) {
 						$any = $paramset['vocabulary']['any'];
 					}
-					
+
 					if ( isset( $paramset['vocabulary']['not'] ) ) {
 						$not = $paramset['vocabulary']['not'];
 					}
 
 					foreach ( $all as $vocab => $value ) {
-						
+
 						foreach ( $value as $field => $terms ) {
-							
+
 							// we only support these fields to search by
 							if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
 								continue;
 							}
-							
+
 							$query->join( 'JOIN {object_terms} ON {posts}.id = {object_terms}.object_id', array(), 'term2post_posts' );
 							$query->join( 'JOIN {terms} ON {object_terms}.term_id = {terms}.id', array(), 'terms_term2post' );
 							$query->join( 'JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id', array(), 'terms_vocabulary' );
 
-							$vocab_name = Query::new_param_name( 'vocab_any');
-							$obid_name = Query::new_param_name( 'oid_any' );
-
-							$where->add( "{vocabularies}.name = :{$vocab_name}", array( $vocab_name => $vocab ) );
+							$where->in( '{vocabularies}.name', $vocab );
 							$where->in( "{terms}.{$field}", $terms );
-							$where->add( "{object_terms}.object_type_id = :{$obid_name}", array( $obid_name => $object_id ) );
+							$where->in( '{object_terms}.object_type_id', $object_id );
 						}
-						
+
 						// this causes no posts to match if combined with 'any' below and should be re-thought... somehow
                                                 $groupby = implode( ',', $select_distinct );
 						$having = 'count(*) = ' . count( $terms );
-						
+
 					}
-					
+
 					foreach ( $any as $vocab => $value ) {
-						
+
 						foreach ( $value as $field => $terms ) {
-							
+
 							// we only support these fields to search by
 							if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
 								continue;
 							}
-							
+
 							$query->join( 'JOIN {object_terms} ON {posts}.id = {object_terms}.object_id', array(), 'term2post_posts' );
 							$query->join( 'JOIN {terms} ON {object_terms}.term_id = {terms}.id', array(), 'terms_term2post' );
 							$query->join( 'JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id', array(), 'terms_vocabulary' );
 
-							$vocab_name = Query::new_param_name( 'vocab_any');
-							$obid_name = Query::new_param_name( 'oid_any' );
-
-							$where->add( "{vocabularies}.name = :{$vocab_name}", array( $vocab_name => $vocab ) );
+							$where->in( '{vocabularies}.name', $vocab );
 							$where->in( "{terms}.{$field}", $terms );
-							$where->add( "{object_terms}.object_type_id = :{$obid_name}", array( $obid_name => $object_id ) );
+							$where->in( '{object_terms}.object_type_id', $object_id );
 						}
-						
+
 					}
-					
+
 					foreach ( $not as $vocab => $value ) {
-						
+
 						foreach ( $value as $field => $terms ) {
-							
+
 							// we only support these fields to search by
 							if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
 								continue;
 							}
 
-							$nt_query = Query::create( '{object_terms}' );
-							$nt_query->select( '1' );
-							$nt_query->join( 'JOIN {terms} ON {terms}.id = {object_terms}.term_id' );
-							$nt_query->join( 'JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id' );
+							$subquery = Query::create( '{object_terms}' )->select( '1' );
+							$subquery->join( 'JOIN {terms} ON {terms}.id = {object_terms}.term_id' );
+							$subquery->join( 'JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id' );
 
-							$nt_query->where()->in( "{terms}.{$field}", $terms );
+							$subquery->where()->in( "{terms}.{$field}", $terms );
+							$subquery->where()->add( '{object_terms}.object_id = {posts}.id' );
+							$subquery->where()->in( '{object_terms}.object_type_id', $object_id );
+							$subquery->where()->in( '{vocabularies}.name', $vocab );
 
-							$nt_query->where()->add( '{object_terms}.object_id = {posts}.id' );
-
-							$nt_2_name = Query::new_param_name( 'otd_name' );
-							$nt_query->where()->add( "{object_terms}.object_type_id = :{$nt_2_name}", array( $nt_2_name => $object_id ) );
-
-							$nt_3_name = Query::new_param_name( 'nt_3_vocab_name' );
-							$nt_query->where()->add( "{vocabularies}.name = :{$nt_3_name}", array( $nt_3_name => $vocab ) );
-
-							$nt_where = new QueryWhere( '' );
-							$nt_where->add( 'NOT EXISTS (');
-							$nt_where->add( $nt_query->get() . ')', $nt_query->params() );
-
-							$where->add( $nt_where );
+							$where->exists( $subquery, null, false );
 						}
-						
+
 					}
-					
+
 				}
 
 				if ( isset( $paramset['criteria'] ) ) {
@@ -535,7 +519,7 @@ class Posts extends ArrayObject implements IsContent
 			// This doesn't work yet because you can't pass these arrays by reference
 			Plugins::act( 'post_get_perm_where', $perm_where, $paramarray );
 			Plugins::act( 'post_get_perm_where_denied', $perm_where_denied, $paramarray );
-						
+
 			// If there are granted permissions to check, add them to the where clause
 			if($perm_where->count() == 0 && !$query->joined('post_tokens__allowed')) {
 				$master_perm_where->add('(1=0)', array(), 'perms_granted');
@@ -556,10 +540,10 @@ class Posts extends ArrayObject implements IsContent
 				';
 				$merge_params[] = $params_where_denied;
 			}
-			
+
 		}
 		$query->where()->add($master_perm_where);
-		
+
 		// Extract the remaining parameters which will be used onwards
 		// For example: page number, fetch function, limit
 		$paramarray = new SuperGlobal( $paramarray );
@@ -601,8 +585,8 @@ class Posts extends ArrayObject implements IsContent
 		else {
 			$fetch_fn = $fns[0];
 		}
-		
-		
+
+
 		// If the orderby has a function in it, try to create a select field for it with an alias
 		// TODO: Move this to the Query class
 		if ( strpos( $orderby, '(' ) !== false ) {
@@ -615,7 +599,7 @@ class Posts extends ArrayObject implements IsContent
 						'direction' => '',
 					);
 				}
-				
+
 				if ( strpos( $order_matches['field'], '(' ) !== false ) {
 					$ob_index++;
 					$field = 'orderby' . $ob_index;
@@ -701,7 +685,7 @@ class Posts extends ArrayObject implements IsContent
 		if ( 'get_query' == $fetch_fn ) {
 			return $query;
 		}
-		
+
 		/**
 		 * Execute the SQL statement using the PDO extension
 		 */
@@ -711,7 +695,7 @@ class Posts extends ArrayObject implements IsContent
 		$results = DB::$fetch_fn( $query->get(), $query->params(), 'Post' );
 		//Utils::debug( $paramarray, $fetch_fn, $query, $params, $results );
 		//var_dump( $query );
-//		Utils::debug( $query->get(), $query->params(), count($results), $results );
+//		Utils::debug( $query->get(), $query->params(), $results );
 
 		/**
 		 * Return the results
@@ -1012,7 +996,7 @@ class Posts extends ArrayObject implements IsContent
 			// trim out any quote marks that have been matched.
 			$quote = isset( $match['quote'] ) ? $match['quote'] : ' ';
 			$value = trim( stripslashes( $match['value'] ), $quote );
-			
+
 			$flag = $match['flag'];
 			$arguments = Plugins::filter( 'posts_search_to_get', $arguments, $flag, $value, $match, $search_string );
 			switch ( $flag )  {
@@ -1037,7 +1021,8 @@ class Posts extends ArrayObject implements IsContent
 				case 'info':
 					if ( strpos( $value, ':' ) !== false ) {
 						list( $infokey, $infovalue ) = explode( ':', $value, 2 );
-						$arguments['info'][] = array( $infokey=>$infovalue );
+//						$arguments['info'][] = array( $infokey=>$infovalue );
+						$arguments['info'][$infokey] = $infovalue;
 					}
 					break;
 			}
@@ -1093,18 +1078,18 @@ class Posts extends ArrayObject implements IsContent
 		}
 		return 'posts';
 	}
-	
+
 	/**
 	 * Accepts a set of term query qualifiers and converts it into a multi-dimensional array
 	 * of vocabulary (ie: tags), matching method (any, all, not), matching field (id, term, term_display), and list of terms
-	 * 
+	 *
 	 * @return array An array of parsed term-matching conditions
 	 */
 	private static function vocabulary_params( $params )
 	{
-		
+
 		$return = array();
-		
+
 		foreach ( $params as $key => $value ) {
 			// split vocab off the beginning of the key
 			if ( strpos( $key, ':' ) !== false ) {
@@ -1112,16 +1097,16 @@ class Posts extends ArrayObject implements IsContent
 				$params[$newkey][$subkey] = $value;
 				unset( $params[$key] );
 			}
-			
+
 		}
-		
-		
+
+
 		foreach ( $params as $vocab => $values ) {
-			
+
 			foreach ( $values as $key => $value ) {
-				
+
 				$value = Utils::single_array( $value );
-				
+
 				// if there's a colon we've got a mode and a field
 				if ( strpos( $key, ':' ) !== false ) {
 					list( $mode, $by_field ) = explode( ':', $key, 2 );
@@ -1130,10 +1115,10 @@ class Posts extends ArrayObject implements IsContent
 					}
 				}
 				else {
-					
+
 					// if there's no colon we've got a single field name
 					foreach ( $value as $v ) {
-						
+
 						if ( $v instanceof Term ) {
 							// $vocab is not a vocab, but the mode - always match by its ID for the best performance
 							$return[$vocab][$v->vocabulary->name]['id'][] = $v->id;
@@ -1141,20 +1126,20 @@ class Posts extends ArrayObject implements IsContent
 						else {
 							$return['any'][$vocab][$key][] = $v;
 						}
-						
+
 					}
-					
-					
+
+
 				}
-				
+
 			}
-			
+
 		}
-		
+
 		return $return;
-		
+
 	}
-	
+
 }
 
 ?>
