@@ -325,13 +325,12 @@ class Posts extends ArrayObject implements IsContent
 						$pi_count = 0;
 						foreach ( $infos as $info_key => $info_value ) {
 							$pi_count++;
-							$joins['info_' . $info_key] = " LEFT JOIN {postinfo} ipi{$pi_count} ON {posts}.id = ipi{$pi_count}.post_id AND ipi{$pi_count}.name = ? AND ipi{$pi_count}.value = ?";
-							$join_params[] = $info_key;
-							$join_params[] = $info_value;
-							$where[] = "ipi{$pi_count}.name <> ''";
 
-							$select_ary["info_{$info_key}_value"] = "ipi{$pi_count}.value AS info_{$info_key}_value";
-							$select_distinct["info_{$info_key}_value"] = "info_{$info_key}_value";
+							$key_name = Query::new_param_name('info_key' );
+							$value_name = Query::new_param_name( 'info_value');
+							$query->join( "LEFT JOIN {postinfo} ipi{$pi_count} ON {posts}.id = ipi{$pi_count}.post_id AND ipi{$pi_count}.name = :{$key_name} AND ipi{$pi_count}.value = :{$value_name}", array( $key_name => $info_key, $value_name => $info_value ), 'info_' . $info_key );
+							$where->add( "ipi{$pi_count}.name <> ''" );
+							$query->select( array( "info_{$info_key}_value" => "ipi{$pi_count}.value AS info_{$info_key}_value" ) );
 						}
 					}
 
