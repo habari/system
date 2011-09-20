@@ -284,7 +284,11 @@ class QueryWhere {
 	{
 		$expression = $field . ' ';
 		if($values instanceof Query) {
-			$expression = $values;
+			if( !$positive ) {
+				$expression .= 'NOT ';
+			}
+			$expression .= 'IN (' . $values->get() . ')';
+			$this->parameters = array_merge( $this->parameters, $values->params() );
 		}
 		elseif(is_array($values) && count($values) > 1) {
 			$in_elements = array();
@@ -331,6 +335,33 @@ class QueryWhere {
 
 		if(empty($paramname)) {
 			$paramname = count($this->expressions) + 1;
+		}
+
+		$this->expressions[$paramname] = $expression;
+		return $this;
+	}
+
+	/**
+	 * Shortcut to implementing an EXISTS test for one or more values as a new expression
+	 * @param Query $values
+	 * @param string $paramname
+	 * @param boolean $positive
+	 * @return QueryWhere Returns $this, for fluid interface
+	 */
+	public function exists( Query $values, $paramname = null, $positive = true )
+	{
+		$expression = '';
+
+		if( !$positive ) {
+			$expression .= 'NOT ';
+		}
+
+		$expression .= 'EXISTS (' . $values->get() . ')';
+
+		$this->parameters = array_merge( $this->parameters, $values->params() );
+
+		if( empty( $paramname ) ) {
+			$paramname = count( $this->expressions ) + 1;
 		}
 
 		$this->expressions[$paramname] = $expression;
