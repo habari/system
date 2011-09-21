@@ -300,6 +300,7 @@ class Posts extends ArrayObject implements IsContent
 					}
 				}
 
+				//Done
 				if ( isset( $paramset['all:info'] ) || isset( $paramset['info'] ) ) {
 
 					// merge the two possibile calls together
@@ -312,40 +313,45 @@ class Posts extends ArrayObject implements IsContent
 
 							$infokey_field = Query::new_param_name('info_key' );
 							$infovalue_field = Query::new_param_name( 'info_value');
-							$query->join( "LEFT JOIN {postinfo} ipi{$pi_count} ON {posts}.id = ipi{$pi_count}.post_id AND ipi{$pi_count}.name = :{$infokey_field} AND ipi{$pi_count}.value = :{$infovalue_field}", array( $infokey_field => $info_key, $infovalue_field => $info_value ), 'info_' . $info_key );
+							$query->join( "LEFT JOIN {postinfo} ipi{$pi_count} ON {posts}.id = ipi{$pi_count}.post_id AND ipi{$pi_count}.name = :{$infokey_field} AND ipi{$pi_count}.value = :{$infovalue_field}", array( $infokey_field => $info_key, $infovalue_field => $info_value ), 'all_info_' . $info_key );
 							$where->add( "ipi{$pi_count}.name <> ''" );
 							$query->select( array( "info_{$info_key}_value" => "ipi{$pi_count}.value AS info_{$info_key}_value" ) );
+							$select_distinct["info_{$info_key}_value"] = "info_{$info_key}_value";
 						}
 					}
 
 				}
 
+				//Need testing
 				if ( isset( $paramset['any:info'] ) ) {
 					if ( Utils::is_traversable( $paramset['any:info'] ) ) {
 						$pi_count = 0;
-						$pi_where = array();
+						$orwhere = new QueryWhere( 'OR' );
 						foreach ( $paramset['any:info'] as $info_key => $info_value ) {
 							$pi_count++;
 
-							$join_params[] = $info_key;
 							if ( is_array( $info_value ) ) {
-								$joins['any_info_' . $info_key] = " LEFT JOIN {postinfo} aipi{$pi_count} ON {posts}.id = aipi{$pi_count}.post_id AND aipi{$pi_count}.name = ? AND aipi{$pi_count}.value IN (" .Utils::placeholder_string( count( $info_value ) ).")";
-								$join_params = array_merge( $join_params, $info_value );
+								$infokey_field = Query::new_param_name( 'info_key' );
+								$inwhere = new QueryWhere( '' );
+								$inwhere->in( "aipi{$pi_count}.value", $info_value );
+								$query->join( "LEFT JOIN {postinfo} aipi{$pi_count} ON {posts}.id = aipi{$pi_count}.post_id AND aipi{$pi_count}.name = :{$infokey_field} AND " . $inwhere->get(), array_merge( array( $info_key ), $inwhere->params() ), 'any_info_' . $info_key );
 							}
 							else {
-								$joins['any_info_' . $info_key] = " LEFT JOIN {postinfo} aipi{$pi_count} ON {posts}.id = aipi{$pi_count}.post_id AND aipi{$pi_count}.name = ? AND aipi{$pi_count}.value = ?";
-								$join_params[] = $info_value;
+								$infokey_field = Query::new_param_name( 'info_key' );
+								$infovalue_field = Query::new_param_name( 'info_value' );
+								$query->join( "LEFT JOIN {postinfo} aipi{$pi_count} ON {posts}.id = aipi{$pi_count}.post_id AND aipi{$pi_count}.name = :{$infokey_field} AND aipi{$pi_count}.value = :{$infovalue_field}", array( $infokey_field => $info_key, $infovalue_field => $info_value ), 'any_info_' . $info_key );
 							}
 
-							$pi_where[] = "aipi{$pi_count}.name <> ''";
+							$orwhere->add( "aipi{$pi_count}.name <> ''" );
 
-							$select_ary["info_{$info_key}_value"] = "aipi{$pi_count}.value AS info_{$info_key}_value";
+							$query->select( array( "info_{$info_key}_value" => "aipi{$pi_count}.value AS info_{$info_key}_value" ) );
 							$select_distinct["info_{$info_key}_value"] = "info_{$info_key}_value";
 						}
-						$where[] = '(' . implode( ' OR ', $pi_where ) . ')';
+						$where->add( '(' . $orwhere->get() . ')' );
 					}
 				}
 
+				// Not done
 				if ( isset( $paramset['has:info'] ) ) {
 					$the_ins = array();
 					$has_info = Utils::single_array( $paramset['has:info'] );
@@ -363,6 +369,7 @@ class Posts extends ArrayObject implements IsContent
 					$where[] = '(' . implode( ' OR ', $pi_where ) . ')';
 				}
 
+				//Needs tested
 				if ( isset( $paramset['not:all:info'] ) || isset( $paramset['not:info'] ) ) {
 
 					// merge the two possible calls together
@@ -371,27 +378,44 @@ class Posts extends ArrayObject implements IsContent
 					if ( Utils::is_traversable( $infos ) ) {
 						$the_ins = array();
 
-						foreach ( $infos as $info_key => $info_value ) {
+//						foreach ( $infos as $info_key => $info_value ) {
+//
+//							$the_ins[] = ' ({postinfo}.name = ? AND {postinfo}.value = ? ) ';
+//							$params[] = $info_key;
+//							$params[] = $info_value;
+//
+//						}
 
-							$the_ins[] = ' ({postinfo}.name = ? AND {postinfo}.value = ? ) ';
-							$params[] = $info_key;
-							$params[] = $info_value;
+//						$where[] = '
+//							{posts}.id NOT IN (
+//							SELECT post_id FROM {postinfo}
+//							WHERE ( ' . implode( ' OR ', $the_ins ) . ' )
+//							GROUP BY post_id
+//							HAVING COUNT(*) = ' . count( $infos ) . ' )
+//						';
+						// see that hard-coded number? sqlite wets itself if we use a/ bound parameter... don't change that
+
+						$orwhere = new QueryWhere( 'OR' );
+						foreach ( $infos as $info_key => $info_value ) {
+//							$infokey_field = Query::new_param_name();
+//							$infovalue_field = Query::new_param_name();
+//							$orwhere->add( "{postinfo}.name = :{$infokey_field} AND {postinfo}.value = :{$infovalue_field}", array( $infokey_field => $info_key, $infovalue_field => $info_value ) );
+							$andwhere = new QueryWhere();
+							$andwhere->in( '{postinfo}.name', $info_key );
+							$andwhere->in( '{postinfo}.value', $info_value );
+							$orwhere->add( $andwhere );
 
 						}
+						// see that hard-coded number in having()? sqlite wets itself if we use a bound parameter... don't change that
+						$subquery = Query::create( '(postinfo}' )->select( 'post_id' )->groupby( 'post_id' )->having( 'COUNT(*) = ' . count( $infos ) );
+						$subquery->where()->add( $orwhere );
 
-						$where[] = '
-							{posts}.id NOT IN (
-							SELECT post_id FROM {postinfo}
-							WHERE ( ' . implode( ' OR ', $the_ins ) . ' )
-							GROUP BY post_id
-							HAVING COUNT(*) = ' . count( $infos ) . ' )
-						';
-						// see that hard-coded number? sqlite wets itself if we use a bound parameter... don't change that
-
+						$where->in( '{posts}.id', $subquery, 'posts_not_all_info_query', null, false );
 					}
 
 				}
 
+				//Needs tested
 				if ( isset( $paramset['not:any:info'] ) ) {
 					if ( Utils::is_traversable( $paramset['not:any:info'] ) ) {
 						$subquery = Query::create('{postinfo}')->select('post_id');
@@ -402,7 +426,7 @@ class Posts extends ArrayObject implements IsContent
 							$subquery->where()->add(" ({postinfo}.name = :{$infokey_field} AND {postinfo}.value = :{$infovalue_field} ) ", array($infokey_field => $info_key, $infovalue_field => $info_value));
 						}
 
-						$where->in('{posts}.id', $subquery, 'posts_not_any_info', false);
+						$where->in('{posts}.id', $subquery, 'posts_not_any_info', null, false);
 					}
 				}
 
@@ -683,7 +707,7 @@ class Posts extends ArrayObject implements IsContent
 		//Session::notice($query);
 
 		if ( 'get_query' == $fetch_fn ) {
-			return $query;
+			return $query->get();
 		}
 
 		/**
@@ -695,7 +719,6 @@ class Posts extends ArrayObject implements IsContent
 		$results = DB::$fetch_fn( $query->get(), $query->params(), 'Post' );
 		//Utils::debug( $paramarray, $fetch_fn, $query, $params, $results );
 		//var_dump( $query );
-//		Utils::debug( $query->get(), $query->params(), $results );
 
 		/**
 		 * Return the results
