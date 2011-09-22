@@ -322,7 +322,7 @@ class Posts extends ArrayObject implements IsContent
 
 				}
 
-				//Need testing
+				//Done
 				if ( isset( $paramset['any:info'] ) ) {
 					if ( Utils::is_traversable( $paramset['any:info'] ) ) {
 						$pi_count = 0;
@@ -351,55 +351,32 @@ class Posts extends ArrayObject implements IsContent
 					}
 				}
 
-				// Not done
+				// Done
 				if ( isset( $paramset['has:info'] ) ) {
-					$the_ins = array();
 					$has_info = Utils::single_array( $paramset['has:info'] );
 					$pi_count = 0;
-					$pi_where = array();
-					foreach ( $has_info as $info_name ) {
+					$orwhere = new QueryWhere( 'OR' );
+					foreach( $has_info as $info_name ) {
+						$infoname_field = Query::new_param_name( 'info_name' );
 						$pi_count++;
-						$joins['has_info_' . $info_name] = " LEFT JOIN {postinfo} hipi{$pi_count} ON {posts}.id = hipi{$pi_count}.post_id AND hipi{$pi_count}.name = ?";
-						$join_params[] = $info_name;
-						$pi_where[] = "hipi{$pi_count}.name <> ''";
+						$query->join("LEFT JOIN {postinfo} hipi{$pi_count} ON {posts}.id = hipi{$pi_count}.post_id AND hipi{$pi_count}.name = :{$infoname_field}", array( $infoname_field => $info_name ), 'has_info_' . $info_name );
+						$orwhere->add( "hipi{$pi_count}.name <> ''" );
 
-						$select_ary["info_{$info_name}_value"] = "hipi{$pi_count}.value AS info_{$info_name}_value";
+						$query->select( array( "info_{$info_name}_value" => "hipi{$pi_count}.value AS info_{$info_name}_value" ) );
 						$select_distinct["info_{$info_name}_value"] = "info_{$info_name}_value";
 					}
-					$where[] = '(' . implode( ' OR ', $pi_where ) . ')';
+					$where->add( '(' . $orwhere->get() . ')' );
 				}
 
-				//Needs tested
+				//Done
 				if ( isset( $paramset['not:all:info'] ) || isset( $paramset['not:info'] ) ) {
 
 					// merge the two possible calls together
 					$infos = array_merge( isset( $paramset['not:all:info'] ) ? $paramset['not:all:info'] : array(), isset( $paramset['not:info'] ) ? $paramset['not:info'] : array() );
 
 					if ( Utils::is_traversable( $infos ) ) {
-						$the_ins = array();
-
-//						foreach ( $infos as $info_key => $info_value ) {
-//
-//							$the_ins[] = ' ({postinfo}.name = ? AND {postinfo}.value = ? ) ';
-//							$params[] = $info_key;
-//							$params[] = $info_value;
-//
-//						}
-
-//						$where[] = '
-//							{posts}.id NOT IN (
-//							SELECT post_id FROM {postinfo}
-//							WHERE ( ' . implode( ' OR ', $the_ins ) . ' )
-//							GROUP BY post_id
-//							HAVING COUNT(*) = ' . count( $infos ) . ' )
-//						';
-						// see that hard-coded number? sqlite wets itself if we use a/ bound parameter... don't change that
-
 						$orwhere = new QueryWhere( 'OR' );
 						foreach ( $infos as $info_key => $info_value ) {
-//							$infokey_field = Query::new_param_name();
-//							$infovalue_field = Query::new_param_name();
-//							$orwhere->add( "{postinfo}.name = :{$infokey_field} AND {postinfo}.value = :{$infovalue_field}", array( $infokey_field => $info_key, $infovalue_field => $info_value ) );
 							$andwhere = new QueryWhere();
 							$andwhere->in( '{postinfo}.name', $info_key );
 							$andwhere->in( '{postinfo}.value', $info_value );
@@ -407,7 +384,7 @@ class Posts extends ArrayObject implements IsContent
 
 						}
 						// see that hard-coded number in having()? sqlite wets itself if we use a bound parameter... don't change that
-						$subquery = Query::create( '(postinfo}' )->select( 'post_id' )->groupby( 'post_id' )->having( 'COUNT(*) = ' . count( $infos ) );
+						$subquery = Query::create( '{postinfo}' )->select( '{postinfo}.post_id' )->groupby( 'post_id' )->having( 'COUNT(*) = ' . count( $infos ) );
 						$subquery->where()->add( $orwhere );
 
 						$where->in( '{posts}.id', $subquery, 'posts_not_all_info_query', null, false );
@@ -415,7 +392,7 @@ class Posts extends ArrayObject implements IsContent
 
 				}
 
-				//Needs tested
+				//Tested. Test fails
 				if ( isset( $paramset['not:any:info'] ) ) {
 					if ( Utils::is_traversable( $paramset['not:any:info'] ) ) {
 						$subquery = Query::create('{postinfo}')->select('post_id');
