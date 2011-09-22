@@ -392,7 +392,7 @@ class Posts extends ArrayObject implements IsContent
 
 				}
 
-				//Tested. Test fails
+				//Tested. Test fails with original code
 				if ( isset( $paramset['not:any:info'] ) ) {
 					if ( Utils::is_traversable( $paramset['not:any:info'] ) ) {
 						$subquery = Query::create('{postinfo}')->select('post_id');
@@ -400,7 +400,8 @@ class Posts extends ArrayObject implements IsContent
 						foreach ( $paramset['not:any:info'] as $info_key => $info_value ) {
 							$infokey_field = $query->new_param_name('info_key');
 							$infovalue_field = $query->new_param_name('info_value');
-							$subquery->where()->add(" ({postinfo}.name = :{$infokey_field} AND {postinfo}.value = :{$infovalue_field} ) ", array($infokey_field => $info_key, $infovalue_field => $info_value));
+//							$subquery->where()->add(" ({postinfo}.name = :{$infokey_field} AND {postinfo}.value = :{$infovalue_field} ) ", array($infokey_field => $info_key, $infovalue_field => $info_value));
+							$subquery->where( 'OR' )->add(" ({postinfo}.name = :{$infokey_field} AND {postinfo}.value = :{$infovalue_field} ) ", array($infokey_field => $info_key, $infovalue_field => $info_value));
 						}
 
 						$where->in('{posts}.id', $subquery, 'posts_not_any_info', null, false);
