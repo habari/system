@@ -480,6 +480,43 @@ class AdminPostsHandler extends AdminHandler
 		$ar->data = $output;
 		$ar->out();
 	}
+		
+	/**
+	 * Handles AJAX upload requests from media panels.
+	 */
+	public function ajax_media_upload( $handler_vars )
+	{
+		Utils::check_request_method( array( 'POST' ) );
+
+		$path = $handler_vars['path'];
+		$panelname = $handler_vars['panel'];
+		$rpath = $path;
+		$silo = Media::get_silo( $rpath, true );  // get_silo sets $rpath by reference to the path inside the silo
+
+		$panel = '';
+		$panel = Plugins::filter( 'media_panels', $panel, $silo, $rpath, $panelname );
+
+		$controls = array();
+		$controls = Plugins::filter( 'media_controls', $controls, $silo, $rpath, $panelname );
+		$controls_out = '';
+		foreach ( $controls as $k => $v ) {
+			if ( is_numeric( $k ) ) {
+				$controls_out .= "<li>{$v}</li>";
+			}
+			else {
+				$controls_out .= "<li class=\"{$k}\">{$v}</li>";
+			}
+		}
+		$output = array(
+			'controls' => $controls_out,
+			'panel' => $panel,
+		);
+
+		$ar = new AjaxResponse();
+		$ar->data = $output;
+		$ar->out( true ); // See discussion at https://github.com/habari/habari/issues/204
+	}
+
 
 	/**
 	 * Handles AJAX requests from the manage posts page.
