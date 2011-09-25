@@ -143,7 +143,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS user_group ON {$prefix}users_groups(user_id,gr
 
 CREATE TABLE {$prefix}sessions  (
   token VARCHAR(255) NOT NULL,
-  subnet INTEGER NOT NULL,
+  ip VARCHAR(45) NOT NULL,
   expires INTEGER NOT NULL,
   ua VARCHAR(255) NOT NULL,
   user_id INTEGER,

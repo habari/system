@@ -166,7 +166,7 @@ CREATE TABLE {$prefix}users_groups (
 
 CREATE TABLE {$prefix}sessions  (
   token varchar(255) NOT NULL,
-  subnet INT NOT NULL DEFAULT 0,
+  ip VARCHAR(45) NOT NULL,
   expires INT UNSIGNED NOT NULL DEFAULT 0,
   ua VARCHAR(255) NOT NULL,
   data MEDIUMTEXT,
