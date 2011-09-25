@@ -194,7 +194,7 @@ class Session
 		if ( $dowrite ) {
 			// DB::update() checks if the record key exists, and inserts if not
 			$record = array(
-				'ip' => self::get_subnet( $remote_address ),
+				'subnet' => self::get_subnet( $remote_address ),
 				'expires' => HabariDateTime::date_create()->int + self::$lifetime,
 				'ua' => $user_agent,
 				'data' => $data,
