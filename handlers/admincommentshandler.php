@@ -66,7 +66,7 @@ class AdminCommentsHandler extends AdminHandler
 		$author->author_url->value = $comment->url;
 
 		$author->append( 'text', 'author_ip', 'null:null', _t( 'IP Address:' ), 'tabcontrol_text' );
-		$author->author_ip->value = long2ip( $comment->ip );
+		$author->author_ip->value = $comment->ip;
 
 
 		// Create the advanced settings
