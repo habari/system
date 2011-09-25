@@ -3,7 +3,7 @@
 
 			<div id="main-posts">
             <?php $posts = (array) $posts; ?>
-			<?php if ( sizeof( $posts ) ): ?>
+			<?php if ( count( $posts ) ): ?>
 				<?php $post =reset($posts); ?>
 				<div class="<?php echo $post_class?>">
 				<?php if ( count( $post->tags ) ) : ?>
@@ -68,8 +68,8 @@
 			<?php endwhile; ?>
 			</div>
 			<div id="prev-posts-footer">
-				<span class="nav-next"><?php $theme->prev_page_link( _t('Newer Posts') ); ?></span>
-				<span class="nav-prev"><?php $theme->next_page_link( _t('Older Posts') ); ?></span>
+				<span class="nav-next"><?php echo $theme->prev_page_link( _t('Newer Posts') ); ?></span>
+				<span class="nav-prev"><?php echo $theme->next_page_link( _t('Older Posts') ); ?></span>
 				<br class="clear">
 			</div>
 			<?php //$theme->prevnext($page, Utils::archive_pages($posts->count_all())); ?>

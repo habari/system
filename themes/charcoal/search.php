@@ -3,7 +3,7 @@
 
 		<?php if (isset($post)) : ?>
 			<div id="main-posts">
-				<p class="prompt"><?php $theme->search_prompt( Utils::htmlspecialchars( $criteria ), true ); ?></p>
+				<p class="prompt"><?php echo $theme->search_prompt( Utils::htmlspecialchars( $criteria ), true ); ?></p>
 			<?php foreach ($posts as $post): ?>
 				<div class="post multi">
 				<?php if ( count( $post->tags ) && ($tags_in_multiple) ) : ?>
@@ -31,7 +31,7 @@
 			</div>
 		<?php else: ?>
 			<div id="main-posts">
-				<p class="prompt"><?php $theme->search_prompt( Utils::htmlspecialchars( $criteria ), false ); ?></p>
+				<p class="prompt"><?php echo $theme->search_prompt( Utils::htmlspecialchars( $criteria ), false ); ?></p>
 				<div class="post multi"></div>
 			</div>
 		<?php endif; ?>
@@ -45,8 +45,8 @@
 	<div id="wrapper-bottom">
 		<div id="bottom-primary">
 			<div id="prev-posts-footer">
-				<span class="nav-next"><?php $theme->prev_page_link( _t('Newer Posts') ); ?></span>
-				<span class="nav-prev"><?php $theme->next_page_link( _t('Older Posts') ); ?></span>
+				<span class="nav-next"><?php echo $theme->prev_page_link( _t('Newer Posts') ); ?></span>
+				<span class="nav-prev"><?php echo $theme->next_page_link( _t('Older Posts') ); ?></span>
 				<br class="clear">
 			</div>
 			<?php $theme->display_archives() ;?>

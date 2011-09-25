@@ -47,7 +47,7 @@ class AjaxResponse
 		}
 	}
 
-	public function out()
+	public function out( $to_iframe = false )
 	{
 		$ret_array = array(
 			'response_code' => $this->response_code,
@@ -63,7 +63,14 @@ class AjaxResponse
 			$ret_array['html'] = $this->html;
 		}
 		
-		header( 'Content-type: text/javascript;charset=utf-8' );
+		// If the output is destined for an iframe, set appropriate headers we 
+		// know the browser will definitely be able to interpret. 
+		// See discussion at https://github.com/habari/habari/issues/204
+		if ( $to_iframe ) {
+			header( 'Content-type: text/plain' );
+		} else {
+			header( 'Content-type: application/json' );
+		}
 		echo json_encode( $ret_array );
 	}
 

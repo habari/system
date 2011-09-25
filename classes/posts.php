@@ -1162,7 +1162,7 @@ class Posts extends ArrayObject implements IsContent
 				case 'info':
 					if ( strpos( $value, ':' ) !== false ) {
 						list( $infokey, $infovalue ) = explode( ':', $value, 2 );
-						$arguments['info'][] = array( $infokey=>$infovalue );
+						$arguments['info'][$infokey] = $infovalue;
 					}
 					break;
 			}
