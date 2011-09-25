@@ -1050,7 +1050,7 @@ class Utils
 	public static function get_ip( $default = '0.0.0.0' )
 	{
 		
-		$keys = array( 'HTTP_CLIENT_IP', 'HTTP_FORWARDED', 'HTTP_X_FORWARDED', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR' );
+		$keys = array( 'HTTP_CLIENT_IP', 'HTTP_FORWARDED', 'HTTP_X_FORWARDED', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_CLUSTER_CLIENT_IP', 'REMOTE_ADDR' );
 		
 		foreach ( $keys as $key ) {
 			if ( isset( $_SERVER[ $key ] ) ) {
