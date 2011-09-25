@@ -572,7 +572,7 @@ class Comments extends ArrayObject
 						$email = '';
 						$url = '';
 					}
-					if ( ( $c->ip == sprintf( "%u", ip2long( Utils::get_ip() ) ) )
+					if ( ( $c->ip == Utils::get_ip() )
 						&& ( $c->name == $name )
 						&& ( $c->email == $email )
 						&& ( $c->url == $url ) ) {
