@@ -1047,26 +1047,19 @@ class Utils
 	* behind proxies, whether they know it or not.
 	* @return The client's IP address.
 	*/
-	public static function get_ip()
+	public static function get_ip( $default = '0.0.0.0' )
 	{
-		if ( isset( $_SERVER['HTTP_CLIENT_IP'] ) ) {
-			return $_SERVER['HTTP_CLIENT_IP'];
+		
+		$keys = array( 'HTTP_CLIENT_IP', 'HTTP_FORWARDED', 'HTTP_X_FORWARDED', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR' );
+		
+		foreach ( $keys as $key ) {
+			if ( isset( $_SERVER[ $key ] ) ) {
+				return $_SERVER[ $key ];
+			}
 		}
-		else if ( isset( $_SERVER['HTTP_FORWARDED'] ) ) {
-			return $_SERVER['HTTP_FORWARDED'];
-		}
-		else if ( isset( $_SERVER['HTTP_X_FORWARDED'] ) ) {
-			return $_SERVER['HTTP_X_FORWARDED'];
-		}
-		else if ( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-			return $_SERVER['HTTP_X_FORWARDED_FOR'];
-		}
-		else if ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
-			return $_SERVER['REMOTE_ADDR'];
-		}
-		else {
-			return '0.0.0.0';
-		}
+		
+		return $default;
+		
 	}
 
 	/**
