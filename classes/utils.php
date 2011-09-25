@@ -1049,7 +1049,7 @@ class Utils
 	*/
 	public static function get_ip( $default = '0.0.0.0' )
 	{
-		
+		// @todo in particular HTTP_X_FORWARDED_FOR could be a comma-separated list of IPs that have handled it, the client being the left-most. we should handle that...
 		$keys = array( 'HTTP_CLIENT_IP', 'HTTP_FORWARDED', 'HTTP_X_FORWARDED', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_CLUSTER_CLIENT_IP', 'REMOTE_ADDR' );
 		
 		foreach ( $keys as $key ) {
