@@ -1052,13 +1052,22 @@ class Utils
 		// @todo in particular HTTP_X_FORWARDED_FOR could be a comma-separated list of IPs that have handled it, the client being the left-most. we should handle that...
 		$keys = array( 'HTTP_CLIENT_IP', 'HTTP_FORWARDED', 'HTTP_X_FORWARDED', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_CLUSTER_CLIENT_IP', 'REMOTE_ADDR' );
 		
+		$return = '';
 		foreach ( $keys as $key ) {
 			if ( isset( $_SERVER[ $key ] ) ) {
-				return $_SERVER[ $key ];
+				$return = $_SERVER[ $key ];
 			}
 		}
 		
-		return $default;
+		// make sure whatever IP we got was valid
+		$valid = filter_var( $return, FILTER_VALIDATE_IP );
+		
+		if ( $valid === false ) {
+			return $default;
+		}
+		else {
+			return $return;
+		}
 		
 	}
 
