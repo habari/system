@@ -45,7 +45,7 @@
 						echo '<li class="empty">' . _t( 'no email provided' ) . '</li>';
 					} ?>
 				<?php if ( $comment->ip ): ?>
-					<li><?php echo long2ip($comment->ip); ?></li>
+					<li><?php echo $comment->ip; ?></li>
 				<?php endif; ?>
 			</ul>
 			<?php if ( $comment->status == Comment::STATUS_SPAM ) :?>

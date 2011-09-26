@@ -72,7 +72,7 @@ CREATE TABLE {$prefix}comments (
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL,
   url VARCHAR(255) NULL,
-  ip BIGINT NOT NULL,
+  ip VARCHAR(45) NOT NULL,
   content TEXT,
   status INTEGER NOT NULL,
   date INT NOT NULL,
@@ -134,7 +134,7 @@ CREATE TABLE {$prefix}log (
   message VARCHAR(255) NOT NULL,
   data BYTEA NULL,
   timestamp INT NOT NULL,
-  ip BIGINT NOT NULL DEFAULT 0,
+  ip VARCHAR(45) NOT NULL,
   PRIMARY KEY (id)
 );
 
@@ -166,7 +166,7 @@ CREATE TABLE {$prefix}users_groups (
 
 CREATE TABLE {$prefix}sessions (
   token varchar(255) NOT NULL,
-  subnet INTEGER NOT NULL DEFAULT 0,
+  ip VARCHAR(45) NOT NULL,
   expires BIGINT NOT NULL DEFAULT 0,
   ua VARCHAR(255) NOT NULL,
   data TEXT,

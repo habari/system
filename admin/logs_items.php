@@ -13,7 +13,7 @@
 				}
 			} ?>&nbsp;
 		</span></span>
-		<span class="ip pct10 minor"><span><?php echo long2ip($log->ip); ?></span></span>
+		<span class="ip pct10 minor"><span><?php echo $log->ip; ?></span></span>
 		<span class="module pct10 minor"><span><?php echo $log->module; ?></span></span>
 		<span class="type pct10 minor"><span><?php echo $log->type; ?></span></span>
 		<span class="severity pct10 minor"><span><?php echo $log->severity; ?></span></span>

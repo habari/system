@@ -538,7 +538,7 @@ class HabariSilo extends Plugin implements MediaSilo
 					else {
 
 						$fullpath = self::SILO_NAME . '/' . $path;
-						$form_action = URL::get( 'admin_ajax', array( 'context' => 'media_panel' ) );
+						$form_action = URL::get( 'admin_ajax', array( 'context' => 'media_upload' ) );
 						$panel .= <<< UPLOAD_FORM
 <form enctype="multipart/form-data" method="post" id="simple_upload" target="simple_upload_frame" action="{$form_action}" class="span-10" style="margin:0px auto;text-align: center">
 	<p style="padding-top:30px;">%s <b style="font-weight:normal;color: #e0e0e0;font-size: 1.2em;">/{$path}</b></p>

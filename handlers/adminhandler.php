@@ -489,6 +489,7 @@ class AdminHandler extends ActionHandler
 			case 'publish':
 			case 'ajax_media':
 			case 'ajax_media_panel':
+			case 'ajax_media_upload':
 				$type = Post::type_name( $type );
 				$require_any = array(
 					'post_any' => array( ACL::get_bitmask( 'create' ), ACL::get_bitmask( 'edit' ) ),
