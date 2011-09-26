@@ -121,7 +121,7 @@ class Session
 		if ( !defined( 'SESSION_SKIP_SUBNET' ) || SESSION_SKIP_SUBNET != true ) {
 			// Verify on the same subnet
 			$subnet = self::get_subnet( $remote_address );
-			if ( $session->subnet != $subnet ) {
+			if ( $session->ip != $subnet ) {
 				$dodelete = true;
 			}
 		}
