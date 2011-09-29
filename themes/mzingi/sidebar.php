@@ -27,9 +27,7 @@
  		?>
 	<?php endforeach; ?>
    </ul>
-
-	<?php $theme->area( 'sidebar' ); ?>
-	
+	<?php echo $theme->area( 'sidebar' ); ?>
 
 	</div>
 	<!--end secondary content-->
