@@ -86,7 +86,7 @@ class EventLog extends ArrayObject
 			'module' => $module,
 			'type' => $type,
 			'data' => $data,
-			'ip' => sprintf( "%u", ip2long( Utils::get_ip() ) ),
+			'ip' => Utils::get_ip(),
 		) );
 		$user = User::identify();
 		if ( $user->loggedin ) {

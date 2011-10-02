@@ -173,7 +173,7 @@ class AdminLogsHandler extends AdminHandler
 		);
 
 		foreach ( $db_ips as $db_ip ) {
-			$ips[ $db_ip ] = long2ip( $db_ip );
+			$ips[ $db_ip ] = $db_ip;
 		}
 		return $ips;
 	}

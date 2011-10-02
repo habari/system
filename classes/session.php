@@ -121,7 +121,7 @@ class Session
 		if ( !defined( 'SESSION_SKIP_SUBNET' ) || SESSION_SKIP_SUBNET != true ) {
 			// Verify on the same subnet
 			$subnet = self::get_subnet( $remote_address );
-			if ( $session->subnet != $subnet ) {
+			if ( $session->ip != $subnet ) {
 				$dodelete = true;
 			}
 		}
@@ -194,7 +194,7 @@ class Session
 		if ( $dowrite ) {
 			// DB::update() checks if the record key exists, and inserts if not
 			$record = array(
-				'subnet' => self::get_subnet( $remote_address ),
+				'ip' => self::get_subnet( $remote_address ),
 				'expires' => HabariDateTime::date_create()->int + self::$lifetime,
 				'ua' => $user_agent,
 				'data' => $data,
@@ -472,7 +472,14 @@ class Session
 
 	protected static function get_subnet( $remote_address = '' )
 	{
-
+		
+		// if it's an ipv6 address, we just use that and don't try to determine the subnet
+		$is_v6 = filter_var( $remote_address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 );
+		
+		if ( $is_v6 !== false ) {
+			return $remote_address;
+		}
+		
 		$long_addr = ip2long( $remote_address );
 
 		if ( $long_addr >= ip2long( '0.0.0.0' ) && $long_addr <= ip2long( '127.255.255.255' ) ) {

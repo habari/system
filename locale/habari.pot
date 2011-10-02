@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-25 00:00+0000\n"
+"POT-Creation-Date: 2011-10-02 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2807,7 +2807,7 @@ msgstr ""
 #: handlers/admincommentshandler.php:539 handlers/admintagshandler.php:39
 #: handlers/admintagshandler.php:66 handlers/admingroupshandler.php:114
 #: handlers/admingroupshandler.php:222 handlers/adminlogshandler.php:238
-#: handlers/adminpostshandler.php:528 handlers/adminusershandler.php:291
+#: handlers/adminpostshandler.php:565 handlers/adminusershandler.php:291
 msgid "WSSE authentication failed."
 msgstr ""
 
@@ -2815,7 +2815,7 @@ msgstr ""
 msgid "No comments selected."
 msgstr ""
 
-#: handlers/admincommentshandler.php:561 handlers/adminpostshandler.php:548
+#: handlers/admincommentshandler.php:561 handlers/adminpostshandler.php:585
 #, php-format
 msgid "Unknown action \"%s\""
 msgstr ""
@@ -3385,11 +3385,11 @@ msgstr ""
 msgid "Root"
 msgstr ""
 
-#: handlers/adminpostshandler.php:559
+#: handlers/adminpostshandler.php:596
 msgid "You did not have permission to delete some posts."
 msgstr ""
 
-#: handlers/adminpostshandler.php:562
+#: handlers/adminpostshandler.php:599
 #, php-format
 msgid "Deleted %d post"
 msgid_plural "Deleted %d posts"

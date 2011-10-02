@@ -14,7 +14,7 @@
 		</div>
 <?php endif; ?>
 
-<?php $theme->area( 'sidebar' ); ?>
+<?php echo $theme->area( 'sidebar' ); ?>
 
 <?php if ( $display_login == 'sidebar' ) : ?>
 <div class="sb-user">

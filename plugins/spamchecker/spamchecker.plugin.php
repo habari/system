@@ -114,7 +114,7 @@ class SpamChecker extends Plugin
 			// If you've already got two spams on your IP address, all you ever do is spam
 			if ($spams > 1) {
 				$comment->status = Comment::STATUS_SPAM;
-				$spamcheck[] = sprintf(_t('Too many existing spams from this IP: %s'), long2ip($comment->ip));
+				$spamcheck[] = sprintf(_t('Too many existing spams from this IP: %s'), $comment->ip);
 			}
 		}
 
@@ -215,7 +215,7 @@ class SpamChecker extends Plugin
 	public function get_code($post_id, $ip = '')
 	{
 		if ( $ip == '' ) {
-			$ip = sprintf( "%u", ip2long( Utils::get_ip() ) );
+			$ip = Utils::get_ip();
 		}
 		$code = substr( md5( $post_id . Options::get( 'GUID' ) . 'more salt' . $ip ), 0, 10 );
 		$code = Plugins::filter( 'comment_code', $code, $post_id, $ip );

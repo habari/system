@@ -66,7 +66,7 @@ class AdminCommentsHandler extends AdminHandler
 		$author->author_url->value = $comment->url;
 
 		$author->append( 'text', 'author_ip', 'null:null', _t( 'IP Address:' ), 'tabcontrol_text' );
-		$author->author_ip->value = long2ip( $comment->ip );
+		$author->author_ip->value = $comment->ip;
 
 
 		// Create the advanced settings
@@ -161,7 +161,7 @@ class AdminCommentsHandler extends AdminHandler
 				$comment->name = $form->author_name;
 				$comment->url = $form->author_url;
 				$comment->email = $form->author_email;
-				$comment->ip = ip2long( $form->author_ip );
+				$comment->ip = $form->author_ip;
 
 				$comment->date = HabariDateTime::date_create( $form->comment_date );
 				$comment->post_id = $form->comment_post;
