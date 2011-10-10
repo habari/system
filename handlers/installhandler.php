@@ -37,9 +37,9 @@ class InstallHandler extends ActionHandler
 			$this->handler_vars['locale'] = 'en-us';
 		}
 
-		/*
+		/**
 		 * Check .htaccess first because ajax doesn't work without it.
-		*/
+		 */
 		if ( ! $this->check_htaccess() ) {
 			$this->handler_vars['file_contents'] = htmlentities( implode( "\n", $this->htaccess() ) );
 			$this->display( 'htaccess' );
@@ -69,13 +69,13 @@ class InstallHandler extends ActionHandler
 			$this->display( 'requirements' );
 		}
 
-		/*
+		/**
 		 * Add the AJAX hooks
 		 */
 		Plugins::register( array( 'InstallHandler', 'ajax_check_mysql_credentials' ), 'ajax_', 'check_mysql_credentials' );
 		Plugins::register( array( 'InstallHandler', 'ajax_check_pgsql_credentials' ), 'ajax_', 'check_pgsql_credentials' );
 
-		/*
+		/**
 		 * Let's check the config.php file if no POST data was submitted
 		 */
 		if ( ( ! file_exists( Site::get_dir( 'config_file' ) ) ) && ( ! isset( $_POST['admin_username'] ) ) ) {
@@ -191,7 +191,7 @@ class InstallHandler extends ActionHandler
 		Utils::redirect( Site::get_url( 'habari' ) );
 	}
 
-	/*
+	/**
 	 * Helper function to grab list of plugins
 	 */
 	public function get_plugins()
@@ -584,7 +584,7 @@ class InstallHandler extends ActionHandler
 	/**
 	 * Checks for the existance of a SQLite datafile
 	 * tries to create it if it does not exist
-	**/
+	 */
 	private function check_sqlite()
 	{
 		$db_file = $this->handler_vars['db_file'];
@@ -712,7 +712,7 @@ class InstallHandler extends ActionHandler
 		$group->grant( 'post_entry', 'read' );
 		$group->grant( 'post_page', 'read' );
 
-		// Add the anonumous user to the anonymous group
+		// Add the anonymous user to the anonymous group
 		$group->add( 0 );
 	}
 
@@ -793,7 +793,7 @@ class InstallHandler extends ActionHandler
 
 	/**
 	 * Create the first post
-	**/
+	 */
 	private function create_first_post()
 	{
 		$users = Users::get();
@@ -868,10 +868,10 @@ class InstallHandler extends ActionHandler
 	}
 
 	/**
-	* Gets the configuration template, inserts the variables into it, and returns it as a string
-	*
-	* @return string The config.php template for the db_type schema
-	*/
+	 * Gets the configuration template, inserts the variables into it, and returns it as a string
+	 *
+	 * @return string The config.php template for the db_type schema
+	 */
 	private function get_config_file()
 	{
 		if ( ! ( $file_contents = file_get_contents( HABARI_PATH . "/system/schema/" . $this->handler_vars['db_type'] . "/config.php" ) ) ) {
@@ -1079,7 +1079,7 @@ class InstallHandler extends ActionHandler
 	 * @param bool whether an .htaccess file already exists or not
 	 * @param bool whether to remove and re-create any existing Habari block
 	 * @param bool whether to try a rewritebase in the .htaccess
-	**/
+	 */
 	public function write_htaccess( $exists = false, $update = false, $rewritebase = true )
 	{
 		$htaccess = $this->htaccess();
@@ -1113,7 +1113,7 @@ class InstallHandler extends ActionHandler
 			// Append the Habari rewrite block to the existing file.
 			$fmode = 'a';
 		}
-		//Save the htaccess
+		// Save the .htaccess
 		if ( $fh = fopen( HABARI_PATH . '/.htaccess', $fmode ) ) {
 			if ( false === fwrite( $fh, $file_contents ) ) {
 				return false;
@@ -1149,7 +1149,7 @@ class InstallHandler extends ActionHandler
 	 * attempts to write the Files clause to the .htaccess file
 	 * if the clause for this sqlite doesn't exist.
 	 * @return bool success or failure
-	**/
+	 */
 	public function secure_sqlite()
 	{
 		if ( false === strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) ) {

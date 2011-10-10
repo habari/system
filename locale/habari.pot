@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-25 00:00+0000\n"
+"POT-Creation-Date: 2011-10-09 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -842,7 +842,7 @@ msgid "password"
 msgstr ""
 
 #: admin/login.php:47 themes/charcoal/header.php:41 themes/k2/theme.php:238
-#: plugins/coreblocks/coreblocks.plugin.php:328
+#: plugins/coreblocks/coreblocks.plugin.php:329
 msgid "Login"
 msgstr ""
 
@@ -922,15 +922,15 @@ msgstr ""
 msgid "Go"
 msgstr ""
 
-#: themes/charcoal/sidebar.php:7
+#: themes/charcoal/sidebar.php:6
 msgid "{blog entries}"
 msgstr ""
 
-#: themes/charcoal/sidebar.php:8
+#: themes/charcoal/sidebar.php:7
 msgid "{comments}"
 msgstr ""
 
-#: themes/charcoal/sidebar.php:12
+#: themes/charcoal/sidebar.php:11
 msgid "Powered by Habari"
 msgstr ""
 
@@ -1067,7 +1067,7 @@ msgstr ""
 msgid "Displaying posts tagged: %s and not %s"
 msgstr ""
 
-#: themes/charcoal/theme.php:148 classes/theme.php:899
+#: themes/charcoal/theme.php:148 classes/theme.php:909
 msgid "No Comments"
 msgstr ""
 
@@ -1213,7 +1213,7 @@ msgid "Perhaps you can try searching."
 msgstr ""
 
 #: themes/mzingi/searchform.php:5 themes/k2/sidebar.php:6
-#: plugins/coreblocks/coreblocks.plugin.php:365
+#: plugins/coreblocks/coreblocks.plugin.php:366
 #: plugins/flickrsilo/flickrsilo.plugin.php:609
 #: plugins/flickrsilo/flickrsilo.plugin.php:982
 msgid "Search"
@@ -2011,7 +2011,7 @@ msgstr ""
 msgid "Unbalanced braces."
 msgstr ""
 
-#: classes/utils.php:1175
+#: classes/utils.php:1177
 msgid "Not set"
 msgstr ""
 
@@ -2633,28 +2633,28 @@ msgstr ""
 msgid "Remove this item?"
 msgstr ""
 
-#: classes/theme.php:257
+#: classes/theme.php:267
 msgid "Whoops! 404. The page you were trying to access is not really there. Please try again."
 msgstr ""
 
-#: classes/theme.php:667
+#: classes/theme.php:677
 #, php-format
 msgid "Content could not be displayed. One of the following templates - %s - has to be present in the active theme."
 msgstr ""
 
-#: classes/theme.php:825
+#: classes/theme.php:835
 msgid "Previous"
 msgstr ""
 
-#: classes/theme.php:852
+#: classes/theme.php:862
 msgid "Next"
 msgstr ""
 
-#: classes/theme.php:878
+#: classes/theme.php:888
 msgid "Read Comments"
 msgstr ""
 
-#: classes/theme.php:904
+#: classes/theme.php:914
 #, php-format
 msgid "%s Comment"
 msgid_plural "%s Comments"
@@ -2807,7 +2807,7 @@ msgstr ""
 #: handlers/admincommentshandler.php:539 handlers/admintagshandler.php:39
 #: handlers/admintagshandler.php:66 handlers/admingroupshandler.php:114
 #: handlers/admingroupshandler.php:222 handlers/adminlogshandler.php:238
-#: handlers/adminpostshandler.php:528 handlers/adminusershandler.php:291
+#: handlers/adminpostshandler.php:565 handlers/adminusershandler.php:291
 msgid "WSSE authentication failed."
 msgstr ""
 
@@ -2815,7 +2815,7 @@ msgstr ""
 msgid "No comments selected."
 msgstr ""
 
-#: handlers/admincommentshandler.php:561 handlers/adminpostshandler.php:548
+#: handlers/admincommentshandler.php:561 handlers/adminpostshandler.php:585
 #, php-format
 msgid "Unknown action \"%s\""
 msgstr ""
@@ -3296,7 +3296,7 @@ msgstr ""
 msgid "Log out of the administration interface"
 msgstr ""
 
-#: handlers/adminhandler.php:335 plugins/coreblocks/coreblocks.plugin.php:325
+#: handlers/adminhandler.php:335 plugins/coreblocks/coreblocks.plugin.php:326
 msgid "Logout"
 msgstr ""
 
@@ -3385,11 +3385,11 @@ msgstr ""
 msgid "Root"
 msgstr ""
 
-#: handlers/adminpostshandler.php:559
+#: handlers/adminpostshandler.php:596
 msgid "You did not have permission to delete some posts."
 msgstr ""
 
-#: handlers/adminpostshandler.php:562
+#: handlers/adminpostshandler.php:599
 #, php-format
 msgid "Deleted %d post"
 msgid_plural "Deleted %d posts"
@@ -4183,56 +4183,64 @@ msgstr ""
 msgid "Search Form"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:35
-msgid "Site Feed"
+#: plugins/coreblocks/coreblocks.plugin.php:25
+msgid "Text"
 msgstr ""
 
 #: plugins/coreblocks/coreblocks.plugin.php:36
+msgid "Site Feed"
+msgstr ""
+
+#: plugins/coreblocks/coreblocks.plugin.php:37
 msgid "Comments Feed"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:67
+#: plugins/coreblocks/coreblocks.plugin.php:68
 msgid "Comments to show:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:125
+#: plugins/coreblocks/coreblocks.plugin.php:126
 msgid "Posts to show:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:135
+#: plugins/coreblocks/coreblocks.plugin.php:136
 msgid "Content Types to Include:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:175
-msgid "Display full month names:"
-msgstr ""
-
 #: plugins/coreblocks/coreblocks.plugin.php:176
-#: plugins/coreblocks/coreblocks.plugin.php:249
-msgid "Append post count:"
+msgid "Display full month names:"
 msgstr ""
 
 #: plugins/coreblocks/coreblocks.plugin.php:177
 #: plugins/coreblocks/coreblocks.plugin.php:250
+msgid "Append post count:"
+msgstr ""
+
+#: plugins/coreblocks/coreblocks.plugin.php:178
+#: plugins/coreblocks/coreblocks.plugin.php:251
 msgid "Preferred Output Style:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:178
-#: plugins/coreblocks/coreblocks.plugin.php:251
+#: plugins/coreblocks/coreblocks.plugin.php:179
+#: plugins/coreblocks/coreblocks.plugin.php:252
 msgid "Dropdown"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:178
-#: plugins/coreblocks/coreblocks.plugin.php:251
+#: plugins/coreblocks/coreblocks.plugin.php:179
+#: plugins/coreblocks/coreblocks.plugin.php:252
 msgid "List"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:310
+#: plugins/coreblocks/coreblocks.plugin.php:311
 msgid "Links to show:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:350
+#: plugins/coreblocks/coreblocks.plugin.php:351
 msgid "Button:"
+msgstr ""
+
+#: plugins/coreblocks/coreblocks.plugin.php:381
+msgid "Content:"
 msgstr ""
 
 #: plugins/simple_private_posts/simple_private_posts.plugin.php:26
@@ -4543,9 +4551,4 @@ msgstr ""
 
 #: installer/db_setup.php:175
 msgid ""
-"<strong>Site Name</strong> is the name of your site as it will appear\n"
-"\t\t\t\tto your visitors."
-msgstr ""
-
-#: installer/db_setup.php:186
-msgid "<strong>Username</
+"<strong>Site Name</s

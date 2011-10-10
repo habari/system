@@ -32,7 +32,7 @@
 					</div>
 					<div id="navbar">
 						<ul>
-						<?php $theme->area( 'nav' ); ?>
+						<?php echo $theme->area( 'nav' ); ?>
 						<?php if ( $display_login ): ?>
 							<li class="login">
 							<?php if ( $loggedin ) : ?>

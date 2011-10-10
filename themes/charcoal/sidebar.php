@@ -1,5 +1,4 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-
 <div id="search">
 	<?php echo $theme->search_form() ?>
 </div>
@@ -14,5 +13,5 @@
 </div>
 <div id="sidebar">
 <!-- Call your plugins theme functions here-->
-<?php $theme->area('sidebar'); ?>
+<?php echo $theme->area('sidebar'); ?>
 </div>
