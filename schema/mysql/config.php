@@ -1,4 +1,4 @@
-<?php
+<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 Config::set( 'db_connection', array(
 	'connection_string'=>'mysql:host={$db_host};dbname={$db_schema}',
 	'username'=>'{$db_user}',
