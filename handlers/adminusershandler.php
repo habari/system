@@ -393,6 +393,12 @@ class AdminUsersHandler extends AdminHandler
 	 */
 	public function post_users()
 	{
+		$wsse = Utils::WSSE( $this->handler_vars['nonce'], $this->handler_vars['timestamp'] );
+		if ( $this->handler_vars['password_digest'] != $wsse['digest'] ) {
+			Session::error( _t( 'WSSE authentication failed.' ) );
+			return Session::messages_get( true, 'array' );
+		}
+
 		$this->fetch_users();
 
 		$extract = $this->handler_vars->filter_keys( 'newuser', 'delete', 'new_pass1', 'new_pass2', 'new_email', 'new_username' );
