@@ -101,6 +101,7 @@ class AdminHandler extends ActionHandler
 	public function act_admin()
 	{
 		$page = ( isset( $this->handler_vars['page'] ) && !empty( $this->handler_vars['page'] ) ) ? $this->handler_vars['page'] : 'dashboard';
+		$page = filter_var( $page, FILTER_SANITIZE_STRING );
 		if ( isset( $this->handler_vars['content_type'] ) ) {
 			$type = Plugins::filter( 'post_type_display', Post::type_name( $this->handler_vars['content_type'] ), 'singular' );
 		}
