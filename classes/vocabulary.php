@@ -684,7 +684,7 @@ SQL;
 
 			// Determine the insertion point mptt_target
 			if ( $this->hierarchical ) {
-				if ( null == $target_term ) {
+				if ( $target_term == null ) {
 					// If no target is specified, put the new term after the last term
 					$mptt_target = DB::get_value( 'SELECT MAX(mptt_right) FROM {terms} WHERE vocabulary_id=?', array( $this->id ) ) + 1;
 				}
