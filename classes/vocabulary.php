@@ -631,6 +631,10 @@ SQL;
 
 	/**
 	 * Moves a term within the vocabulary. Returns a Term object. null parameters append the term to the end of any hierarchies.
+	 * 
+	 * @param Term $term The term to move.
+	 * @param Term|null $target_term The term to move $term before or after, or null to move it to the very end of the vocabulary.
+	 * @param bool $before True to move $term BEFORE $target_term, false (the default) to move $term AFTER $target_term.
 	 * @return Term The Term object moved
 	 **/
 	public function move_term( $term, $target_term = null, $before = false )
