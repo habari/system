@@ -646,9 +646,6 @@ SQL;
 
 			$source_left = $term->mptt_left;
 			$source_right = $term->mptt_right;
-			$range = $source_right - $source_left + 1;
-
-			$nodes_moving = ( $range ) / 2; // parent and descendants
 
 			DB::begin_transaction();
 
