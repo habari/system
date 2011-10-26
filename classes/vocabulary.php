@@ -740,8 +740,7 @@ SQL;
 			// Success!
 			DB::commit();
 
-			// @todo: need to return the updated term
-			return $term;
+			return $this->get_term( $term->id );
 		}
 		return false;
 	}
