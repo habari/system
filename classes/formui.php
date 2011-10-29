@@ -1629,13 +1629,13 @@ class FormControlTextMulti extends FormControl
 				<script type="text/javascript">
 				controls.textmulti = {
 					add: function(e, field){
-						$(e).before("<label><input type=\"text\" name=\"" + field + "[]\"> <a href=\"#\" onclick=\"return controls.textmulti.remove(this);\">[' . _t( 'remove' ) . ']</a></label>");
+						$(e).before(" <span class=\"textmulti_item\"><input type=\"text\" name=\"" + field + "[]\"> <a href=\"#\" onclick=\"return controls.textmulti.remove(this);\" title=\"'. _t( 'Remove item' ).'\" class=\"textmulti_remove opa50\">[' . _t( 'remove' ) . ']</a></span>");
 						return false;
 					},
 					remove: function(e){
 						if (confirm("' . _t( 'Remove this item?' ) . '")) {
 							if ( $(e).parent().parent().find("input").length == 1) {
-								field = $(e).parent().prev().attr("name");
+								field = $(e).prev().attr("name");
 								$(e).parent().prev().before("<input type=\"hidden\" name=\"" + field + "\" value=\"\">");
 							}
 							$(e).parent().prev("input").remove();
