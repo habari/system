@@ -578,6 +578,8 @@ var themeManage = {
 					forcePlaceholderSize: true,
 					connectWith: '.area_drop',
 					containment: $('#block_add').parents('.item'),
+					update: themeManage.refresh_areas,
+					remove: themeManage.refresh_areas,
 					axis: 'y'
 				});
 				// We've saved, reset the hash
@@ -599,6 +601,8 @@ var themeManage = {
 					forcePlaceholderSize: true,
 					connectWith: '.area_drop',
 					containment: $('#block_add').parents('.item'),
+					update: themeManage.refresh_areas,
+					remove: themeManage.refresh_areas,
 					axis: 'y'
 				});
 				themeManage.refresh_areas();
