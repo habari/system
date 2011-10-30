@@ -3004,3 +3004,25 @@ ol.tree, ol.tree ol {
 	color:#8a1f11;
 }
  
+
+/*- Textmulti */
+
+.textmulti_add, .textmulti_remove {
+	background-image: url('images/ui-icons_222222_256x240.png');
+	width: 16px;
+	height: 16px;
+	text-indent: -10000px;
+	display: inline-block;
+}
+
+.textmulti_add {
+	background-position: 0 -192px;
+}
+.textmulti_remove {
+	background-position: -16px -192px;
+}
+
+.textmulti_item {
+	display: inline-block;
+    margin-top: 5px;
+}

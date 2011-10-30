@@ -76,11 +76,6 @@ class Theme extends Pluggable
 		// Set up the corresponding engine to handle the templating
 		$this->template_engine = new $themedata->template_engine();
 
-		if(isset($themedata->parent)) {
-			$parent = Themes::create($themedata->parent);
-			$parent_theme_dir = Utils::single_array($parent->theme_dir);
-			$theme_dir = array_merge($theme_dir, $parent_theme_dir);
-		}
 		$this->theme_dir = $theme_dir;
 		$this->template_engine->set_template_dir( $theme_dir );
 		$this->plugin_id = $this->plugin_id();
@@ -1380,6 +1375,33 @@ class Theme extends Pluggable
 	public function get_version()
 	{
 		return (string)$this->info()->version;
+	}
+
+	/**
+	 * Get the URL for a resource in this theme's directory
+	 * @param string $resource The resource name
+	 * @return string The URL of the requested resource
+	 * @todo This method needs to be aware of the class that called it so that it can find the right directory to use
+	 */
+	public function get_url($resource = false)
+	{
+		$theme = basename(end($this->theme_dir));
+		if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
+			$url = Site::get_url( 'user' ) .  '/themes/' . $theme;
+		}
+		elseif ( file_exists( HABARI_PATH . '/user/themes/' . $theme ) ) {
+			$url = Site::get_url( 'habari' ) . '/user/themes/' . $theme;
+		}
+		elseif ( file_exists( HABARI_PATH . '/3rdparty/themes/' . $theme ) ) {
+			$url = Site::get_url( 'habari' ) . '/3rdparty/themes/' . $theme;
+		}
+		else {
+			$url = Site::get_url( 'habari' ) . '/system/themes/' . $theme;
+		}
+
+		$url .= Utils::trail( $resource );
+		$url = Plugins::filter( 'site_url_theme', $url );
+		return $url;
 	}
 
 }

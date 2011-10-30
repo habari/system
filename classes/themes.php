@@ -271,7 +271,7 @@ class Themes
 
 		// Set the default theme file
 		$themefile = 'theme.php';
-		if(isset($themedata->class['file']) && (string)$themedata->xml->class['file'] != '') {
+		if(isset($themedata['info']->class['file']) && (string)$themedata['info']->class['file'] != '') {
 			$themefile = (string)$themedata->xml->class['file'];
 		}
 
@@ -279,15 +279,33 @@ class Themes
 		// @todo: Potentially break themes by sending an array to the constructor instead of this QueryRecord
 		$themedata = new QueryRecord($themedata);
 
-		if ( file_exists( $themedata->theme_dir . $themefile ) ) {
-			include_once( $themedata->theme_dir . $themefile );
+
+		// Deal with parent themes
+		if(isset($themedata->parent)) {
+			// @todo If the parent theme doesn't exist, provide a useful error
+			$parent_data = self::get_by_name( $themedata->parent );
+			$parent_themefile = 'theme.php';
+			if(isset($parent_data['info']->class['file']) && (string)$parent_data['info']->class['file'] != '') {
+				$parent_themefile = (string)$parent_data['info']->class['file'];
+			}
+			include_once($parent_data['theme_dir'] . $parent_themefile);
+
+			$themedata->parent_theme_dir = Utils::single_array($parent_data['theme_dir']);
+			$themedata->theme_dir = array_merge(Utils::single_array($themedata->theme_dir), $themedata->parent_theme_dir);
+		}
+		$primary_theme_dir = $themedata->theme_dir;
+		$primary_theme_dir = is_array($primary_theme_dir) ? reset($primary_theme_dir) : $primary_theme_dir;
+
+		// Include the theme class file
+		if ( file_exists( $primary_theme_dir . $themefile ) ) {
+			include_once( $primary_theme_dir . $themefile );
 		}
 
 		if ( isset( $themedata->class ) ) {
 			$classname = $themedata->class;
 		}
 		else {
-			$classname = self::class_from_filename( $themedata->theme_dir . $themefile );
+			$classname = self::class_from_filename( $primary_theme_dir . $themefile );
 		}
 
 		// the final fallback, for the admin "theme"
@@ -309,7 +327,8 @@ class Themes
 			$file = realpath( $file );
 		}
 
-		foreach ( self::get_theme_classes() as $theme ) {
+		$theme_classes = self::get_theme_classes();
+		foreach ( $theme_classes as $theme ) {
 			$class = new ReflectionClass( $theme );
 			$classfile = str_replace( '\\', '/', $class->getFileName() );
 			if ( $classfile == $file ) {
@@ -326,16 +345,31 @@ class Themes
 		}
 	}
 
+	/**
+	 * Get a list of classes that extend Theme
+	 * @static
+	 * @return array List of string names of classes that extend Theme
+	 */
 	public static function get_theme_classes()
 	{
 		$classes = get_declared_classes();
-		return array_filter( $classes, array( 'Themes', 'extends_theme' ) );
-	}
+		foreach($classes as $class) {
+			$parents = class_parents( $class, false );
+			if(count($parents) > 0) {
+				$class_parents[$class] = $parents;
+			}
+		}
 
-	public static function extends_theme( $class )
-	{
-		$parents = class_parents( $class, false );
-		return in_array( 'Theme', $parents );
+		$theme_classes = array();
+		do {
+			$delta = count($theme_classes);
+			foreach($class_parents as $class => $parents) {
+				if(count(array_intersect($theme_classes + array('Theme'), $parents))>0) {
+					$theme_classes[$class] = $class;
+				}
+			}
+		} while($delta != count($theme_classes));
+		return $theme_classes;
 	}
 }
 
