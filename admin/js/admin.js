@@ -578,6 +578,8 @@ var themeManage = {
 					forcePlaceholderSize: true,
 					connectWith: '.area_drop',
 					containment: $('#block_add').parents('.item'),
+					update: themeManage.refresh_areas,
+					remove: themeManage.refresh_areas,
 					axis: 'y'
 				});
 				// We've saved, reset the hash
@@ -592,7 +594,19 @@ var themeManage = {
 		$('#scope_container').load(
 			habari.url.ajaxSaveAreas, 
 			{scope:$('#scope_id').val()},
-			themeManage.refresh_areas
+			// Can't simply refresh the sortable because we've reloaded the element
+			function() {
+				$('.area_drop').sortable({
+					placeholder: 'block_drop',
+					forcePlaceholderSize: true,
+					connectWith: '.area_drop',
+					containment: $('#block_add').parents('.item'),
+					update: themeManage.refresh_areas,
+					remove: themeManage.refresh_areas,
+					axis: 'y'
+				});
+				themeManage.refresh_areas();
+			}
 		);
 		spinner.stop();
 	},
