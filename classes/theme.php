@@ -1385,7 +1385,24 @@ class Theme extends Pluggable
 	 */
 	public function get_url($resource = false)
 	{
-		$theme = basename(end($this->theme_dir));
+		$backtraces = debug_backtrace(false);
+		$stop = false;
+		foreach($backtraces as $b) {
+			if($stop) {
+				$backtrace = $b;
+				break;
+			}
+			if($b['function'] = 'get_url') {
+				$stop = true;
+			}
+		}
+
+		$r_class = new ReflectionClass($backtrace['class']);
+		$classfile = $r_class->getFileName();
+
+		$themedir = basename(dirname($classfile));
+
+		$theme = $themedir; //basename(end($this->theme_dir));
 		if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
 			$url = Site::get_url( 'user' ) .  '/themes/' . $theme;
 		}
