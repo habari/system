@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-30 00:00+0000\n"
+"POT-Creation-Date: 2011-11-06 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1067,7 +1067,7 @@ msgstr ""
 msgid "Displaying posts tagged: %s and not %s"
 msgstr ""
 
-#: themes/charcoal/theme.php:148 classes/theme.php:909
+#: themes/charcoal/theme.php:148 classes/theme.php:904
 msgid "No Comments"
 msgstr ""
 
@@ -1986,7 +1986,7 @@ msgstr ""
 msgid "Vocabulary %1$s (%2$s) deleted."
 msgstr ""
 
-#: classes/vocabulary.php:833
+#: classes/vocabulary.php:829
 #, php-format
 msgid "Term %1$s in the %2$s vocabulary has been renamed to %3$s."
 msgid_plural "Terms %1$s in the %2$s vocabulary have been renamed to %3$s."
@@ -2629,32 +2629,36 @@ msgstr ""
 msgid "The value entered is greater than the maximum of %d."
 msgstr ""
 
+#: classes/formui.php:1632
+msgid "Remove item"
+msgstr ""
+
 #: classes/formui.php:1636
 msgid "Remove this item?"
 msgstr ""
 
-#: classes/theme.php:267
+#: classes/theme.php:262
 msgid "Whoops! 404. The page you were trying to access is not really there. Please try again."
 msgstr ""
 
-#: classes/theme.php:677
+#: classes/theme.php:672
 #, php-format
 msgid "Content could not be displayed. One of the following templates - %s - has to be present in the active theme."
 msgstr ""
 
-#: classes/theme.php:835
+#: classes/theme.php:830
 msgid "Previous"
 msgstr ""
 
-#: classes/theme.php:862
+#: classes/theme.php:857
 msgid "Next"
 msgstr ""
 
-#: classes/theme.php:888
+#: classes/theme.php:883
 msgid "Read Comments"
 msgstr ""
 
-#: classes/theme.php:914
+#: classes/theme.php:909
 #, php-format
 msgid "%s Comment"
 msgid_plural "%s Comments"
@@ -4547,7 +4551,4 @@ msgid "Check Database Connection"
 msgstr ""
 
 #: installer/db_setup.php:165
-msgid "Site Configuration"
-msgstr ""
-
-#: installer/db_setup.
+ms
