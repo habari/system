@@ -248,7 +248,7 @@ class URL extends Singleton
 		$url = Site::get_url( 'habari' ) . MultiByte::substr( $path, MultiByte::strlen( HABARI_PATH ) );
 		// Replace windows paths with forward slashes
 		$url = str_replace( '\\', '/', $url );
-		$url .= ( $trail ) ? '/' : '';
+		$url .= Utils::trail($trail);
 		return $url;
 	}
 
