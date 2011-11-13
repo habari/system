@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-06 00:00+0000\n"
+"POT-Creation-Date: 2011-11-13 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -829,7 +829,7 @@ msgstr ""
 msgid "Login to %s"
 msgstr ""
 
-#: admin/login.php:40 themes/charcoal/theme.php:215 themes/k2/theme.php:194
+#: admin/login.php:40 themes/charcoal/theme.php:217 themes/k2/theme.php:194
 msgid "Name"
 msgstr ""
 
@@ -968,7 +968,7 @@ msgstr ""
 msgid "Atom Comments"
 msgstr ""
 
-#: themes/charcoal/theme.php:29 themes/charcoal/theme.php:230
+#: themes/charcoal/theme.php:29 themes/charcoal/theme.php:232
 msgid "Charcoal Menu"
 msgstr ""
 
@@ -1052,83 +1052,83 @@ msgstr ""
 msgid "Options saved"
 msgstr ""
 
-#: themes/charcoal/theme.php:116
+#: themes/charcoal/theme.php:118
 #, php-format
 msgid "Displaying posts tagged: %s"
 msgstr ""
 
-#: themes/charcoal/theme.php:119
+#: themes/charcoal/theme.php:121
 #, php-format
 msgid "Displaying posts not tagged: %s"
 msgstr ""
 
-#: themes/charcoal/theme.php:122
+#: themes/charcoal/theme.php:124
 #, php-format
 msgid "Displaying posts tagged: %s and not %s"
 msgstr ""
 
-#: themes/charcoal/theme.php:148 classes/theme.php:904
+#: themes/charcoal/theme.php:150 classes/theme.php:904
 msgid "No Comments"
 msgstr ""
 
-#: themes/charcoal/theme.php:148
+#: themes/charcoal/theme.php:150
 #, php-format
 msgid "%1$d Comment"
 msgid_plural "%1$d Comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: themes/charcoal/theme.php:161
+#: themes/charcoal/theme.php:163
 msgid "Search for "
 msgstr ""
 
-#: themes/charcoal/theme.php:166 themes/charcoal/theme.php:172
+#: themes/charcoal/theme.php:168 themes/charcoal/theme.php:174
 #, php-format
 msgid "Search results for '%s'"
 msgstr ""
 
-#: themes/charcoal/theme.php:169
+#: themes/charcoal/theme.php:171
 #, php-format
 msgid "No results found for your search '%1$s'"
 msgstr ""
 
-#: themes/charcoal/theme.php:169
+#: themes/charcoal/theme.php:171
 #, php-format
 msgid "You can try searching for '%2$s'"
 msgstr ""
 
-#: themes/charcoal/theme.php:175
+#: themes/charcoal/theme.php:177
 #, php-format
 msgid "No results found for your search '%s'"
 msgstr ""
 
-#: themes/charcoal/theme.php:215
+#: themes/charcoal/theme.php:217
 msgid "(Required)"
 msgstr ""
 
-#: themes/charcoal/theme.php:217 themes/k2/theme.php:196
+#: themes/charcoal/theme.php:219 themes/k2/theme.php:196
 msgid "Mail"
 msgstr ""
 
-#: themes/charcoal/theme.php:217
+#: themes/charcoal/theme.php:219
 msgid "(will not be published"
 msgstr ""
 
-#: themes/charcoal/theme.php:217
+#: themes/charcoal/theme.php:219
 msgid "- Required)"
 msgstr ""
 
-#: themes/charcoal/theme.php:219 themes/k2/theme.php:198 classes/post.php:1156
+#: themes/charcoal/theme.php:221 themes/k2/theme.php:198 classes/post.php:1156
 msgid "Website"
 msgstr ""
 
-#: themes/charcoal/theme.php:222 themes/mzingi/theme.php:114
+#: themes/charcoal/theme.php:224 themes/mzingi/theme.php:114
 #: themes/k2/theme.php:201 classes/post.php:1176
 #: plugins/habarisilo/habarisilo.plugin.php:465
 msgid "Submit"
 msgstr ""
 
-#: themes/charcoal/theme.php:242 themes/k2/theme.php:81
+#: themes/charcoal/theme.php:244 themes/k2/theme.php:81
 msgid "Blog"
 msgstr ""
 
