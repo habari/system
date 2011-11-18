@@ -13,7 +13,7 @@
 class Version
 {
 	// DB and API versions are incremented by one as the DB structure or API change
-	const DB_VERSION = 5100;
+	const DB_VERSION = 5101;
 	const API_VERSION = 4956;
 
 	const HABARI_VERSION = '0.8-alpha';
