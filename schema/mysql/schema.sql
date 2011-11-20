@@ -179,8 +179,8 @@ CREATE TABLE {$prefix}terms (
   term VARCHAR(255) NOT NULL,
   term_display VARCHAR(255) NOT NULL,
   vocabulary_id INT UNSIGNED NOT NULL,
-  mptt_left INT UNSIGNED NOT NULL,
-  mptt_right INT UNSIGNED NOT NULL,
+  mptt_left INT SIGNED NOT NULL,
+  mptt_right INT SIGNED NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY ix_mptt (vocabulary_id, mptt_right, mptt_left),
   UNIQUE KEY ix_term (vocabulary_id, term)
