@@ -41,6 +41,7 @@ class CURLRequestProcessor extends RequestProcessor
 			CURLOPT_BUFFERSIZE		=> $config['buffer_size'],
 			CURLOPT_HTTPHEADER		=> $merged_headers,	// headers to send
 			CURLOPT_FAILONERROR		=> true,		// if the status code is >= 400, fail
+			CURLOPT_ENCODING		=> '',	// let curl decide which compression methods to use
 		);
 
 		if ( $this->can_followlocation && $config['follow_redirects'] ) {
