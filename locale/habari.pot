@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-06 00:00+0000\n"
+"POT-Creation-Date: 2011-11-20 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -712,7 +712,7 @@ msgid "Upload Plugin Package"
 msgstr ""
 
 #: admin/plugins.php:88 plugins/habarisilo/habarisilo.plugin.php:416
-#: plugins/habarisilo/habarisilo.plugin.php:567
+#: plugins/habarisilo/habarisilo.plugin.php:574
 msgid "Upload"
 msgstr ""
 
@@ -829,7 +829,7 @@ msgstr ""
 msgid "Login to %s"
 msgstr ""
 
-#: admin/login.php:40 themes/charcoal/theme.php:215 themes/k2/theme.php:194
+#: admin/login.php:40 themes/charcoal/theme.php:217 themes/k2/theme.php:194
 msgid "Name"
 msgstr ""
 
@@ -968,7 +968,7 @@ msgstr ""
 msgid "Atom Comments"
 msgstr ""
 
-#: themes/charcoal/theme.php:29 themes/charcoal/theme.php:230
+#: themes/charcoal/theme.php:29 themes/charcoal/theme.php:232
 msgid "Charcoal Menu"
 msgstr ""
 
@@ -1052,83 +1052,83 @@ msgstr ""
 msgid "Options saved"
 msgstr ""
 
-#: themes/charcoal/theme.php:116
+#: themes/charcoal/theme.php:118
 #, php-format
 msgid "Displaying posts tagged: %s"
 msgstr ""
 
-#: themes/charcoal/theme.php:119
+#: themes/charcoal/theme.php:121
 #, php-format
 msgid "Displaying posts not tagged: %s"
 msgstr ""
 
-#: themes/charcoal/theme.php:122
+#: themes/charcoal/theme.php:124
 #, php-format
 msgid "Displaying posts tagged: %s and not %s"
 msgstr ""
 
-#: themes/charcoal/theme.php:148 classes/theme.php:904
+#: themes/charcoal/theme.php:150 classes/theme.php:904
 msgid "No Comments"
 msgstr ""
 
-#: themes/charcoal/theme.php:148
+#: themes/charcoal/theme.php:150
 #, php-format
 msgid "%1$d Comment"
 msgid_plural "%1$d Comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: themes/charcoal/theme.php:161
+#: themes/charcoal/theme.php:163
 msgid "Search for "
 msgstr ""
 
-#: themes/charcoal/theme.php:166 themes/charcoal/theme.php:172
+#: themes/charcoal/theme.php:168 themes/charcoal/theme.php:174
 #, php-format
 msgid "Search results for '%s'"
 msgstr ""
 
-#: themes/charcoal/theme.php:169
+#: themes/charcoal/theme.php:171
 #, php-format
 msgid "No results found for your search '%1$s'"
 msgstr ""
 
-#: themes/charcoal/theme.php:169
+#: themes/charcoal/theme.php:171
 #, php-format
 msgid "You can try searching for '%2$s'"
 msgstr ""
 
-#: themes/charcoal/theme.php:175
+#: themes/charcoal/theme.php:177
 #, php-format
 msgid "No results found for your search '%s'"
 msgstr ""
 
-#: themes/charcoal/theme.php:215
+#: themes/charcoal/theme.php:217
 msgid "(Required)"
 msgstr ""
 
-#: themes/charcoal/theme.php:217 themes/k2/theme.php:196
+#: themes/charcoal/theme.php:219 themes/k2/theme.php:196
 msgid "Mail"
 msgstr ""
 
-#: themes/charcoal/theme.php:217
+#: themes/charcoal/theme.php:219
 msgid "(will not be published"
 msgstr ""
 
-#: themes/charcoal/theme.php:217
+#: themes/charcoal/theme.php:219
 msgid "- Required)"
 msgstr ""
 
-#: themes/charcoal/theme.php:219 themes/k2/theme.php:198 classes/post.php:1156
+#: themes/charcoal/theme.php:221 themes/k2/theme.php:198 classes/post.php:1156
 msgid "Website"
 msgstr ""
 
-#: themes/charcoal/theme.php:222 themes/mzingi/theme.php:114
+#: themes/charcoal/theme.php:224 themes/mzingi/theme.php:114
 #: themes/k2/theme.php:201 classes/post.php:1176
 #: plugins/habarisilo/habarisilo.plugin.php:465
 msgid "Submit"
 msgstr ""
 
-#: themes/charcoal/theme.php:242 themes/k2/theme.php:81
+#: themes/charcoal/theme.php:244 themes/k2/theme.php:81
 msgid "Blog"
 msgstr ""
 
@@ -3953,85 +3953,89 @@ msgstr ""
 msgid "Are you sure you want to delete this file?"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:510
+#: plugins/habarisilo/habarisilo.plugin.php:511
 msgid "File: "
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:519
+#: plugins/habarisilo/habarisilo.plugin.php:520
 msgid "File added successfully."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:523
+#: plugins/habarisilo/habarisilo.plugin.php:524
 msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:524
+#: plugins/habarisilo/habarisilo.plugin.php:525
 msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:525
+#: plugins/habarisilo/habarisilo.plugin.php:526
 msgid "The uploaded file was only partially uploaded."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:526
+#: plugins/habarisilo/habarisilo.plugin.php:527
 msgid "No file was uploaded."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:527
+#: plugins/habarisilo/habarisilo.plugin.php:528
 msgid "Missing a temporary folder."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:528
+#: plugins/habarisilo/habarisilo.plugin.php:529
 msgid "Failed to write file to disk."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:529
+#: plugins/habarisilo/habarisilo.plugin.php:530
 msgid "A PHP extension stopped the file upload. PHP does not provide a way to ascertain which extension caused the file upload to stop; examining the list of loaded extensions with phpinfo() may help."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:532
+#: plugins/habarisilo/habarisilo.plugin.php:533
 msgid "File could not be added to the silo."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:536
-#: plugins/habarisilo/habarisilo.plugin.php:643
+#: plugins/habarisilo/habarisilo.plugin.php:537
+#: plugins/habarisilo/habarisilo.plugin.php:650
 msgid "Browse the current silo path."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:567
-msgid "Upload to:"
+#: plugins/habarisilo/habarisilo.plugin.php:539
+msgid "Suspicious behaviour or too much time has elapsed.  Please upload your file again."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:585
-#, php-format
-msgid "The directory name contains invalid characters: %s."
+#: plugins/habarisilo/habarisilo.plugin.php:574
+msgid "Upload to:"
 msgstr ""
 
 #: plugins/habarisilo/habarisilo.plugin.php:592
 #, php-format
+msgid "The directory name contains invalid characters: %s."
+msgstr ""
+
+#: plugins/habarisilo/habarisilo.plugin.php:599
+#, php-format
 msgid "Webserver does not have permission to create directory: %s."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:595
+#: plugins/habarisilo/habarisilo.plugin.php:602
 #, php-format
 msgid "Directory: %s already exists."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:614
+#: plugins/habarisilo/habarisilo.plugin.php:621
 #, php-format
 msgid "Directory Deleted: %s"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:619
+#: plugins/habarisilo/habarisilo.plugin.php:626
 #, php-format
 msgid "Directory Created: %s"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:638
+#: plugins/habarisilo/habarisilo.plugin.php:645
 msgid "File deleted successfully."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:640
+#: plugins/habarisilo/habarisilo.plugin.php:647
 msgid "Failed to delete file."
 msgstr ""
 
@@ -4551,4 +4555,174 @@ msgid "Check Database Connection"
 msgstr ""
 
 #: installer/db_setup.php:165
-ms
+msgid "Site Configuration"
+msgstr ""
+
+#: installer/db_setup.php:175
+msgid ""
+"<strong>Site Name</strong> is the name of your site as it will appear\n"
+"\t\t\t\tto your visitors."
+msgstr ""
+
+#: installer/db_setup.php:186
+msgid "<strong>Username</strong> is the username of the initial user in Habari."
+msgstr ""
+
+#: installer/db_setup.php:193
+msgid "Password (again)"
+msgstr ""
+
+#: installer/db_setup.php:198
+msgid "<strong>Password</strong> is the password of the initial user in Habari. Both password fields must match."
+msgstr ""
+
+#: installer/db_setup.php:203
+msgid "Admin Email"
+msgstr ""
+
+#: installer/db_setup.php:208
+msgid "<strong>Admin Email</strong> is the email address of the first user account."
+msgstr ""
+
+#: installer/db_setup.php:220
+msgid "Plugin Activation"
+msgstr ""
+
+#: installer/db_setup.php:256
+msgid "Habari now has all of the information needed to install itself on your server."
+msgstr ""
+
+#: installer/db_setup.php:257 installer/header.php:20
+msgid "Install Habari"
+msgstr ""
+
+#: installer/config.php:17
+msgid "Your <strong>config.php</strong> file is not writable. In order to successfully install Habari, please paste the following into"
+msgstr ""
+
+#: installer/config.php:20
+msgid "<strong>config.php</strong> is a file that tells Habari how to connect to your database. Habari is not able to write this file to your server automatically, so you must create this file yourself to continute the installation."
+msgstr ""
+
+#: installer/config.php:34
+msgid "When you have successfully placed the config file, run the installer again."
+msgstr ""
+
+#: installer/header.php:28
+msgid "Read the user manual"
+msgstr ""
+
+#: installer/header.php:29
+msgid "Read the Habari wiki"
+msgstr ""
+
+#: installer/header.php:30
+msgid "Ask the community"
+msgstr ""
+
+#: installer/header.php:30
+msgid "Mailing List"
+msgstr ""
+
+#: installer/sqlite.php:11
+#, php-format
+msgid "Your <strong>.htaccess</strong> file is not writable. In order to secure your SQLite database, please paste the following into <strong>%s</strong>:"
+msgstr ""
+
+#: installer/sqlite.php:14
+msgid "Your SQLite database is a file on your server like any other file. You can enhance it's security by including a section in your .htaccess file that disallows access to it by readers on the web. Habari is not able to write this section in your .htaccess file automatically, so you must add this section yourself to gain the enhanced security it offers you."
+msgstr ""
+
+#: installer/requirements.php:5
+msgid "Before you install <em>Habari</em>&hellip;"
+msgstr ""
+
+#: installer/requirements.php:8
+msgid "Writable directory needed"
+msgstr ""
+
+#: installer/requirements.php:11
+msgid "Before you can install Habari, you first need to make the install directory writable by php, so that the installation script can write your configuration information properly. The exact process depends on the web server and the ownership of the directory."
+msgstr ""
+
+#: installer/requirements.php:14
+msgid "If your web server is part of the group which owns the directory, you'll need to add group write permissions to the directory. The procedure for this is as follows:"
+msgstr ""
+
+#: installer/requirements.php:18
+msgid "Open a terminal window, and then change to the installation directory:"
+msgstr ""
+
+#: installer/requirements.php:22
+msgid "Change the <em>mode</em> (permissions) of the current directory:"
+msgstr ""
+
+#: installer/requirements.php:26
+msgid "<em>Note</em>: You may need to use <strong>sudo</strong> and enter an administrator password if you do not own the directory."
+msgstr ""
+
+#: installer/requirements.php:31
+msgid "If the web server is not part of the group which owns the directory, you will need to <strong>temporarily</strong> grant world write permissions to the directory:"
+msgstr ""
+
+#: installer/requirements.php:40
+msgid "Be sure to remove the write permissions on the directory as soon as the installation is completed."
+msgstr ""
+
+#: installer/requirements.php:48
+msgid "PHP Upgrade needed&hellip;"
+msgstr ""
+
+#: installer/requirements.php:50
+#, php-format
+msgid "requires PHP %s or newer. Your current PHP version is %s."
+msgstr ""
+
+#: installer/requirements.php:61
+msgid "Missing Extensions"
+msgstr ""
+
+#: installer/requirements.php:63
+msgid "requires the following PHP extensions to be installed:"
+msgstr ""
+
+#: installer/requirements.php:63 installer/requirements.php:70
+msgid "Please contact your web hosting provider if you do not have access to your server."
+msgstr ""
+
+#: installer/requirements.php:70
+msgid "requires PHP's PCRE extension to have Unicode support enabled."
+msgstr ""
+
+#: installer/requirements.php:76
+msgid "No PDO drivers enabled"
+msgstr ""
+
+#: installer/requirements.php:77
+msgid "requires that at least one <a href=\"http://www.php.net/pdo\">PDO driver</a> be installed. Please ask your hosting provider to enable one of the PDO drivers supported by Habari."
+msgstr ""
+
+#: installer/requirements.php:81
+msgid "mod_rewrite not enabled"
+msgstr ""
+
+#: installer/requirements.php:82
+msgid "You have Apache, but mod_rewrite is not enabled. To use Habari, you must enable mod_rewrite in your server configuration. <strong>mod_rewrite</strong> is an Apache module that allows Habari (and other software) to handle URLs dynamically. You need a <code>LoadModule rewrite_module</code> line in your <code>httpd.conf</code>. Please ask your systems administrator or hosting provider to enable mod_rewrite."
+msgstr ""
+
+#: index.php:107
+msgid "Habari General Error"
+msgstr ""
+
+#: index.php:108
+msgid "An error occurred"
+msgstr ""
+
+#: index.php:110
+#, php-format
+msgid "Unable to connect to database.  Error message: %s"
+msgstr ""
+
+#: index.php:111
+msgid "Unable to connect to database."
+msgstr ""

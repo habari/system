@@ -728,9 +728,9 @@ class InstallHandler extends ActionHandler
 		Options::set( 'title', $this->handler_vars['blog_title'] );
 		Options::set( 'pagination', '5' );
 		Options::set( 'atom_entries', '5' );
-		Options::set( 'theme_name', 'k2' );
-		Options::set( 'theme_dir', 'k2' );
-		Themes::activate_theme( 'k2', 'k2' );
+		Options::set( 'theme_name', 'Charcoal' );
+		Options::set( 'theme_dir', 'charcoal' );
+		Themes::activate_theme( 'Charcoal', 'charcoal' );
 		Options::set( 'comments_require_id', 1 );
 		Options::set( 'locale', $this->handler_vars['locale'] );
 		Options::set( 'timezone', 'UTC' );
