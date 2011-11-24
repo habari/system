@@ -341,9 +341,9 @@ class Theme extends Pluggable
 		}
 		
 		if ( isset( $post ) ) {
-			$last_modified = $post->modified->set_timezone( 'UTC' )->format( 'D, d M Y H:i:s e' );
+			$last_modified = $post->modified->set_timezone( 'UTC' )->format( 'D, d M Y H:i:s' );
 			
-			header('Last-Modified: ' . $last_modified, true);
+			header('Last-Modified: ' . $last_modified . ' GMT', true);
 			
 			if ( isset( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) ) {
 				$if_modified_since = HabariDateTime::date_create( $_SERVER['HTTP_IF_MODIFIED_SINCE'] );
@@ -357,8 +357,8 @@ class Theme extends Pluggable
 			
 		}
 		
-		$expires = HabariDateTime::date_create( '30 days' )->set_timezone( 'UTC' )->format( 'D, d M Y H:i:s e' );
-		header('Expires: ' . $expires, true);
+		$expires = HabariDateTime::date_create( '30 days' )->set_timezone( 'UTC' )->format( 'D, d M Y H:i:s' );
+		header('Expires: ' . $expires . ' GMT', true);
 		
 		return $this->display_fallback( $fallback );
 	}
