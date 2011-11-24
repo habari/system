@@ -315,9 +315,17 @@ class Theme extends Pluggable
 			}
 		}
 		
-		// @todo probably need to make this private if the user is logged in so proxy's don't cache it?
-		header('Pragma: public', true);
-		header('Cache-Control: public, max-age=' . HabariDateTime::DAY * 30, true);
+		/** adjust the caching context if the user is logged in - it may contain "private" information only for them
+		 * @link http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1
+		 */
+		if ( User::identify()->loggedin ) {
+			header('Pragma: no-cache', true);
+			header('Cache-Control: private, max-age=' . HabariDateTime::DAY * 30, true);
+		}
+		else {
+			header('Pragma: public', true);
+			header('Cache-Control: public, max-age=' . HabariDateTime::DAY * 30, true);
+		}
 		
 		$etag = var_export( $this, true );
 		$etag = sha1( $etag );
