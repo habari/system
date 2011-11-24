@@ -348,8 +348,9 @@ class Theme extends Pluggable
 				}
 			}
 			
-			header('Expires: ' . $expires, true);
 		}
+		
+		header('Expires: ' . $expires, true);
 		
 		return $this->display_fallback( $fallback );
 	}
