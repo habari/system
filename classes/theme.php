@@ -342,7 +342,6 @@ class Theme extends Pluggable
 		
 		if ( isset( $post ) ) {
 			$last_modified = $post->modified->set_timezone( 'UTC' )->format( 'D, d M Y H:i:s e' );
-			$expires = HabariDateTime::date_create( '30 days' )->set_timezone( 'UTC' )->format( 'D, d M Y H:i:s e' );
 			
 			header('Last-Modified: ' . $last_modified, true);
 			
@@ -358,6 +357,7 @@ class Theme extends Pluggable
 			
 		}
 		
+		$expires = HabariDateTime::date_create( '30 days' )->set_timezone( 'UTC' )->format( 'D, d M Y H:i:s e' );
 		header('Expires: ' . $expires, true);
 		
 		return $this->display_fallback( $fallback );
