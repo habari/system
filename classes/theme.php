@@ -330,7 +330,7 @@ class Theme extends Pluggable
 		$etag = var_export( $this, true );
 		$etag = sha1( $etag );
 		
-		header('ETag: ' . $etag, true);
+		header('ETag: "' . $etag . '"', true);
 
 		if ( isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) ) {
 			if ( $etag == $_SERVER['HTTP_IF_NONE_MATCH'] ) {
