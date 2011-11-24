@@ -343,10 +343,15 @@ class Theme extends Pluggable
 		if ( isset( $posts ) ) {
 			
 			// actually find the most recent post in the list, just in case they've been re-ordered
-			$newest_post = reset( $posts );		// prime with the first one, just so we've got a real object
-			foreach ( $posts as $post ) {
-				if ( $post->modified > $newest_post->modified ) {
-					$newest_post = $post;
+			if ( count( $posts ) == 1 ) {
+				$newest_post = $posts;
+			}
+			else {
+				$newest_post = reset( $posts );		// prime with the first one, just so we've got a real object
+				foreach ( $posts as $post ) {
+					if ( $post->modified > $newest_post->modified ) {
+						$newest_post = $post;
+					}
 				}
 			}
 			
