@@ -340,8 +340,17 @@ class Theme extends Pluggable
 			}
 		}
 		
-		if ( isset( $post ) ) {
-			$last_modified = $post->modified->set_timezone( 'UTC' )->format( 'D, d M Y H:i:s' );
+		if ( isset( $posts ) ) {
+			
+			// actually find the most recent post in the list, just in case they've been re-ordered
+			$newest_post = reset( $posts );		// prime with the first one, just so we've got a real object
+			foreach ( $posts as $post ) {
+				if ( $post->modified > $newest_post->modified ) {
+					$newest_post = $post;
+				}
+			}
+			
+			$last_modified = $newest_post->modified->set_timezone( 'UTC' )->format( 'D, d M Y H:i:s' );
 			
 			header('Last-Modified: ' . $last_modified . ' GMT', true);
 			
