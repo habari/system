@@ -73,8 +73,8 @@ var installer = {
 		var installok = true;
 
 		// If admin passwords have been entered, check if they're the same
-		pass1 = $('#adminpass1');
-		pass2 = $('#adminpass2');
+		var pass1 = $('#adminpass1');
+		var pass2 = $('#adminpass2');
 
 		if ( pass1.val().length > 0 && pass2.val().length > 0 && pass1.val() == pass2.val() ) {
 			pass1.parents('.inputfield').removeClass('invalid').addClass('valid');
