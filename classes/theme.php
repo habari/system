@@ -333,7 +333,7 @@ class Theme extends Pluggable
 		header('ETag: "' . $etag . '"', true);
 
 		if ( isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) ) {
-			if ( $etag == $_SERVER['HTTP_IF_NONE_MATCH'] ) {
+			if ( $etag == trim( $_SERVER->raw('HTTP_IF_NONE_MATCH'), '"' ) ) {
 				header( 'HTTP/1.1 304 Not Modified', true, 304);
 				header( 'X-Habari-Cache-Match: ETag');
 				die();
