@@ -333,18 +333,21 @@ class Theme extends Pluggable
 		header('ETag: "' . $etag . '"', true);
 
 		if ( isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) ) {
-			if ( $etag == $_SERVER['HTTP_IF_NONE_MATCH'] ) {
+			if ( $etag == trim( $_SERVER->raw('HTTP_IF_NONE_MATCH'), '"' ) ) {
 				header( 'HTTP/1.1 304 Not Modified', true, 304);
 				header( 'X-Habari-Cache-Match: ETag');
 				die();
 			}
 		}
 		
-		if ( isset( $posts ) ) {
+		if ( isset( $posts ) && count( $posts ) > 0 ) {
 			
 			// actually find the most recent post in the list, just in case they've been re-ordered
-			if ( count( $posts ) == 1 ) {
+			if ( $posts instanceof Post ) {
 				$newest_post = $posts;
+			}
+			else if ( count( $posts ) == 1 ) {
+				$newest_post = $posts[0];
 			}
 			else {
 				$newest_post = reset( $posts );		// prime with the first one, just so we've got a real object
