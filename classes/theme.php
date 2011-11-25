@@ -340,7 +340,7 @@ class Theme extends Pluggable
 			}
 		}
 		
-		if ( isset( $posts ) ) {
+		if ( isset( $posts ) && count( $posts ) > 0 ) {
 			
 			// actually find the most recent post in the list, just in case they've been re-ordered
 			if ( count( $posts ) == 1 ) {
