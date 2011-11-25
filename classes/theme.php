@@ -343,8 +343,11 @@ class Theme extends Pluggable
 		if ( isset( $posts ) && count( $posts ) > 0 ) {
 			
 			// actually find the most recent post in the list, just in case they've been re-ordered
-			if ( count( $posts ) == 1 ) {
+			if ( $posts instanceof Post ) {
 				$newest_post = $posts;
+			}
+			else if ( count( $posts ) == 1 ) {
+				$newest_post = $posts[0];
 			}
 			else {
 				$newest_post = reset( $posts );		// prime with the first one, just so we've got a real object
