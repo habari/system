@@ -9,9 +9,18 @@
 				$this->can_followlocation = false;
 			}
 			
+			if ( !defined( 'FILE_CACHE_LOCATION' ) ) {
+				define( 'FILE_CACHE_LOCATION', HABARI_PATH . '/user/cache/' );
+			}
+			
 		}
 		
 		public function execute ( $method, $url, $headers, $body, $config ) {
+			
+			// before we handle headers, see if we should add our compression headers
+			if ( $this->can_zlib() ) {
+				$headers['Accept-Encoding'] = 'gzip,deflate';
+			}
 			
 			$merged_headers = array();
 			foreach ( $headers as $k => $v ) {
@@ -98,11 +107,93 @@
 				
 			}
 			
+			// check to see if the response was compressed
+			if ( isset( $headers['Content-Encoding'] ) ) {
+				$encoding = trim( $headers['Content-Encoding'] );
+				
+				if ( $encoding == 'gzip' ) {
+					$body = $this->gzdecode( $body );
+				}
+				else if ( $encoding == 'deflate' ) {
+					$body = gzinflate( $body );
+				}
+			}
+			
 			$this->response_headers = $headers;
 			$this->response_body = $body;
 			$this->executed = true;
 			
 			return true;
+			
+		}
+		
+		private function can_zlib ( ) {
+			
+			// make sure that the zlib extension is loaded
+			if ( !extension_loaded( 'zlib' ) ) {
+				return false;
+			}
+			
+			// since we have to write to a temp file to de-gzip, make sure we can do that
+			$tmp = tempnam( FILE_CACHE_LOCATION, 'RRS' );		// RRS for RemoteRequestSocket, get it?
+			
+			// if creating the temp file failed, that's it
+			if ( !$tmp ) {
+				return false;
+			}
+			
+			$fh = @fopen( $tmp, 'w+b' );
+			
+			// if actually opening the file for writing failed
+			if ( !$fh ) {
+				return false;
+			}
+			
+			fclose( $fh );
+			
+			// now we should be good to go, let's clean up after ourselves
+			if ( file_exists( $tmp ) ) {
+				unlink( $tmp );
+			}
+			
+			// and we're good
+			return true;
+			
+		}
+		
+		private function gzdecode ( $body ) {
+			
+			// create the temp file to write to
+			$tmp = tempnam( FILE_CACHE_LOCATION, 'RRS' );
+			
+			if ( !$tmp ) {
+				throw new Exception( _t( 'Socket Error. Unable to create temporary file name.' ) );
+			}
+			
+			$result = file_put_contents( $tmp, $body );
+			
+			if ( $result === false ) {
+				throw new Exception( _t( 'Socket Error. Unable to write to temporary file.' ) );
+			}
+			
+			// before we read it back in, try to free up as much memory as possible
+			unset( $body );
+			
+			$zp = gzopen( $tmp, 'rb' );
+			
+			$body = '';
+			while ( !gzeof( $zp ) ) {
+				$body .= gzread( $zp, 1024 );
+			}
+			
+			gzclose( $zp );
+			
+			// clean up the temp file
+			if ( file_exists( $tmp ) ) {
+				unlink( $tmp );
+			}
+			
+			return $body;
 			
 		}
 		
