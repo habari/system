@@ -144,7 +144,13 @@ class InstallHandler extends ActionHandler
 
 		// make sure the admin password is correct
 		if ( $this->handler_vars['admin_pass1'] !== $this->handler_vars['admin_pass2'] ) {
-			$this->theme->assign( 'form_errors', array( 'password_mismatch'=>_t( 'Password mis-match.' ) ) );
+			$this->theme->assign( 'form_errors', array( 'password_mismatch' => _t( 'Password mis-match.' ) ) );
+			$this->display( 'db_setup' );
+		}
+
+		// don't accept emails with control characters
+		if ( !ctype_print($this->handler_vars['admin_email']) ) {
+			$this->theme->assign( 'form_errors', array( 'admin_email' => _t( 'Only printable characters are allowed.' ) ) );
 			$this->display( 'db_setup' );
 		}
 
@@ -677,9 +683,9 @@ class InstallHandler extends ActionHandler
 
 		// Insert the admin user
 		$user = User::create( array (
-			'username'=>$admin_username,
-			'email'=>$admin_email,
-			'password'=>$password
+			'username' => $admin_username,
+			'email' => $admin_email,
+			'password' => $password
 		) );
 
 		return $user;
