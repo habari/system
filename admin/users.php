@@ -70,7 +70,7 @@
 		<input type="hidden" name="password_digest" id="password_digest" value="<?php echo $wsse['digest']; ?>">
 	
 		<span class="reassign minor">
-			<?php printf( _t('Reassign posts to %s'), Utils::html_select('reassign', $authors )); ?> and
+			<?php printf( _t('Reassign posts to %s'), Utils::html_select('reassign', $authors )); _e('and'); ?>
 			<input type="submit" name="delete" value="<?php _e('Delete Selected'); ?>">
 		</span>
 	</div>

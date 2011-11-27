@@ -73,8 +73,8 @@ var installer = {
 		var installok = true;
 
 		// If admin passwords have been entered, check if they're the same
-		pass1 = $('#adminpass1');
-		pass2 = $('#adminpass2');
+		var pass1 = $('#adminpass1');
+		var pass2 = $('#adminpass2');
 
 		if ( pass1.val().length > 0 && pass2.val().length > 0 && pass1.val() == pass2.val() ) {
 			pass1.parents('.inputfield').removeClass('invalid').addClass('valid');
@@ -86,7 +86,7 @@ var installer = {
 		}
 
 		// Check other details have been entered
-		$('#sitename, #adminuser, #adminemail').each(function(){
+		$('#sitename, #adminuser').each(function(){
 			if ($(this).val() != '') {
 				$(this).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
 			}
@@ -95,6 +95,16 @@ var installer = {
 				installok = false;
 			}
 		});
+
+		// Check if email is valid
+		var regexemail = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[A-Z]{2}|com|org|net|edu|gov|mil|biz|info|mobi|name|aero|asia|jobs|museum)\b/ // Original from http://www.regular-expressions.info/email.html
+		if ( regexemail.test( $("#adminemail").val() ) ) {
+			$("#adminemail").parents(".inputfield").removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
+		}
+		else {
+			$("#adminemail").parents('.inputfield').removeClass('valid').addClass('invalid');
+			installok = false;
+		}
 
 		if (installok) {
 //			installer.checkDBCredentials();
