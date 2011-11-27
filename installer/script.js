@@ -96,10 +96,10 @@ var installer = {
 			}
 		});
 
-		// Check if email is valid
-		var regexemail = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[A-Z]{2}|com|org|net|edu|gov|mil|biz|info|mobi|name|aero|asia|jobs|museum)\b/ // Original from http://www.regular-expressions.info/email.html
-		if ( regexemail.test( $("#adminemail").val() ) ) {
-			$("#adminemail").parents(".inputfield").removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
+		// Very loosely check if the email is valid (don't be tempted to check this more strictly, you'll go mad, annoy people, or both).
+		var regexemail = /.+@.+/;
+		if (regexemail.test($('#adminemail').val())) {
+			$('#adminemail').parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
 		}
 		else {
 			$("#adminemail").parents('.inputfield').removeClass('valid').addClass('invalid');
