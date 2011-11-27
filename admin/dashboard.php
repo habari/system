@@ -15,7 +15,11 @@
 		<![endif]-->
 
 		<p>
-		<?php _e( '%s has been active for %s', array( Options::get('title'), $active_time->friendly( 3, false ) ) ); ?>
+		<?php
+		if ( isset($active_time) ) {
+			_e( '%s has been active for %s', array( Options::get('title'), $active_time->friendly( 3, false ) ) );
+		}
+		?>
 		<br>
 
 		<?php
