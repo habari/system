@@ -243,6 +243,7 @@ class AdminHandler extends ActionHandler
 			}
 		}
 		$this->theme->plugins = $plugins;
+		$this->theme->admin_page = _t( 'System Information' );
 
 		$this->display( 'sysinfo' );
 	}
