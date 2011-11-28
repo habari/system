@@ -1253,12 +1253,14 @@ class Theme extends Pluggable
 
 		// This is the block wrapper fallback template list
 		$fallback = array(
-			$context . '.' . $area . '.blockwrapper',
-			$context . '.blockwrapper',
 			$area . '.blockwrapper',
 			'blockwrapper',
 			'content',
 		);
+		if(!is_null($context)) {
+			array_unshift($fallback, $context . '.blockwrapper');
+			array_unshift($fallback, $context . '.' . $area . '.blockwrapper');
+		}
 
 		$output = '';
 		$i = 0;
