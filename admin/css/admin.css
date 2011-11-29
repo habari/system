@@ -1986,7 +1986,9 @@ body.page-themes .currenttheme .thumb {
 /*- OPTIONS PAGE */
 
 body.page-options .container .item {
-	line-height: 34px;
+	line-height: 1.5;
+	padding-top: 1em;
+	padding-bottom: 1em;
 }
 
 body.page-options #title {
