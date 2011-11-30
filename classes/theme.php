@@ -314,6 +314,69 @@ class Theme extends Pluggable
 				}
 			}
 		}
+		
+		/** adjust the caching context if the user is logged in - it may contain "private" information only for them
+		 * @link http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1
+		 */
+		if ( User::identify()->loggedin ) {
+			header('Pragma: no-cache', true);
+			header('Cache-Control: private, max-age=' . HabariDateTime::DAY * 30, true);
+		}
+		else {
+			header('Pragma: public', true);
+			header('Cache-Control: public, max-age=' . HabariDateTime::DAY * 30, true);
+		}
+		
+		$etag = var_export( $this, true );
+		$etag = sha1( $etag );
+		
+		header('ETag: "' . $etag . '"', true);
+
+		if ( isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) ) {
+			if ( $etag == trim( $_SERVER->raw('HTTP_IF_NONE_MATCH'), '"' ) ) {
+				header( 'HTTP/1.1 304 Not Modified', true, 304);
+				header( 'X-Habari-Cache-Match: ETag');
+				die();
+			}
+		}
+		
+		if ( isset( $posts ) && count( $posts ) > 0 ) {
+			
+			// actually find the most recent post in the list, just in case they've been re-ordered
+			if ( $posts instanceof Post ) {
+				$newest_post = $posts;
+			}
+			else if ( count( $posts ) == 1 ) {
+				$newest_post = $posts[0];
+			}
+			else {
+				$newest_post = reset( $posts );		// prime with the first one, just so we've got a real object
+				foreach ( $posts as $post ) {
+					if ( $post->modified > $newest_post->modified ) {
+						$newest_post = $post;
+					}
+				}
+			}
+			
+			$last_modified = $newest_post->modified->set_timezone( 'UTC' )->format( 'D, d M Y H:i:s' );
+			
+			header('Last-Modified: ' . $last_modified . ' GMT', true);
+			
+			if ( isset( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) ) {
+				$if_modified_since = HabariDateTime::date_create( $_SERVER['HTTP_IF_MODIFIED_SINCE'] );
+				
+				if ( $post->modified <= $if_modified_since ) {
+					header( 'HTTP/1.1 304 Not Modified', true, 304 );
+					header( 'X-Habari-Cache-Match: Modified' );
+					die();
+				}
+			}
+			
+		}
+		
+		$expires = HabariDateTime::date_create( '30 days' )->set_timezone( 'UTC' )->format( 'D, d M Y H:i:s' );
+		header('Expires: ' . $expires . ' GMT', true);
+		
 		return $this->display_fallback( $fallback );
 	}
 
@@ -1216,12 +1279,14 @@ class Theme extends Pluggable
 
 		// This is the block wrapper fallback template list
 		$fallback = array(
-			$context . '.' . $area . '.blockwrapper',
-			$context . '.blockwrapper',
 			$area . '.blockwrapper',
 			'blockwrapper',
 			'content',
 		);
+		if(!is_null($context)) {
+			array_unshift($fallback, $context . '.blockwrapper');
+			array_unshift($fallback, $context . '.' . $area . '.blockwrapper');
+		}
 
 		$output = '';
 		$i = 0;

@@ -19,7 +19,9 @@ class AdminUsersHandler extends AdminHandler
 		$edit_user = User::identify();
 		$permission = false;
 
-		if ( ( $this->handler_vars['user'] == '' ) || ( User::get_by_name( $this->handler_vars['user'] ) == $edit_user ) ) {
+		// Check if the user is editing their own profile
+		$self = $this->handler_vars['user'] == '' || User::get_by_name($this->handler_vars['user']) == $edit_user;
+		if ($self) {
 			if ( $edit_user->can( 'manage_self' ) || $edit_user->can( 'manage_users' ) ) {
 				$permission = true;
 			}
@@ -175,7 +177,7 @@ class AdminUsersHandler extends AdminHandler
 		Plugins::act( 'form_user', $form, $edit_user );
 
 		$this->theme->form = $form->get();
-		$this->theme->admin_page = _t( 'user' );
+		$this->theme->admin_page = $self ? _t( 'My Profile') : _t( 'User' );
 
 		$this->theme->display( 'user' );
 
