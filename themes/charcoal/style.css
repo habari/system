@@ -207,6 +207,9 @@ li.login a:hover {
 	margin:0;
 	padding:0;
 }
+body.display_home #main-posts {
+	padding:20px 0 0 0;
+}
 .post-nav{
 	margin-top:10px;
 	height:15px;
