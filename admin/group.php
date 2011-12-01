@@ -77,7 +77,7 @@
 				<tr class="head">
 					<th class="pct40"><?php _e( 'Token Description' ); ?></th>
 					<?php foreach ( $access_names as $name ): ?>
-					<th class="pct10"><?php echo $name; ?></th>
+					<th class="pct10"><?php _e( $name ); ?></th>
 					<?php endforeach; ?>
 				</tr>
 				<?php foreach ( $crud_tokens as $token ): ?>

@@ -16,6 +16,7 @@
  * grants that permission.
  *
  */
+
 class ACL
 {
 	/**
@@ -845,6 +846,14 @@ SQL;
 		$authenticated_group->grant( 'post_page', 'read' );
 		$authenticated_group->grant( 'comment' );
 
+	}
+
+	/**
+	 * Dummy function to inject strings into the .pot
+	 */
+	private static function translations() {
+		// @locale The names of the CRUD group token permissions
+		_t( 'read' ); _t( 'edit' ); _t( 'delete' ); _t( 'create' );
 	}
 
 }
