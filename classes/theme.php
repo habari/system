@@ -314,43 +314,6 @@ class Theme extends Pluggable
 				}
 			}
 		}
-		
-		// @todo probably need to make this private if the user is logged in so proxy's don't cache it?
-		header('Pragma: public', true);
-		header('Cache-Control: public, max-age=' . HabariDateTime::DAY * 30, true);
-		
-		$etag = var_export( $this, true );
-		$etag = sha1( $etag );
-		
-		header('ETag: ' . $etag, true);
-
-		if ( isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) ) {
-			if ( $etag == $_SERVER['HTTP_IF_NONE_MATCH'] ) {
-				header( 'HTTP/1.1 304 Not Modified', true, 304);
-				header( 'X-Habari-Cache-Match: ETag');
-				die();
-			}
-		}
-		
-		if ( isset( $post ) ) {
-			$last_modified = $post->modified->set_timezone( 'UTC' )->format( 'D, d M Y H:i:s e' );
-			$expires = HabariDateTime::date_create( '30 days' )->set_timezone( 'UTC' )->format( 'D, d M Y H:i:s e' );
-			
-			header('Last-Modified: ' . $last_modified, true);
-			
-			if ( isset( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) ) {
-				$if_modified_since = HabariDateTime::date_create( $_SERVER['HTTP_IF_MODIFIED_SINCE'] );
-				
-				if ( $post->modified <= $if_modified_since ) {
-					header( 'HTTP/1.1 304 Not Modified', true, 304 );
-					header( 'X-Habari-Cache-Match: Modified' );
-					die();
-				}
-			}
-			
-			header('Expires: ' . $expires, true);
-		}
-		
 		return $this->display_fallback( $fallback );
 	}
 
