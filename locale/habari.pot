@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-02 20:35+0000\n"
+"POT-Creation-Date: 2011-12-04 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -487,50 +487,25 @@ msgid "Display information about the server and Habari"
 msgstr ""
 
 #: admin/footer.php:24 admin/sysinfo.php:2 admin/sysinfo.php:7
-#: handlers/adminhandler.php:246
+#: admin/sysinfo.php:8 handlers/adminhandler.php:246
 msgid "System Information"
 msgstr ""
 
-#: admin/sysinfo.php:8
-msgid "SYSTEM INFORMATION\n"
-msgstr ""
-
-#: admin/sysinfo.php:24
+#: admin/sysinfo.php:24 admin/sysinfo.php:25
 msgid "Site Information"
 msgstr ""
 
-#: admin/sysinfo.php:25
-msgid ""
-"\n"
-"SITE INFORMATION\n"
-msgstr ""
-
-#: admin/sysinfo.php:41
+#: admin/sysinfo.php:41 admin/sysinfo.php:42
 msgid "User Classes"
 msgstr ""
 
-#: admin/sysinfo.php:42
-msgid ""
-"\n"
-"USER CLASSES\n"
-msgstr ""
-
-#: admin/sysinfo.php:53 admin/sysinfo.php:78
+#: admin/sysinfo.php:53 admin/sysinfo.php:54 admin/sysinfo.php:78
+#: admin/sysinfo.php:79
 msgid "None found"
 msgstr ""
 
-#: admin/sysinfo.php:54 admin/sysinfo.php:79
-msgid "None found\n"
-msgstr ""
-
-#: admin/sysinfo.php:60
+#: admin/sysinfo.php:60 admin/sysinfo.php:61
 msgid "Plugin Information"
-msgstr ""
-
-#: admin/sysinfo.php:61
-msgid ""
-"\n"
-"PLUGIN INFORMATION"
 msgstr ""
 
 #: admin/sysinfo.php:86
