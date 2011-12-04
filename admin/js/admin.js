@@ -1,4 +1,4 @@
-// Habari ajax. All Habari Ajax calls should go through here. It allows us to use uniform humanmsg stuff, 
+// Habari ajax. All Habari Ajax calls should go through here. It allows us to use uniform humanmsg stuff,
 // as well as uniform error handling
 var habari_ajax = {
 	post: function(post_url, post_data, ahah_target, local_cb) {
@@ -56,11 +56,11 @@ var habari_ajax = {
 					msg = textStatus;
 					break;
 				default:
-					msg = 'Uh Oh. An error has occurred. Please try again later.';
+					msg = _t('Uh Oh. An error has occurred. Please try again later.');
 			}
 		}
 		else {
-			msg = 'Uh Oh. An error has occurred. Please try again later.';
+			msg = _t('Uh Oh. An error has occurred. Please try again later.');
 		}
 		spinner.stop();
 		human_msg.display_msg(msg);
@@ -288,7 +288,7 @@ var itemManage = {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 1;
 			});
-			$('.item.controls label.selectedtext').removeClass('none').addClass('all').html('All ' + count + ' visible selected (<a href="#all" class="everything">Select all ' + total + '</a>)');
+			$('.item.controls label.selectedtext').removeClass('none').addClass('all').html(_t('All %1$s visible selected (<a href="#all" class="everything">Select all %2$s</a>)', count, total));
 
 			$('.item.controls label.selectedtext .everything').click(function() {
 				itemManage.checkEverything();
@@ -300,16 +300,16 @@ var itemManage = {
 			}
 
 			if ((total == count) || $('.currentposition .total').length === 0) {
-				$('.item.controls label.selectedtext').removeClass('none').addClass('all').addClass('total').html('All ' + total + ' selected');
+				$('.item.controls label.selectedtext').removeClass('none').addClass('all').addClass('total').html(_t('All %s selected', total));
 			}
 		} else {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 0;
 			});
-			$('.item.controls label.selectedtext').removeClass('none').removeClass('all').text(count + ' selected');
+			$('.item.controls label.selectedtext').removeClass('none').removeClass('all').text(_t('%s selected', count));
 
 			if (visible != count) {
-				$('.item.controls label.selectedtext').text(count + ' selected (' + visible + ' visible)');
+				$('.item.controls label.selectedtext').text(_t('%1$s selected (%2$s visible)', count, visible));
 			}
 		}
 	},
@@ -521,7 +521,7 @@ var themeManage = {
 		window.onbeforeunload = function() {
 			if (themeManage.changed()) {
 				spinner.start(); spinner.stop();
-				return 'You did not save the changes you made. \nLeaving this page will result in the lose of data.';
+				return _t('You did not save the changes you made. \nLeaving this page will result in the lose of data.');
 			}
 		};
 	},
@@ -875,7 +875,7 @@ var timeline = {
 	},
 	updateLoupeInfo: function() {
 		var loupeInfo = timeline.getLoupeInfo();
-		$('.currentposition').html( loupeInfo.start +'-'+ loupeInfo.end +' of <span class="total inline">'+ timeline.totalCount + '</span>');
+		$('.currentposition').html( _t('%1$s-%2$s of <span class="total inline">%3$s</span>', loupeInfo.start, loupeInfo.end, timeline.totalCount));
 
 		// Hide 'newer' and 'older' links as necessary
 		if (loupeInfo.start == 1) {$('.navigator .older').animate({opacity: '0'}, 200);} 
