@@ -110,7 +110,8 @@ class InstallHandler extends ActionHandler
 			// if a $blog_data array exists in config.php, use it
 			// to pre-load values for the installer
 			// ** this is completely optional **
-			if ( isset( $blog_data ) ) {
+			if ( Config::exists( 'blog_data' ) ) {
+				$blog_data = Config::get('blog_data'); 
 				foreach ( $blog_data as $blog_datum => $value ) {
 					$this->handler_vars[$blog_datum] = $value;
 				}
