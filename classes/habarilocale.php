@@ -319,6 +319,18 @@ class HabariLocale
 	}
 
 	/**
+	 * Return the entire message catalog for a domain as an array
+	 *
+	 * @static
+	 * @param string $domain (optional) The domain to return
+	 * @return array The array of locale messages
+	 */
+	public static function get_messages($domain = 'habari')
+	{
+		return self::$messages[$domain];
+	}
+
+	/**
 	 * Given a string translated into the current locale, return the untranslated string.
 	 *
 	 * @param string $text The translated string
