@@ -111,7 +111,7 @@ class InstallHandler extends ActionHandler
 			// to pre-load values for the installer
 			// ** this is completely optional **
 			if ( Config::exists( 'blog_data' ) ) {
-				$blog_data = Config::get('blog_data'); 
+				$blog_data = Config::get('blog_data');
 				foreach ( $blog_data as $blog_datum => $value ) {
 					$this->handler_vars[$blog_datum] = $value;
 				}
@@ -736,27 +736,38 @@ class InstallHandler extends ActionHandler
 		EventLog::register_type( 'comment', 'habari' );
 
 		// Create the default options
+		$defaults = array(
+			'installed' => true,
+			'title' => $this->handler_vars['blog_title'],
+			'pagination' => 5,
+			'atom_entries' => 5,
+			'theme_name' => 'Charcoal',
+			'theme_dir' => 'charcoal',
+			'comments_require_id' => 1,
+			'locale' => $this->handler_vars['locale'],
+			'timezone' => 'UTC',
+			'dateformat' => 'Y-m-d',
+			'timeformat' => 'g:i a',
+			'log_min_severity' => 3,
+			'spam_percentage' => 100,
+			// generate a random-ish number to use as the salt for
+			// a SHA1 hash that will serve as the unique identifier for
+			// this installation.  Also for use in cookies
+			'GUID' => sha1( Utils::nonce() ),
+		);
 
-		Options::set( 'installed', true );
+		// Get values from config installation profile
+		foreach ( $this->handler_vars as $id => $value ) {
+			if ( preg_match( '/option_(.+)/u', $id, $matches ) ) {
+				$defaults[$matches[1]] = $value;
+			}
+		}
 
-		Options::set( 'title', $this->handler_vars['blog_title'] );
-		Options::set( 'pagination', '5' );
-		Options::set( 'atom_entries', '5' );
-		Options::set( 'theme_name', 'Charcoal' );
-		Options::set( 'theme_dir', 'charcoal' );
-		Themes::activate_theme( 'Charcoal', 'charcoal' );
-		Options::set( 'comments_require_id', 1 );
-		Options::set( 'locale', $this->handler_vars['locale'] );
-		Options::set( 'timezone', 'UTC' );
-		Options::set( 'dateformat', 'Y-m-d' );
-		Options::set( 'timeformat', 'g:i a' );
-		Options::set( 'log_min_severity', 3 );		// the default logging level - 3 should be 'info'
-		Options::set( 'spam_percentage', 100 );
-
-		// generate a random-ish number to use as the salt for
-		// a SHA1 hash that will serve as the unique identifier for
-		// this installation.  Also for use in cookies
-		Options::set( 'GUID', sha1( Utils::nonce() ) );
+		// Apply values to the options table and activate the default theme
+		foreach($defaults as $key => $value) {
+			Options::set($key, $value);
+		}
+		Themes::activate_theme( $defaults['theme_name'], $defaults['theme_dir'] );
 
 		// Add the cronjob to trim the log so that it doesn't get too big
 		CronTab::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t( 'Trim the log table' ) );
@@ -973,10 +984,12 @@ class InstallHandler extends ActionHandler
 	{
 		// extract checked plugin IDs from $_POST
 		$plugin_ids = array();
-		foreach ( $_POST as $id => $activate ) {
-			if ( preg_match( '/plugin_\w+/u', $id ) && $activate ) {
-				$id = substr( $id, 7 );
-				$plugin_ids[] = $id;
+		foreach ( $this->handler_vars as $id => $activate ) {
+			if ( preg_match( '/plugin_([a-f0-9]{8})/u', $id, $matches ) && $activate ) {
+				$plugin_ids[] = $matches[1];
+			}
+			elseif ( preg_match( '/plugin_(.+)/u', $id, $matches ) && $activate ) {
+				$plugin_ids[] = $matches[1];
 			}
 		}
 
@@ -990,10 +1003,16 @@ class InstallHandler extends ActionHandler
 		// loop through all plugins to find matching plugin files
 		$plugin_files = Plugins::list_all();
 		foreach ( $plugin_files as $file ) {
+			if ( in_array( basename($file), $plugin_ids ) ) {
+				Plugins::activate_plugin( $file );
+				continue;
+			}
 			$id = Plugins::id_from_file( $file );
 			if ( in_array( $id, $plugin_ids ) ) {
 				Plugins::activate_plugin( $file );
+				echo 'ACTIVATED:';
 			}
+			var_dump($file, $id);
 		}
 
 		// unset the user_id session variable
