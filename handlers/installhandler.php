@@ -727,6 +727,13 @@ class InstallHandler extends ActionHandler
 	 */
 	private function create_default_options()
 	{
+		// Let's prepare the EventLog here, first
+		EventLog::register_type( 'default', 'habari' );
+		EventLog::register_type( 'user', 'habari' );
+		EventLog::register_type( 'authentication', 'habari' );
+		EventLog::register_type( 'content', 'habari' );
+		EventLog::register_type( 'comment', 'habari' );
+
 		// Create the default options
 
 		Options::set( 'installed', true );
@@ -749,13 +756,6 @@ class InstallHandler extends ActionHandler
 		// a SHA1 hash that will serve as the unique identifier for
 		// this installation.  Also for use in cookies
 		Options::set( 'GUID', sha1( Utils::nonce() ) );
-
-		// Let's prepare the EventLog here, as well
-		EventLog::register_type( 'default', 'habari' );
-		EventLog::register_type( 'user', 'habari' );
-		EventLog::register_type( 'authentication', 'habari' );
-		EventLog::register_type( 'content', 'habari' );
-		EventLog::register_type( 'comment', 'habari' );
 
 		// Add the cronjob to trim the log so that it doesn't get too big
 		CronTab::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t( 'Trim the log table' ) );
