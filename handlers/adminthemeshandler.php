@@ -246,6 +246,7 @@ class AdminThemesHandler extends AdminHandler
 		echo '<script type="text/javascript">
 			human_msg.display_msg(' . $msg . ');
 			spinner.stop();
+			themeManage.change_scope();
 		</script>';
 	}
 
