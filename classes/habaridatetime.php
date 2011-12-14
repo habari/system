@@ -398,7 +398,7 @@ class HabariDateTime extends DateTime
 	 **/
 	public static function get_default_date_format()
 	{
-		if ( User::identify()->info->locale_date_format != Options::get( 'dateformat' ) ) {
+		if ( isset(User::identify()->info->local_date_format) && User::identify()->info->locale_date_format != Options::get( 'dateformat' ) ) {
 			self::set_default_date_format( User::identify()->info->locale_date_format );
 		}
 		return self::$default_date_format;
@@ -423,7 +423,7 @@ class HabariDateTime extends DateTime
 	 **/
 	public static function get_default_time_format()
 	{
-		if ( User::identify()->info->locale_time_format != Options::get( 'timeformat' ) ) {
+		if ( isset(User::identify()->info->local_time_format) && User::identify()->info->locale_time_format != Options::get( 'timeformat' ) ) {
 			self::set_default_time_format( User::identify()->info->locale_time_format );
 		}
 		return self::$default_time_format;
