@@ -222,7 +222,7 @@ class HiEngineParser
 		if ( preg_match( '/^(\w+):(.+)$/u', $cmd, $cmd_matches ) ) {
 			switch ( strtolower( $cmd_matches[1] ) ) {
 				case 'area':
-					return '<?php $theme->area(\'' . $cmd_matches[2] . '\'); ?>';
+					return '<?php echo $theme->area(\'' . $cmd_matches[2] . '\'); ?>';
 				case 'display':
 					return '<?php $theme->display(\'' . $cmd_matches[2] . '\'); ?>';
 				case 'option':
