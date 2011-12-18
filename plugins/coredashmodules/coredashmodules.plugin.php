@@ -45,22 +45,22 @@ class CoreDashModules extends Plugin
 	 */
 	function filter_dash_modules( $modules )
 	{
-		$modules[] = 'Latest Entries';
+		$modules[] = _t( 'Latest Entries' );
 		if (User::identify()->can('manage_all_comments')) {
-			$modules[] = 'Latest Comments';
+			$modules[] = _t( 'Latest Comments' );
 		}
 		if (User::identify()->can('manage_logs')) {
-			$modules[] = 'Latest Log Activity';
+			$modules[] = _t( 'Latest Log Activity' );
 		}
-		$modules[] = 'Post Types and Statuses';
+		$modules[] = _t( 'Post Types and Statuses' );
 		$this->add_template( 'dash_logs', dirname( __FILE__ ) . '/dash_logs.php' );
 		$this->add_template( 'dash_latestentries', dirname( __FILE__ ) . '/dash_latestentries.php' );
 		$this->add_template( 'dash_latestcomments', dirname( __FILE__ ) . '/dash_latestcomments.php' );
 		$this->add_template( 'dash_posttypes', dirname( __FILE__ ) . '/dash_posttypes.php' );
-		
+
 		return $modules;
 	}
-	
+
 	/**
 	 * filter_dash_module_latest_log_activity
 	 * Sets theme variables and handles logic for the
