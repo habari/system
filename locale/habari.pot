@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-18 00:00+0000\n"
+"POT-Creation-Date: 2011-12-18 16:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,7 +24,7 @@ msgstr ""
 
 #: admin/tags.php:22 admin/users.php:65 admin/posts.php:13 admin/posts.php:39
 #: admin/logs.php:15 admin/logs.php:78 admin/comments.php:16
-#: admin/comments.php:40
+#: admin/comments.php:40 admin/js/admin.js:286
 msgid "None selected"
 msgstr ""
 
@@ -170,6 +170,11 @@ msgstr ""
 msgid "Configure"
 msgstr ""
 
+#: admin/block_instances.php:19
+#, php-format
+msgid "Add to %s"
+msgstr ""
+
 #: admin/formcontrols/formcontrol_textmulti.php:16 classes/formui.php:1632
 msgid "remove"
 msgstr ""
@@ -289,6 +294,10 @@ msgstr ""
 
 #: admin/block_areas.php:3
 msgid "Default"
+msgstr ""
+
+#: admin/block_areas.php:27
+msgid "No assigned blocks"
 msgstr ""
 
 #: admin/publish.php:29
@@ -444,6 +453,14 @@ msgstr ""
 #: admin/themes.php:36 admin/themes.php:112
 #, php-format
 msgid "%1$s is licensed under the %2$s"
+msgstr ""
+
+#: admin/themes.php:50
+msgid "General"
+msgstr ""
+
+#: admin/themes.php:58
+msgid "Areas"
 msgstr ""
 
 #: admin/themes.php:68 themes/charcoal/theme.php:66 classes/post.php:936
@@ -3765,26 +3782,30 @@ msgstr ""
 msgid "M j"
 msgstr ""
 
-#: plugins/coredashmodules/coredashmodules.plugin.php:94
-msgid "Latest Log Activity"
-msgstr ""
-
+#: plugins/coredashmodules/coredashmodules.plugin.php:48
 #: plugins/coredashmodules/coredashmodules.plugin.php:110
 msgid "Latest Entries"
 msgstr ""
 
+#: plugins/coredashmodules/coredashmodules.plugin.php:50
 #: plugins/coredashmodules/coredashmodules.plugin.php:137
 msgid "Latest Comments"
+msgstr ""
+
+#: plugins/coredashmodules/coredashmodules.plugin.php:53
+#: plugins/coredashmodules/coredashmodules.plugin.php:94
+msgid "Latest Log Activity"
+msgstr ""
+
+#: plugins/coredashmodules/coredashmodules.plugin.php:55
+#: plugins/coredashmodules/coredashmodules.plugin.php:209
+msgid "Post Types and Statuses"
 msgstr ""
 
 #. @locale First variable is the post status, second is the post type
 #: plugins/coredashmodules/coredashmodules.plugin.php:166
 #, php-format
 msgid "%1$s %2$s"
-msgstr ""
-
-#: plugins/coredashmodules/coredashmodules.plugin.php:209
-msgid "Post Types and Statuses"
 msgstr ""
 
 #. @locale Time formats according to http://php.net/manual/en/function.date.php
@@ -4638,4 +4659,36 @@ msgstr ""
 
 #: index.php:111
 msgid "Unable to connect to database."
+msgstr ""
+
+#: admin/js/admin.js:59 admin/js/admin.js:63
+msgid "Uh Oh. An error has occurred. Please try again later."
+msgstr ""
+
+#: admin/js/admin.js:291
+msgid "All %1$s visible selected (<a href=\"#all\" class=\"everything\">Select all %2$s</a>)"
+msgstr ""
+
+#: admin/js/admin.js:303
+#, python-format
+msgid "All %s selected"
+msgstr ""
+
+#: admin/js/admin.js:309
+#, python-format
+msgid "%s selected"
+msgstr ""
+
+#: admin/js/admin.js:312
+msgid "%1$s selected (%2$s visible)"
+msgstr ""
+
+#: admin/js/admin.js:524
+msgid ""
+"You did not save the changes you made. \n"
+"Leaving this page will result in the lose of data."
+msgstr ""
+
+#: admin/js/admin.js:878
+msgid "%1$s-%2$s of <span class=\"total inline\">%3$s</span>"
 msgstr ""
