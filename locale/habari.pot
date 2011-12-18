@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-18 16:46+0000\n"
+"POT-Creation-Date: 2011-12-18 17:25+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -304,7 +304,7 @@ msgstr ""
 msgid "Publish"
 msgstr ""
 
-#: admin/publish.php:61
+#: admin/publish.php:61 admin/js/admin.js:524
 msgid "You did not save the changes you made. \\nLeaving this page will result in the lose of data."
 msgstr ""
 
@@ -4666,29 +4666,21 @@ msgid "Uh Oh. An error has occurred. Please try again later."
 msgstr ""
 
 #: admin/js/admin.js:291
+#, perl-format
 msgid "All %1$s visible selected (<a href=\"#all\" class=\"everything\">Select all %2$s</a>)"
 msgstr ""
 
 #: admin/js/admin.js:303
-#, python-format
+#, perl-format
 msgid "All %s selected"
 msgstr ""
 
 #: admin/js/admin.js:309
-#, python-format
+#, perl-format
 msgid "%s selected"
 msgstr ""
 
 #: admin/js/admin.js:312
+#, perl-format
 msgid "%1$s selected (%2$s visible)"
-msgstr ""
-
-#: admin/js/admin.js:524
-msgid ""
-"You did not save the changes you made. \n"
-"Leaving this page will result in the lose of data."
-msgstr ""
-
-#: admin/js/admin.js:878
-msgid "%1$s-%2$s of <span class=\"total inline\">%3$s</span>"
 msgstr ""
