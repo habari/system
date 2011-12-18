@@ -283,7 +283,7 @@ var itemManage = {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 0;
 			});
-			$('.item.controls label.selectedtext').addClass('none').removeClass('all').text('None selected');
+			$('.item.controls label.selectedtext').addClass('none').removeClass('all').text(_t('None selected'));
 		} else if (visible == $('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').length) {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 1;
