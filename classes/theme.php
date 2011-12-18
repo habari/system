@@ -597,7 +597,7 @@ class Theme extends Pluggable
 		
 		// create a stack of the atom tags before the first action so they can be unset if desired
 		Stack::add( 'template_atom', array( 'alternate', 'application/atom+xml', 'Atom 1.0', implode( '', $this->feed_alternate_return() ) ), 'atom' );
-		Stack::add( 'template_atom', array( 'edit', 'application/atom+xml', 'Atom Publishing Protocol', URL::get( 'atompub_servicedocument' ) ), 'app' );
+		Stack::add( 'template_atom', array( 'service', 'application/atomsvc+xml', 'Atom Publishing Protocol', URL::get( 'atompub_servicedocument' ) ), 'app' );
 		Stack::add( 'template_atom', array( 'EditURI', 'application/rsd+xml', 'RSD', URL::get( 'rsd' ) ), 'rsd' );
 		
 		Plugins::act( 'template_header', $theme );

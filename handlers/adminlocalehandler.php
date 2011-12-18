@@ -29,7 +29,7 @@ function _t() {
 	}
 
 	for(var i = 1; i <= arguments.length; i++) {
-		r = new RegExp('%' + (i) + '\\\$s', 'g');
+		r = new RegExp('%' + (i) + '\\\\\$s', 'g');
 		if(!s.match(r)) {
 			r = new RegExp('%s');
 		}

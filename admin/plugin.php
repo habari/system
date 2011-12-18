@@ -62,36 +62,40 @@
 
 	</div>
 	
-	<div class="missing">
-		<?php 
-		
-			if ( isset( $plugin['missing'] ) ) {
-				?>
-					<p><?php _e('This plugin cannot be activated because the following features were not present:'); ?></p>
-					<ul>
-						<?php 
-						
-							foreach ( $plugin['missing'] as $feature => $url ) {
-								
-								if ( $url != '' ) {
-									$output = sprintf('<a href="%s">%s</a>', $url, $feature);
-								}
-								else {
-									$output = $feature;
-								}
-								
-								?>
-									<li><?php echo $output; ?></li>
-								<?php
-								
-							}
-						
-						?>
-					</ul>
-				<?php
-			}
-		
-		?>
+	<div class="requirements">
+		<?php if ( isset( $plugin['missing'] ) ) : ?>
+			<ul>
+				<?php foreach ( $plugin['missing'] as $feature => $url ) : ?>
+				<li class="error"><?php
+				$feature = '<span class="feature">' . ( $url == '' ? $feature : sprintf('<a href="%s">%s</a>', $url, $feature) ) . '</span>';
+				_e('This plugin requires the %1$s feature and cannot be activated.', array($feature))
+				?></li>
+				<?php endforeach; ?>
+			</ul>
+				<?php elseif ( isset( $plugin['available'] ) ) : ?>
+			<ul>
+				<?php foreach ( $plugin['available'] as $feature => $plugins ) : if(count($plugins) == 1) : ?>
+				<li>
+					<?php 
+						$dependency = reset($plugins);
+						_e('%1$s will be activated to provide %2$s.', array("<b>{$dependency}</b>", "<span class=\"feature\">{$feature}</span>"));
+					?>
+				</li>
+				
+				<?php else: ?>
+					<li class="error"><?php _e('One of these plugins must be activated to provide %s:', array("<span class=\"feature\">{$feature}</span>")); ?>
+
+						<ul class="dependency_options">
+						<?php foreach ( $plugins as $plugin_id => $plugin_name ) : ?>
+							<?php if(isset($inactive_plugins[$plugin_id]['actions']['activate'])): ?>
+								<li class="fulfills"><a href="#plugin_<?php echo $plugin_id; ?>" onclick="$('html,body').animate({scrollTop: $('#plugin_<?php echo $plugin_id; ?>').offset().top-40},500);$('#plugin_<?php echo $plugin_id; ?>').effect('pulsate', {}, 500);return false;"><?php echo $plugin_name; ?></a></li>
+							<?php endif; ?>
+						<?php endforeach; ?>
+						</ul>
+					</li>
+				<?php endif; endforeach; ?>
+			</ul>
+		<?php endif; ?>
 	</div>
 
 

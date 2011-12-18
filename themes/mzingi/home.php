@@ -18,7 +18,7 @@
 						<?php if ( count( $post->tags ) ) { ?>
 						<div class="tags"><?php _e('Tagged:'); ?> <?php echo $post->tags_out; ?></div>
 						<?php } ?>
-						<div class="commentCount"><?php $theme->comments_link($post,'%d Comments','%d Comment','%d Comments'); ?></div>
+						<div class="commentCount"><?php echo $theme->comments_link($post,'%d Comments','%d Comment','%d Comments'); ?></div>
 					<br>
 					<?php if ( $loggedin ) { ?>
 					<a href="<?php echo $post->editlink; ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a>
@@ -29,7 +29,7 @@
 			<!--end loop-->
 			<!--pagination-->
 			<div id="pagenav" class="clear">
-				<?php $theme->prev_page_link('&laquo; ' . _t('Newer Posts')); ?> <?php $theme->page_selector( null, array( 'leftSide' => 2, 'rightSide' => 2 ) ); ?> <?php $theme->next_page_link('&raquo; ' . _t('Older Posts')); ?>
+				<?php echo $theme->prev_page_link('&laquo; ' . _t('Newer Posts')); ?> <?php echo $theme->page_selector( null, array( 'leftSide' => 2, 'rightSide' => 2 ) ); ?> <?php echo $theme->next_page_link('&raquo; ' . _t('Older Posts')); ?>
 			</div>
 			</div>
 
