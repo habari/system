@@ -1265,13 +1265,38 @@ class FormControl
 					return $this->get_default();
 				}
 		}
-		if ( isset( $this->$name ) ) {
+		if ( property_exists( $this, $name ) ) {
 			return $this->$name;
 		}
-		if ( isset( $this->properties[$name] ) ) {
+		if ( isset($this->properties[$name])) {
 			return $this->properties[$name];
 		}
 		return null;
+	}
+
+	/**
+	 * Magic function __isset returns whether properties exist for this object.
+	 * Potential valid properties:
+	 * field: A valid unique name for this control in HTML.
+	 * value: The value of the control, whether the default or submitted in the form
+	 *
+	 * @param string $name The parameter to retrieve
+	 * @return boolean True if the property exists
+	 */
+	public function __isset( $name )
+	{
+		switch ( $name ) {
+			case 'field':
+			case 'value':
+				return true;
+		}
+		if ( property_exists( $this, $name ) ) {
+			return true;
+		}
+		if ( isset( $this->properties[$name] ) ) {
+			return true;
+		}
+		return false;
 	}
 
 	public function __toString()
@@ -1437,6 +1462,34 @@ class FormControl
 		$this->container->remove( $this );
 	}
 
+	function parameter_map($map = array(), $additional = array()) {
+		$output = '';
+		foreach($map as $tag_param => $tag_fields) {
+			$value_out = false;
+			if(is_numeric($tag_param)) {
+				$tag_param = $tag_fields;
+			}
+			foreach(Utils::single_array($tag_fields) as $tag_field) {
+				if(isset($this->$tag_field)) {
+					$value_out = $this->$tag_field;
+					break;
+				}
+			}
+			if($value_out) {
+				if(is_array($value_out)) {
+					$output .= ' ' . $tag_param . '="' . implode(' ', $value_out) . '"';
+				}
+				else {
+					$output .= ' ' . $tag_param . '="' . $value_out . '"';
+				}
+			}
+		}
+		foreach($additional as $tag_param => $value_out) {
+			$output .= ' ' . $tag_param . '="' . $value_out . '"';
+		}
+		return $output;
+	}
+
 }
 
 /**
@@ -1475,7 +1528,21 @@ class FormControlNoSave extends FormControl
  */
 class FormControlText extends FormControl
 {
-// Placeholder class
+	/**
+	 * FormControlText constructor - set initial settings of the control
+	 *
+	 * @param string $storage The storage location for this control
+	 * @param string $default The default value of the control
+	 * @param string $caption The caption used as the label when displaying a control
+	 */
+	public function __construct()
+	{
+		$args = func_get_args();
+		list( $name, $storage, $caption, $template ) = array_merge( $args, array_fill( 0, 4, null ) );
+		parent::__construct($name, $storage, $caption, $template);
+		$this->properties['type'] = 'text';
+	}
+
 }
 
 /**
