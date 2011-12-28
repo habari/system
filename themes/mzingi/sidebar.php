@@ -2,7 +2,7 @@
 <?php Plugins::act( 'theme_sidebar_top' ); ?>
 	<!--begin secondary content-->
 	<div id="secondaryContent" class="span-7 last">
-	<h3><a id="rss" href="<?php $theme->feed_alternate(); ?>" class="block"><?php _e('Subscribe to Feed'); ?></a></h3>
+	<h3><a id="rss" href="<?php echo $theme->feed_alternate(); ?>" class="block"><?php _e('Subscribe to Feed'); ?></a></h3>
 	<h2 id="site"><?php _e('Navigation'); ?></h2>
 	<ul id="nav">
 		<li><a href="<?php Site::out_url( 'habari' ); ?>"><?php _e('Home'); ?></a></li>

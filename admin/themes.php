@@ -2,7 +2,7 @@
 <?php include('header.php');?>
 
 <div class="container currenttheme">
-	<h2><?php _e('Current Theme'); ?></h2>
+	<h2><?php _e( 'Current Theme' ); ?></h2>
 	<div class="item clear">
 		<div class="head">
 
@@ -37,7 +37,7 @@
 			<?php endif; ?>
 		</div>
 	</div>
-	
+
 	<?php
 	// Capture the admin config output.  If nothing is there, don't output the section
 	ob_start();
@@ -45,9 +45,9 @@
 	$output = ob_get_clean();
 	if (trim($output) != '') :
 	?>
-	
+
 	<div class="item clear">
-		<h3>General</h3>
+		<h3><?php _e( "General" ); ?></h3>
 		<?php echo $output; ?>
 		<div></div>
 	</div>
@@ -55,7 +55,7 @@
 
 	<?php if ( isset($active_theme['info']->areas) ): ?>
 	<div id="blocksconfigure"class="item clear">
-		<h3>Areas</h3>
+		<h3><?php _e( "Areas" ); ?></h3>
 				<div>
 					<div id="block_add">
 						<?php $this->display('block_instances'); ?>

@@ -537,6 +537,9 @@ class AdminHandler extends ActionHandler
 			case 'ajax_save_areas':
 				$result = true;
 				break;
+			case 'locale':
+				$result = true;
+				break;
 			default:
 				break;
 		}
@@ -593,8 +596,9 @@ class AdminHandler extends ActionHandler
 		Stack::add( 'admin_header_javascript', Site::get_url( 'vendor' ) . "/jquery.ui.nestedSortable.js", 'jquery-nested-sortable', 'jquery.ui' );
 		Stack::add( 'admin_header_javascript', Site::get_url( 'vendor' ) . "/humanmsg/humanmsg.js", 'humanmsg', 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url( 'vendor' ) . "/jquery.hotkeys.js", 'jquery.hotkeys', 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url( 'admin_theme' ) . "/js/media.js", 'media', 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url( 'admin_theme' ) . "/js/admin.js", 'admin', 'jquery' );
+		Stack::add( 'admin_header_javascript', URL::get( 'admin', 'page=locale'), 'locale' );
+		Stack::add( 'admin_header_javascript', Site::get_url( 'admin_theme' ) . "/js/media.js", 'media', array('jquery', 'locale') );
+		Stack::add( 'admin_header_javascript', Site::get_url( 'admin_theme' ) . "/js/admin.js", 'admin', array('jquery', 'locale') );
 
 		Stack::add( 'admin_header_javascript', Site::get_url( 'vendor' ) . "/crc32.js", 'crc32' );
 	}

@@ -513,14 +513,14 @@ class Format
 	{
 		$output = '';
 		if ( count( $errors ) ) {
-			$output.= '<ul class="error">';
+			$output.= '<ul class="messages error">';
 			foreach ( $errors as $error ) {
 				$output.= '<li>' . $error . '</li>';
 			}
 			$output.= '</ul>';
 		}
 		if ( count( $notices ) ) {
-			$output.= '<ul class="success">';
+			$output.= '<ul class="messages success">';
 			foreach ( $notices as $notice ) {
 				$output.= '<li>' . $notice . '</li>';
 			}

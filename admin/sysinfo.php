@@ -5,7 +5,7 @@
 
 <div class="container">
 	<h2><?php _e( "System Information" ); ?></h2>
-	<?php $plaintext_output = _t( "SYSTEM INFORMATION\n" ); ?>
+	<?php $plaintext_output = strtoupper( _t( "System Information" ) ) . "\n"; ?>
 
 	<div class="manage">
 	<?php foreach ( $sysinfo as $key => $value ) : ?>
@@ -22,7 +22,7 @@
 
 <div class="container">
 	<h2><?php _e( "Site Information" ); ?></h2>
-	<?php $plaintext_output .= _t( "\nSITE INFORMATION\n" ); ?>
+	<?php $plaintext_output .= "\n" . strtoupper( _t( "Site Information" ) ) . "\n"; ?>
 
 	<div class="manage">
 	<?php foreach ( $siteinfo as $key => $value ) : ?>
@@ -39,7 +39,7 @@
 
 <div class="container">
 	<h2><?php _e( "User Classes" ); ?></h2>
-	<?php $plaintext_output .= _t( "\nUSER CLASSES\n" ); ?>
+	<?php $plaintext_output .= "\n" . strtoupper( _t( "User Classes" ) ) . "\n"; ?>
 
 	<div class="manage">
 	<?php foreach ( $classinfo as $fullpath ) : ?>
@@ -51,14 +51,14 @@
 	<?php endforeach; ?>
 	<?php if ( empty( $fullpath ) ) : ?>
 		<div class="item clear"><span class="pct100"><?php _e( "None found" ); 
-			$plaintext_output .= _t( "None found\n" ); ?></span></div>
+			$plaintext_output .= _t( "None found" ) . "\n"; ?></span></div>
 	<?php endif; ?>
 	</div>
 </div>
 
 <div class="container">
 	<h2><?php _e( "Plugin Information" ); ?></h2>
-	<?php $plaintext_output .= _t( "\nPLUGIN INFORMATION" ); ?>
+	<?php $plaintext_output .= "\n" . strtoupper( _t( "Plugin Information" ) ); ?>
 
 	<?php foreach ( $plugins as $section => $sec_plugins ): ?>
 
@@ -76,7 +76,7 @@
 	<?php endforeach; ?>
 	<?php if ( count($sec_plugins) == 0 ) : ?>
 		<div class="item clear"><span class="pct100"><?php _e( "None found" ); 
-			$plaintext_output .= _t( "None found\n" ); ?></span></div>
+			$plaintext_output .= _t( "None found" ) . "\n"; ?></span></div>
 	<?php endif; ?>
 	</div>
 	<?php endforeach; ?>

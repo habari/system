@@ -24,7 +24,7 @@
 				<?php endforeach; ?>
 			<?php endif; ?>
 			<div class="no_blocks">
-				<h3>No assigned blocks</h3>
+				<h3><?php _e( "No assigned blocks" ); ?></h3>
 			</div>
 		</div>
 	</div>

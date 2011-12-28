@@ -57,6 +57,7 @@ class RewriteRules extends ArrayObject
 			array( 'name' => 'display_tags', 'parse_regex' => '#^admin/(?P<page>tags)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminTagsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage tags' ),
 			array( 'name' => 'display_logs', 'parse_regex' => '#^admin/(?P<page>logs)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminLogsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage logs' ),
 			array( 'name' => 'display_import', 'parse_regex' => '#^admin/(?P<page>import)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminimportHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage importing content' ),
+			array( 'name' => 'get_locale', 'parse_regex' => '#^admin/(?P<page>locale)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminLocaleHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Fetch the locale data as javascript' ),
 
 			array( 'name' => 'admin', 'parse_regex' => '#^admin(?:/?$|/(?P<page>[^/]*))/?$#i', 'build_str' => 'admin/({$page})', 'handler' => 'AdminHandler', 'action' => 'admin', 'priority' => 6, 'description' => 'An admin action' ),
 
