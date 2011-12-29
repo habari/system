@@ -1141,6 +1141,7 @@ class Post extends QueryRecord implements IsContent
 			'formcontrol_text'
 		)->add_validator( 'validate_email', _t( 'The Email field value must be a valid email address' ) )
 		->id = 'comment_email';
+		$form->cf_email->type = 'email';
 		$form->cf_email->tabindex = 2;
 		if ( Options::get( 'comments_require_id' ) == 1 ) {
 			$form->cf_email->add_validator(  'validate_required', _t( 'The Email field value must be a valid email address' ) );
@@ -1157,6 +1158,7 @@ class Post extends QueryRecord implements IsContent
 			'formcontrol_text'
 		)->add_validator( 'validate_url', _t( 'The Web Site field value must be a valid URL' ) )
 		->id = 'comment_url';
+		$form->cf_url->type = 'url';
 		$form->cf_url->tabindex = 3;
 		$form->cf_url->value = $commenter_url;
 

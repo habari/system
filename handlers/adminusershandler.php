@@ -335,6 +335,8 @@ class AdminUsersHandler extends AdminHandler
 
 					$posts = Posts::get( array( 'user_id' => $user->id, 'nolimit' => 1) );
 
+					$user->delete();
+
 					if ( isset( $posts[0] ) ) {
 						if ( 0 == $assign ) {
 							foreach ( $posts as $post ) {
@@ -345,7 +347,6 @@ class AdminUsersHandler extends AdminHandler
 							Posts::reassign( $assign, $posts );
 						}
 					}
-					$user->delete();
 				}
 				else {
 					$msg_status = _t( 'You cannot delete yourself.' );
