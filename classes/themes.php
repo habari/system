@@ -121,7 +121,7 @@ class Themes
 			if ( !$theme_exists ) {
 				die( _t( 'There is no valid theme currently installed.' ) );
 			}
-		}
+		} 		
 		return $themes[$theme_dir];
 	}
 
