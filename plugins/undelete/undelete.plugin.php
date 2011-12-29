@@ -40,7 +40,7 @@ class Undelete extends Plugin
 		// and then return false.  The Post::delete() method will
 		// see the false return value, and simply return, leaving
 		// the post in the database.
-		if ( $post->status != Post::status( 'deleted' ) && ACL::access_check( $post->get_access(), 'delete' ) ) {
+		if ( $post->status != Post::status( 'deleted' ) && ACL::access_check( $post->get_access(), 'delete' ) && User::get_by_id( $post->user_id ) ) {
 			$post->info->prior_status = $post->status;
 			$post->status = Post::status( 'deleted' );
 			$post->update();
