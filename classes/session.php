@@ -128,7 +128,9 @@ class Session
 
 		// Verify expiry
 		if ( HabariDateTime::date_create()->int > $session->expires ) {
-			Session::error( _t( 'Your session expired.' ), 'expired_session' );
+			if ( $session->user_id ) {
+				Session::error( _t( 'Your session expired.' ), 'expired_session' );
+			}
 			$dodelete = true;
 		}
 
