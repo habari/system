@@ -234,12 +234,19 @@ class AdminHandler extends ActionHandler
 		$plugins = array( 'system'=>array(), 'user'=>array(), '3rdparty'=>array(), 'other'=>array() );
 		foreach ( $raw_plugins as $plugin ) {
 			$file = $plugin->get_file();
+			// Catch plugins that are symlinked from other locations as ReflectionClass->getFileName() only returns the ultimate file path, not the symlink path, and we really want the symlink path
+			$all_plugins = Plugins::list_all();
+			$filename = basename( $file );
+			if ( array_key_exists( $filename, $all_plugins ) && $all_plugins[$filename] != $file ) {
+				$file = $all_plugins[$filename];
+			}
 			if ( preg_match( '%[\\\\/](system|3rdparty|user)[\\\\/]plugins[\\\\/]%i', $file, $matches ) ) {
 				// A plugin's info is XML, cast the element to a string. See #1026.
 				$plugins[strtolower( $matches[1] )][(string)$plugin->info->name] = $file;
 			}
 			else {
-				$plugins['other'][$plugin->info->name] = $file;
+				// A plugin's info is XML, cast the element to a string.
+				$plugins['other'][(string)$plugin->info->name] = $file;
 			}
 		}
 		$this->theme->plugins = $plugins;
