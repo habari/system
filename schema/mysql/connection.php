@@ -143,7 +143,7 @@ class MySQLConnection extends DatabaseConnection
 							}
 							if ( preg_match("| DEFAULT ([^ ]*)|i", $cfields[strtolower($tablefield->Field)], $matches) ) {
 								$default_value = $matches[1];
-								if ( $tablefield->Default != $default_value ) {
+								if ( $tablefield->Default != $default_value && !(is_null($tablefield->Default) && strtoupper($default_value) == 'NULL')) {
 									$cqueries[] = "ALTER TABLE {$table} ALTER COLUMN {$tablefield->Field} SET DEFAULT {$default_value}";
 									$for_update[$table.'.'.$tablefield->Field] = "Changed default value of {$table}.{$tablefield->Field} from {$tablefield->Default} to {$default_value}";
 								}
