@@ -687,6 +687,35 @@ class Utils
 	}
 
 	/**
+	 * Remove assets.
+	 *
+	 * Supported asset types are files, options, tables.
+	 */
+	public static function remove_assets($assets)
+	{
+		foreach ( $assets as $type => $assets ) {
+			switch ( $type ) {
+				case 'files':
+					foreach ( $assets as $file ) {
+						unlink($file);
+					}
+					break;
+				case 'options':
+					Options::delete($assets);
+					break;
+				case 'tables':
+					foreach ( $assets as $table ) {
+						DB::exec("DROP TABLE {$table}");
+					}
+					break;
+				default:
+					throw new DomainException('Unknown asset type: ' . $type);
+					break;
+			}
+		}
+	}
+
+	/**
 	 * Check the PHP syntax of the specified code.
 	 * Performs a syntax (lint) check on the specified code testing for scripting errors.
 	 *

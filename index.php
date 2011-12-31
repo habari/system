@@ -170,6 +170,9 @@ Plugins::upgrade();
 // All plugins loaded, tell the plugins.
 Plugins::act( 'plugins_loaded' );
 
+// Allow themes and plugins to register assets, so we can clean up after them if needed.
+Pluggable::register_assets();
+
 // Start the session.
 Session::init();
 

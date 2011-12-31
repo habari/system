@@ -175,6 +175,88 @@ abstract class Pluggable
 	}
 
 	/**
+	 * Allow pluggables to register assets so we can minimise abandoned assets 
+	 * left behind by deleted and deactivated pluggables.
+	 *
+	 * Well-behaved pluggables that include assets SHOULD respond to the 
+	 * filter_pluggable_assets filter and specify their assets, for example, as 
+	 * follows.
+	 *
+	 * private $assets = array(__CLASS__ => array(
+	 *   'files' => array('list', 'of', 'files'),
+	 *   'tables' => array('table')
+	 * ));
+	 *
+	 * public function filter_pluggable_assets($assets) {
+	 *   return array_merge($assets, $this->assets);
+	 * }
+	 *
+	 * Supported asset types are files, options, tables.
+	 *
+	 * @todo Consider support for cache, post types, log types, especially how to
+	 * deal with still present historical records, such as log entries, if the
+	 * type is gone.
+	 *
+	 * @todo Deal with assets registered by pluggables that are no longer active 
+	 * (those stored in $inactive). This will require notification to the user as 
+	 * well as some UI.
+	 *
+	 */
+	public static function register_assets()
+	{
+		$assets = Plugins::filter('pluggable_assets', array());
+		$cached = Cache::get('pluggable_assets');
+
+		if ( $cached ) {
+			$inactive = array();
+			foreach ( $cached as $pluggable => $cache ) {
+				// Check if the pluggable is no longer announcing assets
+				// (the pluggable may have been deactivated or inactive)
+				if ( !array_key_exists($pluggable, $assets) ) {
+					$inactive[$pluggable] = $cache;
+				}
+				// Find released assets (previously but no longer referred to)
+				// @todo Make this work for removed assets, not just removed types
+				$released[$pluggable] = array_diff_assoc($cache, $assets[$pluggable]);
+			}
+
+			// Store assets that are no longer used, a weekly Cron job will remove them.
+			if ( !CronTab::get_cronjob( 'remove_pluggable_assets') ) {
+				CronTab::add_weekly_cron(
+					'remove_pluggable_assets',
+					array('Pluggable', 'remove_released_assets'),
+					_t('Remove assets such as files and database tables that are no longer used by addons')
+				);
+			}
+
+			Options::set('released_pluggable_assets', $released);
+
+			// Store assets that were registered by pluggables that are no longer active.
+			// Users with permission will be asked if they want to clean the assets.
+			Options::set('inactive_pluggable_assets', $inactive);
+		}
+
+		// Refresh the cache
+		Cache::set('pluggable_assets', $assets);
+	}
+
+	/**
+	 * Remove assets that are no longer used by pluggables
+	 *
+	 * @todo Merge the caches and call remove_assets once.
+	 */
+	public static function remove_released_assets()
+	{
+		$released = Options::get('released_pluggable_assets');
+		if ($released) {
+			foreach ( $released as $pluggable => $cache ) {
+				Utils::remove_assets($cache);
+				EventLog::log(_t('Removed released assets for pluggable %s', array($pluggable)), 'notice', 'pluggable', 'habari', $cache);
+			}
+		}
+	}
+
+	/**
 	 * Registered to the plugin_config hook to supply help via a plugin's help() method
 	 *
 	 * @param array $actions An array of actions applicable to this plugin
