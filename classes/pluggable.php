@@ -207,17 +207,27 @@ abstract class Pluggable
 		$assets = Plugins::filter('pluggable_assets', array());
 		$cached = Cache::get('pluggable_assets');
 
+		$inactive = array();
+		$released = array();
 		if ( $cached ) {
-			$inactive = array();
-			foreach ( $cached as $pluggable => $cache ) {
+			foreach ( $cached as $pluggable => $cached_assets ) {
 				// Check if the pluggable is no longer announcing assets
 				// (the pluggable may have been deactivated or inactive)
 				if ( !array_key_exists($pluggable, $assets) ) {
-					$inactive[$pluggable] = $cache;
+					$inactive[$pluggable] = $cached_assets;
 				}
 				// Find released assets (previously but no longer referred to)
-				// @todo Make this work for removed assets, not just removed types
-				$released[$pluggable] = array_diff_assoc($cache, $assets[$pluggable]);
+				foreach ($cached_assets as $cached_type => $cached_type_assets) {
+					if ( !array_key_exists($cached_type, $assets[$pluggable]) ) {
+						$released[$pluggable][$cached_type] = $cached_type_assets;
+					}
+					else {
+						$diff = array_diff($cached_type_assets, $assets[$pluggable][$cached_type]);
+						if ( count($diff) > 0 ) {
+							$released[$pluggable][$cached_type] = $diff;
+						}
+					}
+				}
 			}
 
 			// Store assets that are no longer used, a weekly Cron job will remove them.
