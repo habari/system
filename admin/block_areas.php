@@ -8,9 +8,7 @@
 </select></label>
 
 <div class="area_container">
-<?php foreach ( $active_theme['info']->areas->area as $area ): ?>
-	<?php $area = (string)$area['name']; ?>
-
+<?php foreach ( $areas as $area ): ?>
 	<div class="area_drop_outer">
 		<h2><?php echo $area; ?></h2>
 			<div class="area_drop" id="area_<?php echo $area; ?>">

@@ -1380,47 +1380,55 @@ class Theme extends Pluggable
 	}
 
 	/**
-	 * Get the URL for a resource in this theme's directory
-	 * @param string $resource The resource name
+	 * Get the URL for a resource in one of the directories used by the active theme, child theme directory first
+	 * @param bool|string $resource The resource name
+	 * @param bool $overrideok If false, find only the parent theme resources
 	 * @return string The URL of the requested resource
 	 * @todo This method needs to be aware of the class that called it so that it can find the right directory to use
 	 */
-	public function get_url($resource = false)
+	public function get_url($resource = false, $overrideok = true)
 	{
-		$backtraces = debug_backtrace(false);
-		$stop = false;
-		foreach($backtraces as $b) {
-			if($stop) {
-				$backtrace = $b;
-				break;
+		$url = false;
+		$theme = '';
+
+		$themedirs = $this->theme_dir;
+
+		if(!$overrideok) {
+			$themedirs = last($this->theme_dir);
+		}
+
+		foreach($themedirs as $dir) {
+			if(file_exists(Utils::end_in_slash($dir) . trim($resource, '/'))) {
+				$url = $this->dir_to_url(Utils::end_in_slash($dir) . trim($resource, '/'));
 			}
-			if($b['function'] = 'get_url') {
-				$stop = true;
-			}
 		}
 
-		$r_class = new ReflectionClass($backtrace['class']);
-		$classfile = $r_class->getFileName();
-
-		$themedir = basename(dirname($classfile));
-
-		$theme = $themedir; //basename(end($this->theme_dir));
-		if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
-			$url = Site::get_url( 'user' ) .  '/themes/' . $theme;
-		}
-		elseif ( file_exists( HABARI_PATH . '/user/themes/' . $theme ) ) {
-			$url = Site::get_url( 'habari' ) . '/user/themes/' . $theme;
-		}
-		elseif ( file_exists( HABARI_PATH . '/3rdparty/themes/' . $theme ) ) {
-			$url = Site::get_url( 'habari' ) . '/3rdparty/themes/' . $theme;
-		}
-		else {
-			$url = Site::get_url( 'habari' ) . '/system/themes/' . $theme;
-		}
-
-		$url .= Utils::trail( $resource );
-		$url = Plugins::filter( 'site_url_theme', $url );
+		$url = Plugins::filter( 'site_url_theme', $url, $theme );
 		return $url;
+	}
+
+	/**
+	 * Convert a theme directory or resource into a URL
+	 * @param string $dir The pathname to convert
+	 * @return bool|string The URL to use, or false if none was found
+	 */
+	public function dir_to_url($dir)
+	{
+		static $tomatch = false;
+
+		if(!$tomatch) {
+			$tomatch = array(
+				Site::get_dir( 'config' ) . '/themes/' => Site::get_url( 'user' ) .  '/themes/',
+				HABARI_PATH . '/user/themes/' => Site::get_url( 'habari' ) . '/user/themes/',
+				HABARI_PATH . '/3rdparty/themes/' => Site::get_url( 'habari' ) . '/3rdparty/themes/',
+				HABARI_PATH . '/system/themes/' => Site::get_url( 'habari' ) . '/system/themes/',
+			);
+		}
+
+		if(preg_match('#^(' . implode('|', array_map('preg_quote', array_keys($tomatch))) . ')(.*)$#', $dir, $matches)) {
+			return $tomatch[$matches[1]] . $matches[2];
+		}
+		return false;
 	}
 
 }
