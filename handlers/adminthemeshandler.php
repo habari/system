@@ -311,7 +311,7 @@ class AdminThemesHandler extends AdminHandler
 		$areas = array();
 		if ( isset( $activedata['info']->areas->area ) ) {
 			foreach ( $activedata['info']->areas->area as $area ) {
-				$areas[(string)$area['name']] = (string)$area['name'];
+				$areas[(string)$area['name']] = (string)$area->description;
 			}
 		}
 		$areas = Plugins::filter('areas', $areas, $scope);

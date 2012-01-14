@@ -8,7 +8,7 @@
 </select></label>
 
 <div class="area_container">
-<?php foreach ( $areas as $area ): ?>
+<?php foreach ( $areas as $area => $area_name ): ?>
 	<div class="area_drop_outer">
 		<h2><?php echo $area; ?></h2>
 			<div class="area_drop" id="area_<?php echo $area; ?>">
