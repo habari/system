@@ -86,24 +86,32 @@ class User extends QueryRecord
 	 */
 	public static function identify()
 	{
+		$out = false;
+		// Let plugins set the user
+		if ( $out = Plugins::filter('user_identify', $out) ) {
+			self::$identity = $out;
+		}
 		// Is the logged-in user not cached already?
 		if ( isset( self::$identity ) ) {
 			// is this user acting as another user?
 			if ( isset( $_SESSION['sudo'] ) ) {
 				// if so, let's return that user data
-				return self::get_by_id( intval( $_SESSION['sudo'] ) );
+				$out = self::get_by_id( intval( $_SESSION['sudo'] ) );
 			}
 			// otherwise return the logged-in user
-			return self::$identity;
+			$out = self::$identity;
 		}
 		if ( isset( $_SESSION['user_id'] ) ) {
 			if ( $user = self::get_by_id( intval( $_SESSION['user_id'] ) ) ) {
 				// Cache the user in the static variable
 				self::$identity = $user;
-				return $user;
+				$out = $user;
 			}
 		}
-		return self::anonymous();
+		if(!$out) {
+			$out = self::anonymous();
+		}
+		return $out;
 	}
 
 	/**
@@ -252,7 +260,7 @@ class User extends QueryRecord
 	*
 	* @param string $who A username or email address
 	* @param string $pw A password
-	* @return object a User object, or false
+	* @return User|boolean a User object, or false
 	*/
 	public static function authenticate( $who, $pw )
 	{
