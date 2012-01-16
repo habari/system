@@ -1118,76 +1118,96 @@ class Post extends QueryRecord implements IsContent
 		$form = new FormUI( 'comment-' . $context, 'comment' );
 		$form->class[] = $context;
 		$form->class[] = 'commentform';
-		$form->set_option( 'form_action', URL::get( 'submit_feedback', array( 'id' => $this->id ) ) );
 
-		// Create the Name field
-		$form->append(
-			'text',
-			'cf_commenter',
-			'null:null',
-			_t( 'Name <span class="required">*Required</span>' ),
-			'formcontrol_text'
-		)->add_validator( 'validate_required', _t( 'The Name field value is required' ) )
-		->id = 'comment_name';
-		$form->cf_commenter->tabindex = 1;
-		$form->cf_commenter->value = $commenter_name;
-
-		// Create the Email field
-		$form->append(
-			'text',
-			'cf_email',
-			'null:null',
-			_t( 'Email' ),
-			'formcontrol_text'
-		)->add_validator( 'validate_email', _t( 'The Email field value must be a valid email address' ) )
-		->id = 'comment_email';
-		$form->cf_email->type = 'email';
-		$form->cf_email->tabindex = 2;
-		if ( Options::get( 'comments_require_id' ) == 1 ) {
-			$form->cf_email->add_validator(  'validate_required', _t( 'The Email field value must be a valid email address' ) );
-			$form->cf_email->caption = _t( 'Email <span class="required">*Required</span>' );
+		// Enforce commenting rules
+		if(Options::get('comments_disabled')) {
+			$form->append(new FormControlStatic('message', _t('Comments are disabled site-wide.')));
+			$form->class[] = 'comments_disabled';
+			$form->set_option( 'form_action', '/' );
 		}
-		$form->cf_email->value = $commenter_email;
+		elseif($this->info->comments_disabled) {
+			$form->append(new FormControlStatic('message', _t('Comments for this post are disabled.')));
+			$form->class[] = 'comments_disabled';
+			$form->set_option( 'form_action', '/' );
+		}
+		elseif(Options::get('comments_require_logon') && !User::identify()->loggedin) {
+			$form->append(new FormControlStatic('message', _t('Commenting on this site requires authentication.')));
+			$form->class[] = 'comments_require_logon';
+			$form->set_option( 'form_action', '/' );
+		}
+		else {
 
-		// Create the URL field
-		$form->append(
-			'text',
-			'cf_url',
-			'null:null',
-			_t( 'Website' ),
-			'formcontrol_text'
-		)->add_validator( 'validate_url', _t( 'The Web Site field value must be a valid URL' ) )
-		->id = 'comment_url';
-		$form->cf_url->type = 'url';
-		$form->cf_url->tabindex = 3;
-		$form->cf_url->value = $commenter_url;
+			$form->set_option( 'form_action', URL::get( 'submit_feedback', array( 'id' => $this->id ) ) );
 
-		// Create the Comment field
-		$form->append(
-			'text',
-			'cf_content',
-			'null:null',
-			_t( 'Comment' ),
-			'formcontrol_textarea'
-		)->add_validator( 'validate_required', _t( 'The Content field value is required' ) )
-		->id = 'comment_content';
-		$form->cf_content->tabindex = 4;
-		$form->cf_content->value = $commenter_content;
+			// Create the Name field
+			$form->append(
+				'text',
+				'cf_commenter',
+				'null:null',
+				_t( 'Name <span class="required">*Required</span>' ),
+				'formcontrol_text'
+			)->add_validator( 'validate_required', _t( 'The Name field value is required' ) )
+			->id = 'comment_name';
+			$form->cf_commenter->tabindex = 1;
+			$form->cf_commenter->value = $commenter_name;
 
-		// Create the Submit button
-		$form->append( 'submit', 'cf_submit', _t( 'Submit' ), 'formcontrol_submit' );
-		$form->cf_submit->tabindex = 5;
+			// Create the Email field
+			$form->append(
+				'text',
+				'cf_email',
+				'null:null',
+				_t( 'Email' ),
+				'formcontrol_text'
+			)->add_validator( 'validate_email', _t( 'The Email field value must be a valid email address' ) )
+			->id = 'comment_email';
+			$form->cf_email->type = 'email';
+			$form->cf_email->tabindex = 2;
+			if ( Options::get( 'comments_require_id' ) == 1 ) {
+				$form->cf_email->add_validator(  'validate_required', _t( 'The Email field value must be a valid email address' ) );
+				$form->cf_email->caption = _t( 'Email <span class="required">*Required</span>' );
+			}
+			$form->cf_email->value = $commenter_email;
 
-		// Add required hidden controls
-		/*
-		$form->append( 'hidden', 'content_type', 'null:null' );
-		$form->content_type->value = $this->content_type;
-		$form->append( 'hidden', 'post_id', 'null:null' );
-		$form->post_id->id = 'id';
-		$form->post_id->value = $this->id;
-		$form->append( 'hidden', 'slug', 'null:null' );
-		$form->slug->value = $this->slug;
-		*/
+			// Create the URL field
+			$form->append(
+				'text',
+				'cf_url',
+				'null:null',
+				_t( 'Website' ),
+				'formcontrol_text'
+			)->add_validator( 'validate_url', _t( 'The Web Site field value must be a valid URL' ) )
+			->id = 'comment_url';
+			$form->cf_url->type = 'url';
+			$form->cf_url->tabindex = 3;
+			$form->cf_url->value = $commenter_url;
+
+			// Create the Comment field
+			$form->append(
+				'text',
+				'cf_content',
+				'null:null',
+				_t( 'Comment' ),
+				'formcontrol_textarea'
+			)->add_validator( 'validate_required', _t( 'The Content field value is required' ) )
+			->id = 'comment_content';
+			$form->cf_content->tabindex = 4;
+			$form->cf_content->value = $commenter_content;
+
+			// Create the Submit button
+			$form->append( 'submit', 'cf_submit', _t( 'Submit' ), 'formcontrol_submit' );
+			$form->cf_submit->tabindex = 5;
+
+			// Add required hidden controls
+			/*
+			$form->append( 'hidden', 'content_type', 'null:null' );
+			$form->content_type->value = $this->content_type;
+			$form->append( 'hidden', 'post_id', 'null:null' );
+			$form->post_id->id = 'id';
+			$form->post_id->value = $this->id;
+			$form->append( 'hidden', 'slug', 'null:null' );
+			$form->slug->value = $this->slug;
+			*/
+		}
 
 		// Let plugins alter this form
 		Plugins::act( 'form_comment', $form, $this, $context );
