@@ -82,10 +82,10 @@ class AdminThemesHandler extends AdminHandler
 	{
 		$theme_name = $this->handler_vars['theme_name'];
 		$theme_dir = $this->handler_vars['theme_dir'];
-		if ( isset( $theme_name )  && isset( $theme_dir ) ) {
+		if ( isset( $theme_name ) && isset( $theme_dir ) ) {
 			Themes::activate_theme( $theme_name, $theme_dir );
 		}
-		Session::notice( sprintf( _t( "Activated theme '%s'" ), $theme_name ) );
+		Session::notice( _t( "Activated theme '%s'", array( $theme_name ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=themes' ) );
 	}
 
@@ -99,11 +99,11 @@ class AdminThemesHandler extends AdminHandler
 		if ( isset( $theme_name )  && isset( $theme_dir ) ) {
 			if ( Themes::get_theme_dir() == $theme_dir ) {
 				Themes::cancel_preview();
-				Session::notice( sprintf( _t( "Ended the preview of the theme '%s'" ), $theme_name ) );
+				Session::notice( _t( "Ended the preview of the theme '%s'", array( $theme_name ) ) );
 			}
 			else {
 				Themes::preview_theme( $theme_name, $theme_dir );
-				Session::notice( sprintf( _t( "Previewing theme '%s'" ), $theme_name ) );
+				Session::notice( _t( "Previewing theme '%s'", array( $theme_name ) ) );
 			}
 		}
 		Utils::redirect( URL::get( 'admin', 'page=themes' ) );

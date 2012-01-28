@@ -450,7 +450,7 @@ class InstallHandler extends ActionHandler
 
 		if ( DB::has_errors() ) {
 			$error = DB::get_last_error();
-			$this->theme->assign( 'form_errors', array( 'db_host'=>sprintf( _t( 'Could not create schema tables&hellip; %s' ), $error['message'] ) ) );
+			$this->theme->assign( 'form_errors', array( 'db_host'=>_t( 'Could not create schema tables&hellip; %s', array( $error['message'] ) ) ) );
 			DB::rollback();
 			return false;
 		}

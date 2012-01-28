@@ -234,7 +234,7 @@ class AtomHandler extends ActionHandler
 			$content = Plugins::filter( 'atom_add_comment', $content, $comment );
 
 			$item = $xml->addChild( 'entry' );
-			$title = $item->addChild( 'title', Utils::htmlspecialchars( sprintf( _t( '%1$s on "%2$s"' ), $comment->name, $comment->post->title ) ) );
+			$title = $item->addChild( 'title', Utils::htmlspecialchars( _t( '%1$s on "%2$s"', array( $comment->name, $comment->post->title ) ) ) );
 
 			$link = $item->addChild( 'link' );
 			$link->addAttribute( 'rel', 'alternate' );
