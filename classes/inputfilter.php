@@ -73,7 +73,6 @@ class InputFilter
 		// http://www.w3.org/TR/html4/present/frames.html#h-16.5
 		'iframe',
 
-
 	);
 
 	/**
@@ -148,17 +147,16 @@ class InputFilter
 		'sbquo', 'ldquo', 'rdquo', 'bdquo', 'dagger', 'Dagger', 'permil', 'lsaquo',
 		'rsaquo', 'euro',
 	);
+
 	private static $character_entities_re = '';
 
 	public static function __static ( ) {
-		
 		self::$whitelist_elements = Plugins::filter( 'inputfilter_whitelist_elements', self::$whitelist_elements );
 		self::$whitelist_attributes = Plugins::filter( 'inputfilter_whitelist_attributes', self::$whitelist_attributes );
 		self::$elements_empty = Plugins::filter( 'inputfilter_elements_empty', self::$elements_empty );
 		self::$whitelist_protocols = Plugins::filter( 'inputfilter_whitelist_protocols', self::$whitelist_protocols );
 		self::$character_entities = Plugins::filter( 'inputfilter_character_entities', self::$character_entities );
 		self::$character_entities_re = Plugins::filter( 'inputfilter_character_entities_re', self::$character_entities_re );
-		
 	}
 
 	/**
@@ -183,6 +181,11 @@ class InputFilter
 		}
 	}
 
+	/**
+	 * Remove nulls, return new string.
+	 * @param string $str Input string.
+	 * @return string Filtered output string.
+	 */
 	public static function strip_nulls( $str )
 	{
 		$str = str_replace( '\0', '', $str );
@@ -199,11 +202,13 @@ class InputFilter
 	{
 		$is_valid = false;
 
-		// valid entity references have the form
-		//   /&named([;<\n\r])/
-		// for named entities, or
-		//   /&#(\d{1,5}|[xX][0-9a-fA-F]{1,4})([;<\n\r])/
-		// for numeric character references
+		/**
+		 * valid entity references have the form
+		 *   /&named([;<\n\r])/
+		 * for named entities, or
+		 *   /&#(\d{1,5}|[xX][0-9a-fA-F]{1,4})([;<\n\r])/
+		 * for numeric character references
+		 */
 
 		$e = trim( $m[1] );
 		$r = $m[2];
@@ -248,6 +253,11 @@ class InputFilter
 		return $is_valid ? '&' . $e . $r : '';
 	}
 
+	/**
+	 * Remove illegal entities, return new string.
+	 * @param string $str Input string.
+	 * @return string Filtered output string.
+	 */
 	public static function strip_illegal_entities( $str )
 	{
 		$str = preg_replace_callback( "/&([^;<\n\r]+)([;<\n\r])/", array( __CLASS__, '_validate_entity' ), $str );
@@ -277,13 +287,13 @@ class InputFilter
 			//
 			'pseudo_args' => '',
 		);
-		
+
 		// sanitize the url
 		$sanitized = html_entity_decode( $url, null, 'UTF-8' );		// make double-sure we've converted all entities
 		$sanitized = filter_var( $sanitized, FILTER_SANITIZE_URL );		// strip everything but ascii, essentially
-		
+
 		$sanitized_scheme = parse_url( $sanitized, PHP_URL_SCHEME );
-		
+
 		// Use PHP's parse_url to get the basics
 		$parsed = parse_url( $url );
 		if ( $parsed == false ) {
@@ -291,13 +301,13 @@ class InputFilter
 			return $r;
 		}
 		$r = array_merge( $r, $parsed );
-		
+
 		// replace the scheme with the one we got from the fully-sanitized string
 		$r['scheme'] = $sanitized_scheme;
 
 		$r['is_pseudo'] = !in_array( $r['scheme'], array( 'http', 'https', '' ) );
 		$r['is_relative'] = ( $r['host'] == '' && !$r['is_pseudo'] );
-		
+
 		if ( $r['is_pseudo'] ) {
 			$r['pseudo_args'] = $r['path'];
 			$r['path'] = '';
@@ -396,7 +406,7 @@ class InputFilter
 					return preg_match( '/^[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](?:Z|[\+-][0-2][0-9]:[0-5][0-9])$/', $v );
 					break;
 				default:
-					Error::raise( sprintf( _t( 'Unkown attribute type "%s" in %s' ), $type, __CLASS__ ) );
+					Error::raise( _t( 'Unknown attribute type "%s" in %s', array( $type, __CLASS__ ) );
 					return false;
 			}
 		}
@@ -440,19 +450,19 @@ class InputFilter
 					else {
 						// check attributes
 						foreach ( $node['attrs'] as $k => $v ) {
-							
+
 							$attr_ok = false;
-							
+
 							// if the attribute is in the global whitelist and validates
 							if ( array_key_exists( strtolower( $k ), self::$whitelist_attributes['*'] ) && self::check_attr_value( strtolower( $k ), $v, self::$whitelist_attributes['*'][ strtolower( $k ) ] ) ) {
 								$attr_ok = true;
 							}
-							
+
 							// if there is a whitelist for this node and this attribute is in that list and it validates
 							if ( array_key_exists( strtolower( $node['name'] ), self::$whitelist_attributes ) && array_key_exists( strtolower( $k ), self::$whitelist_attributes[ strtolower( $node['name'] ) ] ) && self::check_attr_value( strtolower( $k ), $v, self::$whitelist_attributes[ strtolower( $node['name'] ) ][ strtolower( $k ) ] ) ) {
 								$attr_ok = true;
 							}
-							
+
 							// if it wasn't in one of the whitelists or failed its check, remove it
 							if ( $attr_ok != true ) {
 								unset( $node['attrs'][$k] );
