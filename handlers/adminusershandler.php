@@ -34,7 +34,7 @@ class AdminUsersHandler extends AdminHandler
 			}
 			$edit_user = User::get_by_name( $this->handler_vars['user'] );
 			$who = $edit_user->username;
-			$possessive = sprintf( _t( "%s's User Information" ), $who );
+			$possessive = _t( "%s's User Information", array( $who ) );
 		}
 
 		if ( !$permission ) {
@@ -216,7 +216,7 @@ class AdminUsersHandler extends AdminHandler
 					}
 				}
 
-				Session::notice( sprintf( _t( '%s has been deleted' ), $username ) );
+				Session::notice( _t( '%s has been deleted', array( $username ) ) );
 
 				Utils::redirect( URL::get( 'admin', array( 'page' => 'users' ) ) );
 			}
@@ -356,7 +356,7 @@ class AdminUsersHandler extends AdminHandler
 			}
 
 			if ( !isset( $msg_status ) ) {
-				$msg_status = sprintf( _t( 'Deleted %d users.' ), $count );
+				$msg_status = _t( 'Deleted %d users.', array( $count ) );
 			}
 
 			Session::notice( $msg_status );
@@ -438,7 +438,7 @@ class AdminUsersHandler extends AdminHandler
 			if ( !Session::has_errors( 'adduser' ) ) {
 				$user = new User( array( 'username' => $new_username, 'email' => $new_email, 'password' => Utils::crypt( $new_pass1 ) ) );
 				if ( $user->insert() ) {
-					Session::notice( sprintf( _t( "Added user '%s'" ), $new_username ) );
+					Session::notice( _t( "Added user '%s'", array( $new_username ) ) );
 				}
 				else {
 					$dberror = DB::get_last_error();

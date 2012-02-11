@@ -1232,6 +1232,7 @@ class Theme extends Pluggable
 			$block->_area = $area;
 			$block->_instance_id = $block_instance_id;
 			$block->_area_index = $i++;
+			$block->_fallback = $fallback;
 
 			$hook = 'block_content_' . $block->type;
 			Plugins::act( $hook, $block, $this );
