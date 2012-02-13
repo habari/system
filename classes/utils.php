@@ -829,7 +829,7 @@ class Utils
 	public static function mimetype( $filename )
 	{
 		$mimetype = null;
-		if ( function_exists( 'finfo_open' ) ) {
+		if ( function_exists( 'finfo_open' ) && file_exists($filename) ) {
 			$finfo = finfo_open( FILEINFO_MIME );
 			$mimetype = finfo_file( $finfo, $filename );
 			/* FILEINFO_MIME Returns the mime type and mime encoding as defined by RFC 2045.
@@ -868,6 +868,10 @@ class Utils
 				case 'swf':
 					$mimetype = 'application/x-shockwave-flash';
 					break;
+				case 'htm':
+				case 'html':
+				$mimetype = 'text/html';
+				break;
 			}
 		}
 		$mimetype = Plugins::filter( 'get_mime_type', $mimetype, $filename );
