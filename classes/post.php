@@ -575,7 +575,7 @@ class Post extends QueryRecord implements IsContent
 		$this->info->commit( DB::last_insert_id() );
 		$this->save_tags();
 		$this->create_default_permissions();
-		EventLog::log( sprintf( _t( 'New post %1$s (%2$s);  Type: %3$s; Status: %4$s' ), $this->id, $this->slug, Post::type_name( $this->content_type ), $this->statusname ), 'info', 'content', 'habari' );
+		EventLog::log( _t( 'New post %1$s (%2$s);  Type: %3$s; Status: %4$s', array( $this->id, $this->slug, Post::type_name( $this->content_type ), $this->statusname ) ), 'info', 'content', 'habari' );
 		Plugins::act( 'post_insert_after', $this );
 
 		//scheduled post
@@ -674,7 +674,7 @@ class Post extends QueryRecord implements IsContent
 		$this->delete_tokens();
 
 		$result = parent::deleteRecord( DB::table( 'posts' ), array( 'slug'=>$this->slug ) );
-		EventLog::log( sprintf( _t( 'Post %1$s (%2$s) deleted.' ), $this->id, $this->slug ), 'info', 'content', 'habari' );
+		EventLog::log( _t( 'Post %1$s (%2$s) deleted.', array( $this->id, $this->slug ) ), 'info', 'content', 'habari' );
 
 		//scheduled post
 		if ( $this->status == Post::status( 'scheduled' ) ) {
@@ -708,10 +708,10 @@ class Post extends QueryRecord implements IsContent
 		}
 
 		if ( $this->status == Post::status( 'scheduled' ) ) {
-			$msg = sprintf( _t( 'Scheduled Post %1$s (%2$s) published at %3$s.' ), $this->id, $this->slug, $this->pubdate->format() );
+			$msg = _t( 'Scheduled Post %1$s (%2$s) published at %3$s.', array( $this->id, $this->slug, $this->pubdate->format() ) );
 		}
 		else {
-			$msg = sprintf( _t( 'Post %1$s (%2$s) published.' ), $this->id, $this->slug );
+			$msg = _t( 'Post %1$s (%2$s) published.', array( $this->id, $this->slug ) );
 		}
 
 		$this->status = Post::status( 'published' );
@@ -1072,7 +1072,7 @@ class Post extends QueryRecord implements IsContent
 		$post->update( $minor );
 
 		$permalink = ( $post->status != Post::status( 'published' ) ) ? $post->permalink . '?preview=1' : $post->permalink;
-		Session::notice( sprintf( _t( 'The post %1$s has been saved as %2$s.' ), sprintf( '<a href="%1$s">\'%2$s\'</a>', $permalink, Utils::htmlspecialchars( $post->title ) ), Post::status_name( $post->status ) ) );
+		Session::notice( _t( 'The post %1$s has been saved as %2$s.', array( sprintf( '<a href="%1$s">\'%2$s\'</a>', $permalink, Utils::htmlspecialchars( $post->title ) ), Post::status_name( $post->status ) ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
 	}
 

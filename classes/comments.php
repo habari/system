@@ -434,14 +434,14 @@ class Comments extends ArrayObject
 			foreach ( $comments as $comment ) {
 				$comment->status = $status;
 				$result &= $comment->update();
-				EventLog::log( sprintf( _t( 'Comment %1$s moderated from %2$s' ), $comment->id, $comment->post->title ), 'info', 'comment', 'habari' );
+				EventLog::log( _t( 'Comment %1$s moderated from %2$s', array( $comment->id, $comment->post->title ) ), 'info', 'comment', 'habari' );
 			}
 		}
 		else if ( is_numeric( $comments[0] ) ) {
 			$result = true;
 			foreach ( $comments as $commentid ) {
 				$result &= DB::update( DB::table( 'comments' ), array( 'status' => $status), array( 'id' => $commentid ) );
-				EventLog::log( sprintf( _t( 'Comment Moderated on %s' ), $comment->post->title ), 'info', 'comment', 'habari' );
+				EventLog::log( _t( 'Comment Moderated on %s', array( $comment->post->title ) ), 'info', 'comment', 'habari' );
 			}
 		}
 		else {
@@ -638,7 +638,7 @@ class Comments extends ArrayObject
 		$result = true;
 		foreach ( $this as $c ) {
 			$result &= $c->delete();
-			EventLog::log( sprintf( _t( 'Comment %1$s deleted from %2$s' ), $c->id, $c->post->title ), 'info', 'comment', 'habari' );
+			EventLog::log( _t( 'Comment %1$s deleted from %2$s', array( $c->id, $c->post->title ) ), 'info', 'comment', 'habari' );
 		}
 		// Clear ourselves.
 		$this->exchangeArray( array() );

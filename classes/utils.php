@@ -419,7 +419,7 @@ class Utils
 					case 'md5':
 						return self::$algo( $password, $hash );
 					default:
-						Error::raise( sprintf( _t( 'Unsupported digest algorithm "%s"' ), $algo ) );
+						Error::raise( _t( 'Unsupported digest algorithm "%s"', array( $algo ) ) );
 						return false;
 				}
 			}

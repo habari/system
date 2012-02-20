@@ -165,16 +165,16 @@ class Charcoal extends Theme
 		
 		if ( sizeof( $keywords ) > 1 ) {
 			if ( $has_results ) {
-				return sprintf( _t( 'Search results for \'%s\'' ), implode( ' ', $out ) );
+				return _t( 'Search results for \'%s\'', array( implode( ' ', $out ) ) );
 				exit;
 			}
 			return sprintf( _t( 'No results found for your search \'%1$s\'' ) . '<br>'. _t( 'You can try searching for \'%2$s\'' ), $criteria, implode( '\' or \'', $out ) );
 		}
 		else {
-			return sprintf( _t( 'Search results for \'%s\'' ), $criteria );
+			return _t( 'Search results for \'%s\'', array( $criteria ) );
 			exit;
 		}
-		return sprintf( _t( 'No results found for your search \'%s\'' ), $criteria );
+		return _t( 'No results found for your search \'%s\'', array( $criteria ) );
 
 	}
 	

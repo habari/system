@@ -53,7 +53,7 @@
 				}
 
 				if ( !empty( $message_bits ) ) {
-					$string = sprintf( _t( '%1$s and currently has %2$s' ), $last_login_message, Format::and_list( $message_bits ) );
+					$string = _t( '%1$s and currently has %2$s', array( $last_login_message, Format::and_list( $message_bits ) ) );
 				}
 				else {
 					$string = $last_login_message;

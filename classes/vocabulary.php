@@ -293,7 +293,7 @@ class Vocabulary extends QueryRecord
 
 		// Finally, delete the vocabulary
 		$result = parent::deleteRecord( '{vocabularies}', array( 'id'=>$this->id ) );
-		EventLog::log( sprintf( _t( 'Vocabulary %1$s (%2$s) deleted.' ), $this->id, $this->name ), 'info', 'content', 'habari' );
+		EventLog::log( _t( 'Vocabulary %1$s (%2$s) deleted.', array( $this->id, $this->name ) ), 'info', 'content', 'habari' );
 
 		// Let plugins act after we write to the database
 		Plugins::act( 'vocabulary_delete_after', $this );

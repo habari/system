@@ -145,7 +145,7 @@ class ACL
 			// if it didn't work, don't bother trying to log it
 			return false;
 		}
-		EventLog::log( sprintf( _t( 'Permission token deleted: %s' ), $name ), 'info', 'default', 'habari' );
+		EventLog::log( _t( 'Permission token deleted: %s', array( $name ) ), 'info', 'default', 'habari' );
 		Plugins::act( 'token_destroy_after', $token_id );
 		return $result;
 	}
