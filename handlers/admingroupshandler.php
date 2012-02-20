@@ -238,7 +238,7 @@ class AdminGroupsHandler extends AdminHandler
 				$this->theme->addform = $settings;
 
 				if ( UserGroup::exists( $name ) ) {
-					Session::notice( sprintf( _t( 'The group %s already exists' ), $name ) );
+					Session::notice( _t( 'The group %s already exists', array( $name ) ) );
 					if ( $ajax ) {
 						return Session::messages_get( true, 'array' );
 					}
@@ -260,7 +260,7 @@ class AdminGroupsHandler extends AdminHandler
 						'name' => $name
 					);
 					$group = UserGroup::create( $groupdata );
-					Session::notice( sprintf( _t( 'Added group %s' ), $name ) );
+					Session::notice( _t( 'Added group %s', array( $name ) ) );
 					// reload the groups
 					$this->theme->groups = UserGroups::get_all();
 
@@ -311,7 +311,7 @@ class AdminGroupsHandler extends AdminHandler
 				}
 
 				if ( !isset( $msg_status ) ) {
-					$msg_status = sprintf( _t( 'Deleted %d groups.' ), $count );
+					$msg_status = _t( 'Deleted %d groups.', array( $count ) );
 				}
 
 				Session::notice( $msg_status );

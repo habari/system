@@ -243,7 +243,14 @@ class Themes
 	 **/
 	public static function create( $name = null, $template_engine = null, $theme_dir = null )
 	{
-		// If the name is not supplied, load the active theme
+		static $bound = array();
+
+		$hash = md5(serialize(array($name, $template_engine, $theme_dir)));
+		if(isset($bound[$hash])) {
+			return $bound[$hash];
+		}
+
+ 		// If the name is not supplied, load the active theme
 		if(empty($name)) {
 			$themedata = self::get_active();
 			if ( empty( $themedata ) ) {
@@ -317,6 +324,7 @@ class Themes
 		$created_theme->upgrade();
 		Plugins::act_id( 'init_theme', $created_theme->plugin_id(), $created_theme );
 		Plugins::act( 'init_theme_any', $created_theme );
+		$bound[$hash] = $created_theme;
 		return $created_theme;
 
 	}
