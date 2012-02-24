@@ -48,8 +48,8 @@ class AdminPostsHandler extends AdminHandler
 			}
 		}
 
-		$this->theme->admin_page = sprintf( _t( 'Publish %s' ), Plugins::filter( 'post_type_display', Post::type_name( $post->content_type ), 'singular' ) );
-		$this->theme->admin_title = sprintf( _t( 'Publish %s' ), Plugins::filter( 'post_type_display', Post::type_name( $post->content_type ), 'singular' ) );
+		$this->theme->admin_page = _t( 'Publish %s', array( Plugins::filter( 'post_type_display', Post::type_name( $post->content_type ), 'singular' ) ) );
+		$this->theme->admin_title = _t( 'Publish %s', array( Plugins::filter( 'post_type_display', Post::type_name( $post->content_type ), 'singular' ) ) );
 
 		$statuses = Post::list_post_statuses( false );
 		$this->theme->statuses = $statuses;
@@ -81,7 +81,7 @@ class AdminPostsHandler extends AdminHandler
 		if ( 0 !== $post_id ) {
 			$post = Post::get( array( 'id' => $post_id, 'status' => Post::status( 'any' ) ) );
 
-			$this->theme->admin_page = sprintf( _t( 'Publish %s' ), Plugins::filter( 'post_type_display', Post::type_name( $post->content_type ), 'singular' ) );
+			$this->theme->admin_page = _t( 'Publish %s', array( Plugins::filter( 'post_type_display', Post::type_name( $post->content_type ), 'singular' ) ) );
 
 			// Verify that the post hasn't already been updated since the form was loaded
 			if ( $post->modified != $form->modified->value ) {
@@ -189,7 +189,7 @@ class AdminPostsHandler extends AdminHandler
 		$post->update( $minor );
 
 		$permalink = ( $post->status != Post::status( 'published' ) ) ? $post->permalink . '?preview=1' : $post->permalink;
-		Session::notice( sprintf( _t( 'The post %1$s has been saved as %2$s.' ), sprintf( '<a href="%1$s">\'%2$s\'</a>', $permalink, Utils::htmlspecialchars( $post->title ) ), Post::status_name( $post->status ) ) );
+		Session::notice( _t( 'The post %1$s has been saved as %2$s.', array( sprintf( '<a href="%1$s">\'%2$s\'</a>', $permalink, Utils::htmlspecialchars( $post->title ) ), Post::status_name( $post->status ) ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
 	}
 
@@ -222,7 +222,7 @@ class AdminPostsHandler extends AdminHandler
 		}
 
 		$post->delete();
-		Session::notice( sprintf( _t( 'Deleted the %1$s titled "%2$s".' ), Post::type_name( $post->content_type ), Utils::htmlspecialchars( $post->title ) ) );
+		Session::notice( _t( 'Deleted the %1$s titled "%2$s".', array( Post::type_name( $post->content_type ), Utils::htmlspecialchars( $post->title ) ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=posts&type=' . Post::status( 'any' ) ) );
 	}
 

@@ -274,7 +274,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 		$result = parent::deleteRecord( '{blocks_areas}', array( 'block_id'=>$this->id ) );
 		$result = $result && parent::deleteRecord( '{blocks}', array( 'id'=>$this->id ) );
 
-		EventLog::log( sprintf( _t( 'Block %1$s (%2$s) deleted.' ), $this->id, $this->title ), 'info', 'content', 'habari' );
+		EventLog::log( _t( 'Block %1$s (%2$s) deleted.', array( $this->id, $this->title ) ), 'info', 'content', 'habari' );
 
 		// Let plugins act after we write to the database
 		Plugins::act( 'block_delete_after', $this );

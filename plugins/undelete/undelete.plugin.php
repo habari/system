@@ -123,7 +123,7 @@ class Undelete extends Plugin
 			$post->update();
 
 			EventLog::log(
-				sprintf(_t('Post %1$s (%2$s) restored.'), $post->id, $post->slug),
+				_t('Post %1$s (%2$s) restored.', array( $post->id, $post->slug ) ),
 				'info', 'content', 'habari'
 			);
 			//scheduled post
@@ -205,7 +205,7 @@ class Undelete extends Plugin
 	{
 		$count = self::delete_all();
 
-		Session::notice(sprintf( _t('Permanently deleted %d posts'), $count));
+		Session::notice( _t( 'Permanently deleted %d posts', array( $count ) ) );
 		return false;
 	}
 

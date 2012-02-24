@@ -158,7 +158,7 @@ class User extends QueryRecord
 			}
 		}
 
-		EventLog::log( sprintf( _t( 'New user created: %s' ), $this->username ), 'info', 'default', 'habari' );
+		EventLog::log( _t( 'New user created: %s', array( $this->username ) ), 'info', 'default', 'habari' );
 		Plugins::act( 'user_insert_after', $this );
 
 		return $result;
@@ -200,7 +200,7 @@ class User extends QueryRecord
 		DB::query( 'DELETE FROM {user_token_permissions} WHERE user_id=?', array( $this->id ) );
 		// remove user from any groups
 		DB::query( 'DELETE FROM {users_groups} WHERE user_id=?', array( $this->id ) );
-		EventLog::log( sprintf( _t( 'User deleted: %s' ), $this->username ), 'info', 'default', 'habari' );
+		EventLog::log( _t( 'User deleted: %s', array( $this->username ) ), 'info', 'default', 'habari' );
 		$result = parent::deleteRecord( DB::table( 'users' ), array( 'id' => $this->id ) );
 		Plugins::act( 'user_delete_after', $this );
 		return $result;
@@ -274,14 +274,14 @@ class User extends QueryRecord
 		if ( $user instanceof User ) {
 			self::$identity = $user;
 			Plugins::act( 'user_authenticate_successful', self::$identity );
-			EventLog::log( sprintf( _t( 'Successful login for %s' ), $user->username ), 'info', 'authentication', 'habari' );
+			EventLog::log( _t( 'Successful login for %s', array( $user->username ) ), 'info', 'authentication', 'habari' );
 			// set the cookie
 			$user->remember();
 			return self::$identity;
 		}
 		elseif ( !is_object( $user ) ) {
 			Plugins::act( 'user_authenticate_failure', 'plugin' );
-			EventLog::log( sprintf( _t( 'Login attempt (via authentication plugin) for non-existent user %s' ), $who ), 'warning', 'authentication', 'habari' );
+			EventLog::log( _t( 'Login attempt (via authentication plugin) for non-existent user %s', array( $who ) ), 'warning', 'authentication', 'habari' );
 			Session::error( _t( 'Invalid username/password' ) );
 			self::$identity = null;
 			return false;
