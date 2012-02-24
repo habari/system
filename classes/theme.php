@@ -599,9 +599,9 @@ class Theme extends Pluggable
 		Stack::add( 'template_atom', array( 'alternate', 'application/atom+xml', 'Atom 1.0', implode( '', $this->feed_alternate_return() ) ), 'atom' );
 		Stack::add( 'template_atom', array( 'service', 'application/atomsvc+xml', 'Atom Publishing Protocol', URL::get( 'atompub_servicedocument' ) ), 'app' );
 		Stack::add( 'template_atom', array( 'EditURI', 'application/rsd+xml', 'RSD', URL::get( 'rsd' ) ), 'rsd' );
-		
+
 		Plugins::act( 'template_header', $theme );
-		
+
 		$atom = Stack::get( 'template_atom', '<link rel="%1$s" type="%2$s" title="%3$s" href="%4$s">' );
 		$styles = Stack::get( 'template_stylesheet', array( 'Stack', 'styles' ) );
 		$scripts = Stack::get( 'template_header_javascript', array( 'Stack', 'scripts' ) );
@@ -1378,6 +1378,57 @@ class Theme extends Pluggable
 	public function get_version()
 	{
 		return (string)$this->info()->version;
+	}
+
+	/**
+	 * Load and return a list of all assets in the current theme chain's /assets/ directory
+	 * @param bool $refresh If True, clear and reload all assets
+	 * @return array An array of URLs of assets in the assets directories of the active theme chain
+	 */
+	public function load_assets($refresh = false)
+	{
+		static $assets = null;
+
+		if(is_null($assets) || $refresh) {
+			$themedirs = $this->theme_dir;
+			$assets = array(
+				'css' => array(),
+				'js' => array(),
+			);
+
+			foreach($themedirs as $dir) {
+				if( file_exists(Utils::end_in_slash($dir) . 'assets')) {
+					$theme_assets = Utils::glob(Utils::end_in_slash($dir) . 'assets/*.*');
+					foreach($theme_assets as $asset) {
+						$extension = strtolower(substr($asset, strrpos($asset, '.') + 1));
+						$assets[$extension][basename($asset)] = $this->dir_to_url($asset);
+					}
+				}
+			}
+		}
+		return $assets;
+	}
+
+	/**
+	 * Load assets and add the CSS ones to the header on the template_stylesheet action hook.
+	 */
+	public function action_template_header_9()
+	{
+		$assets = $this->load_assets();
+		foreach($assets['css'] as $css) {
+			Stack::add('template_stylesheet', array($css , 'screen,projection'));
+		}
+	}
+
+	/**
+	 * Load assets and add the javascript ones to the footer on the template_footer_javascript action hook.
+	 */
+	public function action_template_footer_9()
+	{
+		$assets = $this->load_assets();
+		foreach($assets['js'] as $js) {
+			Stack::add('template_footer_javascript', $js);
+		}
 	}
 
 	/**
