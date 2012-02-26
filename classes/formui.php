@@ -962,8 +962,8 @@ class FormControl
 	public $class = array( 'formcontrol' );
 	public $name;
 	public $properties = array();
-	protected $template = null;
-	protected $raw = false;
+	public $template = null;
+	public $raw = false;
 	public $errors = array();
 
 	/**

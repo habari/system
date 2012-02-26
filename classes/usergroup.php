@@ -10,11 +10,12 @@
  */
 class UserGroup extends QueryRecord
 {
-	// These arrays hold the current membership and permission settings for this group
+	// These arrays hold the current membership, permission and token settings for this group
 	// $member_ids is not NOT matched key and value pairs ( like array('foo'=>'foo') )
 	private $member_ids = null;
 	private $permissions;
-
+	private $tokens = null;
+	
 	/**
 	 * get default fields for this record
 	 * @return array an array of the fields used in the UserGroup table
@@ -90,7 +91,7 @@ class UserGroup extends QueryRecord
 
 		$this->set_member_list();
 
-		EventLog::log( sprintf( _t( 'New group created: %s' ), $this->name ), 'info', 'default', 'habari' );
+		EventLog::log( _t( 'New group created: %s', array( $this->name ) ), 'info', 'default', 'habari' );
 		Plugins::act( 'usergroup_insert_after', $this );
 		return $result;
 	}
@@ -110,7 +111,7 @@ class UserGroup extends QueryRecord
 
 		$this->set_member_list();
 
-		EventLog::log( sprintf( _t( 'User Group updated: %s' ), $this->name ), 'info', 'default', 'habari' );
+		EventLog::log( _t( 'User Group updated: %s', array( $this->name ) ), 'info', 'default', 'habari' );
 		Plugins::act( 'usergroup_update_after', $this );
 	}
 
@@ -292,6 +293,20 @@ class UserGroup extends QueryRecord
 			return ACL::get_bitmask( $this->permissions[$token] );
 		}
 		return false;
+	}
+
+	/**
+	 * Returns an array of token ids that are associated with this group
+	 * Also initializes the internal token array for use by other token operations
+	 *
+	 * @return array An array of token ids
+	 */
+	public function get_tokens()
+	{
+		if ( empty( $this->tokens ) ) {
+			$this->tokens = DB::get_column( 'SELECT token_id FROM {group_token_permissions} WHERE group_id = ?', array( $this->id ) );
+		}
+		return $this->tokens;
 	}
 
 	/**

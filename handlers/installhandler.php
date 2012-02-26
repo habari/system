@@ -136,7 +136,7 @@ class InstallHandler extends ActionHandler
 		if ( (!Config::exists('db_connection') || Config::get( 'db_connection' )->connection_string == '') && ($db_type == 'mysql' || $db_type == 'pgsql') ) {
 			$this->handler_vars['db_host'] = $_POST["{$db_type}_db_host"];
 			$this->handler_vars['db_user'] = $_POST["{$db_type}_db_user"];
-			$this->handler_vars['db_pass'] = $_POST["{$db_type}_db_pass"];
+			$this->handler_vars['db_pass'] = $_POST->raw( "{$db_type}_db_pass" );
 			$this->handler_vars['db_schema'] = $_POST["{$db_type}_db_schema"];
 		}
 
@@ -450,7 +450,7 @@ class InstallHandler extends ActionHandler
 
 		if ( DB::has_errors() ) {
 			$error = DB::get_last_error();
-			$this->theme->assign( 'form_errors', array( 'db_host'=>sprintf( _t( 'Could not create schema tables&hellip; %s' ), $error['message'] ) ) );
+			$this->theme->assign( 'form_errors', array( 'db_host'=>_t( 'Could not create schema tables&hellip; %s', array( $error['message'] ) ) ) );
 			DB::rollback();
 			return false;
 		}

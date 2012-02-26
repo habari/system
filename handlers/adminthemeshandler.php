@@ -42,14 +42,7 @@ class AdminThemesHandler extends AdminHandler
 		$this->theme->configurable = Plugins::filter( 'theme_config', false, $this->active_theme );
 		$this->theme->assign( 'configure', Controller::get_var( 'configure' ) );
 
-		$activedata = Themes::get_active_data( true );
-		$areas = array();
-		if ( isset( $activedata['info']->areas->area ) ) {
-			foreach ( $activedata['info']->areas->area as $area ) {
-				$areas[] = (string)$area;
-			}
-		}
-		$this->theme->areas = $areas;
+		$this->theme->areas = $this->get_areas(0);
 		$this->theme->previewed = Themes::get_theme_dir( false );
 
 		$this->theme->blocks = Plugins::filter( 'block_list', array() );
@@ -89,10 +82,10 @@ class AdminThemesHandler extends AdminHandler
 	{
 		$theme_name = $this->handler_vars['theme_name'];
 		$theme_dir = $this->handler_vars['theme_dir'];
-		if ( isset( $theme_name )  && isset( $theme_dir ) ) {
+		if ( isset( $theme_name ) && isset( $theme_dir ) ) {
 			Themes::activate_theme( $theme_name, $theme_dir );
 		}
-		Session::notice( sprintf( _t( "Activated theme '%s'" ), $theme_name ) );
+		Session::notice( _t( "Activated theme '%s'", array( $theme_name ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=themes' ) );
 	}
 
@@ -106,11 +99,11 @@ class AdminThemesHandler extends AdminHandler
 		if ( isset( $theme_name )  && isset( $theme_dir ) ) {
 			if ( Themes::get_theme_dir() == $theme_dir ) {
 				Themes::cancel_preview();
-				Session::notice( sprintf( _t( "Ended the preview of the theme '%s'" ), $theme_name ) );
+				Session::notice( _t( "Ended the preview of the theme '%s'", array( $theme_name ) ) );
 			}
 			else {
 				Themes::preview_theme( $theme_name, $theme_dir );
-				Session::notice( sprintf( _t( "Previewing theme '%s'" ), $theme_name ) );
+				Session::notice( _t( "Previewing theme '%s'", array( $theme_name ) ) );
 			}
 		}
 		Utils::redirect( URL::get( 'admin', 'page=themes' ) );
@@ -301,6 +294,7 @@ class AdminThemesHandler extends AdminHandler
 		}
 		$this->theme->blocks_areas = $blocks_areas;
 		$this->theme->scopeid = $scope;
+		$this->theme->areas = $this->get_areas($scope);
 		$scopes = DB::get_results( 'SELECT * FROM {scopes} ORDER BY name ASC;' );
 		$scopes = Plugins::filter( 'get_scopes', $scopes );
 		$this->theme->scopes = $scopes;
@@ -311,5 +305,17 @@ class AdminThemesHandler extends AdminHandler
 		echo $msg;
 	}
 
+
+	function get_areas($scope) {
+		$activedata = Themes::get_active_data( true );
+		$areas = array();
+		if ( isset( $activedata['info']->areas->area ) ) {
+			foreach ( $activedata['info']->areas->area as $area ) {
+				$areas[(string)$area['name']] = (string)$area->description;
+			}
+		}
+		$areas = Plugins::filter('areas', $areas, $scope);
+		return $areas;
+	}
 }
 ?>

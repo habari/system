@@ -201,7 +201,7 @@ class Term extends QueryRecord
 		DB::query( 'DELETE FROM {object_terms} WHERE term_id = :id', array( 'id' => $this->id ) );
 
 		$result = parent::deleteRecord( '{terms}', array( 'id'=>$this->id ) );
-		EventLog::log( sprintf( _t( 'Term %1$s (%2$s) deleted.' ), $this->id, $this->term_display ), 'info', 'content', 'habari' );
+		EventLog::log( _t( 'Term %1$s (%2$s) deleted.', array( $this->id, $this->term_display ) ), 'info', 'content', 'habari' );
 
 		// Let plugins act after we write to the database
 		Plugins::act( 'term_delete_after', $this );

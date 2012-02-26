@@ -216,7 +216,7 @@ class URL extends Singleton
 			else {
 				$error_args = $error_trace[0];
 			}
-			EventLog::log( sprintf( _t( 'Could not find a rule matching the following names: %s. File: %s (line %s)' ), implode( ', ', $rule_names ), $error_args['file'], $error_args['line'] ), 'notice', 'rewriterules', 'habari' );
+			EventLog::log( _t( 'Could not find a rule matching the following names: %s. File: %s (line %s)', array( implode( ', ', $rule_names ), $error_args['file'], $error_args['line'] ) ), 'notice', 'rewriterules', 'habari' );
 		}
 	}
 

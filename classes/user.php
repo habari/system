@@ -86,24 +86,34 @@ class User extends QueryRecord
 	 */
 	public static function identify()
 	{
+		$out = false;
+		// Let plugins set the user
+		if ( $out = Plugins::filter('user_identify', $out) ) {
+			self::$identity = $out;
+		}
 		// Is the logged-in user not cached already?
 		if ( isset( self::$identity ) ) {
 			// is this user acting as another user?
 			if ( isset( $_SESSION['sudo'] ) ) {
 				// if so, let's return that user data
-				return self::get_by_id( intval( $_SESSION['sudo'] ) );
+				$out = self::get_by_id( intval( $_SESSION['sudo'] ) );
 			}
-			// otherwise return the logged-in user
-			return self::$identity;
+			else {
+				// otherwise return the logged-in user
+				$out = self::$identity;
+			}
 		}
 		if ( isset( $_SESSION['user_id'] ) ) {
 			if ( $user = self::get_by_id( intval( $_SESSION['user_id'] ) ) ) {
 				// Cache the user in the static variable
 				self::$identity = $user;
-				return $user;
+				$out = $user;
 			}
 		}
-		return self::anonymous();
+		if(!$out) {
+			$out = self::anonymous();
+		}
+		return $out;
 	}
 
 	/**
@@ -150,7 +160,7 @@ class User extends QueryRecord
 			}
 		}
 
-		EventLog::log( sprintf( _t( 'New user created: %s' ), $this->username ), 'info', 'default', 'habari' );
+		EventLog::log( _t( 'New user created: %s', array( $this->username ) ), 'info', 'default', 'habari' );
 		Plugins::act( 'user_insert_after', $this );
 
 		return $result;
@@ -192,7 +202,7 @@ class User extends QueryRecord
 		DB::query( 'DELETE FROM {user_token_permissions} WHERE user_id=?', array( $this->id ) );
 		// remove user from any groups
 		DB::query( 'DELETE FROM {users_groups} WHERE user_id=?', array( $this->id ) );
-		EventLog::log( sprintf( _t( 'User deleted: %s' ), $this->username ), 'info', 'default', 'habari' );
+		EventLog::log( _t( 'User deleted: %s', array( $this->username ) ), 'info', 'default', 'habari' );
 		$result = parent::deleteRecord( DB::table( 'users' ), array( 'id' => $this->id ) );
 		Plugins::act( 'user_delete_after', $this );
 		return $result;
@@ -252,7 +262,7 @@ class User extends QueryRecord
 	*
 	* @param string $who A username or email address
 	* @param string $pw A password
-	* @return object a User object, or false
+	* @return User|boolean a User object, or false
 	*/
 	public static function authenticate( $who, $pw )
 	{
@@ -266,14 +276,14 @@ class User extends QueryRecord
 		if ( $user instanceof User ) {
 			self::$identity = $user;
 			Plugins::act( 'user_authenticate_successful', self::$identity );
-			EventLog::log( sprintf( _t( 'Successful login for %s' ), $user->username ), 'info', 'authentication', 'habari' );
+			EventLog::log( _t( 'Successful login for %s', array( $user->username ) ), 'info', 'authentication', 'habari' );
 			// set the cookie
 			$user->remember();
 			return self::$identity;
 		}
 		elseif ( !is_object( $user ) ) {
 			Plugins::act( 'user_authenticate_failure', 'plugin' );
-			EventLog::log( sprintf( _t( 'Login attempt (via authentication plugin) for non-existent user %s' ), $who ), 'warning', 'authentication', 'habari' );
+			EventLog::log( _t( 'Login attempt (via authentication plugin) for non-existent user %s', array( $who ) ), 'warning', 'authentication', 'habari' );
 			Session::error( _t( 'Invalid username/password' ) );
 			self::$identity = null;
 			return false;

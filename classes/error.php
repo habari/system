@@ -80,7 +80,7 @@ class Error extends Exception
 		$file = isset( $trace1['file'] ) ? $trace1['file'] : $this->getFile();
 		$line = isset( $trace1['line'] ) ? $trace1['line'] : $this->getLine();
 
-		return sprintf( _t( '%1$s in %2$s line %3$s on request of "%4$s"' ), $this->getMessage(), $file, $line, $_SERVER['REQUEST_URI'] );
+		return _t( '%1$s in %2$s line %3$s on request of "%4$s"', array( $this->getMessage(), $file, $line, $_SERVER['REQUEST_URI'] ) );
 	}
 
 	/**

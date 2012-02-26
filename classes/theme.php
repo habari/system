@@ -599,9 +599,9 @@ class Theme extends Pluggable
 		Stack::add( 'template_atom', array( 'alternate', 'application/atom+xml', 'Atom 1.0', implode( '', $this->feed_alternate_return() ) ), 'atom' );
 		Stack::add( 'template_atom', array( 'service', 'application/atomsvc+xml', 'Atom Publishing Protocol', URL::get( 'atompub_servicedocument' ) ), 'app' );
 		Stack::add( 'template_atom', array( 'EditURI', 'application/rsd+xml', 'RSD', URL::get( 'rsd' ) ), 'rsd' );
-		
+
 		Plugins::act( 'template_header', $theme );
-		
+
 		$atom = Stack::get( 'template_atom', '<link rel="%1$s" type="%2$s" title="%3$s" href="%4$s">' );
 		$styles = Stack::get( 'template_stylesheet', array( 'Stack', 'styles' ) );
 		$scripts = Stack::get( 'template_header_javascript', array( 'Stack', 'scripts' ) );
@@ -1232,6 +1232,7 @@ class Theme extends Pluggable
 			$block->_area = $area;
 			$block->_instance_id = $block_instance_id;
 			$block->_area_index = $i++;
+			$block->_fallback = $fallback;
 
 			$hook = 'block_content_' . $block->type;
 			Plugins::act( $hook, $block, $this );
@@ -1380,47 +1381,106 @@ class Theme extends Pluggable
 	}
 
 	/**
-	 * Get the URL for a resource in this theme's directory
-	 * @param string $resource The resource name
+	 * Load and return a list of all assets in the current theme chain's /assets/ directory
+	 * @param bool $refresh If True, clear and reload all assets
+	 * @return array An array of URLs of assets in the assets directories of the active theme chain
+	 */
+	public function load_assets($refresh = false)
+	{
+		static $assets = null;
+
+		if(is_null($assets) || $refresh) {
+			$themedirs = $this->theme_dir;
+			$assets = array(
+				'css' => array(),
+				'js' => array(),
+			);
+
+			foreach($themedirs as $dir) {
+				if( file_exists(Utils::end_in_slash($dir) . 'assets')) {
+					$theme_assets = Utils::glob(Utils::end_in_slash($dir) . 'assets/*.*');
+					foreach($theme_assets as $asset) {
+						$extension = strtolower(substr($asset, strrpos($asset, '.') + 1));
+						$assets[$extension][basename($asset)] = $this->dir_to_url($asset);
+					}
+				}
+			}
+		}
+		return $assets;
+	}
+
+	/**
+	 * Load assets and add the CSS ones to the header on the template_stylesheet action hook.
+	 */
+	public function action_template_header_9()
+	{
+		$assets = $this->load_assets();
+		foreach($assets['css'] as $css) {
+			Stack::add('template_stylesheet', array($css , 'screen,projection'));
+		}
+	}
+
+	/**
+	 * Load assets and add the javascript ones to the footer on the template_footer_javascript action hook.
+	 */
+	public function action_template_footer_9()
+	{
+		$assets = $this->load_assets();
+		foreach($assets['js'] as $js) {
+			Stack::add('template_footer_javascript', $js);
+		}
+	}
+
+	/**
+	 * Get the URL for a resource in one of the directories used by the active theme, child theme directory first
+	 * @param bool|string $resource The resource name
+	 * @param bool $overrideok If false, find only the parent theme resources
 	 * @return string The URL of the requested resource
 	 * @todo This method needs to be aware of the class that called it so that it can find the right directory to use
 	 */
-	public function get_url($resource = false)
+	public function get_url($resource = false, $overrideok = true)
 	{
-		$backtraces = debug_backtrace(false);
-		$stop = false;
-		foreach($backtraces as $b) {
-			if($stop) {
-				$backtrace = $b;
-				break;
+		$url = false;
+		$theme = '';
+
+		$themedirs = $this->theme_dir;
+
+		if(!$overrideok) {
+			$themedirs = last($this->theme_dir);
+		}
+
+		foreach($themedirs as $dir) {
+			if(file_exists(Utils::end_in_slash($dir) . trim($resource, '/'))) {
+				$url = $this->dir_to_url(Utils::end_in_slash($dir) . trim($resource, '/'));
 			}
-			if($b['function'] = 'get_url') {
-				$stop = true;
-			}
 		}
 
-		$r_class = new ReflectionClass($backtrace['class']);
-		$classfile = $r_class->getFileName();
-
-		$themedir = basename(dirname($classfile));
-
-		$theme = $themedir; //basename(end($this->theme_dir));
-		if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
-			$url = Site::get_url( 'user' ) .  '/themes/' . $theme;
-		}
-		elseif ( file_exists( HABARI_PATH . '/user/themes/' . $theme ) ) {
-			$url = Site::get_url( 'habari' ) . '/user/themes/' . $theme;
-		}
-		elseif ( file_exists( HABARI_PATH . '/3rdparty/themes/' . $theme ) ) {
-			$url = Site::get_url( 'habari' ) . '/3rdparty/themes/' . $theme;
-		}
-		else {
-			$url = Site::get_url( 'habari' ) . '/system/themes/' . $theme;
-		}
-
-		$url .= Utils::trail( $resource );
-		$url = Plugins::filter( 'site_url_theme', $url );
+		$url = Plugins::filter( 'site_url_theme', $url, $theme );
 		return $url;
+	}
+
+	/**
+	 * Convert a theme directory or resource into a URL
+	 * @param string $dir The pathname to convert
+	 * @return bool|string The URL to use, or false if none was found
+	 */
+	public function dir_to_url($dir)
+	{
+		static $tomatch = false;
+
+		if(!$tomatch) {
+			$tomatch = array(
+				Site::get_dir( 'config' ) . '/themes/' => Site::get_url( 'user' ) .  '/themes/',
+				HABARI_PATH . '/user/themes/' => Site::get_url( 'habari' ) . '/user/themes/',
+				HABARI_PATH . '/3rdparty/themes/' => Site::get_url( 'habari' ) . '/3rdparty/themes/',
+				HABARI_PATH . '/system/themes/' => Site::get_url( 'habari' ) . '/system/themes/',
+			);
+		}
+
+		if(preg_match('#^(' . implode('|', array_map('preg_quote', array_keys($tomatch))) . ')(.*)$#', $dir, $matches)) {
+			return $tomatch[$matches[1]] . $matches[2];
+		}
+		return false;
 	}
 
 }
