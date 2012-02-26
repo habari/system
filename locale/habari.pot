@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-19 00:00+0000\n"
+"POT-Creation-Date: 2012-02-26 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -187,7 +187,7 @@ msgid "Logout"
 msgstr ""
 
 #: plugins/coreblocks/coreblocks.plugin.php:329 themes/charcoal/header.php:41
-#: admin/login.php:47
+#: admin/login.php:51
 msgid "Login"
 msgstr ""
 
@@ -456,7 +456,7 @@ msgstr ""
 
 #: plugins/undelete/undelete.plugin.php:181
 #: plugins/flickrsilo/flickrsilo.plugin.php:876 themes/charcoal/theme.php:66
-#: admin/themes.php:68 handlers/adminthemeshandler.php:141
+#: admin/themes.php:68 handlers/adminthemeshandler.php:134
 #: classes/post.php:936
 msgid "Save"
 msgstr ""
@@ -720,7 +720,7 @@ msgid "What would you like to call the new directory?"
 msgstr ""
 
 #: plugins/habarisilo/habarisilo.plugin.php:465 themes/charcoal/theme.php:224
-#: themes/mzingi/theme.php:114 classes/post.php:1178
+#: themes/mzingi/theme.php:114 classes/post.php:1197
 msgid "Submit"
 msgstr ""
 
@@ -1045,7 +1045,7 @@ msgstr ""
 msgid "No results found for your search '%s'"
 msgstr ""
 
-#: themes/charcoal/theme.php:217 admin/login.php:40
+#: themes/charcoal/theme.php:217 admin/login.php:44
 msgid "Name"
 msgstr ""
 
@@ -1065,7 +1065,7 @@ msgstr ""
 msgid "- Required)"
 msgstr ""
 
-#: themes/charcoal/theme.php:221 classes/post.php:1157
+#: themes/charcoal/theme.php:221 classes/post.php:1176
 msgid "Website"
 msgstr ""
 
@@ -1229,7 +1229,7 @@ msgid "Feed for this Entry"
 msgstr ""
 
 #: themes/mzingi/commentform.php:28 handlers/admincommentshandler.php:49
-#: classes/post.php:1170
+#: classes/post.php:1189
 msgid "Comment"
 msgid_plural "Comments"
 msgstr[0] ""
@@ -1289,7 +1289,7 @@ msgstr ""
 msgid "GO!"
 msgstr ""
 
-#: themes/mzingi/loginform.php:31 admin/login.php:51
+#: themes/mzingi/loginform.php:31 admin/login.php:54
 #: handlers/userhandler.php:21
 msgid "Reset password"
 msgstr ""
@@ -1385,7 +1385,7 @@ msgstr ""
 msgid "E-Mail"
 msgstr ""
 
-#: admin/users.php:48 admin/login.php:43 installer/db_setup.php:62
+#: admin/users.php:48 admin/login.php:47 installer/db_setup.php:62
 #: installer/db_setup.php:109 installer/db_setup.php:191
 msgid "Password"
 msgstr ""
@@ -1817,10 +1817,14 @@ msgid "Login to %s"
 msgstr ""
 
 #: admin/login.php:40
+msgid "Please enter the username you wish to reset the password for.  A unique password reset link will be emailed to that user."
+msgstr ""
+
+#: admin/login.php:44
 msgid "name"
 msgstr ""
 
-#: admin/login.php:43
+#: admin/login.php:47
 msgid "password"
 msgstr ""
 
@@ -1832,7 +1836,7 @@ msgstr ""
 msgid "Default"
 msgstr ""
 
-#: admin/block_areas.php:27
+#: admin/block_areas.php:25
 msgid "No assigned blocks"
 msgstr ""
 
@@ -2135,7 +2139,7 @@ msgstr ""
 msgid "User Name"
 msgstr ""
 
-#: handlers/adminusershandler.php:98 classes/post.php:1140
+#: handlers/adminusershandler.php:98 classes/post.php:1159
 msgid "Email"
 msgstr ""
 
@@ -2450,53 +2454,53 @@ msgstr ""
 msgid "Plugins that conflict with importing are active. To prevent undesirable consequences, please de-activate the following plugins until the import is finished: "
 msgstr ""
 
-#: handlers/adminthemeshandler.php:95
+#: handlers/adminthemeshandler.php:88
 #, php-format
 msgid "Activated theme '%s'"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:109
+#: handlers/adminthemeshandler.php:102
 #, php-format
 msgid "Ended the preview of the theme '%s'"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:113
+#: handlers/adminthemeshandler.php:106
 #, php-format
 msgid "Previewing theme '%s'"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:131 handlers/adminthemeshandler.php:134
+#: handlers/adminthemeshandler.php:124 handlers/adminthemeshandler.php:127
 msgid "Block Display Settings"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:137
+#: handlers/adminthemeshandler.php:130
 msgid "Block Title:"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:140
+#: handlers/adminthemeshandler.php:133
 msgid "Display Block Title:"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:195
+#: handlers/adminthemeshandler.php:188
 msgid "A new block must first have a name."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:211
+#: handlers/adminthemeshandler.php:204
 #, php-format
 msgid "Added new block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:234
+#: handlers/adminthemeshandler.php:227
 #, php-format
 msgid "Deleted block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:237
+#: handlers/adminthemeshandler.php:230
 #, php-format
 msgid "Failed to delete block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:285
+#: handlers/adminthemeshandler.php:278
 msgid "Saved block areas settings."
 msgstr ""
 
@@ -3794,7 +3798,7 @@ msgstr ""
 msgid "Unbalanced braces."
 msgstr ""
 
-#: classes/utils.php:1182
+#: classes/utils.php:1186
 msgid "Not set"
 msgstr ""
 
@@ -4065,7 +4069,7 @@ msgstr ""
 msgid "Canceled Theme Preview: %s"
 msgstr ""
 
-#: classes/themes.php:250
+#: classes/themes.php:257
 msgid "Theme not installed."
 msgstr ""
 
@@ -4162,55 +4166,67 @@ msgstr ""
 msgid "Content Address"
 msgstr ""
 
-#: classes/post.php:1128
+#: classes/post.php:1124
+msgid "Comments are disabled site-wide."
+msgstr ""
+
+#: classes/post.php:1129
+msgid "Comments for this post are disabled."
+msgstr ""
+
+#: classes/post.php:1134
+msgid "Commenting on this site requires authentication."
+msgstr ""
+
+#: classes/post.php:1147
 msgid "Name <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: classes/post.php:1130
+#: classes/post.php:1149
 msgid "The Name field value is required"
 msgstr ""
 
-#: classes/post.php:1142 classes/post.php:1147
+#: classes/post.php:1161 classes/post.php:1166
 msgid "The Email field value must be a valid email address"
 msgstr ""
 
-#: classes/post.php:1148
+#: classes/post.php:1167
 msgid "Email <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: classes/post.php:1159
+#: classes/post.php:1178
 msgid "The Web Site field value must be a valid URL"
 msgstr ""
 
-#: classes/post.php:1172
+#: classes/post.php:1191
 msgid "The Content field value is required"
 msgstr ""
 
-#: classes/post.php:1539
+#: classes/post.php:1559
 msgid "Entry"
 msgstr ""
 
-#: classes/post.php:1540
+#: classes/post.php:1560
 msgid "Entries"
 msgstr ""
 
-#: classes/post.php:1543
+#: classes/post.php:1563
 msgid "Page"
 msgstr ""
 
-#: classes/post.php:1544
+#: classes/post.php:1564
 msgid "Pages"
 msgstr ""
 
-#: classes/post.php:1559
+#: classes/post.php:1579
 msgid "draft"
 msgstr ""
 
-#: classes/post.php:1560
+#: classes/post.php:1580
 msgid "published"
 msgstr ""
 
-#: classes/post.php:1561
+#: classes/post.php:1581
 msgid "scheduled"
 msgstr ""
 
@@ -4258,56 +4274,56 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
-#: classes/user.php:153
+#: classes/user.php:163
 #, php-format
 msgid "New user created: %s"
 msgstr ""
 
-#: classes/user.php:195
+#: classes/user.php:205
 #, php-format
 msgid "User deleted: %s"
 msgstr ""
 
-#: classes/user.php:269 classes/user.php:298
+#: classes/user.php:279 classes/user.php:308
 #, php-format
 msgid "Successful login for %s"
 msgstr ""
 
-#: classes/user.php:276
+#: classes/user.php:286
 #, php-format
 msgid "Login attempt (via authentication plugin) for non-existent user %s"
 msgstr ""
 
-#: classes/user.php:277 classes/user.php:289 classes/user.php:307
+#: classes/user.php:287 classes/user.php:299 classes/user.php:317
 msgid "Invalid username/password"
 msgstr ""
 
-#: classes/user.php:288
+#: classes/user.php:298
 #, php-format
 msgid "Login attempt for non-existent user %s"
 msgstr ""
 
-#: classes/user.php:306
+#: classes/user.php:316
 #, php-format
 msgid "Wrong password for user %s"
 msgstr ""
 
-#: classes/user.php:524
+#: classes/user.php:534
 #, php-format
 msgid "User %1$s: Access to %2$s changed to %3$s"
 msgstr ""
 
-#: classes/user.php:548
+#: classes/user.php:558
 #, php-format
 msgid "User %1$s: Permission to %2$s revoked."
 msgstr ""
 
-#: classes/user.php:587
+#: classes/user.php:597
 #, php-format
 msgid " User %1$s: Added to %2$s group."
 msgstr ""
 
-#: classes/user.php:601
+#: classes/user.php:611
 #, php-format
 msgid " User %1$s: Removed from %2$s group."
 msgstr ""
@@ -4382,39 +4398,39 @@ msgstr ""
 msgid "Failed to register HiEngine stream protocol"
 msgstr ""
 
-#: classes/usergroup.php:93
+#: classes/usergroup.php:94
 #, php-format
 msgid "New group created: %s"
 msgstr ""
 
-#: classes/usergroup.php:113
+#: classes/usergroup.php:114
 #, php-format
 msgid "User Group updated: %s"
 msgstr ""
 
-#: classes/usergroup.php:130
+#: classes/usergroup.php:131
 #, php-format
 msgid "User Group %s: Member list reset"
 msgstr ""
 
-#: classes/usergroup.php:154
+#: classes/usergroup.php:155
 #, php-format
 msgid "User Group %s: Group deleted."
 msgstr ""
 
-#: classes/usergroup.php:204
+#: classes/usergroup.php:205
 #, php-format
 msgid "User Group %1$s: Users were added to the group."
 msgstr ""
 
-#: classes/usergroup.php:221
+#: classes/usergroup.php:222
 #, php-format
 msgid "User Group %1$s: Users were removed from the group."
 msgstr ""
 
-#: classes/inputfilter.php:399
+#: classes/inputfilter.php:409
 #, php-format
-msgid "Unkown attribute type \"%s\" in %s"
+msgid "Unknown attribute type \"%s\" in %s"
 msgstr ""
 
 #. @locale Signifies the plugin or theme is missing needed information to check for an update
