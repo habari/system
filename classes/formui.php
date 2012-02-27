@@ -20,6 +20,7 @@ class FormContainer
 	public $class = '';
 	public $caption = '';
 	public $controls = array();
+	/** @var Theme $theme_obj */
 	protected $theme_obj = null;
 	protected $checksum;
 	public $template = 'formcontainer';
@@ -180,7 +181,14 @@ class FormContainer
 	{
 		if ( !isset( $this->theme_obj ) ) {
 			$theme_dir = Plugins::filter( 'control_theme_dir', Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) ) . 'formcontrols/', $control );
-			$this->theme_obj = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+			$this->theme_obj = Themes::create( ); // Create the current theme instead of: 'admin', 'RawPHPEngine', $theme_dir
+			// Add the templates for the form controls tothe current theme,
+			// and allow any matching templates from the current theme to override
+			$formcontrol_templates = Utils::glob($theme_dir . '*.php');
+			foreach($formcontrol_templates as $template) {
+				$template_name = basename($template, '.php');
+				$this->theme_obj->add_template($template_name, $template);
+			}
 		}
 		$this->theme_obj->start_buffer();
 		if ( $control instanceof FormControl ) {

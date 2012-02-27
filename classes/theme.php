@@ -1483,5 +1483,16 @@ class Theme extends Pluggable
 		return false;
 	}
 
+	/**
+	 * Add a template to the list of available templates
+	 * @param string $name Name of the new template
+	 * @param string $file File of the template to add
+	 * @param boolean $replace If true, replace any existing template with this name
+	 */
+	public function add_template($name, $file, $replace = false)
+	{
+		$this->template_engine->add_template($name, $file, $replace);
+	}
+
 }
 ?>
