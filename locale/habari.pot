@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-26 00:00+0000\n"
+"POT-Creation-Date: 2012-03-04 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1960,7 +1960,7 @@ msgstr ""
 msgid "Add Item"
 msgstr ""
 
-#: admin/formcontrols/formcontrol_textmulti.php:16 classes/formui.php:1699
+#: admin/formcontrols/formcontrol_textmulti.php:16 classes/formui.php:1707
 msgid "remove"
 msgstr ""
 
@@ -4202,31 +4202,31 @@ msgstr ""
 msgid "The Content field value is required"
 msgstr ""
 
-#: classes/post.php:1559
+#: classes/post.php:1548
 msgid "Entry"
 msgstr ""
 
-#: classes/post.php:1560
+#: classes/post.php:1549
 msgid "Entries"
 msgstr ""
 
-#: classes/post.php:1563
+#: classes/post.php:1552
 msgid "Page"
 msgstr ""
 
-#: classes/post.php:1564
+#: classes/post.php:1553
 msgid "Pages"
 msgstr ""
 
-#: classes/post.php:1579
+#: classes/post.php:1568
 msgid "draft"
 msgstr ""
 
-#: classes/post.php:1580
+#: classes/post.php:1569
 msgid "published"
 msgstr ""
 
-#: classes/post.php:1581
+#: classes/post.php:1570
 msgid "scheduled"
 msgstr ""
 
@@ -4519,51 +4519,51 @@ msgstr ""
 msgid "Something went terribly wrong here."
 msgstr ""
 
-#: classes/formui.php:801
+#: classes/formui.php:809
 msgid "Relative urls are not allowed"
 msgstr ""
 
-#: classes/formui.php:807
+#: classes/formui.php:815
 #, php-format
 msgid "Only %s urls are allowed"
 msgstr ""
 
-#: classes/formui.php:828
+#: classes/formui.php:836
 msgid "Value must be a valid Email Address."
 msgstr ""
 
-#: classes/formui.php:847
+#: classes/formui.php:855
 msgid "A value for this field is required."
 msgstr ""
 
-#: classes/formui.php:869
+#: classes/formui.php:877
 msgid "That username is already in use!"
 msgstr ""
 
-#: classes/formui.php:889
+#: classes/formui.php:897
 #, php-format
 msgid "The value of this field must match the value of %s."
 msgstr ""
 
-#: classes/formui.php:912
+#: classes/formui.php:920
 msgid "The value does not meet submission requirements"
 msgstr ""
 
-#: classes/formui.php:933
+#: classes/formui.php:941
 #, php-format
 msgid "The value entered is lesser than the minimum of %d."
 msgstr ""
 
-#: classes/formui.php:939
+#: classes/formui.php:947
 #, php-format
 msgid "The value entered is greater than the maximum of %d."
 msgstr ""
 
-#: classes/formui.php:1699
+#: classes/formui.php:1707
 msgid "Remove item"
 msgstr ""
 
-#: classes/formui.php:1703
+#: classes/formui.php:1711
 msgid "Remove this item?"
 msgstr ""
 
