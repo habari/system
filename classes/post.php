@@ -1135,6 +1135,11 @@ class Post extends QueryRecord implements IsContent
 			$form->class[] = 'comments_require_logon';
 			$form->set_option( 'form_action', '/' );
 		}
+		elseif(User::identify()->cannot('comment')) {
+			$form->append(new FormControlStatic('message', _t('You do not have permission to comment on this site.')));
+			$form->class[] = 'comments_require_permission';
+			$form->set_option( 'form_action', '/' );
+		}
 		else {
 
 			$form->set_option( 'form_action', URL::get( 'submit_feedback', array( 'id' => $this->id ) ) );
