@@ -64,7 +64,7 @@ class Posts extends ArrayObject implements IsContent
 	 * - before => a timestamp to compare post publication dates
 	 * - after => a timestamp to compare post publication dates
 	 * - month_cts => return the number of posts published in each month
-	 * - criteria => a literal search string to match post content
+	 * - criteria => a literal search string to match post content or title
 	 * - title => an exact case-insensitive match to a post title
 	 * - title_search => a search string that acts only on the post title
 	 * - has:info => a post info key or array of post info keys, which should be present
