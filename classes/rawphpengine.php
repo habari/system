@@ -184,5 +184,13 @@ class RawPHPEngine extends TemplateEngine
 			$this->engine_vars[$key] = $value;
 		}
 	}
+
+	public function add_template($name, $file, $replace = false)
+	{
+		if($replace || empty($this->available_templates[$name])) {
+			$this->available_templates[] = $name;
+			$this->template_map[$name] = $file;
+		}
+	}
 }
 ?>

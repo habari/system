@@ -98,8 +98,10 @@ class User extends QueryRecord
 				// if so, let's return that user data
 				$out = self::get_by_id( intval( $_SESSION['sudo'] ) );
 			}
-			// otherwise return the logged-in user
-			$out = self::$identity;
+			else {
+				// otherwise return the logged-in user
+				$out = self::$identity;
+			}
 		}
 		if ( isset( $_SESSION['user_id'] ) ) {
 			if ( $user = self::get_by_id( intval( $_SESSION['user_id'] ) ) ) {
