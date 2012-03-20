@@ -108,7 +108,16 @@ abstract class TemplateEngine
 	 * @param value value of variable
 	 */
 	abstract function append( $key, $value = '' ); // virtual - implement in derived class
-	
+
+	/**
+	 * Add a template to the list of available templates
+	 * @abstract
+	 * @param string $name Name of the new template
+	 * @param string $file File of the template to add
+	 * @param boolean $replace If true, replace any existing template with this name
+	 */
+	abstract function add_template( $name, $file, $replace = false ); // virtual - implement in derived class
+
 	/**
 	 * Sets the directory for the engine to find templates
 	 *

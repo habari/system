@@ -281,17 +281,25 @@ class Stack
 	 *
 	 * @param string $element The script element in the stack
 	 * @param mixed $attrib Additional attributes, like 'defer' or 'async' allowed for <script src=...> tags
+	 * @param string $wrapper An sprintf formatting string in which to output the script tag, for IE conditional comments
 	 * @return string The resulting script tag
 	 */
-	public static function scripts( $element, $attrib = null )
+	public static function scripts( $element, $attrib = null, $wrapper = '%s' )
 	{
-		if ( self::is_url( $element ) ) {
-			$attrib = ( is_array( $attrib ) ) ? implode( ' ', $attrib ) : $attrib;
-			$output = sprintf( '<script %s src="%s" type="text/javascript"></script>'."\r\n", $attrib, $element );
+		if(is_array($attrib)) {
+			$attrib = $attrib + array('type' => 'text/javascript');
+			$attrib = Utils::html_attr($attrib);
 		}
 		else {
-			$output = sprintf( '<script type="text/javascript">%s</script>'."\r\n", $element );
+			$attrib .= ' type="text/javascript"';
 		}
+		if ( self::is_url( $element ) ) {
+			$output = sprintf( "<script %s src=\"%s\"></script>\r\n", $attrib, $element );
+		}
+		else {
+			$output = sprintf( "<script %s>%s</script>\r\n", $attrib, $element );
+		}
+		$output = sprintf($wrapper, $output);
 		return $output;
 	}
 
@@ -300,22 +308,22 @@ class Stack
 	 *
 	 * @param string $element The style element in the stack
 	 * @param string $typename The media disposition of the content
+	 * @param string $props Additional properties of the style tag output
 	 * @return string The resulting style or link tag
 	 */
-	public static function styles( $element, $typename = null )
+	public static function styles( $element, $typename = null, $props = array() )
 	{
-		if ( empty( $typename ) ) {
-			$media = '';
+		$props = $props + array('type' => 'text/css');
+		if ( !empty( $typename ) ) {
+			$props['media'] = $typename;
 		}
-		else {
-			$media = 'media="' . $typename . '"';
-		}
-		
+
 		if ( self::is_url( $element ) ) {
-			$output = sprintf( '<link rel="stylesheet" type="text/css" href="%1$s" %2$s>'."\r\n", $element, $media );
+			$props = $props + array('rel' => 'stylesheet', 'href' => $element);
+			$output = sprintf( "<link %s>\r\n", Utils::html_attr($props) );
 		}
 		else {
-			$output = sprintf( '<style type="text/css" %2$s>%1$s</style>'."\r\n", $element, $media );
+			$output = sprintf( "<style %2\$s>%1\$s</style>\r\n", $element, Utils::html_attr($props) );
 		}
 		return $output;
 	}

@@ -14,7 +14,7 @@
 				</div>
 			<?php endif; ?>
 				<div class="<?php echo $post_class?>">
-				<?php if ( is_array($post->tags) ) : ?>
+				<?php if ( count($post->tags) ) : ?>
 					<div class="post-tags">
 						<?php echo $post->tags_out;?>
 					</div>

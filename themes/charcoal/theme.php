@@ -138,7 +138,7 @@ class Charcoal extends Theme
 	 */
 	public function filter_post_tags_out( $array )
 	{
-		$fn = create_function( '$a', 'return "<a href=\\"" . URL::get("display_entries_by_tag", array( "tag" => $a->tag_slug) ) . "\\" rel=\\"tag\\">" . $a->tag . "</a>";' );
+		$fn = create_function( '$a', 'return "<a href=\\"" . URL::get("display_entries_by_tag", array( "tag" => $a->term) ) . "\\" rel=\\"tag\\">" . $a->term_display . "</a>";' );
 		$array = array_map( $fn, (array)$array );
 		$out = implode( ' ', $array );
 		return $out;

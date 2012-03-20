@@ -1135,6 +1135,11 @@ class Post extends QueryRecord implements IsContent
 			$form->class[] = 'comments_require_logon';
 			$form->set_option( 'form_action', '/' );
 		}
+		elseif(User::identify()->cannot('comment')) {
+			$form->append(new FormControlStatic('message', _t('You do not have permission to comment on this site.')));
+			$form->class[] = 'comments_require_permission';
+			$form->set_option( 'form_action', '/' );
+		}
 		else {
 
 			$form->set_option( 'form_action', URL::get( 'submit_feedback', array( 'id' => $this->id ) ) );
@@ -1196,17 +1201,6 @@ class Post extends QueryRecord implements IsContent
 			// Create the Submit button
 			$form->append( 'submit', 'cf_submit', _t( 'Submit' ), 'formcontrol_submit' );
 			$form->cf_submit->tabindex = 5;
-
-			// Add required hidden controls
-			/*
-			$form->append( 'hidden', 'content_type', 'null:null' );
-			$form->content_type->value = $this->content_type;
-			$form->append( 'hidden', 'post_id', 'null:null' );
-			$form->post_id->id = 'id';
-			$form->post_id->value = $this->id;
-			$form->append( 'hidden', 'slug', 'null:null' );
-			$form->slug->value = $this->slug;
-			*/
 		}
 
 		// Let plugins alter this form
