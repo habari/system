@@ -41,7 +41,8 @@ class AdminTagsHandler extends AdminHandler
 			return;
 		}
 
-		$this->theme_create();
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
+		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
 		$search = $handler_vars['search'];
 
@@ -68,7 +69,8 @@ class AdminTagsHandler extends AdminHandler
 		}
 
 		$tag_names = array();
-		$this->theme_create();
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
+		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 		$action = $this->handler_vars['action'];
 		switch ( $action ) {
 			case 'delete':

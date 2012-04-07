@@ -108,7 +108,8 @@ class AdminDashboardHandler extends AdminHandler
 	{
 		Utils::check_request_method( array( 'POST' ) );
 
-		$this->create_theme();
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
+		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
 		switch ( $handler_vars['action'] ) {
 			case 'updateModules':
