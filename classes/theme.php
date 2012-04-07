@@ -545,8 +545,6 @@ class Theme extends Pluggable
 	{
 		$this->play_var_stack();
 
-		$this->add_template_vars();
-
 		$this->template_engine->assign( 'theme', $this );
 
 		$return = $this->fetch_unassigned( $template_name );
