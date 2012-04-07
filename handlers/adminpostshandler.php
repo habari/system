@@ -525,8 +525,7 @@ class AdminPostsHandler extends AdminHandler
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD' ) );
 
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
-		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+		$this->theme_create();
 
 		$params = $_GET;
 
