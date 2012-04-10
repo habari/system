@@ -82,7 +82,7 @@ class User extends QueryRecord
 
 	/**
 	 * Check for the existence of a cookie, and return a user object of the user, if successful
-	 * @return object user object, or false if no valid cookie exists
+	 * @return User user object, or false if no valid cookie exists
 	 */
 	public static function identify()
 	{
