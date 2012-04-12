@@ -241,7 +241,7 @@ class Charcoal extends Theme
 		$menus = array('home' => array(
 			'link' => Site::get_url( 'habari' ), 
 			'title' => Options::get( 'title' ), 
-			'caption' => _t('Blog'), 
+			'caption' => Options::get( 'Charcoal__home_label', _t( 'Blog' ) ), 
 			'cssclass' => $theme->request->display_home ? 'current_page_item' : '',
 		));
 		$pages = Posts::get( 'page_list' );
