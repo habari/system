@@ -239,6 +239,25 @@ class Plugins
 	}
 
 	/**
+	 * Determine if a hook of any type is implemented
+	 * @static
+	 * @param string $hookname The name of the hook to check for
+	 * @param string $searchtype Optional. The type of hook to check for
+	 * @return array|bool An array with the types of hook implemented, or false if not implemented
+	 */
+	public static function implemented( $hookname, $searchtype = null )
+	{
+		$result = array();
+		foreach(self::$hooks as $type => $hooks) {
+			if($searchtype && $searchtype != $type) continue;
+			if(isset($hooks[$hookname])) {
+				$result[$type] = $type;
+			}
+		}
+		return count($result) > 0 ? $result : false;
+	}
+
+	/**
 	 * function list_active
 	 * Gets a list of active plugin filenames to be included
 	 * @param boolean Whether to refresh the cached array.  Default false
