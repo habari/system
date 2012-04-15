@@ -45,15 +45,15 @@ class QueryRecord implements URLProperties
 	 **/
 	public function __get( $name )
 	{
+		$return = null;
 		if ( isset( $this->newfields[$name] ) ) {
-			return $this->newfields[$name];
+			$return = $this->newfields[$name];
 		}
 		else if ( isset( $this->fields[$name] ) ) {
-			return $this->fields[$name];
+			$return = $this->fields[$name];
 		}
-		else {
-			return null;
-		}
+		$classname = strtolower(get_class($this));
+		return Plugins::filter('get_' . $classname . '_' . $name, $return, $this);
 	}
 
 	/**
@@ -65,6 +65,11 @@ class QueryRecord implements URLProperties
 	 **/
 	public function __set( $name, $value )
 	{
+		$classname = strtolower(get_class($this));
+		$hook = 'set_' . $classname . '_' . $name;
+		if(Plugins::implemented($hook, 'action')) {
+			return Plugins::act('set_' . $classname . '_' . $name, $value, $this);
+		}
 		if ( isset( $this->properties_loaded[$name] ) ) {
 			$this->newfields[$name] = $value;
 		}

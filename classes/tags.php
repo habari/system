@@ -61,7 +61,7 @@ class Tags extends Vocabulary
 	/**
 	 * Returns the tags vocabulary
 	 *
-	 * @return String The tags vocabulary
+	 * @return Vocabulary The tags vocabulary
 	 */
 	public static function vocabulary()
 	{
