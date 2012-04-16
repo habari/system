@@ -21,7 +21,7 @@
  * </code>
  *
  */
-class User extends QueryRecord
+class User extends QueryRecord implements FormStorage
 {
 	/**
 	 * Static storage for the currently logged-in User record
@@ -82,7 +82,7 @@ class User extends QueryRecord
 
 	/**
 	 * Check for the existence of a cookie, and return a user object of the user, if successful
-	 * @return object user object, or false if no valid cookie exists
+	 * @return User user object, or false if no valid cookie exists
 	 */
 	public static function identify()
 	{
@@ -693,6 +693,28 @@ class User extends QueryRecord
 		return $this->url_args;
 	}
 
+	/**
+	 * Stores a form value into the object
+	 *
+	 * @param string $key The name of a form component that will be stored
+	 * @param mixed $value The value of the form component to store
+	 */
+	function field_save($key, $value)
+	{
+		$this->info->$key = $value;
+		$this->info->commit();
+	}
+
+	/**
+	 * Loads form values from an object
+	 *
+	 * @param string $key The name of a form component that will be loaded
+	 * @return mixed The stored value returned
+	 */
+	function field_load($key)
+	{
+		return $this->info->$key;
+	}
 }
 
 ?>

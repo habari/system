@@ -168,7 +168,7 @@ class Charcoal extends Theme
 				return _t( 'Search results for \'%s\'', array( implode( ' ', $out ) ) );
 				exit;
 			}
-			return sprintf( _t( 'No results found for your search \'%1$s\'' ) . '<br>'. _t( 'You can try searching for \'%2$s\'' ), $criteria, implode( '\' or \'', $out ) );
+			return _t( 'No results found for your search \'%s\'', array( $criteria ) ) . '<br>'. _t( 'You can try searching for \'%s\'', array( implode( '\' or \'', $out ) ) );
 		}
 		else {
 			return _t( 'Search results for \'%s\'', array( $criteria ) );

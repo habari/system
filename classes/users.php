@@ -81,6 +81,18 @@ class Users extends ArrayObject
 					}
 				}
 
+				if ( isset( $paramset['not:id'] ) ) {
+					if ( is_array( $paramset['not:id'] ) ) {
+						array_walk( $paramset['not:id'], create_function( '&$a,$b', '$a = intval( $a );' ) );
+						$where[] = "{users}.id NOT IN (" . implode( ',', array_fill( 0, count( $paramset['not:id'] ), '?' ) ) . ")";
+						$params = array_merge( $params, $paramset['not:id'] );
+					}
+					else {
+						$where[] = "{users}.id != ?";
+						$params[] = (int) $paramset['not:id'];
+					}
+				}
+
 				if ( isset( $paramset['criteria'] ) ) {
 					if ( isset( $paramset['criteria_fields'] ) ) {
 						// Support 'criteria_fields' => 'author,ip' rather than 'criteria_fields' => array( 'author', 'ip' )

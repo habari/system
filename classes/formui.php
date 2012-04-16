@@ -44,7 +44,7 @@ class FormContainer
 		$args = func_get_args();
 		$type = array_shift( $args );
 
-		if ( $type instanceof FormControl ) {
+		if ( $type instanceof FormControl || $type instanceof FormContainer) {
 			$control = $type;
 			$name = $control->name;
 		}
