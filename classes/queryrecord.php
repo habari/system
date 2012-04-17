@@ -196,6 +196,13 @@ class QueryRecord implements URLProperties
 		return DB::delete( $table, $updatekeyfields );
 	}
 
+	/**
+	 * This is the public interface to update a record with an array
+	 */
+	public function modify( $paramarray = array() )
+	{
+		$this->newfields = array_merge( $this->newfields, $paramarray );
+	}
 }
 
 ?>
