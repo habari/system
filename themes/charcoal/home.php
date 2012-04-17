@@ -21,7 +21,7 @@
 							<?php $post->pubdate->out(); ?>
 						</span>
 						<span class="post-comments-link">
-							<a href="<?php echo $post->permalink.'#comment-form'; ?>" title="<?php _e( "Comments on this post" ); ?>"><?php $theme->post_comments_link( $post ); ?></a>
+							<a href="<?php echo $post->permalink.'#comment-form'; ?>" title="<?php _e( "Comments on this post" ); ?>"><?php echo $theme->post_comments_link( $post ); ?></a>
 						</span>
 						<br class="clear">
 					</div>
