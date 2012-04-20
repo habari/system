@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-15 00:00+0000\n"
+"POT-Creation-Date: 2012-04-20 18:44+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -112,7 +112,7 @@ msgstr ""
 #: plugins/undelete/undelete.plugin.php:181
 #: plugins/flickrsilo/flickrsilo.plugin.php:876 themes/charcoal/theme.php:66
 #: admin/themes.php:68 handlers/adminthemeshandler.php:134
-#: classes/post.php:936
+#: classes/post.php:940
 msgid "Save"
 msgstr ""
 
@@ -221,7 +221,7 @@ msgid "What would you like to call the new directory?"
 msgstr ""
 
 #: plugins/habarisilo/habarisilo.plugin.php:465 themes/mzingi/theme.php:114
-#: themes/charcoal/theme.php:224 classes/post.php:1197
+#: themes/charcoal/theme.php:224 classes/post.php:1205
 msgid "Submit"
 msgstr ""
 
@@ -990,7 +990,7 @@ msgid "Feed for this Entry"
 msgstr ""
 
 #: themes/mzingi/commentform.php:28 handlers/admincommentshandler.php:49
-#: classes/post.php:1189
+#: classes/post.php:1197
 msgid "Comment"
 msgid_plural "Comments"
 msgstr[0] ""
@@ -1205,7 +1205,7 @@ msgstr ""
 msgid "Displaying posts tagged: %s and not %s"
 msgstr ""
 
-#: themes/charcoal/theme.php:150 classes/theme.php:904
+#: themes/charcoal/theme.php:150 classes/theme.php:902
 msgid "No Comments"
 msgstr ""
 
@@ -1225,19 +1225,14 @@ msgstr ""
 msgid "Search results for '%s'"
 msgstr ""
 
-#: themes/charcoal/theme.php:171
-#, php-format
-msgid "No results found for your search '%1$s'"
-msgstr ""
-
-#: themes/charcoal/theme.php:171
-#, php-format
-msgid "You can try searching for '%2$s'"
-msgstr ""
-
-#: themes/charcoal/theme.php:177
+#: themes/charcoal/theme.php:171 themes/charcoal/theme.php:177
 #, php-format
 msgid "No results found for your search '%s'"
+msgstr ""
+
+#: themes/charcoal/theme.php:171
+#, php-format
+msgid "You can try searching for '%s'"
 msgstr ""
 
 #: themes/charcoal/theme.php:217 admin/login.php:44
@@ -1260,7 +1255,7 @@ msgstr ""
 msgid "- Required)"
 msgstr ""
 
-#: themes/charcoal/theme.php:221 classes/post.php:1176
+#: themes/charcoal/theme.php:221 classes/post.php:1184
 msgid "Website"
 msgstr ""
 
@@ -1455,7 +1450,7 @@ msgstr ""
 msgid "Error: No tags selected."
 msgstr ""
 
-#: admin/tags.php:107 handlers/admintagshandler.php:91
+#: admin/tags.php:107 handlers/admintagshandler.php:89
 msgid "Error: New name not specified."
 msgstr ""
 
@@ -1808,7 +1803,7 @@ msgid "Current Theme"
 msgstr ""
 
 #: admin/themes.php:20 handlers/admincommentshandler.php:73
-#: classes/post.php:897
+#: classes/post.php:900
 msgid "Settings"
 msgstr ""
 
@@ -1854,7 +1849,7 @@ msgstr ""
 msgid "Activate"
 msgstr ""
 
-#: admin/dashboard_modules.php:5 handlers/admindashboardhandler.php:168
+#: admin/dashboard_modules.php:5 handlers/admindashboardhandler.php:167
 msgid "Add Item"
 msgstr ""
 
@@ -2171,25 +2166,25 @@ msgstr ""
 msgid "Plugins that conflict with importing are active. To prevent undesirable consequences, please de-activate the following plugins until the import is finished: "
 msgstr ""
 
-#: handlers/admintagshandler.php:39 handlers/admintagshandler.php:66
-#: handlers/adminlogshandler.php:238 handlers/admincommentshandler.php:539
-#: handlers/adminpostshandler.php:565 handlers/admingroupshandler.php:114
-#: handlers/admingroupshandler.php:222 handlers/adminusershandler.php:293
-#: handlers/adminusershandler.php:401
+#: handlers/admintagshandler.php:39 handlers/admintagshandler.php:65
+#: handlers/adminlogshandler.php:238 handlers/admincommentshandler.php:538
+#: handlers/adminpostshandler.php:441 handlers/admingroupshandler.php:115
+#: handlers/admingroupshandler.php:222 handlers/adminusershandler.php:294
+#: handlers/adminusershandler.php:402
 msgid "WSSE authentication failed."
 msgstr ""
 
-#: handlers/admintagshandler.php:86
+#: handlers/admintagshandler.php:84
 #, php-format
 msgid "Tag %s has been deleted."
 msgstr ""
 
-#: handlers/admintagshandler.php:86
+#: handlers/admintagshandler.php:84
 #, php-format
 msgid "%d tags have been deleted."
 msgstr ""
 
-#: handlers/admintagshandler.php:107
+#: handlers/admintagshandler.php:105
 #, php-format
 msgid "Tag %1$s has been renamed to %2$s."
 msgid_plural "Tags %1$s have been renamed to %2$s."
@@ -2209,20 +2204,20 @@ msgstr ""
 msgid "Logs purged."
 msgstr ""
 
-#: handlers/admindashboardhandler.php:129
+#: handlers/admindashboardhandler.php:128
 msgid "Modules updated."
 msgstr ""
 
-#: handlers/admindashboardhandler.php:134
+#: handlers/admindashboardhandler.php:133
 #, php-format
 msgid "Added module %s."
 msgstr ""
 
-#: handlers/admindashboardhandler.php:140
+#: handlers/admindashboardhandler.php:139
 msgid "Removed module."
 msgstr ""
 
-#: handlers/admindashboardhandler.php:162
+#: handlers/admindashboardhandler.php:161
 msgid "+"
 msgstr ""
 
@@ -2405,7 +2400,7 @@ msgstr ""
 msgid "Log out of the administration interface"
 msgstr ""
 
-#: handlers/installhandler.php:147 handlers/adminusershandler.php:425
+#: handlers/installhandler.php:147 handlers/adminusershandler.php:426
 msgid "Password mis-match."
 msgstr ""
 
@@ -2568,7 +2563,7 @@ msgstr ""
 
 #: handlers/installhandler.php:1699 classes/acl.php:780 classes/acl.php:781
 #: classes/acl.php:782 classes/acl.php:784 classes/post.php:246
-#: classes/post.php:868
+#: classes/post.php:871
 msgid "Content"
 msgstr ""
 
@@ -2621,12 +2616,12 @@ msgid "Status"
 msgstr ""
 
 #: handlers/admincommentshandler.php:277 handlers/admincommentshandler.php:278
-#: handlers/admincommentshandler.php:566
+#: handlers/admincommentshandler.php:565
 msgid "Deleted all spam comments"
 msgstr ""
 
 #: handlers/admincommentshandler.php:284 handlers/admincommentshandler.php:285
-#: handlers/admincommentshandler.php:570
+#: handlers/admincommentshandler.php:569
 msgid "Deleted all unapproved comments"
 msgstr ""
 
@@ -2673,37 +2668,37 @@ msgstr ""
 msgid "Edit this comment"
 msgstr ""
 
-#: handlers/admincommentshandler.php:554
+#: handlers/admincommentshandler.php:553
 msgid "No comments selected."
 msgstr ""
 
-#: handlers/admincommentshandler.php:561 handlers/adminpostshandler.php:585
+#: handlers/admincommentshandler.php:560 handlers/adminpostshandler.php:461
 #, php-format
 msgid "Unknown action \"%s\""
 msgstr ""
 
-#: handlers/admincommentshandler.php:575
+#: handlers/admincommentshandler.php:574
 #, php-format
 msgid "Deleted %d comment"
 msgid_plural "Deleted %d comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: handlers/admincommentshandler.php:580
+#: handlers/admincommentshandler.php:579
 #, php-format
 msgid "Marked %d comment as spam"
 msgid_plural "Marked %d comments as spam"
 msgstr[0] ""
 msgstr[1] ""
 
-#: handlers/admincommentshandler.php:586
+#: handlers/admincommentshandler.php:585
 #, php-format
 msgid "Approved %d comment"
 msgid_plural "Approved %d comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: handlers/admincommentshandler.php:592
+#: handlers/admincommentshandler.php:591
 #, php-format
 msgid "Unapproved %d comment"
 msgid_plural "Unapproved %d comments"
@@ -2711,7 +2706,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: handlers/adminpostshandler.php:28 handlers/adminpostshandler.php:32
-#: handlers/adminpostshandler.php:113 classes/post.php:996
+#: classes/post.php:978
 msgid "You don't have permission to edit that post"
 msgstr ""
 
@@ -2721,62 +2716,39 @@ msgid "Access to create posts of type %s is denied"
 msgstr ""
 
 #: handlers/adminpostshandler.php:51 handlers/adminpostshandler.php:52
-#: handlers/adminpostshandler.php:84
 #, php-format
 msgid "Publish %s"
 msgstr ""
 
-#: handlers/adminpostshandler.php:88 classes/post.php:971
-#, php-format
-msgid "The post %1$s was updated since you made changes.  Please review those changes before overwriting them."
-msgstr ""
-
-#: handlers/adminpostshandler.php:103 classes/post.php:986
-msgid "A post slug cannot be empty. Keeping old slug."
-msgstr ""
-
-#: handlers/adminpostshandler.php:120 classes/post.php:1003
-msgid "Changing content types is not allowed"
-msgstr ""
-
-#: handlers/adminpostshandler.php:149 classes/post.php:1032
-msgid "Creating that post type is denied"
-msgstr ""
-
-#: handlers/adminpostshandler.php:192 classes/post.php:1075
-#, php-format
-msgid "The post %1$s has been saved as %2$s."
-msgstr ""
-
-#: handlers/adminpostshandler.php:225
+#: handlers/adminpostshandler.php:102
 #, php-format
 msgid "Deleted the %1$s titled \"%2$s\"."
 msgstr ""
 
-#: handlers/adminpostshandler.php:396
+#: handlers/adminpostshandler.php:273
 msgid "My Posts"
 msgstr ""
 
-#: handlers/adminpostshandler.php:398 handlers/adminpostshandler.php:399
+#: handlers/adminpostshandler.php:275 handlers/adminpostshandler.php:276
 msgid "Manage Posts"
 msgstr ""
 
-#: handlers/adminpostshandler.php:430
+#: handlers/adminpostshandler.php:307
 msgid "Root"
 msgstr ""
 
-#: handlers/adminpostshandler.php:596
+#: handlers/adminpostshandler.php:472
 msgid "You did not have permission to delete some posts."
 msgstr ""
 
-#: handlers/adminpostshandler.php:599
+#: handlers/adminpostshandler.php:475
 #, php-format
 msgid "Deleted %d post"
 msgid_plural "Deleted %d posts"
 msgstr[0] ""
 msgstr[1] ""
 
-#: handlers/admingroupshandler.php:160
+#: handlers/admingroupshandler.php:161
 msgid "Updated permissions."
 msgstr ""
 
@@ -2816,7 +2788,7 @@ msgstr ""
 msgid "%s's User Information"
 msgstr ""
 
-#: handlers/adminusershandler.php:48 handlers/adminusershandler.php:377
+#: handlers/adminusershandler.php:48 handlers/adminusershandler.php:378
 msgid "nobody"
 msgstr ""
 
@@ -2840,7 +2812,7 @@ msgstr ""
 msgid "User Name"
 msgstr ""
 
-#: handlers/adminusershandler.php:98 classes/post.php:1159
+#: handlers/adminusershandler.php:98 classes/post.php:1167
 msgid "Email"
 msgstr ""
 
@@ -2899,7 +2871,7 @@ msgstr ""
 msgid "%s has been deleted"
 msgstr ""
 
-#: handlers/adminusershandler.php:224 handlers/adminusershandler.php:352
+#: handlers/adminusershandler.php:224 handlers/adminusershandler.php:353
 msgid "You cannot delete yourself."
 msgstr ""
 
@@ -2912,36 +2884,36 @@ msgstr ""
 msgid "Password changed."
 msgstr ""
 
-#: handlers/adminusershandler.php:268
+#: handlers/adminusershandler.php:269
 msgid "User updated."
 msgstr ""
 
-#: handlers/adminusershandler.php:321
+#: handlers/adminusershandler.php:322
 msgid "No users deleted."
 msgstr ""
 
-#: handlers/adminusershandler.php:359
+#: handlers/adminusershandler.php:360
 #, php-format
 msgid "Deleted %d users."
 msgstr ""
 
-#: handlers/adminusershandler.php:422
+#: handlers/adminusershandler.php:423
 msgid "Password is required."
 msgstr ""
 
-#: handlers/adminusershandler.php:428
+#: handlers/adminusershandler.php:429
 msgid "Please supply a valid email address."
 msgstr ""
 
-#: handlers/adminusershandler.php:431
+#: handlers/adminusershandler.php:432
 msgid "Please supply a user name."
 msgstr ""
 
-#: handlers/adminusershandler.php:436
+#: handlers/adminusershandler.php:437
 msgid "That username is already assigned."
 msgstr ""
 
-#: handlers/adminusershandler.php:441
+#: handlers/adminusershandler.php:442
 #, php-format
 msgid "Added user '%s'"
 msgstr ""
@@ -3145,32 +3117,32 @@ msgstr ""
 msgid "The APC Cache PHP module is not loaded - the cache is disabled."
 msgstr ""
 
-#: classes/plugins.php:261
+#: classes/plugins.php:280
 #, php-format
 msgid "An empty plugin definition pointing to file \"%1$s\" was removed."
 msgstr ""
 
-#: classes/plugins.php:272
+#: classes/plugins.php:291
 #, php-format
 msgid "Plugin \"%1$s\" deactivated because it could no longer be found."
 msgstr ""
 
-#: classes/plugins.php:442
+#: classes/plugins.php:461
 #, php-format
 msgid "Invalid plugin XML file: %1$s"
 msgstr ""
 
-#: classes/plugins.php:549
+#: classes/plugins.php:568
 #, php-format
 msgid "Activated Plugin: %s"
 msgstr ""
 
-#: classes/plugins.php:585
+#: classes/plugins.php:604
 #, php-format
 msgid "Deactivated Plugin: %s"
 msgstr ""
 
-#: classes/plugins.php:692
+#: classes/plugins.php:711
 #, php-format
 msgid "Attempted to load the plugin file \"%s\", but it failed with syntax errors. <div class=\"reveal\">%s</div>"
 msgstr ""
@@ -3686,24 +3658,24 @@ msgstr ""
 msgid "Whoops! 404. The page you were trying to access is not really there. Please try again."
 msgstr ""
 
-#: classes/theme.php:672
+#: classes/theme.php:670
 #, php-format
 msgid "Content could not be displayed. One of the following templates - %s - has to be present in the active theme."
 msgstr ""
 
-#: classes/theme.php:830
+#: classes/theme.php:828
 msgid "Previous"
 msgstr ""
 
-#: classes/theme.php:857
+#: classes/theme.php:855
 msgid "Next"
 msgstr ""
 
-#: classes/theme.php:883
+#: classes/theme.php:881
 msgid "Read Comments"
 msgstr ""
 
-#: classes/theme.php:909
+#: classes/theme.php:907
 #, php-format
 msgid "%s Comment"
 msgid_plural "%s Comments"
@@ -4299,99 +4271,129 @@ msgstr ""
 msgid "View Post"
 msgstr ""
 
-#: classes/post.php:855
+#: classes/post.php:855 classes/post.php:858
 msgid "Title"
 msgstr ""
 
-#: classes/post.php:876
+#: classes/post.php:879
 msgid "Tags, separated by, commas"
 msgstr ""
 
-#: classes/post.php:899
+#: classes/post.php:902
 msgid "Content State"
 msgstr ""
 
-#: classes/post.php:908
+#: classes/post.php:911
 msgid "Minor Edit"
 msgstr ""
 
-#: classes/post.php:913
+#: classes/post.php:916
 msgid "Comments Allowed"
 msgstr ""
 
-#: classes/post.php:916
+#: classes/post.php:919
 msgid "Publication Time"
 msgstr ""
 
-#: classes/post.php:918
+#: classes/post.php:921
 msgid "YYYY-MM-DD HH:MM:SS"
 msgstr ""
 
-#: classes/post.php:923
+#: classes/post.php:926
 msgid "Content Address"
 msgstr ""
 
-#: classes/post.php:1124
+#: classes/post.php:985
+msgid "Changing content types is not allowed"
+msgstr ""
+
+#: classes/post.php:996
+msgid "Creating that post type is denied"
+msgstr ""
+
+#: classes/post.php:1009
+msgid "Editing that post type is denied"
+msgstr ""
+
+#: classes/post.php:1016
+#, php-format
+msgid "The post %1$s was updated since you made changes.  Please review those changes before overwriting them."
+msgstr ""
+
+#: classes/post.php:1023
+msgid "A post slug cannot be empty. Keeping old slug."
+msgstr ""
+
+#: classes/post.php:1078
+#, php-format
+msgid "The post %1$s has been saved as %2$s."
+msgstr ""
+
+#: classes/post.php:1127
 msgid "Comments are disabled site-wide."
 msgstr ""
 
-#: classes/post.php:1129
+#: classes/post.php:1132
 msgid "Comments for this post are disabled."
 msgstr ""
 
-#: classes/post.php:1134
+#: classes/post.php:1137
 msgid "Commenting on this site requires authentication."
 msgstr ""
 
-#: classes/post.php:1147
+#: classes/post.php:1142
+msgid "You do not have permission to comment on this site."
+msgstr ""
+
+#: classes/post.php:1155
 msgid "Name <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: classes/post.php:1149
+#: classes/post.php:1157
 msgid "The Name field value is required"
 msgstr ""
 
-#: classes/post.php:1161 classes/post.php:1166
+#: classes/post.php:1169 classes/post.php:1174
 msgid "The Email field value must be a valid email address"
 msgstr ""
 
-#: classes/post.php:1167
+#: classes/post.php:1175
 msgid "Email <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: classes/post.php:1178
+#: classes/post.php:1186
 msgid "The Web Site field value must be a valid URL"
 msgstr ""
 
-#: classes/post.php:1191
+#: classes/post.php:1199
 msgid "The Content field value is required"
 msgstr ""
 
-#: classes/post.php:1548
+#: classes/post.php:1556
 msgid "Entry"
 msgstr ""
 
-#: classes/post.php:1549
+#: classes/post.php:1557
 msgid "Entries"
 msgstr ""
 
-#: classes/post.php:1552
+#: classes/post.php:1560
 msgid "Page"
 msgstr ""
 
-#: classes/post.php:1553
+#: classes/post.php:1561
 msgid "Pages"
 msgstr ""
 
-#: classes/post.php:1568
+#: classes/post.php:1576
 msgid "draft"
 msgstr ""
 
-#: classes/post.php:1569
+#: classes/post.php:1577
 msgid "published"
 msgstr ""
 
-#: classes/post.php:1570
+#: classes/post.php:1578
 msgid "scheduled"
 msgstr ""
 
