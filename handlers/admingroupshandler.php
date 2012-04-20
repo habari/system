@@ -18,7 +18,8 @@ class AdminGroupsHandler extends AdminHandler
 	{
 		// prepare the WSSE tokens
 		$this->theme->wsse = Utils::WSSE();
-		$this->theme->groups = UserGroups::get_all();
+		$groups = UserGroups::get_all();
+		$this->theme->groups = Plugins::filter('admin_groups_visible', $groups);
 		$this->display( 'groups' );
 	}
 
@@ -31,7 +32,7 @@ class AdminGroupsHandler extends AdminHandler
 		$this->theme->wsse = Utils::WSSE();
 		$this->theme->groups = UserGroups::get_all();
 		$this->update_groups( $this->handler_vars, false );
-		$this->display( 'groups' );
+		Utils::redirect( URL::get( 'admin', 'page=groups' ) );
 	}
 
 	/**
@@ -180,8 +181,7 @@ class AdminGroupsHandler extends AdminHandler
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD' ) );
 
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
-		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+		$this->create_theme();
 
 		$output = '';
 

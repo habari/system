@@ -11,7 +11,7 @@
 class AjaxResponse
 {
 	
-	private $data;
+	public $data;
 	private $response_code;
 	private $message;
 	private $callback = null;

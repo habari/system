@@ -90,7 +90,7 @@ class Theme extends Pluggable
 	public function info()
 	{
 
-		$xml_file = $this->theme_dir . '/theme.xml';
+		$xml_file = end($this->theme_dir) . '/theme.xml';
 		if(!file_exists($xml_file)) {
 			return new SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?>
 <pluggable type="theme">
@@ -544,8 +544,6 @@ class Theme extends Pluggable
 	public function fetch( $template_name, $unstack = false )
 	{
 		$this->play_var_stack();
-
-		$this->add_template_vars();
 
 		$this->template_engine->assign( 'theme', $this );
 
@@ -1446,7 +1444,7 @@ class Theme extends Pluggable
 		$themedirs = $this->theme_dir;
 
 		if(!$overrideok) {
-			$themedirs = last($this->theme_dir);
+			$themedirs = end($this->theme_dir);
 		}
 
 		foreach($themedirs as $dir) {

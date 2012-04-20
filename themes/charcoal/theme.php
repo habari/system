@@ -138,7 +138,7 @@ class Charcoal extends Theme
 	 */
 	public function filter_post_tags_out( $array )
 	{
-		$fn = create_function( '$a', 'return "<a href=\\"" . URL::get("display_entries_by_tag", array( "tag" => $a->tag_slug) ) . "\\" rel=\\"tag\\">" . $a->tag . "</a>";' );
+		$fn = create_function( '$a', 'return "<a href=\\"" . URL::get("display_entries_by_tag", array( "tag" => $a->term) ) . "\\" rel=\\"tag\\">" . $a->term_display . "</a>";' );
 		$array = array_map( $fn, (array)$array );
 		$out = implode( ' ', $array );
 		return $out;
@@ -168,7 +168,7 @@ class Charcoal extends Theme
 				return _t( 'Search results for \'%s\'', array( implode( ' ', $out ) ) );
 				exit;
 			}
-			return sprintf( _t( 'No results found for your search \'%1$s\'' ) . '<br>'. _t( 'You can try searching for \'%2$s\'' ), $criteria, implode( '\' or \'', $out ) );
+			return _t( 'No results found for your search \'%s\'', array( $criteria ) ) . '<br>'. _t( 'You can try searching for \'%s\'', array( implode( '\' or \'', $out ) ) );
 		}
 		else {
 			return _t( 'Search results for \'%s\'', array( $criteria ) );
@@ -241,7 +241,7 @@ class Charcoal extends Theme
 		$menus = array('home' => array(
 			'link' => Site::get_url( 'habari' ), 
 			'title' => Options::get( 'title' ), 
-			'caption' => _t('Blog'), 
+			'caption' => Options::get( 'Charcoal__home_label', _t( 'Blog' ) ), 
 			'cssclass' => $theme->request->display_home ? 'current_page_item' : '',
 		));
 		$pages = Posts::get( 'page_list' );

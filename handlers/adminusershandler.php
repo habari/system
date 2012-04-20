@@ -262,6 +262,7 @@ class AdminUsersHandler extends AdminHandler
 
 		// Let plugins tell us to update
 		$update = Plugins::filter( 'form_user_update', $update, $form, $edit_user );
+		$form->save();
 
 		if ( $update ) {
 			$edit_user->update();
