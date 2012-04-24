@@ -155,7 +155,7 @@ class Posts extends ArrayObject implements IsContent
 					$where->in('{posts}.id', $paramset['id'], 'posts_id', 'intval');
 				}
 				if ( isset( $paramset['not:id'] ) ) {
-					$where->in('{posts}.id', $paramset['id'], 'posts_not_id', 'intval', false);
+					$where->in('{posts}.id', $paramset['not:id'], 'posts_not_id', 'intval', false);
 				}
 
 				if ( isset( $paramset['status'] ) && ( $paramset['status'] != 'any' ) && ( 0 !== $paramset['status'] ) ) {
@@ -445,12 +445,13 @@ class Posts extends ArrayObject implements IsContent
 
 		// Only show posts to which the current user has permission
 		if ( isset( $paramset['ignore_permissions'] ) ) {
-			$master_perm_where = '';
+			$master_perm_where = new QueryWhere();
 			// Set up the merge params
 			$merge_params = array( $join_params, $params );
 			$params = call_user_func_array( 'array_merge', $merge_params );
 		}
 		else {
+			$master_perm_where = new QueryWhere();
 			// This set of wheres will be used to generate a list of post_ids that this user can read
 			$perm_where = new QueryWhere('OR');
 			$perm_where_denied = array();
