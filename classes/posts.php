@@ -1221,7 +1221,7 @@ class Posts extends ArrayObject implements IsContent
 		}
 		return 'posts';
 	}
-	
+
 	/**
 	 * Accepts a set of term query qualifiers and converts it into a multi-dimensional array
 	 * of vocabulary (ie: tags), matching method (any, all, not), matching field (id, term, term_display), and list of terms
@@ -1230,7 +1230,6 @@ class Posts extends ArrayObject implements IsContent
 	 */
 	private static function vocabulary_params( $params )
 	{
-		
 		$return = array();
 		
 		foreach ( $params as $key => $value ) {
@@ -1280,7 +1279,6 @@ class Posts extends ArrayObject implements IsContent
 		}
 		
 		return $return;
-		
 	}
 
 	/**
@@ -1304,6 +1302,17 @@ class Posts extends ArrayObject implements IsContent
 		$presets['asides'] = array( 'vocabulary' => array( 'tags:term' => 'aside' ), 'limit' => 5 );
 
 		return $presets;
+	}
+
+	/**
+	 * function delete
+	 * Delete all Posts in a Posts object
+	 */
+	public function delete()
+	{
+		foreach( $this as $post ) {
+			$post->delete();
+		}
 	}
 }
 
