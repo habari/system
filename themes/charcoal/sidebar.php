@@ -1,7 +1,6 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-
 <div id="search">
-	<?php $theme->search_form() ?>
+	<?php echo $theme->search_form() ?>
 </div>
 <div id="feeds">
 	<div class="feedlink"><a href="<?php URL::out( 'atom_feed', array( 'index' => '1' ) ); ?>"><?php _e( "{blog entries}" ); ?></a></div>
@@ -14,5 +13,5 @@
 </div>
 <div id="sidebar">
 <!-- Call your plugins theme functions here-->
-<?php $theme->area('sidebar'); ?>
+<?php echo $theme->area('sidebar'); ?>
 </div>

@@ -64,7 +64,7 @@ class Posts extends ArrayObject implements IsContent
 	 * - before => a timestamp to compare post publication dates
 	 * - after => a timestamp to compare post publication dates
 	 * - month_cts => return the number of posts published in each month
-	 * - criteria => a literal search string to match post content
+	 * - criteria => a literal search string to match post content or title
 	 * - title => an exact case-insensitive match to a post title
 	 * - title_search => a search string that acts only on the post title
 	 * - has:info => a post info key or array of post info keys, which should be present
@@ -444,8 +444,13 @@ class Posts extends ArrayObject implements IsContent
 		}
 
 		// Only show posts to which the current user has permission
-		if ( !isset( $paramset['ignore_permissions'] ) ) {
-			$master_perm_where = new QueryWhere();
+		if ( isset( $paramset['ignore_permissions'] ) ) {
+			$master_perm_where = '';
+			// Set up the merge params
+			$merge_params = array( $join_params, $params );
+			$params = call_user_func_array( 'array_merge', $merge_params );
+		}
+		else {
 			// This set of wheres will be used to generate a list of post_ids that this user can read
 			$perm_where = new QueryWhere('OR');
 			$perm_where_denied = array();
@@ -1022,7 +1027,6 @@ class Posts extends ArrayObject implements IsContent
 				case 'info':
 					if ( strpos( $value, ':' ) !== false ) {
 						list( $infokey, $infovalue ) = explode( ':', $value, 2 );
-//						$arguments['info'][] = array( $infokey=>$infovalue );
 						$arguments['info'][$infokey] = $infovalue;
 					}
 					break;

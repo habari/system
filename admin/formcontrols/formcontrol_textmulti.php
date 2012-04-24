@@ -12,11 +12,11 @@ $i = 0;
 foreach($value as $value_1) :
 $i++;
 	if ( $value_1 ) :
-?>
-	<input type="text" name="<?php echo $field; ?>[]" id="<?php echo $field . '_' . $i; ?>" value="<?php echo Utils::htmlspecialchars($value_1); ?>"> <label for="<?php echo $field . '_' . $i; ?>"><a href="#" onclick="return controls.textmulti.remove(this);">[<?php _e('remove'); ?>]</a></label>
+ ?>
+	<span class="textmulti_item"><input type="text" name="<?php echo $field; ?>[]" id="<?php echo $field . '_' . $i; ?>" value="<?php echo Utils::htmlspecialchars($value_1); ?>"> <a href="#" onclick="return controls.textmulti.remove(this);" title="<?php _e( 'remove' ); ?>" class="textmulti_remove opa50">[<?php _e( 'remove' ); ?>]</a></span>
 <?php
 	endif;
 endforeach;
 ?>
-<a href="#" onclick="return controls.textmulti.add(this, '<?php echo $field; ?>');">[<?php _e('add'); ?>]</a>
+<a href="#" onclick="return controls.textmulti.add(this, '<?php echo $field; ?>');" class="textmulti_add opa50" title="<?php _e( 'add' ); ?>">[<?php _e( 'add' ); ?>]</a>
 </div>

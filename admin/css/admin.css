@@ -715,6 +715,16 @@ body.page-comments .button{
 	-moz-border-radius: 3px;
 }
 
+.create select {
+	padding: 3px 5px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border: 1px solid #BBB;
+	margin: 0 0 0 -6px;
+	width: 100%;
+}
+
 .create label.overcontent {
 	text-transform: lowercase;
 	color: #aeaeae;
@@ -1514,19 +1524,40 @@ body.page-options .item {
 	font-size: 1.1em;
 }
 
+.plugins .requirements {
+	margin: 10px 0px;
+}
+
+.plugins .requirements ul {
+	list-style-type: disc;
+	margin-left: 30px;
+}
+
 .plugins .description {
 	margin: 0;
 	width: 80%;
 }
 
-.plugins .missing {
-	padding-top: 5px;
+.plugins .requirements .error {
 	color: red;
 }
 
-.plugins .missing a {
+.plugins .requirements .feature {
 	font-weight: bold;
 	color: #333333;
+}
+
+.plugins .dependency_options {
+	margin-left: 10px;
+}
+
+.plugins .dependency_options li {
+	display: inline;
+	margin-right: 20px;
+}
+
+#page .plugins .fulfills a {
+	font-weight: bold;
 }
 
 .plugins .item a.help, .plugins .item a.help.active:hover {
@@ -1986,7 +2017,9 @@ body.page-themes .currenttheme .thumb {
 /*- OPTIONS PAGE */
 
 body.page-options .container .item {
-	line-height: 34px;
+	line-height: 1.5;
+	padding-top: 1em;
+	padding-bottom: 1em;
 }
 
 body.page-options #title {
@@ -3004,3 +3037,25 @@ ol.tree, ol.tree ol {
 	color:#8a1f11;
 }
  
+
+/*- Textmulti */
+
+.textmulti_add, .textmulti_remove {
+	background-image: url('images/ui-icons_222222_256x240.png');
+	width: 16px;
+	height: 16px;
+	text-indent: -10000px;
+	display: inline-block;
+}
+
+.textmulti_add {
+	background-position: 0 -192px;
+}
+.textmulti_remove {
+	background-position: -16px -192px;
+}
+
+.textmulti_item {
+	display: inline-block;
+    margin-top: 5px;
+}

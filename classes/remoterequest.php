@@ -52,7 +52,9 @@ class RemoteRequest
 	private $method = 'GET';
 	private $url;
 	private $params = array();
-	private $headers = array();
+	private $headers = array(
+		'Accept' => '*/*',
+	);
 	private $postdata = array();
 	private $files = array();
 	private $body = '';

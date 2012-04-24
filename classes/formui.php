@@ -20,6 +20,7 @@ class FormContainer
 	public $class = '';
 	public $caption = '';
 	public $controls = array();
+	/** @var Theme $theme_obj */
 	protected $theme_obj = null;
 	protected $checksum;
 	public $template = 'formcontainer';
@@ -43,7 +44,7 @@ class FormContainer
 		$args = func_get_args();
 		$type = array_shift( $args );
 
-		if ( $type instanceof FormControl ) {
+		if ( $type instanceof FormControl || $type instanceof FormContainer) {
 			$control = $type;
 			$name = $control->name;
 		}
@@ -180,7 +181,14 @@ class FormContainer
 	{
 		if ( !isset( $this->theme_obj ) ) {
 			$theme_dir = Plugins::filter( 'control_theme_dir', Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) ) . 'formcontrols/', $control );
-			$this->theme_obj = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+			$this->theme_obj = Themes::create( ); // Create the current theme instead of: 'admin', 'RawPHPEngine', $theme_dir
+			// Add the templates for the form controls tothe current theme,
+			// and allow any matching templates from the current theme to override
+			$formcontrol_templates = Utils::glob($theme_dir . '*.php');
+			foreach($formcontrol_templates as $template) {
+				$template_name = basename($template, '.php');
+				$this->theme_obj->add_template($template_name, $template);
+			}
 		}
 		$this->theme_obj->start_buffer();
 		if ( $control instanceof FormControl ) {
@@ -634,7 +642,7 @@ class FormUI extends FormContainer
 		}
 		if ( !FormUI::$outpre ) {
 			FormUI::$outpre = true;
-			$out .= '<script type="text/javascript">controls.init();</script>';
+			$out .= '<script type="text/javascript">window.setTimeout(function(){controls.init();}, 500);</script>';
 		}
 		return $out;
 	}
@@ -962,8 +970,8 @@ class FormControl
 	public $class = array( 'formcontrol' );
 	public $name;
 	public $properties = array();
-	protected $template = null;
-	protected $raw = false;
+	public $template = null;
+	public $raw = false;
 	public $errors = array();
 
 	/**
@@ -1265,13 +1273,38 @@ class FormControl
 					return $this->get_default();
 				}
 		}
-		if ( isset( $this->$name ) ) {
+		if ( property_exists( $this, $name ) ) {
 			return $this->$name;
 		}
-		if ( isset( $this->properties[$name] ) ) {
+		if ( isset($this->properties[$name])) {
 			return $this->properties[$name];
 		}
 		return null;
+	}
+
+	/**
+	 * Magic function __isset returns whether properties exist for this object.
+	 * Potential valid properties:
+	 * field: A valid unique name for this control in HTML.
+	 * value: The value of the control, whether the default or submitted in the form
+	 *
+	 * @param string $name The parameter to retrieve
+	 * @return boolean True if the property exists
+	 */
+	public function __isset( $name )
+	{
+		switch ( $name ) {
+			case 'field':
+			case 'value':
+				return true;
+		}
+		if ( property_exists( $this, $name ) ) {
+			return true;
+		}
+		if ( isset( $this->properties[$name] ) ) {
+			return true;
+		}
+		return false;
 	}
 
 	public function __toString()
@@ -1437,6 +1470,34 @@ class FormControl
 		$this->container->remove( $this );
 	}
 
+	function parameter_map($map = array(), $additional = array()) {
+		$output = '';
+		foreach($map as $tag_param => $tag_fields) {
+			$value_out = false;
+			if(is_numeric($tag_param)) {
+				$tag_param = $tag_fields;
+			}
+			foreach(Utils::single_array($tag_fields) as $tag_field) {
+				if(isset($this->$tag_field)) {
+					$value_out = $this->$tag_field;
+					break;
+				}
+			}
+			if($value_out) {
+				if(is_array($value_out)) {
+					$output .= ' ' . $tag_param . '="' . implode(' ', $value_out) . '"';
+				}
+				else {
+					$output .= ' ' . $tag_param . '="' . $value_out . '"';
+				}
+			}
+		}
+		foreach($additional as $tag_param => $value_out) {
+			$output .= ' ' . $tag_param . '="' . $value_out . '"';
+		}
+		return $output;
+	}
+
 }
 
 /**
@@ -1475,7 +1536,21 @@ class FormControlNoSave extends FormControl
  */
 class FormControlText extends FormControl
 {
-// Placeholder class
+	/**
+	 * FormControlText constructor - set initial settings of the control
+	 *
+	 * @param string $storage The storage location for this control
+	 * @param string $default The default value of the control
+	 * @param string $caption The caption used as the label when displaying a control
+	 */
+	public function __construct()
+	{
+		$args = func_get_args();
+		list( $name, $storage, $caption, $template ) = array_merge( $args, array_fill( 0, 4, null ) );
+		parent::__construct($name, $storage, $caption, $template);
+		$this->properties['type'] = 'text';
+	}
+
 }
 
 /**
@@ -1629,13 +1704,13 @@ class FormControlTextMulti extends FormControl
 				<script type="text/javascript">
 				controls.textmulti = {
 					add: function(e, field){
-						$(e).before("<label><input type=\"text\" name=\"" + field + "[]\"> <a href=\"#\" onclick=\"return controls.textmulti.remove(this);\">[' . _t( 'remove' ) . ']</a></label>");
+						$(e).before(" <span class=\"textmulti_item\"><input type=\"text\" name=\"" + field + "[]\"> <a href=\"#\" onclick=\"return controls.textmulti.remove(this);\" title=\"'. _t( 'Remove item' ).'\" class=\"textmulti_remove opa50\">[' . _t( 'remove' ) . ']</a></span>");
 						return false;
 					},
 					remove: function(e){
 						if (confirm("' . _t( 'Remove this item?' ) . '")) {
 							if ( $(e).parent().parent().find("input").length == 1) {
-								field = $(e).parent().prev().attr("name");
+								field = $(e).prev().attr("name");
 								$(e).parent().prev().before("<input type=\"hidden\" name=\"" + field + "\" value=\"\">");
 							}
 							$(e).parent().prev("input").remove();

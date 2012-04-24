@@ -326,7 +326,12 @@ class Utils
 		echo "<pre style=\"color:white;\">";
 		foreach ( $fooargs as $arg1 ) {
 			echo '<em>' . gettype( $arg1 ) . '</em> ';
-			echo htmlentities( print_r( $arg1, true ) ) . "<br>";
+			if ( gettype( $arg1 ) == 'boolean' ) {
+				echo htmlentities( var_export( $arg1 ) ) . '<br>';
+			}
+			else {
+				echo htmlentities( print_r( $arg1, true ) ) . "<br>";
+			}
 		}
 		echo "</pre></div>";
 	}
@@ -414,7 +419,7 @@ class Utils
 					case 'md5':
 						return self::$algo( $password, $hash );
 					default:
-						Error::raise( sprintf( _t( 'Unsupported digest algorithm "%s"' ), $algo ) );
+						Error::raise( _t( 'Unsupported digest algorithm "%s"', array( $algo ) ) );
 						return false;
 				}
 			}
@@ -824,7 +829,7 @@ class Utils
 	public static function mimetype( $filename )
 	{
 		$mimetype = null;
-		if ( function_exists( 'finfo_open' ) ) {
+		if ( function_exists( 'finfo_open' ) && file_exists($filename) ) {
 			$finfo = finfo_open( FILEINFO_MIME );
 			$mimetype = finfo_file( $finfo, $filename );
 			/* FILEINFO_MIME Returns the mime type and mime encoding as defined by RFC 2045.
@@ -863,6 +868,10 @@ class Utils
 				case 'swf':
 					$mimetype = 'application/x-shockwave-flash';
 					break;
+				case 'htm':
+				case 'html':
+				$mimetype = 'text/html';
+				break;
 			}
 		}
 		$mimetype = Plugins::filter( 'get_mime_type', $mimetype, $filename );
@@ -1047,26 +1056,28 @@ class Utils
 	* behind proxies, whether they know it or not.
 	* @return The client's IP address.
 	*/
-	public static function get_ip()
+	public static function get_ip( $default = '0.0.0.0' )
 	{
-		if ( isset( $_SERVER['HTTP_CLIENT_IP'] ) ) {
-			return $_SERVER['HTTP_CLIENT_IP'];
+		// @todo in particular HTTP_X_FORWARDED_FOR could be a comma-separated list of IPs that have handled it, the client being the left-most. we should handle that...
+		$keys = array( 'HTTP_CLIENT_IP', 'HTTP_FORWARDED', 'HTTP_X_FORWARDED', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_CLUSTER_CLIENT_IP', 'REMOTE_ADDR' );
+		
+		$return = '';
+		foreach ( $keys as $key ) {
+			if ( isset( $_SERVER[ $key ] ) ) {
+				$return = $_SERVER[ $key ];
+			}
 		}
-		else if ( isset( $_SERVER['HTTP_FORWARDED'] ) ) {
-			return $_SERVER['HTTP_FORWARDED'];
-		}
-		else if ( isset( $_SERVER['HTTP_X_FORWARDED'] ) ) {
-			return $_SERVER['HTTP_X_FORWARDED'];
-		}
-		else if ( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-			return $_SERVER['HTTP_X_FORWARDED_FOR'];
-		}
-		else if ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
-			return $_SERVER['REMOTE_ADDR'];
+		
+		// make sure whatever IP we got was valid
+		$valid = filter_var( $return, FILTER_VALIDATE_IP );
+		
+		if ( $valid === false ) {
+			return $default;
 		}
 		else {
-			return '0.0.0.0';
+			return $return;
 		}
+		
 	}
 
 	/**

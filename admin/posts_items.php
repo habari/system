@@ -24,9 +24,9 @@
 
 		<ul class="dropbutton">
 			<?php $actions = array(
-				'edit' => array('url' => URL::get('admin', 'page=publish&id=' . $post->id), 'title' => sprintf( _t('Edit \'%s\''), $post->title ), 'label' => _t('Edit'), 'permission' => 'edit' ),
-				'view' => array('url' => $post->permalink . '?preview=1', 'title' => sprintf( _t('View \'%s\''), $post->title ), 'label' => _t('View') ),
-				'remove' => array('url' => 'javascript:itemManage.remove('. $post->id . ', \'post\');', 'title' => _t('Delete this item'), 'label' => _t('Delete'), 'permission' => 'delete' )
+				'edit' => array( 'url' => URL::get( 'admin', 'page=publish&id=' . $post->id ), 'title' => _t( 'Edit \'%s\'', array( $post->title ) ), 'label' => _t( 'Edit' ), 'permission' => 'edit' ),
+				'view' => array( 'url' => $post->permalink . '?preview=1', 'title' => _t( 'View \'%s\'', array( $post->title ) ), 'label' => _t( 'View' ) ),
+				'remove' => array( 'url' => 'javascript:itemManage.remove('. $post->id . ', \'post\');', 'title' => _t( 'Delete this item' ), 'label' => _t( 'Delete' ), 'permission' => 'delete' )
 			);
 			$actions = Plugins::filter('post_actions', $actions, $post);
 			foreach( $actions as $action ) :

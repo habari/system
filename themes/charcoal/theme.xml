@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<pluggable type="theme">
+<pluggable type="theme" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://schemas.habariproject.org/pluggable/0.8">
 	<name>Charcoal</name>
 	<class>Charcoal</class>
 	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>

@@ -19,7 +19,9 @@ class AdminUsersHandler extends AdminHandler
 		$edit_user = User::identify();
 		$permission = false;
 
-		if ( ( $this->handler_vars['user'] == '' ) || ( User::get_by_name( $this->handler_vars['user'] ) == $edit_user ) ) {
+		// Check if the user is editing their own profile
+		$self = $this->handler_vars['user'] == '' || User::get_by_name($this->handler_vars['user']) == $edit_user;
+		if ($self) {
 			if ( $edit_user->can( 'manage_self' ) || $edit_user->can( 'manage_users' ) ) {
 				$permission = true;
 			}
@@ -32,7 +34,7 @@ class AdminUsersHandler extends AdminHandler
 			}
 			$edit_user = User::get_by_name( $this->handler_vars['user'] );
 			$who = $edit_user->username;
-			$possessive = sprintf( _t( "%s's User Information" ), $who );
+			$possessive = _t( "%s's User Information", array( $who ) );
 		}
 
 		if ( !$permission ) {
@@ -175,7 +177,7 @@ class AdminUsersHandler extends AdminHandler
 		Plugins::act( 'form_user', $form, $edit_user );
 
 		$this->theme->form = $form->get();
-		$this->theme->admin_page = _t( 'user' );
+		$this->theme->admin_page = $self ? _t( 'My Profile') : _t( 'User' );
 
 		$this->theme->display( 'user' );
 
@@ -214,7 +216,7 @@ class AdminUsersHandler extends AdminHandler
 					}
 				}
 
-				Session::notice( sprintf( _t( '%s has been deleted' ), $username ) );
+				Session::notice( _t( '%s has been deleted', array( $username ) ) );
 
 				Utils::redirect( URL::get( 'admin', array( 'page' => 'users' ) ) );
 			}
@@ -260,6 +262,7 @@ class AdminUsersHandler extends AdminHandler
 
 		// Let plugins tell us to update
 		$update = Plugins::filter( 'form_user_update', $update, $form, $edit_user );
+		$form->save();
 
 		if ( $update ) {
 			$edit_user->update();
@@ -333,6 +336,8 @@ class AdminUsersHandler extends AdminHandler
 
 					$posts = Posts::get( array( 'user_id' => $user->id, 'nolimit' => 1) );
 
+					$user->delete();
+
 					if ( isset( $posts[0] ) ) {
 						if ( 0 == $assign ) {
 							foreach ( $posts as $post ) {
@@ -343,7 +348,6 @@ class AdminUsersHandler extends AdminHandler
 							Posts::reassign( $assign, $posts );
 						}
 					}
-					$user->delete();
 				}
 				else {
 					$msg_status = _t( 'You cannot delete yourself.' );
@@ -353,7 +357,7 @@ class AdminUsersHandler extends AdminHandler
 			}
 
 			if ( !isset( $msg_status ) ) {
-				$msg_status = sprintf( _t( 'Deleted %d users.' ), $count );
+				$msg_status = _t( 'Deleted %d users.', array( $count ) );
 			}
 
 			Session::notice( $msg_status );
@@ -393,6 +397,12 @@ class AdminUsersHandler extends AdminHandler
 	 */
 	public function post_users()
 	{
+		$wsse = Utils::WSSE( $this->handler_vars['nonce'], $this->handler_vars['timestamp'] );
+		if ( $this->handler_vars['password_digest'] != $wsse['digest'] ) {
+			Session::error( _t( 'WSSE authentication failed.' ) );
+			return Session::messages_get( true, 'array' );
+		}
+
 		$this->fetch_users();
 
 		$extract = $this->handler_vars->filter_keys( 'newuser', 'delete', 'new_pass1', 'new_pass2', 'new_email', 'new_username' );
@@ -429,7 +439,7 @@ class AdminUsersHandler extends AdminHandler
 			if ( !Session::has_errors( 'adduser' ) ) {
 				$user = new User( array( 'username' => $new_username, 'email' => $new_email, 'password' => Utils::crypt( $new_pass1 ) ) );
 				if ( $user->insert() ) {
-					Session::notice( sprintf( _t( "Added user '%s'" ), $new_username ) );
+					Session::notice( _t( "Added user '%s'", array( $new_username ) ) );
 				}
 				else {
 					$dberror = DB::get_last_error();

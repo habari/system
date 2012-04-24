@@ -16,6 +16,7 @@
  * grants that permission.
  *
  */
+
 class ACL
 {
 	/**
@@ -144,7 +145,7 @@ class ACL
 			// if it didn't work, don't bother trying to log it
 			return false;
 		}
-		EventLog::log( sprintf( _t( 'Permission token deleted: %s' ), $name ), 'info', 'default', 'habari' );
+		EventLog::log( _t( 'Permission token deleted: %s', array( $name ) ), 'info', 'default', 'habari' );
 		Plugins::act( 'token_destroy_after', $token_id );
 		return $result;
 	}
@@ -845,6 +846,14 @@ SQL;
 		$authenticated_group->grant( 'post_page', 'read' );
 		$authenticated_group->grant( 'comment' );
 
+	}
+
+	/**
+	 * Dummy function to inject strings into the .pot
+	 */
+	private static function translations() {
+		// @locale The names of the CRUD group token permissions
+		_t( 'read' ); _t( 'edit' ); _t( 'delete' ); _t( 'create' );
 	}
 
 }

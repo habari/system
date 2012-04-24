@@ -67,7 +67,7 @@ CREATE TABLE  {$prefix}comments (
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL,
   url VARCHAR(255) NULL,
-  ip INT UNSIGNED NOT NULL,
+  ip VARCHAR(45) NOT NULL,
   content TEXT,
   status SMALLINT UNSIGNED NOT NULL,
   date INT UNSIGNED NOT NULL,
@@ -137,7 +137,7 @@ CREATE TABLE {$prefix}log (
   message VARCHAR(255) NOT NULL,
   data BLOB NULL,
   timestamp INT UNSIGNED NOT NULL,
-  ip INT UNSIGNED NOT NULL,
+  ip VARCHAR(45) NOT NULL,
   PRIMARY KEY (id)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
@@ -166,7 +166,7 @@ CREATE TABLE {$prefix}users_groups (
 
 CREATE TABLE {$prefix}sessions  (
   token varchar(255) NOT NULL,
-  subnet INT NOT NULL DEFAULT 0,
+  ip VARCHAR(45) NOT NULL,
   expires INT UNSIGNED NOT NULL DEFAULT 0,
   ua VARCHAR(255) NOT NULL,
   data MEDIUMTEXT,
@@ -179,8 +179,8 @@ CREATE TABLE {$prefix}terms (
   term VARCHAR(255) NOT NULL,
   term_display VARCHAR(255) NOT NULL,
   vocabulary_id INT UNSIGNED NOT NULL,
-  mptt_left INT UNSIGNED NOT NULL,
-  mptt_right INT UNSIGNED NOT NULL,
+  mptt_left INT SIGNED NOT NULL,
+  mptt_right INT SIGNED NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY ix_mptt (vocabulary_id, mptt_right, mptt_left),
   UNIQUE KEY ix_term (vocabulary_id, term)

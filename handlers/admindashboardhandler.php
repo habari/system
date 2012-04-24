@@ -19,7 +19,9 @@ class AdminDashboardHandler extends AdminHandler
 	{
 		// Not sure how best to determine this yet, maybe set an option on install, maybe do this:
 		$firstpostdate = DB::get_value( 'SELECT min(pubdate) FROM {posts} WHERE status = ?', array( Post::status( 'published' ) ) );
-		$this->theme->active_time = HabariDateTime::date_create( $firstpostdate );
+		if ( $firstpostdate ) {
+			$this->theme->active_time = HabariDateTime::date_create( $firstpostdate );
+		}
 
 		// check to see if we have updates to display
 		$this->theme->updates = Options::get( 'updates_available', array() );
@@ -106,8 +108,7 @@ class AdminDashboardHandler extends AdminHandler
 	{
 		Utils::check_request_method( array( 'POST' ) );
 
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
-		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+		$this->create_theme();
 
 		switch ( $handler_vars['action'] ) {
 			case 'updateModules':

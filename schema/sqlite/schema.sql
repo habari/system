@@ -65,7 +65,7 @@ CREATE TABLE {$prefix}comments (
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL,
   url VARCHAR(255) NULL,
-  ip INTEGER NOT NULL,
+  ip VARCHAR(45) NOT NULL,
   content TEXT,
   status SMALLINTEGER NOT NULL,
   date INTEGER NOT NULL,
@@ -118,7 +118,7 @@ CREATE TABLE {$prefix}log (
   message VARCHAR(255) NOT NULL,
   data BLOB NULL,
   timestamp INTEGER NOT NULL,
-  ip INTEGER NOT NULL
+  ip VARCHAR(45) NOT NULL
 );
 
 CREATE TABLE {$prefix}log_types (
@@ -143,7 +143,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS user_group ON {$prefix}users_groups(user_id,gr
 
 CREATE TABLE {$prefix}sessions  (
   token VARCHAR(255) NOT NULL,
-  subnet INTEGER NOT NULL,
+  ip VARCHAR(45) NOT NULL,
   expires INTEGER NOT NULL,
   ua VARCHAR(255) NOT NULL,
   user_id INTEGER,

@@ -101,6 +101,7 @@ class AdminHandler extends ActionHandler
 	public function act_admin()
 	{
 		$page = ( isset( $this->handler_vars['page'] ) && !empty( $this->handler_vars['page'] ) ) ? $this->handler_vars['page'] : 'dashboard';
+		$page = filter_var( $page, FILTER_SANITIZE_STRING );
 		if ( isset( $this->handler_vars['content_type'] ) ) {
 			$type = Plugins::filter( 'post_type_display', Post::type_name( $this->handler_vars['content_type'] ), 'singular' );
 		}
@@ -132,7 +133,7 @@ class AdminHandler extends ActionHandler
 				}
 				else {
 					$classname = get_class( $this );
-					echo sprintf( _t( '%1$s->%2$s() does not exist.' ), $classname, $fn );
+					_e( '%1$s->%2$s() does not exist.', array( $classname, $fn ) );
 					exit;
 				}
 				break;
@@ -233,15 +234,23 @@ class AdminHandler extends ActionHandler
 		$plugins = array( 'system'=>array(), 'user'=>array(), '3rdparty'=>array(), 'other'=>array() );
 		foreach ( $raw_plugins as $plugin ) {
 			$file = $plugin->get_file();
+			// Catch plugins that are symlinked from other locations as ReflectionClass->getFileName() only returns the ultimate file path, not the symlink path, and we really want the symlink path
+			$all_plugins = Plugins::list_all();
+			$filename = basename( $file );
+			if ( array_key_exists( $filename, $all_plugins ) && $all_plugins[$filename] != $file ) {
+				$file = $all_plugins[$filename];
+			}
 			if ( preg_match( '%[\\\\/](system|3rdparty|user)[\\\\/]plugins[\\\\/]%i', $file, $matches ) ) {
 				// A plugin's info is XML, cast the element to a string. See #1026.
 				$plugins[strtolower( $matches[1] )][(string)$plugin->info->name] = $file;
 			}
 			else {
-				$plugins['other'][$plugin->info->name] = $file;
+				// A plugin's info is XML, cast the element to a string.
+				$plugins['other'][(string)$plugin->info->name] = $file;
 			}
 		}
 		$this->theme->plugins = $plugins;
+		$this->theme->admin_page = _t( 'System Information' );
 
 		$this->display( 'sysinfo' );
 	}
@@ -489,6 +498,7 @@ class AdminHandler extends ActionHandler
 			case 'publish':
 			case 'ajax_media':
 			case 'ajax_media_panel':
+			case 'ajax_media_upload':
 				$type = Post::type_name( $type );
 				$require_any = array(
 					'post_any' => array( ACL::get_bitmask( 'create' ), ACL::get_bitmask( 'edit' ) ),
@@ -532,6 +542,9 @@ class AdminHandler extends ActionHandler
 				$result = true;
 				break;
 			case 'ajax_save_areas':
+				$result = true;
+				break;
+			case 'locale':
 				$result = true;
 				break;
 			default:
@@ -590,8 +603,9 @@ class AdminHandler extends ActionHandler
 		Stack::add( 'admin_header_javascript', Site::get_url( 'vendor' ) . "/jquery.ui.nestedSortable.js", 'jquery-nested-sortable', 'jquery.ui' );
 		Stack::add( 'admin_header_javascript', Site::get_url( 'vendor' ) . "/humanmsg/humanmsg.js", 'humanmsg', 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url( 'vendor' ) . "/jquery.hotkeys.js", 'jquery.hotkeys', 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url( 'admin_theme' ) . "/js/media.js", 'media', 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url( 'admin_theme' ) . "/js/admin.js", 'admin', 'jquery' );
+		Stack::add( 'admin_header_javascript', URL::get( 'admin', 'page=locale'), 'locale' );
+		Stack::add( 'admin_header_javascript', Site::get_url( 'admin_theme' ) . "/js/media.js", 'media', array('jquery', 'locale') );
+		Stack::add( 'admin_header_javascript', Site::get_url( 'admin_theme' ) . "/js/admin.js", 'admin', array('jquery', 'locale') );
 
 		Stack::add( 'admin_header_javascript', Site::get_url( 'vendor' ) . "/crc32.js", 'crc32' );
 	}

@@ -37,9 +37,9 @@ class InstallHandler extends ActionHandler
 			$this->handler_vars['locale'] = 'en-us';
 		}
 
-		/*
+		/**
 		 * Check .htaccess first because ajax doesn't work without it.
-		*/
+		 */
 		if ( ! $this->check_htaccess() ) {
 			$this->handler_vars['file_contents'] = htmlentities( implode( "\n", $this->htaccess() ) );
 			$this->display( 'htaccess' );
@@ -69,13 +69,13 @@ class InstallHandler extends ActionHandler
 			$this->display( 'requirements' );
 		}
 
-		/*
+		/**
 		 * Add the AJAX hooks
 		 */
 		Plugins::register( array( 'InstallHandler', 'ajax_check_mysql_credentials' ), 'ajax_', 'check_mysql_credentials' );
 		Plugins::register( array( 'InstallHandler', 'ajax_check_pgsql_credentials' ), 'ajax_', 'check_pgsql_credentials' );
 
-		/*
+		/**
 		 * Let's check the config.php file if no POST data was submitted
 		 */
 		if ( ( ! file_exists( Site::get_dir( 'config_file' ) ) ) && ( ! isset( $_POST['admin_username'] ) ) ) {
@@ -110,7 +110,8 @@ class InstallHandler extends ActionHandler
 			// if a $blog_data array exists in config.php, use it
 			// to pre-load values for the installer
 			// ** this is completely optional **
-			if ( isset( $blog_data ) ) {
+			if ( Config::exists( 'blog_data' ) ) {
+				$blog_data = Config::get('blog_data');
 				foreach ( $blog_data as $blog_datum => $value ) {
 					$this->handler_vars[$blog_datum] = $value;
 				}
@@ -132,19 +133,24 @@ class InstallHandler extends ActionHandler
 		}
 
 		$db_type = $this->handler_vars['db_type'];
-		if ( $db_type == 'mysql' || $db_type == 'pgsql' ) {
+		if ( (!Config::exists('db_connection') || Config::get( 'db_connection' )->connection_string == '') && ($db_type == 'mysql' || $db_type == 'pgsql') ) {
 			$this->handler_vars['db_host'] = $_POST["{$db_type}_db_host"];
 			$this->handler_vars['db_user'] = $_POST["{$db_type}_db_user"];
-			$this->handler_vars['db_pass'] = $_POST["{$db_type}_db_pass"];
+			$this->handler_vars['db_pass'] = $_POST->raw( "{$db_type}_db_pass" );
 			$this->handler_vars['db_schema'] = $_POST["{$db_type}_db_schema"];
 		}
-
 
 		// we got here, so we have all the info we need to install
 
 		// make sure the admin password is correct
 		if ( $this->handler_vars['admin_pass1'] !== $this->handler_vars['admin_pass2'] ) {
-			$this->theme->assign( 'form_errors', array( 'password_mismatch'=>_t( 'Password mis-match.' ) ) );
+			$this->theme->assign( 'form_errors', array( 'password_mismatch' => _t( 'Password mis-match.' ) ) );
+			$this->display( 'db_setup' );
+		}
+
+		// don't accept emails with control characters
+		if ( !ctype_print($this->handler_vars['admin_email']) ) {
+			$this->theme->assign( 'form_errors', array( 'admin_email' => _t( 'Only printable characters are allowed.' ) ) );
 			$this->display( 'db_setup' );
 		}
 
@@ -191,7 +197,7 @@ class InstallHandler extends ActionHandler
 		Utils::redirect( Site::get_url( 'habari' ) );
 	}
 
-	/*
+	/**
 	 * Helper function to grab list of plugins
 	 */
 	public function get_plugins()
@@ -444,7 +450,7 @@ class InstallHandler extends ActionHandler
 
 		if ( DB::has_errors() ) {
 			$error = DB::get_last_error();
-			$this->theme->assign( 'form_errors', array( 'db_host'=>sprintf( _t( 'Could not create schema tables&hellip; %s' ), $error['message'] ) ) );
+			$this->theme->assign( 'form_errors', array( 'db_host'=>_t( 'Could not create schema tables&hellip; %s', array( $error['message'] ) ) ) );
 			DB::rollback();
 			return false;
 		}
@@ -584,7 +590,7 @@ class InstallHandler extends ActionHandler
 	/**
 	 * Checks for the existance of a SQLite datafile
 	 * tries to create it if it does not exist
-	**/
+	 */
 	private function check_sqlite()
 	{
 		$db_file = $this->handler_vars['db_file'];
@@ -677,9 +683,9 @@ class InstallHandler extends ActionHandler
 
 		// Insert the admin user
 		$user = User::create( array (
-			'username'=>$admin_username,
-			'email'=>$admin_email,
-			'password'=>$password
+			'username' => $admin_username,
+			'email' => $admin_email,
+			'password' => $password
 		) );
 
 		return $user;
@@ -712,7 +718,7 @@ class InstallHandler extends ActionHandler
 		$group->grant( 'post_entry', 'read' );
 		$group->grant( 'post_page', 'read' );
 
-		// Add the anonumous user to the anonymous group
+		// Add the anonymous user to the anonymous group
 		$group->add( 0 );
 	}
 
@@ -721,35 +727,46 @@ class InstallHandler extends ActionHandler
 	 */
 	private function create_default_options()
 	{
-		// Create the default options
-
-		Options::set( 'installed', true );
-
-		Options::set( 'title', $this->handler_vars['blog_title'] );
-		Options::set( 'pagination', '5' );
-		Options::set( 'atom_entries', '5' );
-		Options::set( 'theme_name', 'k2' );
-		Options::set( 'theme_dir', 'k2' );
-		Themes::activate_theme( 'k2', 'k2' );
-		Options::set( 'comments_require_id', 1 );
-		Options::set( 'locale', $this->handler_vars['locale'] );
-		Options::set( 'timezone', 'UTC' );
-		Options::set( 'dateformat', 'Y-m-d' );
-		Options::set( 'timeformat', 'g:i a' );
-		Options::set( 'log_min_severity', 3 );		// the default logging level - 3 should be 'info'
-		Options::set( 'spam_percentage', 100 );
-
-		// generate a random-ish number to use as the salt for
-		// a SHA1 hash that will serve as the unique identifier for
-		// this installation.  Also for use in cookies
-		Options::set( 'GUID', sha1( Utils::nonce() ) );
-
-		// Let's prepare the EventLog here, as well
+		// Let's prepare the EventLog here, first
 		EventLog::register_type( 'default', 'habari' );
 		EventLog::register_type( 'user', 'habari' );
 		EventLog::register_type( 'authentication', 'habari' );
 		EventLog::register_type( 'content', 'habari' );
 		EventLog::register_type( 'comment', 'habari' );
+
+		// Create the default options
+		$defaults = array(
+			'installed' => true,
+			'title' => $this->handler_vars['blog_title'],
+			'pagination' => 5,
+			'atom_entries' => 5,
+			'theme_name' => 'Charcoal',
+			'theme_dir' => 'charcoal',
+			'comments_require_id' => 1,
+			'locale' => $this->handler_vars['locale'],
+			'timezone' => 'UTC',
+			'dateformat' => 'Y-m-d',
+			'timeformat' => 'g:i a',
+			'log_min_severity' => 3,
+			'spam_percentage' => 100,
+			// generate a random-ish number to use as the salt for
+			// a SHA1 hash that will serve as the unique identifier for
+			// this installation.  Also for use in cookies
+			'GUID' => sha1( Utils::nonce() ),
+		);
+
+		// Get values from config installation profile
+		foreach ( $this->handler_vars as $id => $value ) {
+			if ( preg_match( '/option_(.+)/u', $id, $matches ) ) {
+				$defaults[$matches[1]] = $value;
+			}
+		}
+
+		// Apply values to the options table and activate the default theme
+		foreach($defaults as $key => $value) {
+			Options::set($key, $value);
+		}
+		Themes::activate_theme( $defaults['theme_name'], $defaults['theme_dir'] );
 
 		// Add the cronjob to trim the log so that it doesn't get too big
 		CronTab::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t( 'Trim the log table' ) );
@@ -793,7 +810,7 @@ class InstallHandler extends ActionHandler
 
 	/**
 	 * Create the first post
-	**/
+	 */
 	private function create_first_post()
 	{
 		$users = Users::get();
@@ -868,10 +885,10 @@ class InstallHandler extends ActionHandler
 	}
 
 	/**
-	* Gets the configuration template, inserts the variables into it, and returns it as a string
-	*
-	* @return string The config.php template for the db_type schema
-	*/
+	 * Gets the configuration template, inserts the variables into it, and returns it as a string
+	 *
+	 * @return string The config.php template for the db_type schema
+	 */
 	private function get_config_file()
 	{
 		if ( ! ( $file_contents = file_get_contents( HABARI_PATH . "/system/schema/" . $this->handler_vars['db_type'] . "/config.php" ) ) ) {
@@ -966,10 +983,12 @@ class InstallHandler extends ActionHandler
 	{
 		// extract checked plugin IDs from $_POST
 		$plugin_ids = array();
-		foreach ( $_POST as $id => $activate ) {
-			if ( preg_match( '/plugin_\w+/u', $id ) && $activate ) {
-				$id = substr( $id, 7 );
-				$plugin_ids[] = $id;
+		foreach ( $this->handler_vars as $id => $activate ) {
+			if ( preg_match( '/plugin_([a-f0-9]{8})/u', $id, $matches ) && $activate ) {
+				$plugin_ids[] = $matches[1];
+			}
+			elseif ( preg_match( '/plugin_(.+)/u', $id, $matches ) && $activate ) {
+				$plugin_ids[] = $matches[1];
 			}
 		}
 
@@ -983,10 +1002,16 @@ class InstallHandler extends ActionHandler
 		// loop through all plugins to find matching plugin files
 		$plugin_files = Plugins::list_all();
 		foreach ( $plugin_files as $file ) {
+			if ( in_array( basename($file), $plugin_ids ) ) {
+				Plugins::activate_plugin( $file );
+				continue;
+			}
 			$id = Plugins::id_from_file( $file );
 			if ( in_array( $id, $plugin_ids ) ) {
 				Plugins::activate_plugin( $file );
+				echo 'ACTIVATED:';
 			}
+			var_dump($file, $id);
 		}
 
 		// unset the user_id session variable
@@ -1079,7 +1104,7 @@ class InstallHandler extends ActionHandler
 	 * @param bool whether an .htaccess file already exists or not
 	 * @param bool whether to remove and re-create any existing Habari block
 	 * @param bool whether to try a rewritebase in the .htaccess
-	**/
+	 */
 	public function write_htaccess( $exists = false, $update = false, $rewritebase = true )
 	{
 		$htaccess = $this->htaccess();
@@ -1113,7 +1138,7 @@ class InstallHandler extends ActionHandler
 			// Append the Habari rewrite block to the existing file.
 			$fmode = 'a';
 		}
-		//Save the htaccess
+		// Save the .htaccess
 		if ( $fh = fopen( HABARI_PATH . '/.htaccess', $fmode ) ) {
 			if ( false === fwrite( $fh, $file_contents ) ) {
 				return false;
@@ -1149,7 +1174,7 @@ class InstallHandler extends ActionHandler
 	 * attempts to write the Files clause to the .htaccess file
 	 * if the clause for this sqlite doesn't exist.
 	 * @return bool success or failure
-	**/
+	 */
 	public function secure_sqlite()
 	{
 		if ( false === strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) ) {

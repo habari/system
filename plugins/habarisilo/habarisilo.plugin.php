@@ -506,45 +506,52 @@ class HabariSilo extends Plugin implements MediaSilo
 					break;
 				case 'upload':
 					if ( isset( $_FILES['file'] ) ) {
-						$size = Utils::human_size( $_FILES['file']['size'] );
-						$panel .= '<div class="span-18" style="padding-top:30px;color: #e0e0e0;margin: 0px auto;"><p>' . _t( 'File: ' ) . $_FILES['file']['name']; 
-						$panel .= ( $_FILES['file']['size'] > 0 ) ? "({$size})" : '';
-						$panel .= '</p>';
+						if ( isset( $_POST['token'] ) && isset( $_POST['token_ts'] ) && self::verify_token( $_POST['token'], $_POST['token_ts'] ) ) {
+							$size = Utils::human_size( $_FILES['file']['size'] );
+							$panel .= '<div class="span-18" style="padding-top:30px;color: #e0e0e0;margin: 0px auto;"><p>' . _t( 'File: ' ) . $_FILES['file']['name'];
+							$panel .= ( $_FILES['file']['size'] > 0 ) ? "({$size})" : '';
+							$panel .= '</p>';
 
-						$path = self::SILO_NAME . '/' . preg_replace( '%\.{2,}%', '.', $path ). '/' . $_FILES['file']['name'];
-						$asset = new MediaAsset( $path, false );
-						$asset->upload( $_FILES['file'] );
+							$path = self::SILO_NAME . '/' . preg_replace( '%\.{2,}%', '.', $path ). '/' . $_FILES['file']['name'];
+							$asset = new MediaAsset( $path, false );
+							$asset->upload( $_FILES['file'] );
 
-						if ( $asset->put() ) {
-							$panel .= '<p>' . _t( 'File added successfully.' ) . '</p>';
+							if ( $asset->put() ) {
+								$panel .= '<p>' . _t( 'File added successfully.' ) . '</p>';
+							}
+							else {
+								$upload_errors = array(
+										1 => _t( 'The uploaded file exceeds the upload_max_filesize directive in php.ini.' ),
+										2 => _t( 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.' ),
+										3 => _t( 'The uploaded file was only partially uploaded.' ),
+										4 => _t( 'No file was uploaded.' ),
+										6 => _t( 'Missing a temporary folder.' ),
+										7 => _t( 'Failed to write file to disk.' ),
+										8 => _t( 'A PHP extension stopped the file upload. PHP does not provide a way to ascertain which extension caused the file upload to stop; examining the list of loaded extensions with phpinfo() may help.' ),
+									);
+
+								$panel .= '<p>' . _t( 'File could not be added to the silo.' ) . '</p>';
+								$panel .= '<p><strong>' . $upload_errors[ $_FILES['file']['error'] ] . '</strong></p>';
+							}
+
+							$panel .= '<p><a href="#" onclick="habari.media.forceReload();habari.media.showdir(\'' . dirname( $path ) . '\');">' . _t( 'Browse the current silo path.' ) . '</a></p></div>';
+						} else {
+							$panel .= '<p><strong>' ._t( 'Suspicious behaviour or too much time has elapsed.  Please upload your file again.' ) . '</strong></p>';
 						}
-						else {
-							$upload_errors = array(
-									1 => _t( 'The uploaded file exceeds the upload_max_filesize directive in php.ini.' ),
-									2 => _t( 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.' ),
-									3 => _t( 'The uploaded file was only partially uploaded.' ),
-									4 => _t( 'No file was uploaded.' ),
-									6 => _t( 'Missing a temporary folder.' ),
-									7 => _t( 'Failed to write file to disk.' ),
-									8 => _t( 'A PHP extension stopped the file upload. PHP does not provide a way to ascertain which extension caused the file upload to stop; examining the list of loaded extensions with phpinfo() may help.' ),
-								);
-
-							$panel .= '<p>' . _t( 'File could not be added to the silo.' ) . '</p>';
-							$panel .= '<p><strong>' . $upload_errors[ $_FILES['file']['error'] ] . '</strong></p>';
-						}
-
-						$panel .= '<p><a href="#" onclick="habari.media.forceReload();habari.media.showdir(\'' . dirname( $path ) . '\');">' . _t( 'Browse the current silo path.' ) . '</a></p></div>';
 					}
 					else {
-
+						$token_ts = time();
+						$token = self::create_token( $token_ts );
 						$fullpath = self::SILO_NAME . '/' . $path;
-						$form_action = URL::get( 'admin_ajax', array( 'context' => 'media_panel' ) );
+						$form_action = URL::get( 'admin_ajax', array( 'context' => 'media_upload' ) );
 						$panel .= <<< UPLOAD_FORM
 <form enctype="multipart/form-data" method="post" id="simple_upload" target="simple_upload_frame" action="{$form_action}" class="span-10" style="margin:0px auto;text-align: center">
 	<p style="padding-top:30px;">%s <b style="font-weight:normal;color: #e0e0e0;font-size: 1.2em;">/{$path}</b></p>
 	<p><input type="file" name="file"><input type="submit" name="upload" value="%s">
 	<input type="hidden" name="path" value="{$fullpath}">
 	<input type="hidden" name="panel" value="{$panelname}">
+	<input type="hidden" name="token" value="{$token}">
+	<input type="hidden" name="token_ts" value="{$token_ts}">
 	</p>
 </form>
 <iframe id="simple_upload_frame" name="simple_upload_frame" style="width:1px;height:1px;" onload="simple_uploaded();"></iframe>
@@ -654,6 +661,38 @@ UPLOAD_FORM;
 	private static function isEmptyDir( $dir )
 	{
 		return ( ( $files = @scandir( $dir ) ) && count( $files ) <= 2 );
+	}
+
+	/**
+	 * Create the upload token based on the time string submitted and the UID for this Habari installation.
+	 *
+	 * @param integer $timestamp
+	 * @return string
+	 */
+	private static function create_token( $timestamp )
+	{
+		return substr( md5( $timestamp . Options::get( 'GUID' ) ), 0, 10 );
+	}
+
+	/**
+	 * Verify that the token and timestamp passed are valid.
+	 *
+	 * @param string $token
+	 * @param integer $timestamp
+	 *
+	 * @TODO By default this gives the user 5 mins to upload a file from the time
+	 *       the form is display and the file uploaded.  This should be sufficient,
+	 *       but do we a) need this timeout and b) should it be configurable?
+	 */
+	private static function verify_token( $token, $timestamp )
+	{
+		if ( $token == self::create_token( $timestamp ) ) {
+			if ( ( time() > ( $timestamp ) ) && ( time() < ( $timestamp + 5*60 ) ) ) {
+				return true;
+			}
+		} else {
+			return false;
+		}
 	}
 
 }

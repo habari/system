@@ -4,7 +4,7 @@
 	<span><?php echo $year; ?></span>
 	<div class="months">
 		<?php foreach ( $year_array as $pdata ): ?>
-		<div><span style="width: <?php echo $pdata->ct; ?>px"><?php echo date('M', mktime(0, 0, 0, $pdata->month)) ?></span></div>
+		<div><span style="width: <?php echo $pdata->ct; ?>px"><?php _e( date('M', mktime(0, 0, 0, $pdata->month)) ); ?></span></div>
 		<?php endforeach; ?>
 	</div>
 </div>

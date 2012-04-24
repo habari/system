@@ -234,7 +234,7 @@ class AtomHandler extends ActionHandler
 			$content = Plugins::filter( 'atom_add_comment', $content, $comment );
 
 			$item = $xml->addChild( 'entry' );
-			$title = $item->addChild( 'title', Utils::htmlspecialchars( sprintf( _t( '%1$s on "%2$s"' ), $comment->name, $comment->post->title ) ) );
+			$title = $item->addChild( 'title', Utils::htmlspecialchars( _t( '%1$s on "%2$s"', array( $comment->name, $comment->post->title ) ) ) );
 
 			$link = $item->addChild( 'link' );
 			$link->addAttribute( 'rel', 'alternate' );
@@ -651,7 +651,7 @@ class AtomHandler extends ActionHandler
 			$tags = array();
 			if ( isset( $xml->category ) ) {
 				foreach ( $xml->category as $cat ) {
-					$tags[] = (string)$cat['term'];
+					$tags[] = (string) $cat['term'];
 				}
 				$post->tags = array_merge( $tags, $post->tags );
 			}
@@ -760,6 +760,8 @@ class AtomHandler extends ActionHandler
 		}
 		else {
 			$updated = null;
+			header( 'HTTP/1.1 404 Not Found', true, 404 );
+			die( 'Posts could not be found' );
 		}
 
 		$xml = $this->create_atom_wrapper( $alternate, $self, $id, $updated );
@@ -794,7 +796,7 @@ class AtomHandler extends ActionHandler
 				'indent' => true,
 				'output-xml' => true,
 				'input-xml' => true,
-				'wrap' => 200
+				'wrap' => 200,
 			);
 
 			$tidy = new tidy();

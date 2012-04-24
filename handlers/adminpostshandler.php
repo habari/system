@@ -48,14 +48,13 @@ class AdminPostsHandler extends AdminHandler
 			}
 		}
 
-		$this->theme->admin_page = sprintf( _t( 'Publish %s' ), Plugins::filter( 'post_type_display', Post::type_name( $post->content_type ), 'singular' ) );
-		$this->theme->admin_title = sprintf( _t( 'Publish %s' ), Plugins::filter( 'post_type_display', Post::type_name( $post->content_type ), 'singular' ) );
+		$this->theme->admin_page = _t( 'Publish %s', array( Plugins::filter( 'post_type_display', Post::type_name( $post->content_type ), 'singular' ) ) );
+		$this->theme->admin_title = _t( 'Publish %s', array( Plugins::filter( 'post_type_display', Post::type_name( $post->content_type ), 'singular' ) ) );
 
 		$statuses = Post::list_post_statuses( false );
 		$this->theme->statuses = $statuses;
 
 		$form = $post->get_form( 'admin' );
-		$form->on_success( array( $this, 'form_publish_success' ) );
 
 		$this->theme->form = $form;
 
@@ -69,128 +68,6 @@ class AdminPostsHandler extends AdminHandler
 	public function post_publish()
 	{
 		$this->get_publish();
-	}
-
-	public function form_publish_success( FormUI $form )
-	{
-		$post_id = 0;
-		if ( isset( $this->handler_vars['id'] ) ) {
-			$post_id = intval( $this->handler_vars['id'] );
-		}
-		// If an id has been passed in, we're updating an existing post, otherwise we're creating one
-		if ( 0 !== $post_id ) {
-			$post = Post::get( array( 'id' => $post_id, 'status' => Post::status( 'any' ) ) );
-
-			$this->theme->admin_page = sprintf( _t( 'Publish %s' ), Plugins::filter( 'post_type_display', Post::type_name( $post->content_type ), 'singular' ) );
-
-			// Verify that the post hasn't already been updated since the form was loaded
-			if ( $post->modified != $form->modified->value ) {
-				Session::notice( _t( 'The post %1$s was updated since you made changes.  Please review those changes before overwriting them.', array( sprintf( '<a href="%1$s">\'%2$s\'</a>', $post->permalink, Utils::htmlspecialchars( $post->title ) ) ) ) );
-				Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
-				exit;
-			}
-
-			// REFACTOR: this is duplicated in the insert code below, move it outside of the conditions
-			// Don't try to update form values that have been removed by plugins
-			$expected = array('title', 'tags', 'content');
-
-			foreach ( $expected as $field ) {
-				if ( isset( $form->$field ) ) {
-					$post->$field = $form->$field->value;
-				}
-			}
-			if ( $form->newslug->value == '' && $post->status == Post::status( 'published' ) ) {
-				Session::notice( _t( 'A post slug cannot be empty. Keeping old slug.' ) );
-			}
-			elseif ( $form->newslug->value != $form->slug->value ) {
-				$post->slug = $form->newslug->value;
-			}
-
-			// REFACTOR: the permissions checks should go before any of this other logic
-			
-			// sorry, we just don't allow changing posts you don't have rights to
-			if ( ! ACL::access_check( $post->get_access(), 'edit' ) ) {
-				Session::error( _t( 'You don\'t have permission to edit that post' ) );
-				$this->get_blank();
-			}
-			// sorry, we just don't allow changing content types to types you don't have rights to
-			$user = User::identify();
-			$type = 'post_' . Post::type_name( $form->content_type->value );
-			if ( $form->content_type->value != $post->content_type && ( $user->cannot( $type ) || ! $user->can_any( array( 'own_posts' => 'edit', 'post_any' => 'edit', $type => 'edit' ) ) ) ) {
-				Session::error( _t( 'Changing content types is not allowed' ) );
-				$this->get_blank();
-			}
-			$post->content_type = $form->content_type->value;
-
-			// if not previously published and the user wants to publish now, change the pubdate to the current date/time unless a date has been explicitly set
-			if ( ( $post->status != Post::status( 'published' ) )
-				&& ( $form->status->value == Post::status( 'published' ) )
-				&& ( HabariDateTime::date_create( $form->pubdate->value )->int == $form->updated->value )
-				) {
-				$post->pubdate = HabariDateTime::date_create();
-			}
-			// else let the user change the publication date.
-			//  If previously published and the new date is in the future, the post will be unpublished and scheduled. Any other status, and the post will just get the new pubdate.
-			// This will result in the post being scheduled for future publication if the date/time is in the future and the new status is published.
-			else {
-				$post->pubdate = HabariDateTime::date_create( $form->pubdate->value );
-			}
-			$minor = $form->minor_edit->value && ( $post->status != Post::status( 'draft' ) );
-			$post->status = $form->status->value;
-		}
-		else {
-			// REFACTOR: don't do this here, it's duplicated in Post::create()
-			$post = new Post();
-
-			// check the user can create new posts of the set type.
-			$user = User::identify();
-			$type = 'post_'  . Post::type_name( $form->content_type->value );
-			if ( ACL::user_cannot( $user, $type ) || ( ! ACL::user_can( $user, 'post_any', 'create' ) && ! ACL::user_can( $user, $type, 'create' ) ) ) {
-				Session::error( _t( 'Creating that post type is denied' ) );
-				$this->get_blank();
-			}
-
-			// REFACTOR: why is this on_success here? We don't even display a form
-			$form->on_success( array( $this, 'form_publish_success' ) );
-			if ( HabariDateTime::date_create( $form->pubdate->value )->int != $form->updated->value ) {
-				$post->pubdate = HabariDateTime::date_create( $form->pubdate->value );
-			}
-
-			$postdata = array(
-				'slug' => $form->newslug->value,
-				'user_id' => User::identify()->id,
-				'pubdate' => $post->pubdate,
-				'status' => $form->status->value,
-				'content_type' => $form->content_type->value,
-			);
-
-			// Don't try to add form values that have been removed by plugins
-			$expected = array( 'title', 'tags', 'content' );
-
-			foreach ( $expected as $field ) {
-				if ( isset( $form->$field ) ) {
-					$postdata[$field] = $form->$field->value;
-				}
-			}
-
-			$minor = false;
-
-			// REFACTOR: consider using new Post( $postdata ) instead and call ->insert() manually 
-			$post = Post::create( $postdata );
-		}
-
-		$post->info->comments_disabled = !$form->comments_enabled->value;
-
-		// REFACTOR: admin should absolutely not have a hook for this here
-		Plugins::act( 'publish_post', $post, $form );
-
-		// REFACTOR: we should not have to update a post we just created, this should be moved to the post-update functionality above and only called if changes have been made
-		// alternately, perhaps call ->update() or ->insert() as appropriate here, so things that apply to each operation (like comments_disabled) can still be included once outside the conditions above
-		$post->update( $minor );
-
-		$permalink = ( $post->status != Post::status( 'published' ) ) ? $post->permalink . '?preview=1' : $post->permalink;
-		Session::notice( sprintf( _t( 'The post %1$s has been saved as %2$s.' ), sprintf( '<a href="%1$s">\'%2$s\'</a>', $permalink, Utils::htmlspecialchars( $post->title ) ), Post::status_name( $post->status ) ) );
-		Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
 	}
 
 	/**
@@ -222,7 +99,7 @@ class AdminPostsHandler extends AdminHandler
 		}
 
 		$post->delete();
-		Session::notice( sprintf( _t( 'Deleted the %1$s titled "%2$s".' ), Post::type_name( $post->content_type ), Utils::htmlspecialchars( $post->title ) ) );
+		Session::notice( _t( 'Deleted the %1$s titled "%2$s".', array( Post::type_name( $post->content_type ), Utils::htmlspecialchars( $post->title ) ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=posts&type=' . Post::status( 'any' ) ) );
 	}
 
@@ -480,6 +357,43 @@ class AdminPostsHandler extends AdminHandler
 		$ar->data = $output;
 		$ar->out();
 	}
+		
+	/**
+	 * Handles AJAX upload requests from media panels.
+	 */
+	public function ajax_media_upload( $handler_vars )
+	{
+		Utils::check_request_method( array( 'POST' ) );
+
+		$path = $handler_vars['path'];
+		$panelname = $handler_vars['panel'];
+		$rpath = $path;
+		$silo = Media::get_silo( $rpath, true );  // get_silo sets $rpath by reference to the path inside the silo
+
+		$panel = '';
+		$panel = Plugins::filter( 'media_panels', $panel, $silo, $rpath, $panelname );
+
+		$controls = array();
+		$controls = Plugins::filter( 'media_controls', $controls, $silo, $rpath, $panelname );
+		$controls_out = '';
+		foreach ( $controls as $k => $v ) {
+			if ( is_numeric( $k ) ) {
+				$controls_out .= "<li>{$v}</li>";
+			}
+			else {
+				$controls_out .= "<li class=\"{$k}\">{$v}</li>";
+			}
+		}
+		$output = array(
+			'controls' => $controls_out,
+			'panel' => $panel,
+		);
+
+		$ar = new AjaxResponse();
+		$ar->data = $output;
+		$ar->out( true ); // See discussion at https://github.com/habari/habari/issues/204
+	}
+
 
 	/**
 	 * Handles AJAX requests from the manage posts page.
@@ -488,8 +402,7 @@ class AdminPostsHandler extends AdminHandler
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD' ) );
 
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
-		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+		$this->create_theme();
 
 		$params = $_GET;
 

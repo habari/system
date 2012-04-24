@@ -13,7 +13,7 @@ class CoreBlocks extends Plugin
 	 */
 	function action_init()
 	{
-		
+
 		$this->allblocks = array(
 			'recent_comments' => _t( 'Recent Comments' ),
 			'recent_posts' => _t( 'Recent Posts' ),
@@ -22,8 +22,9 @@ class CoreBlocks extends Plugin
 			'tag_archives' => _t( 'Tag Archives' ),
 			'meta_links' => _t( 'Meta Links' ),
 			'search_form' => _t( 'Search Form' ),
+			'text' => _t( 'Text' ),
 		);
-		
+
 		foreach ( array_keys( $this->allblocks ) as $blockname ) {
 			$this->add_template( "block.$blockname", dirname( __FILE__ ) . "/block.$blockname.php" );
 		}
@@ -123,17 +124,17 @@ class CoreBlocks extends Plugin
 	public function action_block_form_recent_posts( $form, $block )
 	{
 		$content = $form->append('text', 'quantity', $block, _t( 'Posts to show:' ) );
-		
+
 		$content_types = Post::list_active_post_types();
-		
+
 		unset($content_types['any']);
-		
+
 		foreach ( $content_types as $k => $v ) {
 			$content_types[ $k ] = Plugins::filter( 'post_type_display', $k, 'plural' );
 		}
-				
+
 		$form->append('checkboxes', 'content_types', $block, _t( 'Content Types to Include:' ), $content_types );
-		
+
 	}
 
 	/**
@@ -149,7 +150,7 @@ class CoreBlocks extends Plugin
 		if ( ! $limit = $block->quantity ) {
 			$limit = 5;
 		};
-		
+
 		if ( empty( $block->content_types ) ) {
 			$block->content_types = array( 'entry' );
 		}
@@ -363,6 +364,36 @@ class CoreBlocks extends Plugin
 		$block->form = '<form method="get" id="searchform" action="' . URL::get( 'display_search' ) .
 			'"><p><input type="text" id="s" name="criteria" value="' . ( isset( $theme->criteria ) ? htmlentities( $theme->criteria, ENT_COMPAT, 'UTF-8' ) : '' ) .
 			'"><input type="submit" id="searchsubmit" value="' . ( isset( $block->button ) ? $block->button : _t( 'Search' ) ) . '"></p></form>';
+	}
+
+	/**
+	 * Text
+	 *
+	 * Display unformatted text without any markup.
+	 * If you require HTML output, try the Simple Block plugin instead.
+	 *
+	 * @param FormUI $form The configuration form for this block
+	 * @param Block $block The block instance to be configured
+	 * Configuration form with one big textarea. Raw to allow JS/HTML/etc. Insert them at your own peril.
+	 */
+	public function action_block_form_text( $form, $block )
+	{
+		$content = $form->append( 'textarea', 'content', $block, _t( 'Content:' ) );
+		$content->rows = 5;
+	}
+
+	/**
+	 * Text
+	 *
+	 * Display unformatted text without any markup.
+	 * If you require HTML output, try the Simple Block plugin instead.
+	 *
+	 * @param Block $block The block instance to be configured
+	 * @param Theme $theme The active theme
+	 */
+	public function action_block_content_text( $block, $theme )
+	{
+		return $block;
 	}
 }
 ?>

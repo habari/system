@@ -5,11 +5,11 @@
 ?>
 
 <div id="comments">
-	<h3><?php $theme->comments_count($post,'%d Responses','%d Response','%d Responses'); ?> <?php _e('to'); ?> <?php echo $post->title; ?></h3>
+	<h3><?php echo $theme->comments_count($post,'%d Responses','%d Response','%d Responses'); ?> <?php _e('to'); ?> <?php echo $post->title; ?></h3>
 <a href="<?php echo $post->comment_feed_link; ?>"><?php _e('Feed for this Entry'); ?></a>
 	<?php if ( $post->comments->pingbacks->count ) : ?>
 			<div id="pings">
-			<h4><?php $theme->pingback_count($post); ?></h4>
+			<h4><?php echo $theme->pingback_count($post); ?></h4>
 				<ul id="pings-list">
 					<?php foreach ( $post->comments->pingbacks->approved as $pingback ) : ?>
 						<li id="ping-<?php echo $pingback->id; ?>">
@@ -43,7 +43,7 @@
 		        <?php echo $comment->content_out; ?>
 		       </div>
 			<div class="comment-meta">#<a href="#comment-<?php echo $comment->id; ?>" class="counter" title="<?php _e('Permanent Link to this Comment'); ?>"><?php echo $comment->id; ?></a> |
-		       <span class="commentauthor"><?php _e('Comment by'); ?> <?php $theme->comment_author_link($comment); ?></span>
+		       <span class="commentauthor"><?php _e('Comment by'); ?> <?php echo $theme->comment_author_link($comment); ?></span>
 		       <span class="commentdate"> <?php _e('on'); ?> <a href="#comment-<?php echo $comment->id; ?>" title="<?php _e('Time of this comment'); ?>"><?php /* @locale Date formats according to http://php.net/manual/en/function.date.php */ $comment->date->out( _t( 'M j, Y h:ia' ) ); ?></a></span><h5><?php if ( $comment->status == Comment::STATUS_UNAPPROVED ) : ?> <em><?php _e('In moderation'); ?></em><?php endif; ?></h5></div>
 		      </li>
 

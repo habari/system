@@ -239,6 +239,25 @@ class Plugins
 	}
 
 	/**
+	 * Determine if a hook of any type is implemented
+	 * @static
+	 * @param string $hookname The name of the hook to check for
+	 * @param string $searchtype Optional. The type of hook to check for
+	 * @return array|bool An array with the types of hook implemented, or false if not implemented
+	 */
+	public static function implemented( $hookname, $searchtype = null )
+	{
+		$result = array();
+		foreach(self::$hooks as $type => $hooks) {
+			if($searchtype && $searchtype != $type) continue;
+			if(isset($hooks[$hookname])) {
+				$result[$type] = $type;
+			}
+		}
+		return count($result) > 0 ? $result : false;
+	}
+
+	/**
 	 * function list_active
 	 * Gets a list of active plugin filenames to be included
 	 * @param boolean Whether to refresh the cached array.  Default false
@@ -689,7 +708,7 @@ class Plugins
 		foreach ( $all_plugins as $file ) {
 			$error = '';
 			if ( !Utils::php_check_file_syntax( $file, $error ) ) {
-				Session::error( sprintf( _t( 'Attempted to load the plugin file "%s", but it failed with syntax errors. <div class="reveal">%s</div>' ), basename( $file ), $error ) );
+				Session::error( _t( 'Attempted to load the plugin file "%s", but it failed with syntax errors. <div class="reveal">%s</div>', array( basename( $file ), $error ) ) );
 				$failed_plugins[] = $file;
 			}
 		}

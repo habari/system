@@ -135,16 +135,14 @@ class Site
 				// add the port number to the value returned
 				// from host_url
 				$port = 80; // Default in case not set.
-				if ( isset( $_SERVER['SERVER_PORT'] ) ) {
-					$port = $_SERVER['SERVER_PORT'];
-				}
+				$port = Config::get( 'custom_http_port', isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : $port );
 				$portpart = '';
 				$host = Site::get_url( 'hostname' );
 				// if the port isn't a standard port, and isn't part of $host already, add it
 				if ( ( $port != 80 ) && ( $port != 443 ) && ( MultiByte::substr( $host, MultiByte::strlen( $host ) - strlen( $port ) ) != $port ) ) {
 					$portpart = ':' . $port;
 				}
-				if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' ) {
+				if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) {
 					$protocol = 'https';
 				}
 				$url = $protocol . '://' . $host . $portpart;

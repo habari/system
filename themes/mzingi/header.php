@@ -1,9 +1,9 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
 "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<html lang="<?php echo $locale; ?>">
 <head>
-	<meta http-equiv="Content-Type" content="text/html">
+	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>">
 	<title><?php if ($request->display_entry && isset($post)) { echo "{$post->title} - "; } ?><?php Options::out( 'title' ) ?></title>
 	<meta name="generator" content="Habari">
 
@@ -11,9 +11,9 @@
 	<link rel="stylesheet" type="text/css" media ="screen" href="<?php Site::out_url( 'vendor'); ?>/blueprint/screen.css">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?php Site::out_url( 'theme' ); ?>/style.css">
 	<link rel="Shortcut Icon" href="<?php Site::out_url( 'theme' ); ?>/favicon.ico">
-	<?php $theme->header(); ?>
+	<?php echo $theme->header(); ?>
 </head>
-<body class="<?php $theme->body_class(); ?>">
+<body class="<?php echo $theme->body_class(); ?>">
 	<!--begin wrapper-->
 	<div id="wrapper" class="container prepend-1 append-1">
 		<!--begin masthead-->
