@@ -1093,7 +1093,6 @@ class Posts extends ArrayObject implements IsContent
 	 */
 	private static function vocabulary_params( $params )
 	{
-
 		$return = array();
 
 		foreach ( $params as $key => $value ) {
@@ -1146,6 +1145,30 @@ class Posts extends ArrayObject implements IsContent
 
 	}
 
+	/**
+	 * Provide some default presets
+	 * @static
+	 * @param array $presets List of presets that other classes might provide
+	 * @return array List of presets this class provides
+	 */
+	public static function filter_posts_get_all_presets($presets)
+	{
+		$presets['page_list'] = array( 'content_type' => 'page', 'status' => 'published', 'nolimit' => true );
+		$presets['asides'] = array( 'vocabulary' => array( 'tags:term' => 'aside' ), 'limit' => 5 );
+
+		return $presets;
+	}
+
+	/**
+	 * function delete
+	 * Delete all Posts in a Posts object
+	 */
+	public function delete()
+	{
+		foreach( $this as $post ) {
+			$post->delete();
+		}
+	}
 }
 
 ?>
