@@ -556,6 +556,9 @@ class Posts extends ArrayObject implements IsContent
 		// Only show posts to which the current user has permission
 		if ( isset( $paramset['ignore_permissions'] ) ) {
 			$master_perm_where = '';
+			// Set up the merge params
+			$merge_params = array( $join_params, $params );
+			$params = call_user_func_array( 'array_merge', $merge_params );
 		}
 		else {
 			// This set of wheres will be used to generate a list of post_ids that this user can read
@@ -1218,7 +1221,7 @@ class Posts extends ArrayObject implements IsContent
 		}
 		return 'posts';
 	}
-	
+
 	/**
 	 * Accepts a set of term query qualifiers and converts it into a multi-dimensional array
 	 * of vocabulary (ie: tags), matching method (any, all, not), matching field (id, term, term_display), and list of terms
@@ -1227,7 +1230,6 @@ class Posts extends ArrayObject implements IsContent
 	 */
 	private static function vocabulary_params( $params )
 	{
-		
 		$return = array();
 		
 		foreach ( $params as $key => $value ) {
@@ -1277,7 +1279,6 @@ class Posts extends ArrayObject implements IsContent
 		}
 		
 		return $return;
-		
 	}
 
 	/**
@@ -1301,6 +1302,17 @@ class Posts extends ArrayObject implements IsContent
 		$presets['asides'] = array( 'vocabulary' => array( 'tags:term' => 'aside' ), 'limit' => 5 );
 
 		return $presets;
+	}
+
+	/**
+	 * function delete
+	 * Delete all Posts in a Posts object
+	 */
+	public function delete()
+	{
+		foreach( $this as $post ) {
+			$post->delete();
+		}
 	}
 }
 
