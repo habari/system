@@ -613,6 +613,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		}
 		Plugins::act( 'post_update_before', $this );
 
+		$this->newfields = Plugins::filter( 'post_update_change', $this->newfields, $this);
+
 		// Call setslug() only when post slug is changed
 		if ( isset( $this->newfields['slug'] ) ) {
 			if ( $this->fields['slug'] != $this->newfields['slug'] ) {
