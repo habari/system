@@ -103,9 +103,27 @@ class Posts extends ArrayObject implements IsContent
 	 */
 	public static function get( $paramarray = array() )
 	{
+		static $presets;
+
+		// If $paramarray is a string, use it as a Preset
+		if(is_string($paramarray)) {
+			$paramarray = array('preset' => $paramarray);
+		}
 
 		// If $paramarray is a querystring, convert it to an array
 		$paramarray = Utils::get_params( $paramarray );
+
+		// If a preset is defined, get the named array and merge it with the provided parameters,
+		// allowing the additional $paramarray settings to override the preset
+		if(isset($paramarray['preset'])) {
+			if(!isset($presets)) {
+				$presets = Plugins::filter('posts_get_all_presets', $presets, $paramarray['preset']);
+			}
+			if(isset($presets[$paramarray['preset']])) {
+				$preset = Plugins::filter('posts_get_update_preset', $presets[$paramarray['preset']], $paramarray['preset'], $paramarray);
+				$paramarray = array_merge($paramarray, $preset);
+			}
+		}
 
 		// let plugins alter the param array before we use it. could be useful for modifying search results, etc.
 		$paramarray = Plugins::filter( 'posts_get_paramarray', $paramarray );
@@ -116,9 +134,18 @@ class Posts extends ArrayObject implements IsContent
 		$select_ary = array();
 
 		// Default fields to select, everything by default
-		foreach ( Post::default_fields() as $field => $value ) {
-			$select_ary[$field] = "{posts}.$field AS $field";
-			$select_distinct[$field] = "{posts}.$field";
+		$default_fields = Plugins::filter('post_default_fields', Post::default_fields(), $paramarray);
+		if(isset($paramarray['default_fields'])) {
+			$param_defaults = Utils::single_array($paramarray['default_fields']);
+			$default_fields = array_merge($default_fields, $param_defaults);
+		}
+		foreach ( $default_fields as $field => $value ) {
+			$table = '{posts}';
+			if(strpos($field, '.') !== false) {
+				list($table, $field) = explode('.', $field);
+			}
+			$select_ary[$field] = "$table.$field AS $field";
+			$select_distinct[$field] = "$table.$field";
 		}
 
 		// Default parameters
@@ -452,6 +479,13 @@ class Posts extends ArrayObject implements IsContent
 			}
 		}
 
+		if(isset($paramset['post_join'])) {
+			$post_joins = Utils::single_array($paramset['post_join']);
+			foreach($post_joins as $post_join) {
+				$joins[$post_join] = " INNER JOIN {$post_join} ON {$post_join}.post_id = {posts}.id ";
+			}
+		}
+
 		// Only show posts to which the current user has permission
 		if ( isset( $paramset['ignore_permissions'] ) ) {
 			$master_perm_where = new QueryWhere();
@@ -684,8 +718,8 @@ class Posts extends ArrayObject implements IsContent
 		 */
 		DB::set_fetch_mode( PDO::FETCH_CLASS );
 		DB::set_fetch_class( 'Post' );
-//Utils::debug($query, $query->get());
 		$results = DB::$fetch_fn( $query->get(), $query->params(), 'Post' );
+
 		//Utils::debug( $paramarray, $fetch_fn, $query, $params, $results );
 		//var_dump( $query );
 
@@ -762,6 +796,7 @@ class Posts extends ArrayObject implements IsContent
 		$params = array_merge( ( array ) $this->get_param_cache, array( 'fetch_fn' => 'get_query') );
 		return Posts::get( $params );
 	}
+
 	/**
 	 * static count_by_author
 	 * return a count of the number of posts by the specified author
