@@ -125,15 +125,43 @@ class QueryRecord implements URLProperties
 	 * function insertRecord(
 	 * Inserts this record's fields as a new row
 	 * @param string Table to update
-	 * @return boolean True on success, false if not
+	 * @return integer The inserted record id on success, false if not
 	 *
 	 * Again, the parent class's method's signature must match that of the
 	 * child class's signature
 	 */
-	protected function insertRecord( $table )
+	protected function insertRecord( $table, $schema = null )
 	{
-		$merge =  array_merge( $this->fields, $this->newfields );
-		return DB::insert( $table, array_diff_key( $merge, $this->unsetfields ) );
+		$merge = array_merge( $this->fields, $this->newfields );
+		$table = DB::table($table);
+		if(empty($schema)) {
+			$result = DB::insert( $table, array_diff_key( $merge, $this->unsetfields ) );
+			if($result) {
+				$result = DB::last_insert_id();
+			}
+		}
+		else {
+			$result = false;
+			if(DB::insert( $table, array_intersect_key(array_diff_key( $merge, $this->unsetfields ), $schema[$table]) )) {
+				$result = true;
+				$record_id = DB::last_insert_id();
+				$merge['*id'] = $record_id;
+				foreach($schema as $schema_table => $fields) {
+					if($schema_table == '*' || $table == $schema_table) {
+						continue;
+					}
+					$data = array();
+					foreach($fields as $field => $value) {
+						$data[$field] = $merge[$value];
+					}
+					$result = $result && DB::insert( $schema_table, array_intersect_key(array_diff_key($data, $this->unsetfields), $fields));
+				}
+			}
+			if($result) {
+				$result = $record_id;
+			}
+		}
+		return $result;
 	}
 
 	/**

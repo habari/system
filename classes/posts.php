@@ -482,9 +482,11 @@ class Posts extends ArrayObject implements IsContent
 		if(isset($paramset['post_join'])) {
 			$post_joins = Utils::single_array($paramset['post_join']);
 			foreach($post_joins as $post_join) {
-				$joins[$post_join] = " INNER JOIN {$post_join} ON {$post_join}.post_id = {posts}.id ";
+				$query->join("LEFT JOIN {$post_join} ON {$post_join}.post_id = {posts}.id ");
 			}
 		}
+
+
 
 		// Only show posts to which the current user has permission
 		if ( isset( $paramset['ignore_permissions'] ) ) {
@@ -497,7 +499,7 @@ class Posts extends ArrayObject implements IsContent
 			$master_perm_where = new QueryWhere();
 			// This set of wheres will be used to generate a list of post_ids that this user can read
 			$perm_where = new QueryWhere('OR');
-			$perm_where_denied = array();
+			$perm_where_denied = new QueryWhere('OR');
 			$params_where = array();
 			$where = array();
 
@@ -512,7 +514,7 @@ class Posts extends ArrayObject implements IsContent
 			else {
 				// If a user can read his own posts, let him
 				if ( User::identify()->can( 'own_posts', 'read' ) ) {
-					$perm_where->add('{posts}.user_id = :own_posts_id', array('own_posts_id' => User::identify()->id));
+					$perm_where->add('{posts}.user_id = :current_user_id', array('current_user_id' => User::identify()->id));
 				}
 
 				// If a user can read specific post types, let him
@@ -529,14 +531,12 @@ class Posts extends ArrayObject implements IsContent
 				// If a user can read posts with specific tokens, let him
 				if ( count( $read_tokens ) > 0 ) {
 					$query->join('LEFT JOIN {post_tokens} pt_allowed ON {posts}.id= pt_allowed.post_id AND pt_allowed.token_id IN ('.implode( ',', $read_tokens ).')', array(), 'post_tokens__allowed');
-					$perm_where->add('pt_allowed.post_id IS NOT NULL', array(), 'perms_join_null');
+					$perm_where->add('pt_allowed.post_id IS NOT NULL', array(), 'perms_join_not_null');
 				}
 
 				// If a user has access to read other users' unpublished posts, let him
 				if ( User::identify()->can( 'post_unpublished', 'read' ) ) {
-					$perm_where[] = '({posts}.status <> ? AND {posts}.user_id <> ?)';
-					$params_where[] = Post::status( 'published' );
-					$params_where[] = User::identify()->id;
+					$perm_where->add('({posts}.status <> :status_published AND {posts}.user_id <> :current_user_id)', array('current_user_id' => User::identify()->id, 'status_published' => Post::status('published')));
 				}
 
 			}
@@ -544,7 +544,7 @@ class Posts extends ArrayObject implements IsContent
 			$params_where_denied = array();
 			// If a user is denied access to all posts, do so
 			if ( User::identify()->cannot( 'post_any' ) ) {
-				$perm_where_denied = array( '(1=0)' );
+				$perm_where_denied->add('(1=0)');
 			}
 			else {
 				// If a user is denied read access to specific post types, deny him
@@ -555,19 +555,22 @@ class Posts extends ArrayObject implements IsContent
 					}
 				}
 				if ( count( $denied_post_types ) > 0 ) {
-					$perm_where_denied[] = '{posts}.content_type NOT IN (' . implode( ',', $denied_post_types ) . ')';
+					$perm_where_denied->in('{posts}.content_type', $denied_post_types, 'posts_denied_types', 'intval', false);
+				}
+
+				// If a user is denied read access to posts with specific tokens, deny it
+				if ( count( $deny_tokens ) > 0 ) {
+					$query->join('LEFT JOIN {post_tokens} pt_denied ON {posts}.id= pt_denied.post_id AND pt_denied.token_id IN ('.implode( ',', $deny_tokens ).')', array(), 'post_tokens__denied');
+					$perm_where_denied->add('pt_denied.post_id IS NULL', array(), 'perms_join_null');
 				}
 
 				// If a user is denied access to read other users' unpublished posts, deny it
 				if ( User::identify()->cannot( 'post_unpublished' ) ) {
-					$perm_where_denied[] = '({posts}.status = ? OR {posts}.user_id = ?)';
-					$params_where_denied[] = Post::status( 'published' );
-					$params_where_denied[] = User::identify()->id;
+					$perm_where_denied->add('({posts}.status = :status_published OR {posts}.user_id <> :current_user_id)', array('current_user_id' => User::identify()->id, 'status_published' => Post::status('published')));
 				}
 
 			}
 
-			// This doesn't work yet because you can't pass these arrays by reference
 			Plugins::act( 'post_get_perm_where', $perm_where, $paramarray );
 			Plugins::act( 'post_get_perm_where_denied', $perm_where_denied, $paramarray );
 
@@ -579,17 +582,10 @@ class Posts extends ArrayObject implements IsContent
 				$master_perm_where->add($perm_where, array(), 'perms_granted');
 			}
 
-			if ( count( $deny_tokens ) > 0 ) {
-				$joins['post_tokens__denied'] = ' LEFT JOIN {post_tokens} pt_denied ON {posts}.id= pt_denied.post_id AND pt_denied.token_id IN ('.implode( ',', $deny_tokens ).')';
-				$perm_where_denied['perms_join_null'] = 'pt_denied.post_id IS NULL';
-			}
 
 			// If there are denied permissions to check, add them to the where clause
-			if ( count( $perm_where_denied ) > 0 ) {
-				$where['perms_denied'] = '
-					(' . implode( ' AND ', $perm_where_denied ) . ')
-				';
-				$merge_params[] = $params_where_denied;
+			if($perm_where_denied->count() > 0 || $query->joined('post_tokens__denied')) {
+				$master_perm_where->add($perm_where_denied, array(), 'perms_denied');
 			}
 
 		}
@@ -720,7 +716,7 @@ class Posts extends ArrayObject implements IsContent
 		DB::set_fetch_class( 'Post' );
 		$results = DB::$fetch_fn( $query->get(), $query->params(), 'Post' );
 
-		//Utils::debug( $paramarray, $fetch_fn, $query, $params, $results );
+		//Utils::debug( $paramarray, $fetch_fn, $query->get(), $query->params(), $results );
 		//var_dump( $query );
 
 		/**

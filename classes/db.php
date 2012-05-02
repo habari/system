@@ -12,12 +12,16 @@
  */
 class DB extends Singleton
 {
+	/**
+	 * @var DatabaseConnection $connection
+	 */
 	private $connection = null;
 
 	/**
 	 * Enables singleton working properly
 	 *
 	 * @see singleton.php
+	 * @return DB
 	 */
 	protected static function instance()
 	{
@@ -90,7 +94,7 @@ class DB extends Singleton
 	 * by Theme and Plugin classes to inform the DB class about
 	 * custom tables used by the plugin
 	 *
-	 * @param name  the table name
+	 * @param string $name  The table name
 	**/
 	public static function register_table( $name )
 	{
@@ -100,7 +104,7 @@ class DB extends Singleton
 	/**
 	 * Sets the fetch mode for return calls from PDOStatement
 	 *
-	 * @param mode  One of the PDO::FETCH_MODE integers
+	 * @param integer $mode  One of the PDO::FETCH_MODE integers
 	 */
 	public static function set_fetch_mode( $mode )
 	{
@@ -110,7 +114,7 @@ class DB extends Singleton
 	/**
 	 * Sets the class to fetch, if fetch mode is PDO::FETCH_CLASS
 	 *
-	 * @param class_name  Name of class to create during fetch
+	 * @param string $class_name  Name of class to create during fetch
 	 */
 	public static function set_fetch_class( $class_name )
 	{
@@ -308,8 +312,8 @@ class DB extends Singleton
 
 	/**
 	 * Inserts into the specified table values associated to the key fields
-	 * @param string The table name
-	 * @param array An associative array of fields and values to insert
+	 * @param string $table The table name
+	 * @param array $fieldvalues An associative array of fields and values to insert
 	 * @return boolean True on success, false if not
 	 * <code>DB::insert( 'mytable', array( 'fieldname' => 'value' ) );</code>
 	 **/

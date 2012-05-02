@@ -107,7 +107,7 @@ class AdminHandler extends ActionHandler
 		}
 		elseif ( $page == 'publish' && isset( $this->handler_vars['id'] ) ) {
 			$type = Post::type_name( Post::get( array( 'status' => Post::status( 'any' ), 'id' => intval( $this->handler_vars['id'] ) ) )->content_type );
-			$type = Plugins::filter( 'post_type_display', Post::type_name( Post::get( array( 'status' => Post::status( 'any' ), 'id' => intval( $this->handler_vars['id'] ) ) )->content_type ), 'singular' );
+			$type = Plugins::filter( 'post_type_display', $type, 'singular' );
 		}
 		else {
 			$type = '';

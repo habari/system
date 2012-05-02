@@ -154,7 +154,7 @@ class DatabaseConnection
 	 * Get the full table name for the given table.
 	 *
 	 * @param string $name name of the table
-	 * @return string the full table name, or false if the table was not found
+	 * @return string the full table name, or the original value if the table was not found
 	 */
 	public function table( $name )
 	{
@@ -162,7 +162,7 @@ class DatabaseConnection
 			return $this->sql_tables[$name];
 		}
 		else {
-			return false;
+			return $name;
 		}
 	}
 

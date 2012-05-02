@@ -540,6 +540,29 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	}
 
 	/**
+	 * Get the schema data for this post
+	 * @return array An array of schema data for this post
+	 */
+	public function get_schema_map()
+	{
+		if(empty($this->schema)) {
+			$default_fields = Post::default_fields();
+			$schema = array('posts' => array_combine(array_keys($default_fields), array_keys($default_fields)));
+			$schema['*'] = array();
+			$fields = array_merge( $this->fields, $this->newfields );
+			foreach($fields as $field => $value) {
+				if(!isset($default_fields[$field])) {
+					$schema['*'][$field] = $field;
+				}
+			}
+			$schema = Plugins::filter('post_schema_map_' . Utils::slugify(Post::type_name($fields['content_type']), '_'), $schema, $this);
+			$schema = Plugins::filter('post_schema_map', $schema, $this);
+			$this->schema = $schema;
+		}
+		return $this->schema;
+	}
+
+	/**
 	 * function insert
 	 * Saves a new post to the posts table
 	 */
@@ -568,8 +591,9 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		// invoke plugins for status changes
 		Plugins::act( 'post_status_' . self::status_name( $this->status ), $this, null );
 
-		$result = parent::insertRecord( DB::table( 'posts' ) );
-		$this->newfields['id'] = DB::last_insert_id(); // Make sure the id is set in the post object to match the row id
+
+		$result = parent::insertRecord( DB::table( 'posts' ), $this->get_schema_map() );
+		$this->newfields['id'] = $result; // Make sure the id is set in the post object to match the row id
 		$this->fields = array_merge( $this->fields, $this->newfields );
 		$this->newfields = array();
 		$this->info->commit( DB::last_insert_id() );
