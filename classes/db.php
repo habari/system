@@ -338,9 +338,9 @@ class DB extends Singleton
 	 * function update
 	 * Updates any record that matches the specific criteria
 	 * A new row is inserted if no existing record matches the criteria
-	 * @param string Table to update
-	 * @param array Associative array of field values to set
-	 * @param array Associative array of field values to match
+	 * @param string $table Table to update
+	 * @param array $fieldvalues Associative array of field values to set
+	 * @param array $keyfields Associative array of field values to match
 	 * @return boolean True on success, false if not
 	 * <code>DB::update( 'mytable', array( 'fieldname' => 'newvalue' ), array( 'fieldname' => 'value' ) );</code>
 	 **/

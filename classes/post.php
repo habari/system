@@ -658,7 +658,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			Plugins::act( 'post_status_' . self::status_name( $this->newfields['status'] ), $this, $this->fields['status'] );
 		}
 
-		$result = parent::updateRecord( DB::table( 'posts' ), array( 'id' => $this->id ) );
+		$result = parent::updateRecord( DB::table( 'posts' ), array( 'id' => $this->id ), post::get_schema_map() );
 
 		//scheduled post
 		if ( $this->fields['status'] == Post::status( 'scheduled' ) || $this->status == Post::status( 'scheduled' ) ) {

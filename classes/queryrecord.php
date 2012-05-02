@@ -198,10 +198,38 @@ class QueryRecord implements URLProperties
 	 * @param array An associative array of field data to match
 	 * @return boolean True on success, false if not
 	 */
-	protected function updateRecord( $table, $updatekeyfields = array() )
+	protected function updateRecord( $table, $updatekeyfields = array(), $schema = null )
 	{
 		$merge = array_merge( $this->fields, $this->newfields );
-		return DB::update( $table, array_diff_key( $merge, $this->unsetfields ), $updatekeyfields );
+		$table = DB::table($table);
+		if(empty($schema)) {
+			$result = DB::update( $table, array_diff_key( $merge, $this->unsetfields ), $updatekeyfields );
+		}
+		else {
+			$result = false;
+			if($result = DB::update( $table, array_intersect_key(array_diff_key( $merge, $this->unsetfields ), $schema[$table]), $updatekeyfields )) {
+				foreach($updatekeyfields as $kf => $kd) {
+					$merge['*'.$kf] = $kd;
+				}
+				foreach($schema as $schema_table => $fields) {
+					if($schema_table == '*' || $table == $schema_table) {
+						continue;
+					}
+					$data = array();
+					$updatedata = array();
+					foreach($fields as $field => $value) {
+						if($value[0] == '*') {
+							$updatedata[$field] = $merge[$value];
+						}
+						else {
+							$data[$field] = $merge[$value];
+						}
+					}
+					$result = $result && DB::update( $schema_table, array_intersect_key(array_diff_key($data, $this->unsetfields), $fields), $updatedata);
+				}
+			}
+		}
+		return $result;
 	}
 
 	/**
