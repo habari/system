@@ -711,8 +711,12 @@ class Posts extends ArrayObject implements IsContent
 		 * Execute the SQL statement using the PDO extension
 		 */
 		DB::set_fetch_mode( PDO::FETCH_CLASS );
-		DB::set_fetch_class( 'Post' );
-		$results = DB::$fetch_fn( $query->get(), $query->params(), 'Post' );
+		$fetch_class = 'Post';
+		if(isset($paramarray['fetch_class'])) {
+			$fetch_class = $paramarray['fetch_class'];
+		}
+		DB::set_fetch_class( $fetch_class );
+		$results = DB::$fetch_fn( $query->get(), $query->params(), $fetch_class );
 
 		//Utils::debug($results, $query->get(), $query->params());
 		//Utils::debug( $paramarray, $fetch_fn, $query->get(), $query->params(), $results );
