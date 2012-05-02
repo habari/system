@@ -499,7 +499,7 @@ class Posts extends ArrayObject implements IsContent
 			$master_perm_where = new QueryWhere();
 			// This set of wheres will be used to generate a list of post_ids that this user can read
 			$perm_where = new QueryWhere('OR');
-			$perm_where_denied = new QueryWhere('OR');
+			$perm_where_denied = new QueryWhere('AND');
 			$params_where = array();
 			$where = array();
 
@@ -566,7 +566,7 @@ class Posts extends ArrayObject implements IsContent
 
 				// If a user is denied access to read other users' unpublished posts, deny it
 				if ( User::identify()->cannot( 'post_unpublished' ) ) {
-					$perm_where_denied->add('({posts}.status = :status_published OR {posts}.user_id <> :current_user_id)', array('current_user_id' => User::identify()->id, 'status_published' => Post::status('published')));
+					$perm_where_denied->add('({posts}.status <> :status_published OR {posts}.user_id <> :current_user_id)', array('current_user_id' => User::identify()->id, 'status_published' => Post::status('published')));
 				}
 
 			}
@@ -696,8 +696,6 @@ class Posts extends ArrayObject implements IsContent
 		Plugins::act('posts_get_query', $query);
 		/* All SQL parts are constructed, on to real business! */
 
-		//Utils::debug($query->where(), $query->get(), $query->params());
-
 		/**
 		 * DEBUG: Uncomment the following line to display everything that happens in this function
 		 */
@@ -716,6 +714,7 @@ class Posts extends ArrayObject implements IsContent
 		DB::set_fetch_class( 'Post' );
 		$results = DB::$fetch_fn( $query->get(), $query->params(), 'Post' );
 
+		//Utils::debug($results, $query->get(), $query->params());
 		//Utils::debug( $paramarray, $fetch_fn, $query->get(), $query->params(), $results );
 		//var_dump( $query );
 

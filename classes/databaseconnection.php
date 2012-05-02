@@ -393,7 +393,7 @@ class DatabaseConnection
 	 *
 	 * @param   error   array( 'query'=>query, 'error'=>errorInfo )
 	 */
-	private function add_error( $error )
+	public function add_error( $error )
 	{
 		$backtrace1 = debug_backtrace();
 		$backtrace = array();
