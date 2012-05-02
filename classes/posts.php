@@ -99,7 +99,7 @@ class Posts extends ArrayObject implements IsContent
 	 * Further description of parameters, including usage examples, can be found at
 	 * http://wiki.habariproject.org/en/Dev:Retrieving_Posts
 	 *
-	 * @return array An array of Post objects, or a single post object, depending on request
+	 * @return Posts|Post|string An array of Post objects, or a single post object, depending on request
 	 */
 	public static function get( $paramarray = array() )
 	{
@@ -166,7 +166,7 @@ class Posts extends ArrayObject implements IsContent
 					$where->in('{posts}.content_type', $paramset['content_type'], 'posts_content_type', create_function( '$a', 'return Post::type( $a );' ) );
 				}
 				if ( isset( $paramset['not:content_type'] ) ) {
-					$where->in('{posts}.content_type', $paramset['content_type'], 'posts_not_content_type', create_function( '$a', 'return Post::type( $a );' ), false );
+					$where->in('{posts}.content_type', $paramset['not:content_type'], 'posts_not_content_type', create_function( '$a', 'return Post::type( $a );' ), false );
 				}
 
 				if ( isset( $paramset['slug'] ) ) {
@@ -199,83 +199,92 @@ class Posts extends ArrayObject implements IsContent
 
 					if ( isset( $paramset['vocabulary']['all'] ) ) {
 						$all = $paramset['vocabulary']['all'];
+
+						foreach ( $all as $vocab => $value ) {
+
+							foreach ( $value as $field => $terms ) {
+
+								// we only support these fields to search by
+								if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
+									continue;
+								}
+
+								$join_group = Query::new_param_name('join');
+								$query->join( 'JOIN {object_terms} ' . $join_group . '_ot ON {posts}.id = ' . $join_group . '_ot.object_id', array(), 'term2post_posts_' . $join_group );
+								$query->join( 'JOIN {terms} ' . $join_group . '_t ON ' . $join_group . '_ot.term_id = ' . $join_group . '_t.id', array(), 'terms_term2post_' . $join_group );
+								$query->join( 'JOIN {vocabularies} ' . $join_group . '_v ON ' . $join_group . '_t.vocabulary_id = ' . $join_group . '_v.id', array(), 'terms_vocabulary_' . $join_group );
+
+								$where->in( $join_group . '_v.name', $vocab );
+								$where->in( $join_group . "_t.{$field}", $terms );
+								$where->in( $join_group . '_ot.object_type_id', $object_id );
+							}
+
+							// this causes no posts to match if combined with 'any' below and should be re-thought... somehow
+							$groupby = implode( ',', $select_distinct );
+							$having = 'count(*) = ' . count( $terms );
+
+						}
 					}
 
 					if ( isset( $paramset['vocabulary']['any'] ) ) {
 						$any = $paramset['vocabulary']['any'];
+
+						$orwhere = new QueryWhere( 'OR' );
+
+						foreach ( $any as $vocab => $value ) {
+
+							foreach ( $value as $field => $terms ) {
+
+								$andwhere = new QueryWhere();
+
+								// we only support these fields to search by
+								if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
+									continue;
+								}
+
+								$join_group = Query::new_param_name('join');
+								$query->join( 'JOIN {object_terms} ' . $join_group . '_ot ON {posts}.id = ' . $join_group . '_ot.object_id', array(), 'term2post_posts_' . $join_group );
+								$query->join( 'JOIN {terms} ' . $join_group . '_t ON ' . $join_group . '_ot.term_id = ' . $join_group . '_t.id', array(), 'terms_term2post_' . $join_group );
+								$query->join( 'JOIN {vocabularies} ' . $join_group . '_v ON ' . $join_group . '_t.vocabulary_id = ' . $join_group . '_v.id', array(), 'terms_vocabulary_' . $join_group );
+
+								$andwhere->in( $join_group . '_v.name', $vocab );
+								$andwhere->in( $join_group . "_t.{$field}", $terms );
+								$andwhere->in( $join_group . '_ot.object_type_id', $object_id );
+							}
+							$orwhere->add( $andwhere );
+
+						}
+						$where->add( $orwhere );
 					}
 
 					if ( isset( $paramset['vocabulary']['not'] ) ) {
 						$not = $paramset['vocabulary']['not'];
-					}
 
-					foreach ( $all as $vocab => $value ) {
+						foreach ( $not as $vocab => $value ) {
 
-						foreach ( $value as $field => $terms ) {
+							foreach ( $value as $field => $terms ) {
 
-							// we only support these fields to search by
-							if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
-								continue;
+								// we only support these fields to search by
+								if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
+									continue;
+								}
+
+								$subquery_alias = Query::new_param_name('subquery');
+								$subquery = Query::create( '{object_terms}' )->select('object_id');
+								$subquery->join( 'JOIN {terms} ON {terms}.id = {object_terms}.term_id' );
+								$subquery->join( 'JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id' );
+
+								$subquery->where()->in( "{terms}.{$field}", $terms );
+								$subquery->where()->in( '{object_terms}.object_type_id', $object_id );
+								$subquery->where()->in( '{vocabularies}.name', $vocab );
+
+								$query->join( 'LEFT JOIN (' . $subquery->get() . ') ' . $subquery_alias . ' ON ' . $subquery_alias . '.object_id = {posts}.id', $subquery->params(), $subquery_alias );
+
+								$where->add( 'COALESCE(' . $subquery_alias . '.object_id, 0) = 0' );
 							}
 
-							$query->join( 'JOIN {object_terms} ON {posts}.id = {object_terms}.object_id', array(), 'term2post_posts' );
-							$query->join( 'JOIN {terms} ON {object_terms}.term_id = {terms}.id', array(), 'terms_term2post' );
-							$query->join( 'JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id', array(), 'terms_vocabulary' );
-
-							$where->in( '{vocabularies}.name', $vocab );
-							$where->in( "{terms}.{$field}", $terms );
-							$where->in( '{object_terms}.object_type_id', $object_id );
 						}
-
-						// this causes no posts to match if combined with 'any' below and should be re-thought... somehow
-                                                $groupby = implode( ',', $select_distinct );
-						$having = 'count(*) = ' . count( $terms );
-
 					}
-
-					foreach ( $any as $vocab => $value ) {
-
-						foreach ( $value as $field => $terms ) {
-
-							// we only support these fields to search by
-							if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
-								continue;
-							}
-
-							$query->join( 'JOIN {object_terms} ON {posts}.id = {object_terms}.object_id', array(), 'term2post_posts' );
-							$query->join( 'JOIN {terms} ON {object_terms}.term_id = {terms}.id', array(), 'terms_term2post' );
-							$query->join( 'JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id', array(), 'terms_vocabulary' );
-
-							$where->in( '{vocabularies}.name', $vocab );
-							$where->in( "{terms}.{$field}", $terms );
-							$where->in( '{object_terms}.object_type_id', $object_id );
-						}
-
-					}
-
-					foreach ( $not as $vocab => $value ) {
-
-						foreach ( $value as $field => $terms ) {
-
-							// we only support these fields to search by
-							if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
-								continue;
-							}
-
-							$subquery = Query::create( '{object_terms}' )->select( '1' );
-							$subquery->join( 'JOIN {terms} ON {terms}.id = {object_terms}.term_id' );
-							$subquery->join( 'JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id' );
-
-							$subquery->where()->in( "{terms}.{$field}", $terms );
-							$subquery->where()->add( '{object_terms}.object_id = {posts}.id' );
-							$subquery->where()->in( '{object_terms}.object_type_id', $object_id );
-							$subquery->where()->in( '{vocabularies}.name', $vocab );
-
-							$where->exists( $subquery, null, false );
-						}
-
-					}
-
 				}
 
 				if ( isset( $paramset['criteria'] ) ) {
@@ -595,30 +604,6 @@ class Posts extends ArrayObject implements IsContent
 		}
 
 
-		// If the orderby has a function in it, try to create a select field for it with an alias
-		// TODO: Move this to the Query class
-		if ( strpos( $orderby, '(' ) !== false ) {
-			$orders = explode( ',', $orderby );
-			$ob_index = 0;
-			foreach ( $orders as $key => $order ) {
-				if ( !preg_match( '%(?P<field>.+)\s+(?P<direction>DESC|ASC)%i', $order, $order_matches ) ) {
-					$order_matches = array(
-						'field' => $order,
-						'direction' => '',
-					);
-				}
-
-				if ( strpos( $order_matches['field'], '(' ) !== false ) {
-					$ob_index++;
-					$field = 'orderby' . $ob_index;
-					$select_ary[$field] = "{$order_matches['field']} AS $field";
-					$select_distinct[$field] = "{$order_matches['field']} AS $field";
-					$orders[$key] = $field . ' ' . $order_matches['direction'];
-				}
-			}
-			$orderby = implode( ', ', $orders );
-		}
-
 		// Add arbitrary fields to the select clause for sorting and output
 		if ( isset( $add_select ) ) {
 			$query->select($add_select);
@@ -678,7 +663,7 @@ class Posts extends ArrayObject implements IsContent
 			$query->having($having);
 		}
 
-
+		Plugins::act('posts_get_query', $query);
 		/* All SQL parts are constructed, on to real business! */
 
 		//Utils::debug($query->where(), $query->get(), $query->params());
@@ -691,7 +676,7 @@ class Posts extends ArrayObject implements IsContent
 		//Session::notice($query);
 
 		if ( 'get_query' == $fetch_fn ) {
-			return $query->get();
+			return array($query->get(), $query->params());
 		}
 
 		/**
@@ -768,6 +753,15 @@ class Posts extends ArrayObject implements IsContent
 		return Posts::get( $params );
 	}
 
+	/**
+	 * return the query that generated this set of posts
+	 * @return string The SQL and paramters used to generate this set of posts
+	 */
+	public function get_query()
+	{
+		$params = array_merge( ( array ) $this->get_param_cache, array( 'fetch_fn' => 'get_query') );
+		return Posts::get( $params );
+	}
 	/**
 	 * static count_by_author
 	 * return a count of the number of posts by the specified author

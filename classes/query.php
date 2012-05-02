@@ -64,6 +64,17 @@ class Query {
 	}
 
 	/**
+	 * Set whether only distinct results should be returned
+	 * @param bool $set True if the result set should be distinct
+	 * @return Query Returns $this for fluid interface
+	 */
+	public function distinct($set = true)
+	{
+		$this->distinct = $set;
+		return $this;
+	}
+
+	/**
 	 * Sets the primary table for the FROM statement
 	 * @param string $primary_table The primary table from which to select
 	 * @return Query Returns $this for fluid interface
@@ -170,9 +181,40 @@ class Query {
 	 */
 	public function get()
 	{
+		$fields = $this->fields;
+
+		// If the orderby has a function in it, try to create a select field for it with an alias
+		$orderby = null;
+		if(isset($this->orderby)) {
+			$orderby = $this->orderby;
+			if ( strpos( $orderby, '(' ) !== false ) {
+				$orders = explode( ',', $orderby );
+				$ob_index = 0;
+				foreach ( $orders as $key => $order ) {
+					if ( !preg_match( '%(?P<field>.+)\s+(?P<direction>DESC|ASC)%i', $order, $order_matches ) ) {
+						$order_matches = array(
+							'field' => $order,
+							'direction' => '',
+						);
+					}
+
+					if ( strpos( $order_matches['field'], '(' ) !== false ) {
+						$ob_index++;
+						$field = 'orderby' . $ob_index;
+						$fields[$field] = "{$order_matches['field']} AS $field";
+						$orders[$key] = $field . ' ' . $order_matches['direction'];
+					}
+				}
+				$orderby = implode( ', ', $orders );
+			}
+		}
+
 		$sql = "SELECT \n\t";
-		if(count($this->fields) > 0) {
-			$sql .= implode(",\n\t", $this->fields);
+		if($this->distinct()) {
+			$sql .= "DISTINCT \n\t";
+		}
+		if(count($fields) > 0) {
+			$sql .= implode(",\n\t", $fields);
 		}
 		else {
 			$sql .= "*";
@@ -193,8 +235,8 @@ class Query {
 		if(isset($this->having)) {
 			$sql .= "\nHAVING " . $this->having;
 		}
-		if(isset($this->orderby)) {
-			$sql .= "\nORDER BY " . $this->orderby;
+		if(isset($orderby)) {
+			$sql .= "\nORDER BY " . $orderby;
 		}
 
 		if(isset($this->limit)) {
