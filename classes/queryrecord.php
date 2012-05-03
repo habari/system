@@ -124,7 +124,7 @@ class QueryRecord implements URLProperties
 	/**
 	 * function insertRecord(
 	 * Inserts this record's fields as a new row
-	 * @param string Table to update
+	 * @param string Table to update, use table name without prefix and without braces
 	 * @return integer The inserted record id on success, false if not
 	 *
 	 * Again, the parent class's method's signature must match that of the
@@ -133,9 +133,9 @@ class QueryRecord implements URLProperties
 	protected function insertRecord( $table, $schema = null )
 	{
 		$merge = array_merge( $this->fields, $this->newfields );
-		$table = DB::table($table);
+		$ptable = DB::table($table);
 		if(empty($schema)) {
-			$result = DB::insert( $table, array_diff_key( $merge, $this->unsetfields ) );
+			$result = DB::insert( $ptable, array_diff_key( $merge, $this->unsetfields ) );
 			if($result) {
 				$result = DB::last_insert_id();
 			}
@@ -154,7 +154,8 @@ class QueryRecord implements URLProperties
 					foreach($fields as $field => $value) {
 						$data[$field] = $merge[$value];
 					}
-					$result = $result && DB::insert( $schema_table, array_intersect_key(array_diff_key($data, $this->unsetfields), $fields));
+					$pschema_table = DB::table($schema_table);
+					$result = $result && DB::insert( $pschema_table, array_intersect_key(array_diff_key($data, $this->unsetfields), $fields));
 				}
 			}
 			if($result) {
@@ -194,20 +195,20 @@ class QueryRecord implements URLProperties
 	/**
 	 * function updateRecord
 	 * Updates this record's fields using the new data
-	 * @param string Table to update
+	 * @param string Table to update, use table name without prefix and without braces
 	 * @param array An associative array of field data to match
 	 * @return boolean True on success, false if not
 	 */
 	protected function updateRecord( $table, $updatekeyfields = array(), $schema = null )
 	{
 		$merge = array_merge( $this->fields, $this->newfields );
-		$table = DB::table($table);
+		$ptable = DB::table($table);
 		if(empty($schema)) {
-			$result = DB::update( $table, array_diff_key( $merge, $this->unsetfields ), $updatekeyfields );
+			$result = DB::update( $ptable, array_diff_key( $merge, $this->unsetfields ), $updatekeyfields );
 		}
 		else {
 			$result = false;
-			if($result = DB::update( $table, array_intersect_key(array_diff_key( $merge, $this->unsetfields ), $schema[$table]), $updatekeyfields )) {
+			if($result = DB::update( $ptable, array_intersect_key(array_diff_key( $merge, $this->unsetfields ), $schema[$table]), $updatekeyfields )) {
 				foreach($updatekeyfields as $kf => $kd) {
 					$merge['*'.$kf] = $kd;
 				}
@@ -225,7 +226,8 @@ class QueryRecord implements URLProperties
 							$data[$field] = $merge[$value];
 						}
 					}
-					$result = $result && DB::update( $schema_table, array_intersect_key(array_diff_key($data, $this->unsetfields), $fields), $updatedata);
+					$pschema_table = DB::table($schema_table);
+					$result = $result && DB::update( $pschema_table, array_intersect_key(array_diff_key($data, $this->unsetfields), $fields), $updatedata);
 				}
 			}
 		}
@@ -249,7 +251,7 @@ class QueryRecord implements URLProperties
 	 */
 	protected function deleteRecord( $table, $updatekeyfields )
 	{
-		return DB::delete( $table, $updatekeyfields );
+		return DB::delete( DB::table($table), $updatekeyfields );
 	}
 
 	/**

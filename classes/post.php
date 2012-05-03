@@ -592,7 +592,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		Plugins::act( 'post_status_' . self::status_name( $this->status ), $this, null );
 
 
-		$result = parent::insertRecord( DB::table( 'posts' ), $this->get_schema_map() );
+		$result = parent::insertRecord( 'posts', $this->get_schema_map() );
 		$this->newfields['id'] = $result; // Make sure the id is set in the post object to match the row id
 		$this->fields = array_merge( $this->fields, $this->newfields );
 		$this->newfields = array();
@@ -658,7 +658,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			Plugins::act( 'post_status_' . self::status_name( $this->newfields['status'] ), $this, $this->fields['status'] );
 		}
 
-		$result = parent::updateRecord( DB::table( 'posts' ), array( 'id' => $this->id ), post::get_schema_map() );
+		$result = parent::updateRecord( 'posts', array( 'id' => $this->id ), post::get_schema_map() );
 
 		//scheduled post
 		if ( $this->fields['status'] == Post::status( 'scheduled' ) || $this->status == Post::status( 'scheduled' ) ) {
@@ -699,7 +699,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		// Delete all post_tokens associated with this post
 		$this->delete_tokens();
 
-		$result = parent::deleteRecord( DB::table( 'posts' ), array( 'slug'=>$this->slug ) );
+		$result = parent::deleteRecord( 'posts', array( 'slug'=>$this->slug ) );
 		EventLog::log( _t( 'Post %1$s (%2$s) deleted.', array( $this->id, $this->slug ) ), 'info', 'content', 'habari' );
 
 		//scheduled post
