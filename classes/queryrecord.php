@@ -142,7 +142,7 @@ class QueryRecord implements URLProperties
 		}
 		else {
 			$result = false;
-			if(DB::insert( $table, array_intersect_key(array_diff_key( $merge, $this->unsetfields ), $schema[$table]) )) {
+			if(DB::insert( $ptable, array_intersect_key(array_diff_key( $merge, $this->unsetfields ), $schema[$table]) )) {
 				$result = true;
 				$record_id = DB::last_insert_id();
 				$merge['*id'] = $record_id;
