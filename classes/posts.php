@@ -739,6 +739,28 @@ class Posts extends ArrayObject implements IsContent
 	}
 
 	/**
+	 * Extract parameters from a Posts::get()-style param array, even from within where's
+	 * @static
+	 * @param array $paramarray An array of Posts::get()-style parameters
+	 * @param string $param The parameters to extract
+	 * @return array|bool The parameters in the $paramarray that match $param or false
+	 */
+	public static function extract_param($paramarray, $param) {
+		$result = array();
+		if(isset($paramarray[$param])) {
+			$result = array_merge($result, Utils::single_array($paramarray[$param]));
+		}
+		if(isset($paramarray['where'])) {
+			foreach($paramarray['where'] as $where) {
+				if(isset($where[$param])) {
+					$result = array_merge($result, Utils::single_array($where[$param]));
+				}
+			}
+		}
+		return count($result) ? $result : false;
+	}
+
+	/**
 	 * function by_status
 	 * select all posts of a given status
 	 * @param int a status value
