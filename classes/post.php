@@ -540,6 +540,29 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	}
 
 	/**
+	 * Get the schema data for this post
+	 * @return array An array of schema data for this post
+	 */
+	public function get_schema_map()
+	{
+		if(empty($this->schema)) {
+			$default_fields = Post::default_fields();
+			$schema = array('posts' => array_combine(array_keys($default_fields), array_keys($default_fields)));
+			$schema['*'] = array();
+			$fields = array_merge( $this->fields, $this->newfields );
+			foreach($fields as $field => $value) {
+				if(!isset($default_fields[$field])) {
+					$schema['*'][$field] = $field;
+				}
+			}
+			$schema = Plugins::filter('post_schema_map_' . Utils::slugify(Post::type_name($fields['content_type']), '_'), $schema, $this);
+			$schema = Plugins::filter('post_schema_map', $schema, $this);
+			$this->schema = $schema;
+		}
+		return $this->schema;
+	}
+
+	/**
 	 * function insert
 	 * Saves a new post to the posts table
 	 */
@@ -568,8 +591,9 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		// invoke plugins for status changes
 		Plugins::act( 'post_status_' . self::status_name( $this->status ), $this, null );
 
-		$result = parent::insertRecord( DB::table( 'posts' ) );
-		$this->newfields['id'] = DB::last_insert_id(); // Make sure the id is set in the post object to match the row id
+
+		$result = parent::insertRecord( 'posts', $this->get_schema_map() );
+		$this->newfields['id'] = $result; // Make sure the id is set in the post object to match the row id
 		$this->fields = array_merge( $this->fields, $this->newfields );
 		$this->newfields = array();
 		$this->info->commit( DB::last_insert_id() );
@@ -613,6 +637,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		}
 		Plugins::act( 'post_update_before', $this );
 
+		$this->newfields = Plugins::filter( 'post_update_change', $this->newfields, $this);
+
 		// Call setslug() only when post slug is changed
 		if ( isset( $this->newfields['slug'] ) ) {
 			if ( $this->fields['slug'] != $this->newfields['slug'] ) {
@@ -632,7 +658,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			Plugins::act( 'post_status_' . self::status_name( $this->newfields['status'] ), $this, $this->fields['status'] );
 		}
 
-		$result = parent::updateRecord( DB::table( 'posts' ), array( 'id' => $this->id ) );
+		$result = parent::updateRecord( 'posts', array( 'id' => $this->id ), post::get_schema_map() );
 
 		//scheduled post
 		if ( $this->fields['status'] == Post::status( 'scheduled' ) || $this->status == Post::status( 'scheduled' ) ) {
@@ -673,7 +699,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		// Delete all post_tokens associated with this post
 		$this->delete_tokens();
 
-		$result = parent::deleteRecord( DB::table( 'posts' ), array( 'slug'=>$this->slug ) );
+		$result = parent::deleteRecord( 'posts', array( 'slug'=>$this->slug ) );
 		EventLog::log( _t( 'Post %1$s (%2$s) deleted.', array( $this->id, $this->slug ) ), 'info', 'content', 'habari' );
 
 		//scheduled post
@@ -829,6 +855,16 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	{
 		array_unshift( $args, 'post_call_' . $name, null, $this );
 		return call_user_func_array( array( 'Plugins', 'filter' ), $args );
+	}
+
+	/**
+	 * A field accessor that doesn't filter, for use in plugins that filter field values
+	 * @param string $name Name of the field to get
+	 * @return mixed Value of the field, unfiltered
+	 */
+	public function get_raw_field( $name )
+	{
+		return parent::__get( $name );
 	}
 
 	/**

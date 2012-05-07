@@ -1191,5 +1191,26 @@ class Utils
 		}
 		return $settings;
 	}
+
+	/**
+	 * Are we in a testing environment?
+	 * @static
+	 * @return bool True if this is a test environment.
+	 */
+	public static function env_test($key = 'usetest')
+	{
+		if(
+			defined('UNIT_TEST') ||
+			(isset($_GET[$key]) && $_GET[$key] == 1) ||
+			(isset($_COOKIE[$key]) && $_COOKIE[$key] = 1 && (!isset($_GET[$key]) || $_GET[$key] == 1))
+		) {
+			setcookie($key, 1);
+			return true;
+		}
+		else {
+			setcookie($key, false);
+			return false;
+		}
+	}
 }
 ?>
