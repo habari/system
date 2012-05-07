@@ -432,9 +432,9 @@ class Vocabulary extends QueryRecord
 	/**
 	 * Sets the Term objects associated to that type of object with that id in this vocabulary
 	 *
-	 * @param String the name of the object type
-	 * @param Integer The id of the object for which you want the terms
-	 * @param Array. The names of the terms to associate
+	 * @param String $object_type the name of the object type
+	 * @param Integer $id The id of the object for which you want the terms
+	 * @param Array $terms The names of the terms to associate
 	 *
 	 * @return boolean. Whether the associations were successful or not
 	 **/
