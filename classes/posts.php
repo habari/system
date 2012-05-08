@@ -336,6 +336,17 @@ class Posts extends ArrayObject implements IsContent
 					}
 				}
 
+				// Handle field queries on posts and joined tables
+				foreach($select_ary as $field => $aliasing) {
+					if(in_array($field, array('id', 'title', 'slug', 'status', 'content_type', 'user_id')) ) {
+						// skip fields that we're handling a different way
+						continue;
+					}
+					if(isset($paramset[$field])) {
+						$where->in($field, $paramset[$field], 'posts_field_' . $field);
+					}
+				}
+
 				//Done
 				if ( isset( $paramset['all:info'] ) || isset( $paramset['info'] ) ) {
 
