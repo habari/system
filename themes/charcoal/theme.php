@@ -214,9 +214,9 @@ class Charcoal extends Theme
 	 * Customize comment form layout. Needs thorough commenting.
 	 */
 	public function action_form_comment( $form ) { 
-		$form->cf_commenter->caption = '<strong>' . _t( 'Name' ) . '</strong> <span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? _t( '(Required)' ) : '' ) . '</span></label>';
+		$form->cf_commenter->caption = '<strong>' . _t( 'Name' ) . '</strong> <span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? _t( '(Required)' ) : '' ) . '</span>';
 		$form->cf_commenter->template = 'charcoal_text';
-		$form->cf_email->caption = '<strong>' . _t( 'Mail' ) . '</strong> ' . _t( '(will not be published' ) .' <span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? _t( '- Required)' ) : ')' ) . '</span></label>';
+		$form->cf_email->caption = '<strong>' . _t( 'Mail' ) . '</strong> ' . _t( '(will not be published' ) .' <span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? _t( '- Required)' ) : ')' ) . '</span>';
 		$form->cf_email->template = 'charcoal_text';
 		$form->cf_url->caption = '<strong>' . _t( 'Website' ) . '</strong>';
 		$form->cf_url->template = 'charcoal_text';
