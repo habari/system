@@ -54,7 +54,7 @@
 			}
 		}
 		else {
-			_e('There are currently no comments.');
+			_e('<li>There are currently no comments.</li>');
 		}
 		?>
 	</ul>
