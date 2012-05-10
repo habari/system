@@ -189,6 +189,10 @@ class Posts extends ArrayObject implements IsContent
 					$where->in('{posts}.status', $paramset['status'], 'posts_status', create_function( '$a', 'return Post::status( $a );' ) );
 				}
 
+				if ( isset( $paramset['not:status'] ) && ( $paramset['not:status'] != 'any' ) && ( 0 !== $paramset['not:status'] ) ) {
+					$where->in('{posts}.status', $paramset['status'], 'posts_status', create_function( '$a', 'return Post::status( $a );' ), null, false );
+				}
+
 				if ( isset( $paramset['content_type'] ) && ( $paramset['content_type'] != 'any' ) && ( 0 !== $paramset['content_type'] ) ) {
 					$where->in('{posts}.content_type', $paramset['content_type'], 'posts_content_type', create_function( '$a', 'return Post::type( $a );' ) );
 				}
