@@ -7,11 +7,11 @@
 	enctype="<?php echo $enctype; ?>"
 	accept-charset="<?php echo $accept_charset; ?>"
 	<?php echo $onsubmit; ?>
->
+><div>
 <?php if (isset($message) && $message != ''): ?>
 <div class="form_message"><?php echo $message; ?></div>
 <?php endif; ?>
 <input type="hidden" name="FormUI" value="<?php echo $salted_name; ?>">
 <?php echo $pre_out; ?>
 <?php echo $controls; ?>
-</form>
+</div></form>
