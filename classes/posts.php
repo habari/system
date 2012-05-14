@@ -99,7 +99,7 @@ class Posts extends ArrayObject implements IsContent
 	 * Further description of parameters, including usage examples, can be found at
 	 * http://wiki.habariproject.org/en/Dev:Retrieving_Posts
 	 *
-	 * @return array An array of Post objects, or a single post object, depending on request
+	 * @return Posts|Post|string An array of Post objects, or a single post object, depending on request
 	 */
 	public static function get( $paramarray = array() )
 	{
@@ -134,9 +134,18 @@ class Posts extends ArrayObject implements IsContent
 		$select_ary = array();
 
 		// Default fields to select, everything by default
-		foreach ( Post::default_fields() as $field => $value ) {
-			$select_ary[$field] = "{posts}.$field AS $field";
-			$select_distinct[$field] = "{posts}.$field";
+		$default_fields = Plugins::filter('post_default_fields', Post::default_fields(), $paramarray);
+		if(isset($paramarray['default_fields'])) {
+			$param_defaults = Utils::single_array($paramarray['default_fields']);
+			$default_fields = array_merge($default_fields, $param_defaults);
+		}
+		foreach ( $default_fields as $field => $value ) {
+			$table = '{posts}';
+			if(strpos($field, '.') !== false) {
+				list($table, $field) = explode('.', $field);
+			}
+			$select_ary[$field] = "$table.$field AS $field";
+			$select_distinct[$field] = "$table.$field";
 		}
 
 		// Default parameters
@@ -155,237 +164,179 @@ class Posts extends ArrayObject implements IsContent
 		$wheres = array();
 		$joins = array();
 
+		$query = Query::create('{posts}');
+//		$query->select(array_keys(Post::default_fields()));
+		$query->select($select_ary);
+
 		// If the request as a textual WHERE clause, skip the processing of the $wheresets since it's empty
 		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
-			$wheres[] = $paramarray['where'];
+			$query->where()->add($paramarray['where']);
 		}
 		else {
 			foreach ( $wheresets as $paramset ) {
-				// Safety mechanism to prevent empty queries
-				$where = array();
+				$where = new QueryWhere();
+
 				$paramset = array_merge( (array) $paramarray, (array) $paramset );
-				// $nots= preg_grep( '%^not:(\w+)$%iu', (array) $paramset );
 
 				if ( isset( $paramset['id'] ) ) {
-					if ( is_array( $paramset['id'] ) ) {
-						array_walk( $paramset['id'], create_function( '&$a,$b', '$a = intval( $a );' ) );
-						$where[] = "{posts}.id IN (" . implode( ',', array_fill( 0, count( $paramset['id'] ), '?' ) ) . ")";
-						$params = array_merge( $params, $paramset['id'] );
-					}
-					else {
-						$where[] = "{posts}.id = ?";
-						$params[] = (int) $paramset['id'];
-					}
+					$where->in('{posts}.id', $paramset['id'], 'posts_id', 'intval');
 				}
 				if ( isset( $paramset['not:id'] ) ) {
-					if ( is_array( $paramset['not:id'] ) ) {
-						array_walk( $paramset['not:id'], create_function( '&$a,$b', '$a = intval( $a );' ) );
-						$where[] = "{posts}.id NOT IN (" . implode( ',', array_fill( 0, count( $paramset['not:id'] ), '?' ) ) . ")";
-						$params = array_merge( $params, $paramset['not:id'] );
-					}
-					else {
-						$where[] = "{posts}.id != ?";
-						$params[] = (int) $paramset['not:id'];
-					}
+					$where->in('{posts}.id', $paramset['not:id'], 'posts_not_id', 'intval', false);
 				}
+
 				if ( isset( $paramset['status'] ) && ( $paramset['status'] != 'any' ) && ( 0 !== $paramset['status'] ) ) {
-					if ( is_array( $paramset['status'] ) ) {
-						// remove 'any' from the list if we have an array
-						$paramset['status'] = array_diff( $paramset['status'], array( 'any' ) );
-						array_walk( $paramset['status'], create_function( '&$a,$b', '$a = Post::status( $a );' ) );
-						$where[] = "{posts}.status IN (" . implode( ',', array_fill( 0, count( $paramset['status'] ), '?' ) ) . ")";
-						$params = array_merge( $params, $paramset['status'] );
-					}
-					else {
-						$where[] = "{posts}.status = ?";
-						$params[] = (int) Post::status( $paramset['status'] );
-					}
+					$where->in('{posts}.status', $paramset['status'], 'posts_status', create_function( '$a', 'return Post::status( $a );' ) );
 				}
+
 				if ( isset( $paramset['content_type'] ) && ( $paramset['content_type'] != 'any' ) && ( 0 !== $paramset['content_type'] ) ) {
-					if ( is_array( $paramset['content_type'] ) ) {
-						// remove 'any' from the list if we have an array
-						$paramset['content_type'] = array_diff( $paramset['content_type'], array( 'any' ) );
-						array_walk( $paramset['content_type'], create_function( '&$a,$b', '$a = Post::type( $a );' ) );
-						$where[] = "{posts}.content_type IN (" . implode( ',', array_fill( 0, count( $paramset['content_type'] ), '?' ) ) . ")";
-						$params = array_merge( $params, $paramset['content_type'] );
-					}
-					else {
-						$where[] = "{posts}.content_type = ?";
-						$params[] = (int) Post::type( $paramset['content_type'] );
-					}
+					$where->in('{posts}.content_type', $paramset['content_type'], 'posts_content_type', create_function( '$a', 'return Post::type( $a );' ) );
 				}
 				if ( isset( $paramset['not:content_type'] ) ) {
-					if ( is_array( $paramset['not:content_type'] ) ) {
-						array_walk( $paramset['not:content_type'], create_function( '&$a,$b', '$a = Post::type( $a );' ) );
-						$where[] = "{posts}.content_type NOT IN (" . implode( ',', array_fill( 0, count( $paramset['not:content_type'] ), '?' ) ) . ")";
-						$params = array_merge( $params, $paramset['not:content_type'] );
-					}
-					else {
-						$where[] = "{posts}.content_type != ?";
-						$params[] = (int) Post::type( $paramset['not:content_type'] );
-					}
+					$where->in('{posts}.content_type', $paramset['not:content_type'], 'posts_not_content_type', create_function( '$a', 'return Post::type( $a );' ), false );
 				}
-				if ( isset( $paramset['slug'] ) ) {
-					if ( is_array( $paramset['slug'] ) ) {
-						$where[] = "{posts}.slug IN (" . implode( ',', array_fill( 0, count( $paramset['slug'] ), '?' ) ) . ")";
-						$params = array_merge( $params, $paramset['slug'] );
-					}
-					else {
-						$where[] = "{posts}.slug = ?";
-						$params[] = (string) $paramset['slug'];
-					}
-				}
-				
-				if ( isset( $paramset['not:slug'] ) ) {
-					if ( is_array( $paramset['not:slug'] ) ) {
-						$where[] = "{posts}.slug NOT IN (" . implode( ',', array_fill( 0, count( $paramset['not:slug'] ), '?' ) ) . ")";
-						$params = array_merge( $params, $paramset['not:slug'] );
-					}
-					else {
-						$where[] = "{posts}.slug != ?";
-						$params[] = (string) $paramset['not:slug'];
-					}
-				}
-				
-				if ( isset( $paramset['user_id'] ) && 0 !== $paramset['user_id'] ) {
-					if ( is_array( $paramset['user_id'] ) ) {
-						array_walk( $paramset['user_id'], create_function( '&$a,$b', '$a = intval( $a );' ) );
-						$where[] = "{posts}.user_id IN (" . implode( ',', array_fill( 0, count( $paramset['user_id'] ), '?' ) ) . ")";
-						$params = array_merge( $params, $paramset['user_id'] );
-					}
-					else {
-						$where[] = "{posts}.user_id = ?";
-						$params[] = (int) $paramset['user_id'];
-					}
 
+				if ( isset( $paramset['slug'] ) ) {
+					$where->in('{posts}.slug', $paramset['slug'], 'posts_slug');
+				}
+				if ( isset( $paramset['not:slug'] ) ) {
+					$where->in('{posts}.slug', $paramset['not:slug'], 'posts_not_slug', null, false);
+				}
+
+				if ( isset( $paramset['user_id'] ) && 0 !== $paramset['user_id'] ) {
+					$where->in('{posts}.user_id', $paramset['user_id'], 'posts_user_id', 'intval');
+				}
+				if ( isset( $paramset['not:user_id'] ) && 0 !== $paramset['not:user_id'] ) {
+					$where->in('{posts}.user_id', $paramset['not:user_id'], 'posts_user_id', 'intval', false);
 				}
 
 				if ( isset( $paramset['vocabulary'] ) ) {
-					
+
 					if ( is_string( $paramset['vocabulary'] ) ) {
 						$paramset['vocabulary'] = Utils::get_params( $paramset['vocabulary'] );
 					}
-					
+
 					// parse out the different formats we accept arguments in into a single mutli-dimensional array of goodness
 					$paramset['vocabulary'] = self::vocabulary_params( $paramset['vocabulary'] );
 					$object_id = Vocabulary::object_type_id( 'post' );
-					
+
 					$all = array();
 					$any = array();
 					$not = array();
-					
+
 					if ( isset( $paramset['vocabulary']['all'] ) ) {
 						$all = $paramset['vocabulary']['all'];
+
+						foreach ( $all as $vocab => $value ) {
+
+							foreach ( $value as $field => $terms ) {
+
+								// we only support these fields to search by
+								if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
+									continue;
+								}
+
+								$join_group = Query::new_param_name('join');
+								$query->join( 'JOIN {object_terms} ' . $join_group . '_ot ON {posts}.id = ' . $join_group . '_ot.object_id', array(), 'term2post_posts_' . $join_group );
+								$query->join( 'JOIN {terms} ' . $join_group . '_t ON ' . $join_group . '_ot.term_id = ' . $join_group . '_t.id', array(), 'terms_term2post_' . $join_group );
+								$query->join( 'JOIN {vocabularies} ' . $join_group . '_v ON ' . $join_group . '_t.vocabulary_id = ' . $join_group . '_v.id', array(), 'terms_vocabulary_' . $join_group );
+
+								$where->in( $join_group . '_v.name', $vocab );
+								$where->in( $join_group . "_t.{$field}", $terms );
+								$where->in( $join_group . '_ot.object_type_id', $object_id );
+							}
+
+							// this causes no posts to match if combined with 'any' below and should be re-thought... somehow
+							$groupby = implode( ',', $select_distinct );
+							$having = 'count(*) = ' . count( $terms );
+
+						}
 					}
-					
+
 					if ( isset( $paramset['vocabulary']['any'] ) ) {
 						$any = $paramset['vocabulary']['any'];
+
+						$orwhere = new QueryWhere( 'OR' );
+
+						foreach ( $any as $vocab => $value ) {
+
+							foreach ( $value as $field => $terms ) {
+
+								$andwhere = new QueryWhere();
+
+								// we only support these fields to search by
+								if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
+									continue;
+								}
+
+								$join_group = Query::new_param_name('join');
+								$query->join( 'JOIN {object_terms} ' . $join_group . '_ot ON {posts}.id = ' . $join_group . '_ot.object_id', array(), 'term2post_posts_' . $join_group );
+								$query->join( 'JOIN {terms} ' . $join_group . '_t ON ' . $join_group . '_ot.term_id = ' . $join_group . '_t.id', array(), 'terms_term2post_' . $join_group );
+								$query->join( 'JOIN {vocabularies} ' . $join_group . '_v ON ' . $join_group . '_t.vocabulary_id = ' . $join_group . '_v.id', array(), 'terms_vocabulary_' . $join_group );
+
+								$andwhere->in( $join_group . '_v.name', $vocab );
+								$andwhere->in( $join_group . "_t.{$field}", $terms );
+								$andwhere->in( $join_group . '_ot.object_type_id', $object_id );
+							}
+							$orwhere->add( $andwhere );
+
+						}
+						$where->add( $orwhere );
 					}
-					
+
 					if ( isset( $paramset['vocabulary']['not'] ) ) {
 						$not = $paramset['vocabulary']['not'];
-					}
-					
-					foreach ( $all as $vocab => $value ) {
-						
-						foreach ( $value as $field => $terms ) {
-							
-							// we only support these fields to search by
-							if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
-								continue;
+
+						foreach ( $not as $vocab => $value ) {
+
+							foreach ( $value as $field => $terms ) {
+
+								// we only support these fields to search by
+								if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
+									continue;
+								}
+
+								$subquery_alias = Query::new_param_name('subquery');
+								$subquery = Query::create( '{object_terms}' )->select('object_id');
+								$subquery->join( 'JOIN {terms} ON {terms}.id = {object_terms}.term_id' );
+								$subquery->join( 'JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id' );
+
+								$subquery->where()->in( "{terms}.{$field}", $terms );
+								$subquery->where()->in( '{object_terms}.object_type_id', $object_id );
+								$subquery->where()->in( '{vocabularies}.name', $vocab );
+
+								$query->join( 'LEFT JOIN (' . $subquery->get() . ') ' . $subquery_alias . ' ON ' . $subquery_alias . '.object_id = {posts}.id', $subquery->params(), $subquery_alias );
+
+								$where->add( 'COALESCE(' . $subquery_alias . '.object_id, 0) = 0' );
 							}
-							
-							$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
-							$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
-							$joins['terms_vocabulary'] = ' JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id';
-							
-							$where[] = '{vocabularies}.name = ? AND {terms}.' . $field . ' IN ( ' . Utils::placeholder_string( $terms ) . ' ) AND {object_terms}.object_type_id = ?';
-							$params[] = $vocab;
-							$params = array_merge( $params, $terms );
-							$params[] = $object_id;
-							
+
 						}
-						
-						// this causes no posts to match if combined with 'any' below and should be re-thought... somehow
-						$groupby = implode( ',', $select_distinct );
-						$having = 'count(*) = ' . count( $terms );
-						
 					}
-					
-					foreach ( $any as $vocab => $value ) {
-						
-						foreach ( $value as $field => $terms ) {
-							
-							// we only support these fields to search by
-							if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
-								continue;
-							}
-							
-							$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
-							$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
-							$joins['terms_vocabulary'] = ' JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id';
-							
-							$where[] = '{vocabularies}.name = ? AND {terms}.' . $field . ' IN ( ' . Utils::placeholder_string( $terms ) . ' ) AND {object_terms}.object_type_id = ?';
-							$params[] = $vocab;
-							$params = array_merge( $params, $terms );
-							$params[] = $object_id;
-							
-						}
-						
-					}
-					
-					foreach ( $not as $vocab => $value ) {
-						
-						foreach ( $value as $field => $terms ) {
-							
-							// we only support these fields to search by
-							if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
-								continue;
-							}
-							
-							$where[] = 'NOT EXISTS ( SELECT 1
-								FROM {object_terms} 
-								JOIN {terms} ON {terms}.id = {object_terms}.term_id 
-								JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id  
-								WHERE {terms}.' . $field . ' IN (' . Utils::placeholder_string( $terms ) . ')
-								AND {object_terms}.object_id = {posts}.id 
-								AND {object_terms}.object_type_id = ? 
-								AND {vocabularies}.name = ?
-							)';
-							$params = array_merge( $params, array_values( $terms ) );
-							$params[] = $object_id;
-							$params[] = $vocab;
-							
-						}
-						
-					}
-					
 				}
 
 				if ( isset( $paramset['criteria'] ) ) {
 					// this regex matches any unicode letters (\p{L}) or numbers (\p{N}) inside a set of quotes (but strips the quotes) OR not in a set of quotes
 					preg_match_all( '/(?<=")([\p{L}\p{N}]+[^"]*)(?=")|([\p{L}\p{N}]+)/u', $paramset['criteria'], $matches );
 					foreach ( $matches[0] as $word ) {
-						$where[] .= "( LOWER( {posts}.title ) LIKE ? OR  LOWER( {posts}.content ) LIKE ?)";
-						$params[] = '%' . MultiByte::strtolower( $word ) . '%';
-						$params[] = '%' . MultiByte::strtolower( $word ) . '%';  // Not a typo (there are two ? in the above statement)
+						$crit_placeholder = $query->new_param_name('criteria');
+						$where->add("( LOWER( {posts}.title ) LIKE :{$crit_placeholder} OR LOWER( {posts}.content ) LIKE :{$crit_placeholder})", array($crit_placeholder => '%' . MultiByte::strtolower( $word ) . '%'));
 					}
 				}
 
 				if ( isset( $paramset['title'] ) ) {
-					$where[] .= "LOWER( {posts}.title ) LIKE ?";
-					$params[] = MultiByte::strtolower( $paramset['title'] );
+					$where->add("LOWER( {posts}.title ) LIKE :title_match", array('title_match' => MultiByte::strtolower( $paramset['title'] )));
 				}
 
 				if ( isset( $paramset['title_search'] ) ) {
 					// this regex matches any unicode letters (\p{L}) or numbers (\p{N}) inside a set of quotes (but strips the quotes) OR not in a set of quotes
 					preg_match_all( '/(?<=")([\p{L}\p{N}]+[^"]*)(?=")|([\p{L}\p{N}]+)/u', $paramset['title_search'], $matches );
 					foreach ( $matches[0] as $word ) {
-						$where[] .= " LOWER( {posts}.title ) LIKE ? ";
-						$params[] = '%' . MultiByte::strtolower( $word ) . '%';
+						$crit_placeholder = $query->new_param_name('title_search');
+						$where->add("LOWER( {posts}.title ) LIKE :{$crit_placeholder}", array($crit_placeholder => '%' . MultiByte::strtolower( $word ) . '%'));
 					}
 				}
 
+				//Done
 				if ( isset( $paramset['all:info'] ) || isset( $paramset['info'] ) ) {
 
 					// merge the two possibile calls together
@@ -395,111 +346,102 @@ class Posts extends ArrayObject implements IsContent
 						$pi_count = 0;
 						foreach ( $infos as $info_key => $info_value ) {
 							$pi_count++;
-							$joins['info_' . $info_key] = " LEFT JOIN {postinfo} ipi{$pi_count} ON {posts}.id = ipi{$pi_count}.post_id AND ipi{$pi_count}.name = ? AND ipi{$pi_count}.value = ?";
-							$join_params[] = $info_key;
-							$join_params[] = $info_value;
-							$where[] = "ipi{$pi_count}.name <> ''";
 
-							$select_ary["info_{$info_key}_value"] = "ipi{$pi_count}.value AS info_{$info_key}_value";
+							$infokey_field = Query::new_param_name('info_key' );
+							$infovalue_field = Query::new_param_name( 'info_value');
+							$query->join( "LEFT JOIN {postinfo} ipi{$pi_count} ON {posts}.id = ipi{$pi_count}.post_id AND ipi{$pi_count}.name = :{$infokey_field} AND ipi{$pi_count}.value = :{$infovalue_field}", array( $infokey_field => $info_key, $infovalue_field => $info_value ), 'all_info_' . $info_key );
+							$where->add( "ipi{$pi_count}.name <> ''" );
+							$query->select( array( "info_{$info_key}_value" => "ipi{$pi_count}.value AS info_{$info_key}_value" ) );
 							$select_distinct["info_{$info_key}_value"] = "info_{$info_key}_value";
 						}
 					}
 
 				}
 
+				//Done
 				if ( isset( $paramset['any:info'] ) ) {
 					if ( Utils::is_traversable( $paramset['any:info'] ) ) {
 						$pi_count = 0;
-						$pi_where = array();
+						$orwhere = new QueryWhere( 'OR' );
 						foreach ( $paramset['any:info'] as $info_key => $info_value ) {
 							$pi_count++;
 
-							$join_params[] = $info_key;
 							if ( is_array( $info_value ) ) {
-								$joins['any_info_' . $info_key] = " LEFT JOIN {postinfo} aipi{$pi_count} ON {posts}.id = aipi{$pi_count}.post_id AND aipi{$pi_count}.name = ? AND aipi{$pi_count}.value IN (" .Utils::placeholder_string( count( $info_value ) ).")";
-								$join_params = array_merge( $join_params, $info_value );
+								$infokey_field = Query::new_param_name( 'info_key' );
+								$inwhere = new QueryWhere( '' );
+								$inwhere->in( "aipi{$pi_count}.value", $info_value );
+								$query->join( "LEFT JOIN {postinfo} aipi{$pi_count} ON {posts}.id = aipi{$pi_count}.post_id AND aipi{$pi_count}.name = :{$infokey_field} AND " . $inwhere->get(), array_merge( array( $info_key ), $inwhere->params() ), 'any_info_' . $info_key );
 							}
 							else {
-								$joins['any_info_' . $info_key] = " LEFT JOIN {postinfo} aipi{$pi_count} ON {posts}.id = aipi{$pi_count}.post_id AND aipi{$pi_count}.name = ? AND aipi{$pi_count}.value = ?";
-								$join_params[] = $info_value;
+								$infokey_field = Query::new_param_name( 'info_key' );
+								$infovalue_field = Query::new_param_name( 'info_value' );
+								$query->join( "LEFT JOIN {postinfo} aipi{$pi_count} ON {posts}.id = aipi{$pi_count}.post_id AND aipi{$pi_count}.name = :{$infokey_field} AND aipi{$pi_count}.value = :{$infovalue_field}", array( $infokey_field => $info_key, $infovalue_field => $info_value ), 'any_info_' . $info_key );
 							}
 
-							$pi_where[] = "aipi{$pi_count}.name <> ''";
+							$orwhere->add( "aipi{$pi_count}.name <> ''" );
 
-							$select_ary["info_{$info_key}_value"] = "aipi{$pi_count}.value AS info_{$info_key}_value";
+							$query->select( array( "info_{$info_key}_value" => "aipi{$pi_count}.value AS info_{$info_key}_value" ) );
 							$select_distinct["info_{$info_key}_value"] = "info_{$info_key}_value";
 						}
-						$where[] = '(' . implode( ' OR ', $pi_where ) . ')';
+						$where->add( '(' . $orwhere->get() . ')' );
 					}
 				}
 
+				// Done
 				if ( isset( $paramset['has:info'] ) ) {
-					$the_ins = array();
 					$has_info = Utils::single_array( $paramset['has:info'] );
 					$pi_count = 0;
-					$pi_where = array();
-					foreach ( $has_info as $info_name ) {
+					$orwhere = new QueryWhere( 'OR' );
+					foreach( $has_info as $info_name ) {
+						$infoname_field = Query::new_param_name( 'info_name' );
 						$pi_count++;
-						$joins['has_info_' . $info_name] = " LEFT JOIN {postinfo} hipi{$pi_count} ON {posts}.id = hipi{$pi_count}.post_id AND hipi{$pi_count}.name = ?";
-						$join_params[] = $info_name;
-						$pi_where[] = "hipi{$pi_count}.name <> ''";
+						$query->join("LEFT JOIN {postinfo} hipi{$pi_count} ON {posts}.id = hipi{$pi_count}.post_id AND hipi{$pi_count}.name = :{$infoname_field}", array( $infoname_field => $info_name ), 'has_info_' . $info_name );
+						$orwhere->add( "hipi{$pi_count}.name <> ''" );
 
-						$select_ary["info_{$info_name}_value"] = "hipi{$pi_count}.value AS info_{$info_name}_value";
+						$query->select( array( "info_{$info_name}_value" => "hipi{$pi_count}.value AS info_{$info_name}_value" ) );
 						$select_distinct["info_{$info_name}_value"] = "info_{$info_name}_value";
 					}
-					$where[] = '(' . implode( ' OR ', $pi_where ) . ')';
+					$where->add( '(' . $orwhere->get() . ')' );
 				}
 
+				//Done
 				if ( isset( $paramset['not:all:info'] ) || isset( $paramset['not:info'] ) ) {
 
 					// merge the two possible calls together
 					$infos = array_merge( isset( $paramset['not:all:info'] ) ? $paramset['not:all:info'] : array(), isset( $paramset['not:info'] ) ? $paramset['not:info'] : array() );
 
 					if ( Utils::is_traversable( $infos ) ) {
-						$the_ins = array();
-
+						$orwhere = new QueryWhere( 'OR' );
 						foreach ( $infos as $info_key => $info_value ) {
-
-							$the_ins[] = ' ({postinfo}.name = ? AND {postinfo}.value = ? ) ';
-							$params[] = $info_key;
-							$params[] = $info_value;
+							$andwhere = new QueryWhere();
+							$andwhere->in( '{postinfo}.name', $info_key );
+							$andwhere->in( '{postinfo}.value', $info_value );
+							$orwhere->add( $andwhere );
 
 						}
+						// see that hard-coded number in having()? sqlite wets itself if we use a bound parameter... don't change that
+						$subquery = Query::create( '{postinfo}' )->select( '{postinfo}.post_id' )->groupby( 'post_id' )->having( 'COUNT(*) = ' . count( $infos ) );
+						$subquery->where()->add( $orwhere );
 
-						$where[] = '
-							{posts}.id NOT IN (
-							SELECT post_id FROM {postinfo}
-							WHERE ( ' . implode( ' OR ', $the_ins ) . ' )
-							GROUP BY post_id
-							HAVING COUNT(*) = ' . count( $infos ) . ' )
-						';
-						// see that hard-coded number? sqlite wets itself if we use a bound parameter... don't change that
-
+						$where->in( '{posts}.id', $subquery, 'posts_not_all_info_query', null, false );
 					}
 
 				}
 
+				//Tested. Test fails with original code
 				if ( isset( $paramset['not:any:info'] ) ) {
-
 					if ( Utils::is_traversable( $paramset['not:any:info'] ) ) {
+						$subquery = Query::create('{postinfo}')->select('post_id');
 
 						foreach ( $paramset['not:any:info'] as $info_key => $info_value ) {
-
-							$the_ins[] = ' ({postinfo}.name = ? AND {postinfo}.value = ? ) ';
-							$params[] = $info_key;
-							$params[] = $info_value;
-
+							$infokey_field = $query->new_param_name('info_key');
+							$infovalue_field = $query->new_param_name('info_value');
+//							$subquery->where()->add(" ({postinfo}.name = :{$infokey_field} AND {postinfo}.value = :{$infovalue_field} ) ", array($infokey_field => $info_key, $infovalue_field => $info_value));
+							$subquery->where( 'OR' )->add(" ({postinfo}.name = :{$infokey_field} AND {postinfo}.value = :{$infovalue_field} ) ", array($infokey_field => $info_key, $infovalue_field => $info_value));
 						}
 
-						$where[] = '
-							{posts}.id NOT IN (
-								SELECT post_id FROM {postinfo}
-								WHERE ( ' . implode( ' OR ', $the_ins ) . ' )
-							)
-						';
-
+						$where->in('{posts}.id', $subquery, 'posts_not_any_info', null, false);
 					}
-
 				}
 
 				/**
@@ -509,61 +451,55 @@ class Posts extends ArrayObject implements IsContent
 				 * If we've only got the year, get the whole year.
 				 */
 				if ( isset( $paramset['day'] ) && isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
-					$where[] = 'pubdate BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
 					$start_date = HabariDateTime::date_create( $start_date );
-					$params[] = $start_date->sql;
-					$params[] = $start_date->modify( '+1 day -1 second' )->sql;
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 day -1 second' )->sql));
 				}
 				elseif ( isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
-					$where[] = 'pubdate BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
 					$start_date = HabariDateTime::date_create( $start_date );
-					$params[] = $start_date->sql;
-					$params[] = $start_date->modify( '+1 month -1 second' )->sql;
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
+					$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 month -1 second' )->sql));
 				}
 				elseif ( isset( $paramset['year'] ) ) {
-					$where[] = 'pubdate BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
 					$start_date = HabariDateTime::date_create( $start_date );
-					$params[] = $start_date->sql;
-					$params[] = $start_date->modify( '+1 year -1 second' )->sql;
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
+					$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 year -1 second' )->sql));
 				}
 
 				if ( isset( $paramset['after'] ) ) {
-					$where[] = 'pubdate > ?';
-					$params[] = HabariDateTime::date_create( $paramset['after'] )->sql;
+					$where->add('pubdate > :after_date', array('after_date' => HabariDateTime::date_create( $paramset['after'] )->sql));
 				}
 
 				if ( isset( $paramset['before'] ) ) {
-					$where[] = 'pubdate < ?';
-					$params[] = HabariDateTime::date_create( $paramset['before'] )->sql;
+					$where->add('pubdate < :before_date', array('before_date' => HabariDateTime::date_create( $paramset['before'] )->sql));
 				}
 
 				// Concatenate the WHERE clauses
-				if ( count( $where ) > 0 ) {
-					$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
-				}
+				$query->where()->add($where);
 			}
 		}
 
+		if(isset($paramset['post_join'])) {
+			$post_joins = Utils::single_array($paramset['post_join']);
+			foreach($post_joins as $post_join) {
+				$query->join("LEFT JOIN {$post_join} ON {$post_join}.post_id = {posts}.id ");
+			}
+		}
+
+
+
 		// Only show posts to which the current user has permission
 		if ( isset( $paramset['ignore_permissions'] ) ) {
-			$master_perm_where = '';
+			$master_perm_where = new QueryWhere();
 			// Set up the merge params
 			$merge_params = array( $join_params, $params );
 			$params = call_user_func_array( 'array_merge', $merge_params );
 		}
 		else {
+			$master_perm_where = new QueryWhere();
 			// This set of wheres will be used to generate a list of post_ids that this user can read
-			$perm_where = array();
-			$perm_where_denied = array();
+			$perm_where = new QueryWhere('OR');
+			$perm_where_denied = new QueryWhere('AND');
 			$params_where = array();
 			$where = array();
 
@@ -573,13 +509,12 @@ class Posts extends ArrayObject implements IsContent
 
 			// If a user can read any post type, let him
 			if ( User::identify()->can( 'post_any', 'read' ) ) {
-				$perm_where = array( 'post_any' => '(1=1)' );
+				$perm_where->add( '(1=1)' );
 			}
 			else {
 				// If a user can read his own posts, let him
 				if ( User::identify()->can( 'own_posts', 'read' ) ) {
-					$perm_where['own_posts_id'] = '{posts}.user_id = ?';
-					$params_where[] = User::identify()->id;
+					$perm_where->add('{posts}.user_id = :current_user_id', array('current_user_id' => User::identify()->id));
 				}
 
 				// If a user can read specific post types, let him
@@ -590,20 +525,18 @@ class Posts extends ArrayObject implements IsContent
 					}
 				}
 				if ( count( $permitted_post_types ) > 0 ) {
-					$perm_where[] = '{posts}.content_type IN (' . implode( ',', $permitted_post_types ) . ')';
+					$perm_where->in('{posts}.content_type', $permitted_post_types, 'posts_permitted_types', 'intval');
 				}
 
 				// If a user can read posts with specific tokens, let him
 				if ( count( $read_tokens ) > 0 ) {
-					$joins['post_tokens__allowed'] = ' LEFT JOIN {post_tokens} pt_allowed ON {posts}.id= pt_allowed.post_id AND pt_allowed.token_id IN ('.implode( ',', $read_tokens ).')';
-					$perm_where['perms_join_null'] = 'pt_allowed.post_id IS NOT NULL';
+					$query->join('LEFT JOIN {post_tokens} pt_allowed ON {posts}.id= pt_allowed.post_id AND pt_allowed.token_id IN ('.implode( ',', $read_tokens ).')', array(), 'post_tokens__allowed');
+					$perm_where->add('pt_allowed.post_id IS NOT NULL', array(), 'perms_join_not_null');
 				}
 
 				// If a user has access to read other users' unpublished posts, let him
 				if ( User::identify()->can( 'post_unpublished', 'read' ) ) {
-					$perm_where[] = '({posts}.status <> ? AND {posts}.user_id <> ?)';
-					$params_where[] = Post::status( 'published' );
-					$params_where[] = User::identify()->id;
+					$perm_where->add('({posts}.status <> :status_published AND {posts}.user_id <> :current_user_id)', array('current_user_id' => User::identify()->id, 'status_published' => Post::status('published')));
 				}
 
 			}
@@ -611,7 +544,7 @@ class Posts extends ArrayObject implements IsContent
 			$params_where_denied = array();
 			// If a user is denied access to all posts, do so
 			if ( User::identify()->cannot( 'post_any' ) ) {
-				$perm_where_denied = array( '(1=0)' );
+				$perm_where_denied->add('(1=0)');
 			}
 			else {
 				// If a user is denied read access to specific post types, deny him
@@ -622,56 +555,41 @@ class Posts extends ArrayObject implements IsContent
 					}
 				}
 				if ( count( $denied_post_types ) > 0 ) {
-					$perm_where_denied[] = '{posts}.content_type NOT IN (' . implode( ',', $denied_post_types ) . ')';
+					$perm_where_denied->in('{posts}.content_type', $denied_post_types, 'posts_denied_types', 'intval', false);
+				}
+
+				// If a user is denied read access to posts with specific tokens, deny it
+				if ( count( $deny_tokens ) > 0 ) {
+					$query->join('LEFT JOIN {post_tokens} pt_denied ON {posts}.id= pt_denied.post_id AND pt_denied.token_id IN ('.implode( ',', $deny_tokens ).')', array(), 'post_tokens__denied');
+					$perm_where_denied->add('pt_denied.post_id IS NULL', array(), 'perms_join_null');
 				}
 
 				// If a user is denied access to read other users' unpublished posts, deny it
 				if ( User::identify()->cannot( 'post_unpublished' ) ) {
-					$perm_where_denied[] = '({posts}.status = ? OR {posts}.user_id = ?)';
-					$params_where_denied[] = Post::status( 'published' );
-					$params_where_denied[] = User::identify()->id;
+					$perm_where_denied->add('({posts}.status <> :status_published OR {posts}.user_id <> :current_user_id)', array('current_user_id' => User::identify()->id, 'status_published' => Post::status('published')));
 				}
 
 			}
 
-			// This doesn't work yet because you can't pass these arrays by reference
-			Plugins::act( 'post_get_perm_where', $perm_where, $params_where, $paramarray );
-			Plugins::act( 'post_get_perm_where_denied', $perm_where_denied, $params_where_denied, $paramarray );
-						
-			// Set up the merge params
-			$merge_params = array( $join_params, $params );
-			
+			Plugins::act( 'post_get_perm_where', $perm_where, $paramarray );
+			Plugins::act( 'post_get_perm_where_denied', $perm_where_denied, $paramarray );
+
 			// If there are granted permissions to check, add them to the where clause
-			if ( count( $perm_where ) == 0 && !isset( $joins['post_tokens__allowed'] ) ) {
-				// You have no grants.  You get no posts.
-				$where['perms_granted'] = '(1=0)';
+			if($perm_where->count() == 0 && !$query->joined('post_tokens__allowed')) {
+				$master_perm_where->add('(1=0)', array(), 'perms_granted');
 			}
-			elseif ( count( $perm_where ) > 0 ) {
-				$where['perms_granted'] = '
-					(' . implode( ' OR ', $perm_where ) . ')
-				';
-				$merge_params[] = $params_where;
+			else {
+				$master_perm_where->add($perm_where, array(), 'perms_granted');
 			}
 
-			if ( count( $deny_tokens ) > 0 ) {
-				$joins['post_tokens__denied'] = ' LEFT JOIN {post_tokens} pt_denied ON {posts}.id= pt_denied.post_id AND pt_denied.token_id IN ('.implode( ',', $deny_tokens ).')';
-				$perm_where_denied['perms_join_null'] = 'pt_denied.post_id IS NULL';
-			}
 
 			// If there are denied permissions to check, add them to the where clause
-			if ( count( $perm_where_denied ) > 0 ) {
-				$where['perms_denied'] = '
-					(' . implode( ' AND ', $perm_where_denied ) . ')
-				';
-				$merge_params[] = $params_where_denied;
+			if($perm_where_denied->count() > 0 || $query->joined('post_tokens__denied')) {
+				$master_perm_where->add($perm_where_denied, array(), 'perms_denied');
 			}
-			
-			// Merge the params
-			$params = call_user_func_array( 'array_merge', $merge_params );
 
-			// AND the separate permission-related WHERE clauses
-			$master_perm_where = implode( ' AND ', $where );
 		}
+		$query->where()->add($master_perm_where);
 
 		// Extract the remaining parameters which will be used onwards
 		// For example: page number, fetch function, limit
@@ -714,41 +632,13 @@ class Posts extends ArrayObject implements IsContent
 		else {
 			$fetch_fn = $fns[0];
 		}
-		
-		
-		// If the orderby has a function in it, try to create a select field for it with an alias
-		if ( strpos( $orderby, '(' ) !== false ) {
-			$orders = explode( ',', $orderby );
-			$ob_index = 0;
-			foreach ( $orders as $key => $order ) {
-				if ( !preg_match( '%(?P<field>.+)\s+(?P<direction>DESC|ASC)%i', $order, $order_matches ) ) {
-					$order_matches = array(
-						'field' => $order,
-						'direction' => '',
-					);
-				}
-				
-				if ( strpos( $order_matches['field'], '(' ) !== false ) {
-					$ob_index++;
-					$field = 'orderby' . $ob_index;
-					$select_ary[$field] = "{$order_matches['field']} AS $field";
-					$select_distinct[$field] = "{$order_matches['field']} AS $field";
-					$orders[$key] = $field . ' ' . $order_matches['direction'];
-				}
-			}
-			$orderby = implode( ', ', $orders );
-		}
+
 
 		// Add arbitrary fields to the select clause for sorting and output
 		if ( isset( $add_select ) ) {
-			$select_ary = array_merge( $select_ary, $add_select );
+			$query->select($add_select);
 		}
-		
 
-		/**
-		 * Turn the requested fields into a comma-separated SELECT field clause
-		 */
-		$select = implode( ', ', $select_ary );
 
 		/**
 		 * If a count is requested:
@@ -758,20 +648,20 @@ class Posts extends ArrayObject implements IsContent
 		 * Remove the GROUP BY (tag search added it)
 		 */
 		if ( isset( $count ) ) {
-			$select = "COUNT($count)";
+			$query->set_select( "COUNT({$count})" );
 			$fetch_fn = 'get_value';
-			$orderby = '';
-			$groupby = '';
-			$having = '';
+			$orderby = null;
+			$groupby = null;
+			$having = null;
 		}
 
 		// If the month counts are requested, replaced the select clause
 		if ( isset( $paramset['month_cts'] ) ) {
 			if ( isset( $paramset['vocabulary'] ) ) {
-				$select = 'MONTH(FROM_UNIXTIME(pubdate)) AS month, YEAR(FROM_UNIXTIME(pubdate)) AS year, COUNT(DISTINCT {posts}.id) AS ct';
+				$query->set_select('MONTH(FROM_UNIXTIME(pubdate)) AS month, YEAR(FROM_UNIXTIME(pubdate)) AS year, COUNT(DISTINCT {posts}.id) AS ct');
 			}
 			else {
-				$select = 'MONTH(FROM_UNIXTIME(pubdate)) AS month, YEAR(FROM_UNIXTIME(pubdate)) AS year, COUNT(*) AS ct';
+				$query->set_select('MONTH(FROM_UNIXTIME(pubdate)) AS month, YEAR(FROM_UNIXTIME(pubdate)) AS year, COUNT(*) AS ct');
 			}
 			$groupby = 'year, month';
 			if ( !isset( $paramarray['orderby'] ) ) {
@@ -783,39 +673,28 @@ class Posts extends ArrayObject implements IsContent
 		// Remove the LIMIT if 'nolimit'
 		// Doing this first should allow OFFSET to work
 		if ( isset( $nolimit ) ) {
-			$limit = '';
+			$limit = null;
 		}
 
-		// Define the LIMIT and add the OFFSET if it exists
-		if ( !empty( $limit ) ) {
-			$limit = " LIMIT $limit";
-			if ( isset( $offset ) ) {
-				$limit .= " OFFSET $offset";
-			}
+		// Define the LIMIT, OFFSET, ORDER BY, GROUP BY if they exist
+		if(isset($limit)) {
+			$query->limit($limit);
 		}
-		else {
-			$limit = '';
+		if(isset($offset)) {
+			$query->offset($offset);
+		}
+		if(isset($orderby)) {
+			$query->orderby($orderby);
+		}
+		if(isset($groupby)) {
+			$query->groupby($groupby);
+		}
+		if(isset($having)) {
+			$query->having($having);
 		}
 
+		Plugins::act('posts_get_query', $query);
 		/* All SQL parts are constructed, on to real business! */
-
-		/**
-		 * Build the final SQL statement
-		 */
-		$query = '
-			SELECT DISTINCT ' . $select . '
-			FROM {posts} ' . "\n " . implode( "\n ", $joins ) . "\n";
-
-		if ( count( $wheres ) > 0 ) {
-			$query .= ' WHERE (' . implode( " \nOR\n ", $wheres ) . ')';
-			$query .= ( $master_perm_where == '' ) ? '' : ' AND (' . $master_perm_where . ')';
-		}
-		elseif ( $master_perm_where != '' ) {
-			$query .= ' WHERE (' . $master_perm_where . ')';
-		}
-		$query .= ( ! isset( $groupby ) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
-		$query .= ( ! isset( $having ) || $having == '' ) ? '' : ' HAVING ' . $having;
-		$query .= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
 
 		/**
 		 * DEBUG: Uncomment the following line to display everything that happens in this function
@@ -825,20 +704,22 @@ class Posts extends ArrayObject implements IsContent
 		//Session::notice($query);
 
 		if ( 'get_query' == $fetch_fn ) {
-			return array(
-				$query,
-				$params
-			);
+			return array($query->get(), $query->params());
 		}
-		
+
 		/**
 		 * Execute the SQL statement using the PDO extension
 		 */
 		DB::set_fetch_mode( PDO::FETCH_CLASS );
-		DB::set_fetch_class( 'Post' );
-		$results = DB::$fetch_fn( $query, $params, 'Post' );
+		$fetch_class = 'Post';
+		if(isset($paramarray['fetch_class'])) {
+			$fetch_class = $paramarray['fetch_class'];
+		}
+		DB::set_fetch_class( $fetch_class );
+		$results = DB::$fetch_fn( $query->get(), $query->params(), $fetch_class );
 
-		//Utils::debug( $paramarray, $fetch_fn, $query, $params, $results );
+		//Utils::debug($results, $query->get(), $query->params());
+		//Utils::debug( $paramarray, $fetch_fn, $query->get(), $query->params(), $results );
 		//var_dump( $query );
 
 		/**
@@ -855,6 +736,28 @@ class Posts extends ArrayObject implements IsContent
 			$return_value->get_param_cache = $paramarray;
 			return $return_value;
 		}
+	}
+
+	/**
+	 * Extract parameters from a Posts::get()-style param array, even from within where's
+	 * @static
+	 * @param array $paramarray An array of Posts::get()-style parameters
+	 * @param string $param The parameters to extract
+	 * @return array|bool The parameters in the $paramarray that match $param or false
+	 */
+	public static function extract_param($paramarray, $param) {
+		$result = array();
+		if(isset($paramarray[$param])) {
+			$result = array_merge($result, Utils::single_array($paramarray[$param]));
+		}
+		if(isset($paramarray['where'])) {
+			foreach($paramarray['where'] as $where) {
+				if(isset($where[$param])) {
+					$result = array_merge($result, Utils::single_array($where[$param]));
+				}
+			}
+		}
+		return count($result) ? $result : false;
 	}
 
 	/**
@@ -902,6 +805,16 @@ class Posts extends ArrayObject implements IsContent
 	public function count_all()
 	{
 		$params = array_merge( ( array ) $this->get_param_cache, array( 'count' => '*', 'nolimit' => 1 ) );
+		return Posts::get( $params );
+	}
+
+	/**
+	 * return the query that generated this set of posts
+	 * @return string The SQL and paramters used to generate this set of posts
+	 */
+	public function get_query()
+	{
+		$params = array_merge( ( array ) $this->get_param_cache, array( 'fetch_fn' => 'get_query') );
 		return Posts::get( $params );
 	}
 
@@ -1140,7 +1053,7 @@ class Posts extends ArrayObject implements IsContent
 			// trim out any quote marks that have been matched.
 			$quote = isset( $match['quote'] ) ? $match['quote'] : ' ';
 			$value = trim( stripslashes( $match['value'] ), $quote );
-			
+
 			$flag = $match['flag'];
 			$arguments = Plugins::filter( 'posts_search_to_get', $arguments, $flag, $value, $match, $search_string );
 			switch ( $flag )  {
@@ -1225,13 +1138,13 @@ class Posts extends ArrayObject implements IsContent
 	/**
 	 * Accepts a set of term query qualifiers and converts it into a multi-dimensional array
 	 * of vocabulary (ie: tags), matching method (any, all, not), matching field (id, term, term_display), and list of terms
-	 * 
+	 *
 	 * @return array An array of parsed term-matching conditions
 	 */
 	private static function vocabulary_params( $params )
 	{
 		$return = array();
-		
+
 		foreach ( $params as $key => $value ) {
 			// split vocab off the beginning of the key
 			if ( strpos( $key, ':' ) !== false ) {
@@ -1239,16 +1152,16 @@ class Posts extends ArrayObject implements IsContent
 				$params[$newkey][$subkey] = $value;
 				unset( $params[$key] );
 			}
-			
+
 		}
-		
-		
+
+
 		foreach ( $params as $vocab => $values ) {
-			
+
 			foreach ( $values as $key => $value ) {
-				
+
 				$value = Utils::single_array( $value );
-				
+
 				// if there's a colon we've got a mode and a field
 				if ( strpos( $key, ':' ) !== false ) {
 					list( $mode, $by_field ) = explode( ':', $key, 2 );
@@ -1257,10 +1170,10 @@ class Posts extends ArrayObject implements IsContent
 					}
 				}
 				else {
-					
+
 					// if there's no colon we've got a single field name
 					foreach ( $value as $v ) {
-						
+
 						if ( $v instanceof Term ) {
 							// $vocab is not a vocab, but the mode - always match by its ID for the best performance
 							$return[$vocab][$v->vocabulary->name]['id'][] = $v->id;
@@ -1268,26 +1181,18 @@ class Posts extends ArrayObject implements IsContent
 						else {
 							$return['any'][$vocab][$key][] = $v;
 						}
-						
-					}
-					
-					
-				}
-				
-			}
-			
-		}
-		
-		return $return;
-	}
 
-	/**
-	 * Register some plugin hooks
-	 * @static
-	 */
-	static function __static()
-	{
-		Pluggable::load_hooks('Posts');
+					}
+
+
+				}
+
+			}
+
+		}
+
+		return $return;
+
 	}
 
 	/**
