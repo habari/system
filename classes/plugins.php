@@ -32,6 +32,24 @@ class Plugins
 	{
 		if ( isset( self::$plugin_files[$class] ) ) {
 			require( self::$plugin_files[$class] );
+			if( !class_exists($class, false)) {
+				// The classname of a plugin changed.
+				$filename = self::$plugin_files[$class];
+				EventLog::log(_t('Plugin file "%s" has changed its plugin class name.', array($filename)));
+				Session::error(_t('Plugin file "%s" has changed its plugin class name.', array($filename)));
+
+				// Remove the plugin from the active list
+				$active_plugins = Options::get('active_plugins');
+				unset($active_plugins[$class]);
+				self::$plugin_files = array();
+				Options::set('active_plugins', $active_plugins);
+				self::list_active(true); // Refresh the internal list
+
+				// Reactivate it to try to get the new class loaded
+				self::activate_plugin($filename);
+				Utils::redirect(null, false);
+				exit();
+			}
 		}
 	}
 
@@ -481,6 +499,12 @@ class Plugins
 	public static function load( $class, $activate = true )
 	{
 		$plugin = new $class;
+		if(!$plugin instanceof Plugin) {
+			EventLog::log(_t('The class "%s" is not a Plugin, but was queued to load as a plugin.', array($class)));
+			Session::error(_t('The class "%s" is not a Plugin, but was queued to load as a plugin. It may not currently be active.', array($class)));
+			self::deactivate_plugin(self::$plugin_files[$class], true);
+			return false;
+		}
 		if ( $activate ) {
 			self::$plugins[$plugin->plugin_id] = $plugin;
 			$plugin->load();
@@ -572,6 +596,8 @@ class Plugins
 
 	/**
 	 * Deactivates a plugin file
+	 * @param string $file the Filename of the plugin to deactivate
+	 * @param boolean $force If true, deactivate this plugin regardless of what filters may say about it.
 	 */
 	public static function deactivate_plugin( $file, $force = false )
 	{
@@ -656,7 +682,7 @@ class Plugins
 		$plugin_files = Plugins::list_all();
 		// strip base path
 		foreach ( $plugin_files as $plugin_file ) {
-			$plugin_file = MultiByte::substr( $file, MultiByte::strlen( HABARI_PATH ) );
+			$plugin_file = MultiByte::substr( $plugin_file, MultiByte::strlen( HABARI_PATH ) );
 		}
 
 		$plugin_data = array_map( create_function( '$a', 'return array( "file" => $a, "checksum" => md5_file( $a ) );' ), $plugin_files );

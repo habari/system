@@ -189,6 +189,10 @@ class Posts extends ArrayObject implements IsContent
 					$where->in('{posts}.status', $paramset['status'], 'posts_status', create_function( '$a', 'return Post::status( $a );' ) );
 				}
 
+				if ( isset( $paramset['not:status'] ) && ( $paramset['not:status'] != 'any' ) && ( 0 !== $paramset['not:status'] ) ) {
+					$where->in('{posts}.status', $paramset['not:status'], 'posts_status', create_function( '$a', 'return Post::status( $a );' ), null, false );
+				}
+
 				if ( isset( $paramset['content_type'] ) && ( $paramset['content_type'] != 'any' ) && ( 0 !== $paramset['content_type'] ) ) {
 					$where->in('{posts}.content_type', $paramset['content_type'], 'posts_content_type', create_function( '$a', 'return Post::type( $a );' ) );
 				}
@@ -333,6 +337,17 @@ class Posts extends ArrayObject implements IsContent
 					foreach ( $matches[0] as $word ) {
 						$crit_placeholder = $query->new_param_name('title_search');
 						$where->add("LOWER( {posts}.title ) LIKE :{$crit_placeholder}", array($crit_placeholder => '%' . MultiByte::strtolower( $word ) . '%'));
+					}
+				}
+
+				// Handle field queries on posts and joined tables
+				foreach($select_ary as $field => $aliasing) {
+					if(in_array($field, array('id', 'title', 'slug', 'status', 'content_type', 'user_id')) ) {
+						// skip fields that we're handling a different way
+						continue;
+					}
+					if(isset($paramset[$field])) {
+						$where->in($field, $paramset[$field], 'posts_field_' . $field);
 					}
 				}
 
