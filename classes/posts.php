@@ -111,7 +111,7 @@ class Posts extends ArrayObject implements IsContent
 		}
 
 		// If $paramarray is a querystring, convert it to an array
-		$paramarray = Utils::get_params( $paramarray );
+		$paramarray = new SuperGlobal(Utils::get_params( $paramarray ));
 
 		// If a preset is defined, get the named array and merge it with the provided parameters,
 		// allowing the additional $paramarray settings to override the preset
@@ -119,9 +119,15 @@ class Posts extends ArrayObject implements IsContent
 			if(!isset($presets)) {
 				$presets = Plugins::filter('posts_get_all_presets', $presets, $paramarray['preset']);
 			}
-			if(isset($presets[$paramarray['preset']])) {
-				$preset = Plugins::filter('posts_get_update_preset', $presets[$paramarray['preset']], $paramarray['preset'], $paramarray);
-				$paramarray = array_merge($paramarray, $preset);
+			$paramarray['preset'] = Utils::single_array($paramarray['preset']);
+			foreach($paramarray['preset'] as $presetname => $fallbackpreset) {
+				if(isset($presets[$fallbackpreset])) {
+					$preset = Plugins::filter('posts_get_update_preset', $presets[$fallbackpreset], $presetname, $paramarray);
+					if(is_array( $preset ) || $preset instanceof ArrayObject || $preset instanceof ArrayIterator) {
+						$paramarray = $paramarray->merge($preset);
+						break;
+					}
+				}
 			}
 		}
 
@@ -161,11 +167,7 @@ class Posts extends ArrayObject implements IsContent
 
 		/* Start building the WHERE clauses */
 
-		$wheres = array();
-		$joins = array();
-
 		$query = Query::create('{posts}');
-//		$query->select(array_keys(Post::default_fields()));
 		$query->select($select_ary);
 
 		// If the request as a textual WHERE clause, skip the processing of the $wheresets since it's empty
@@ -223,10 +225,6 @@ class Posts extends ArrayObject implements IsContent
 					// parse out the different formats we accept arguments in into a single mutli-dimensional array of goodness
 					$paramset['vocabulary'] = self::vocabulary_params( $paramset['vocabulary'] );
 					$object_id = Vocabulary::object_type_id( 'post' );
-
-					$all = array();
-					$any = array();
-					$not = array();
 
 					if ( isset( $paramset['vocabulary']['all'] ) ) {
 						$all = $paramset['vocabulary']['all'];
@@ -1211,6 +1209,15 @@ class Posts extends ArrayObject implements IsContent
 	}
 
 	/**
+	 * Register plugin hooks
+	 * @static
+	 */
+	public static function __static()
+	{
+		Pluggable::load_hooks('Posts');
+	}
+
+	/**
 	 * Provide some default presets
 	 * @static
 	 * @param array $presets List of presets that other classes might provide
@@ -1220,6 +1227,7 @@ class Posts extends ArrayObject implements IsContent
 	{
 		$presets['page_list'] = array( 'content_type' => 'page', 'status' => 'published', 'nolimit' => true );
 		$presets['asides'] = array( 'vocabulary' => array( 'tags:term' => 'aside' ), 'limit' => 5 );
+		$presets['home'] = array( 'content_type' => Post::type( 'entry' ), 'status' => Post::status( 'published' ), 'limit' => Options::get('pagination', 5) );
 
 		return $presets;
 	}
