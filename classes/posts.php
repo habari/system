@@ -111,7 +111,10 @@ class Posts extends ArrayObject implements IsContent
 		}
 
 		// If $paramarray is a querystring, convert it to an array
-		$paramarray = new SuperGlobal(Utils::get_params( $paramarray ));
+		$paramarray = Utils::get_params( $paramarray );
+		if($paramarray instanceof ArrayIterator) {
+			$paramarray = $paramarray->getArrayCopy();
+		}
 
 		// If a preset is defined, get the named array and merge it with the provided parameters,
 		// allowing the additional $paramarray settings to override the preset
@@ -124,7 +127,7 @@ class Posts extends ArrayObject implements IsContent
 				if(isset($presets[$fallbackpreset])) {
 					$preset = Plugins::filter('posts_get_update_preset', $presets[$fallbackpreset], $presetname, $paramarray);
 					if(is_array( $preset ) || $preset instanceof ArrayObject || $preset instanceof ArrayIterator) {
-						$paramarray = $paramarray->merge($preset);
+						$paramarray = array_merge($paramarray, $preset);
 						break;
 					}
 				}
