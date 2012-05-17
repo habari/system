@@ -192,8 +192,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 	/**
 	 * returns the integer value of the specified post type, or false
-	 * @param mixed a post type name or number
-	 * @return mixed an integer or boolean false
+	 * @param string|integer $name a post type name or id
+	 * @return boolean|integer the id of the type or false if not found
 	 */
 	public static function type( $name )
 	{
@@ -209,8 +209,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 	/**
 	 * returns the friendly name of a post type, or null
-	 * @param mixed a post type number, or name
-	 * @return mixed a string of the post type, or null
+	 * @param string|integer $type a post type name or id
+	 * @return string the string of the type or emptystring if not found
 	 */
 	public static function type_name( $type )
 	{
