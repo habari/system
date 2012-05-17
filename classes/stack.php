@@ -160,15 +160,10 @@ class Stack
 		if ( !isset( self::$stack_sort[$stack_name] ) ) {
 			self::$stack_sort[$stack_name] = array();
 		}
-		if ( !isset( self::$stack_sort[$stack_name][$value_name_on] ) ) {
-			self::$stack_sort[$stack_name][$value_name_on] = array();
+		if ( !isset( self::$stack_sort[$stack_name][$value_name] ) ) {
+			self::$stack_sort[$stack_name][$value_name] = array();
 		}
-		foreach(self::$stack_sort[$stack_name] as $parent_key => $parent_stack) {
-			if(isset($parent_stack[$value_name_on])) {
-				self::depend($stack_name, $value_name, $parent_key);
-			}
-		}
-		self::$stack_sort[$stack_name][$value_name_on][$value_name] = $value_name;
+		self::$stack_sort[$stack_name][$value_name][$value_name_on] = $value_name_on;
 	}
 
 	/**
@@ -198,49 +193,33 @@ class Stack
 		self::$sorting = $stack_name;
 		$stack = self::get_named_stack( $stack_name );
 
-		uksort( $stack, array( 'Stack', 'sort_stack_cmp' ) );
-		//$stack = array_reverse( $stack );
-		return $stack;
-	}
+		$sorted = array();
+		$depdata = self::$stack_sort[ $stack_name ];
+		$lastcount = 0;
+		$failed = false;
+		while(count($sorted) < count($stack)) {
+			foreach($stack as $itemkey => $value) {
+				if(isset($sorted[$itemkey])) {
+					continue;
+				}
+				if(!$failed && isset($depdata[$itemkey])) {
+					$requires = $depdata[$itemkey];
+					$requires = array_combine($depdata[$itemkey], $depdata[$itemkey]);
+					if(count(array_intersect_key($requires, $sorted)) == count($requires)) {
+						$sorted[$itemkey] = $value;
+					}
+				}
+				else {
+					$sorted[$itemkey] = $value;
+				}
+			}
+			if($lastcount == count($sorted)) {
+				$failed = true;
+			}
+			$lastcount = count($sorted);
+		}
 
-	public static function sort_stack_cmp( $a, $b )
-	{
-		// get the array of sorting values for the first key, or an empty array if there aren't any dependencies
-		if ( isset( self::$stack_sort[ self::$sorting ][ $a ] ) ) {
-			$a_dependents = self::$stack_sort[ self::$sorting ][ $a ];
-		}
-		else {
-			$a_dependents = array();
-		}
-
-		// as above, but for the second key
-		if ( isset( self::$stack_sort[ self::$sorting ][ $b ] ) ) {
-			$b_dependents = self::$stack_sort[ self::$sorting ][ $b ];
-		}
-		else {
-			$b_dependents = array();
-		}
-
-		$b_depends_on_a = isset( $a_dependents[ $b ] );
-		$a_depends_on_b = isset( $b_dependents[ $a ] );
-
-		if ( $a_depends_on_b && $b_depends_on_a ) {
-			// They depend on each other?  How'd this happen?
-			return 0;
-		}
-		elseif ( $a_depends_on_b ) {
-			// a depends on b, b must come first, reverse their order
-			return 1;
-		}
-		elseif ( $b_depends_on_a ) {
-			// b depends on a, a must come first, keep their order
-			return -1;
-		}
-		else {
-			// neither depends on the other, but DON'T force their natural order,
-			// otherwise shortcuts in how the sort works will botch explicit dependencies
-			return 0;
-		}
+		return $sorted;
 	}
 
 	/**
