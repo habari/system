@@ -237,8 +237,9 @@ class Stack
 			return -1;
 		}
 		else {
-			// neither depends on the other, force their natural order
-			return 1;
+			// neither depends on the other, but DON'T force their natural order,
+			// otherwise shortcuts in how the sort works will botch explicit dependencies
+			return 0;
 		}
 	}
 
