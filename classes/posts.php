@@ -348,7 +348,12 @@ class Posts extends ArrayObject implements IsContent
 						continue;
 					}
 					if(isset($paramset[$field])) {
-						$where->in($field, $paramset[$field], 'posts_field_' . $field);
+						if(is_callable($paramset[$field])) {
+							$paramset[$field]($where, $paramset);
+						}
+						else {
+							$where->in($field, $paramset[$field], 'posts_field_' . $field);
+						}
 					}
 				}
 
