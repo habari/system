@@ -30,7 +30,7 @@
 		<?php _e('or'); ?>
 	</span>
 	<span class="pct40">
-		<input id="search" type="search" placeholder="<?php _e('search users'); ?>">
+		<input id="search" type="search" placeholder="<?php _e('search users'); ?>" autofocus="autofocus">
 	</span>
 </div>
 
