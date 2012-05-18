@@ -973,6 +973,7 @@ body.page-publish .buttons input {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	max-width: 150px;
 }
 
 .mediaphotos li.media .mediatitle:after { /* Helps Safari if there is no title */
@@ -1005,6 +1006,7 @@ body.page-publish .buttons input {
 	cursor: pointer;
 	width: 100%;
 	min-width: 30px;
+	max-width: 150px;
 	display: block;
 	text-align: center;
 	background: #111111;
