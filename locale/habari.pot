@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-07 15:57+0000\n"
+"POT-Creation-Date: 2012-05-13 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1023,7 +1023,7 @@ msgid "In moderation"
 msgstr ""
 
 #: themes/mzingi/commentform.php:57
-msgid "There are currently no comments."
+msgid "<li>There are currently no comments.</li>"
 msgstr ""
 
 #: themes/mzingi/loginform.php:5
@@ -3117,32 +3117,47 @@ msgstr ""
 msgid "The APC Cache PHP module is not loaded - the cache is disabled."
 msgstr ""
 
-#: classes/plugins.php:280
+#: classes/plugins.php:38 classes/plugins.php:39
+#, php-format
+msgid "Plugin file \"%s\" has changed its plugin class name."
+msgstr ""
+
+#: classes/plugins.php:298
 #, php-format
 msgid "An empty plugin definition pointing to file \"%1$s\" was removed."
 msgstr ""
 
-#: classes/plugins.php:291
+#: classes/plugins.php:309
 #, php-format
 msgid "Plugin \"%1$s\" deactivated because it could no longer be found."
 msgstr ""
 
-#: classes/plugins.php:461
+#: classes/plugins.php:479
 #, php-format
 msgid "Invalid plugin XML file: %1$s"
 msgstr ""
 
-#: classes/plugins.php:568
+#: classes/plugins.php:503
+#, php-format
+msgid "The class \"%s\" is not a Plugin, but was queued to load as a plugin."
+msgstr ""
+
+#: classes/plugins.php:504
+#, php-format
+msgid "The class \"%s\" is not a Plugin, but was queued to load as a plugin. It may not currently be active."
+msgstr ""
+
+#: classes/plugins.php:592
 #, php-format
 msgid "Activated Plugin: %s"
 msgstr ""
 
-#: classes/plugins.php:604
+#: classes/plugins.php:630
 #, php-format
 msgid "Deactivated Plugin: %s"
 msgstr ""
 
-#: classes/plugins.php:711
+#: classes/plugins.php:737
 #, php-format
 msgid "Attempted to load the plugin file \"%s\", but it failed with syntax errors. <div class=\"reveal\">%s</div>"
 msgstr ""

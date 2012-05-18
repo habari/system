@@ -17,6 +17,9 @@ class AdminThemesHandler extends AdminHandler
 	public function get_themes()
 	{
 		$all_themes = Themes::get_all_data();
+		// @todo Make this a closure in php 5.3
+		$fn = create_function('$theme_data', 'return $theme_data["name"];');
+		$theme_names = array_map($fn, $all_themes);
 
 		$available_updates = Options::get( 'updates_available', array() );
 
@@ -30,6 +33,10 @@ class AdminThemesHandler extends AdminHandler
 				}
 			}
 
+			// If this theme requires a parent to be present and it's not, send an error
+			if(isset($theme['info']->parent) && !in_array((string)$theme['info']->parent, $theme_names)) {
+				$all_themes[$name]['req_parent'] = $theme['info']->parent;
+			}
 		}
 
 		$this->theme->all_themes = $all_themes;
@@ -82,10 +89,13 @@ class AdminThemesHandler extends AdminHandler
 	{
 		$theme_name = $this->handler_vars['theme_name'];
 		$theme_dir = $this->handler_vars['theme_dir'];
+		$activated = false;
 		if ( isset( $theme_name ) && isset( $theme_dir ) ) {
-			Themes::activate_theme( $theme_name, $theme_dir );
+			$activated = Themes::activate_theme( $theme_name, $theme_dir );
 		}
-		Session::notice( _t( "Activated theme '%s'", array( $theme_name ) ) );
+		if($activated) {
+			Session::notice( _t( "Activated theme '%s'", array( $theme_name ) ) );
+		}
 		Utils::redirect( URL::get( 'admin', 'page=themes' ) );
 	}
 
@@ -102,8 +112,9 @@ class AdminThemesHandler extends AdminHandler
 				Session::notice( _t( "Ended the preview of the theme '%s'", array( $theme_name ) ) );
 			}
 			else {
-				Themes::preview_theme( $theme_name, $theme_dir );
-				Session::notice( _t( "Previewing theme '%s'", array( $theme_name ) ) );
+				if(Themes::preview_theme( $theme_name, $theme_dir )) {
+					Session::notice( _t( "Previewing theme '%s'", array( $theme_name ) ) );
+				}
 			}
 		}
 		Utils::redirect( URL::get( 'admin', 'page=themes' ) );

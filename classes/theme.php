@@ -28,6 +28,7 @@ class Theme extends Pluggable
 	 * also, optionally, by the Theme )
 	 */
 	public $valid_filters = array(
+		'preset',
 		'content_type',
 		'not:content_type',
 		'slug',
@@ -330,7 +331,7 @@ class Theme extends Pluggable
 
 		// Makes sure home displays only entries
 		$default_filters = array(
-			'content_type' => Post::type( 'entry' ),
+			'preset' => 'home',
 		);
 
 		$paramarray['user_filters'] = array_merge( $default_filters, $user_filters );

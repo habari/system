@@ -90,12 +90,12 @@ class Mzingi extends Theme
 		$form->move_before( $form->cf_commenterinfo, $form->cf_commenter );
 		//move the Name ( cf_commenter) into the fieldset
 		$form->cf_commenter->move_into( $form->cf_commenterinfo );
-		
-		$form->cf_commenter->caption = _t( 'Name:' ) . '<span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? ' *' . _t( 'Required' ) : '' ) . '</span></label>';
+
+		$form->cf_commenter->caption = _t( 'Name:' ) . '<span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? ' *' . _t( 'Required' ) : '' ) . '</span>';
 		//move the Email ( cf_email) into the Fieldset
 		$form->cf_email->move_into( $form->cf_commenterinfo );
-		
-		$form->cf_email->caption = _t( 'Email Address:' ) . '<span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? ' *' . _t( 'Required' ) : '' ) . '</span></label>'; 
+
+		$form->cf_email->caption = _t( 'Email Address:' ) . '<span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? ' *' . _t( 'Required' ) : '' ) . '</span>';
 		//move the URL into the fieldset
 		$form->cf_url->move_into( $form->cf_commenterinfo );
 		$form->cf_url->caption = _t( 'Web Address:' );

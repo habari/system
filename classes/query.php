@@ -160,7 +160,7 @@ class Query {
 	 */
 	public function limit($value)
 	{
-		$this->limit = is_int($value) ? $value : null;
+		$this->limit = is_numeric($value) ? intval($value) : null;
 		return $this;
 	}
 
@@ -171,7 +171,7 @@ class Query {
 	 */
 	public function offset($value)
 	{
-		$this->offset = is_int($value) ? $value : null;
+		$this->offset = is_numeric($value) ? intval($value) : null;
 		return $this;
 	}
 
