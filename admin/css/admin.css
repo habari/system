@@ -998,14 +998,22 @@ body.page-publish .buttons input {
 	opacity: 0.5;
 }
 
-.mediaphotos li.media img {
+.mediaphotos li.media .mediathumb {
 	margin: 0 0 5px;
 	height: 100px;
 	border: 1px solid #fff;
 	cursor: pointer;
-	max-width: 300px;
+	width: 100%;
 	min-width: 30px;
 	display: block;
+	text-align: center;
+	background: #111111;
+	line-height: 95px;
+}
+
+.mediaphotos li.media img {
+	vertical-align: middle;
+	max-height: 100px;
 }
 
 .mediaphotos li.media:last-child img {
