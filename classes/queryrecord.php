@@ -176,6 +176,27 @@ class QueryRecord implements URLProperties
 	}
 
 	/**
+	 * Convert record data to json
+	 * Returns a string with the current field values in JSON format
+	 * @return string The field settings as they would be saved in JSON
+	 */
+	public function to_json()
+	{
+		return $this->jsonSerialize();
+	}
+
+	/**
+	 * Implements JsonSerializable, only available in PHP 5.4  :(
+	 * @return string
+	 */
+	public function jsonSerialize()
+	{
+		$array = array_merge( $this->fields, $this->newfields );
+		$array = Plugins::filter('queryrecord_to_json', $array);
+		return json_encode($array);
+	}
+
+	/**
 	 * Returns an array with the current field settings
 	 * @return array The field settings as they would be saved
 	 */

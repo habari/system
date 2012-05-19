@@ -20,7 +20,7 @@
 		<?php _e('or'); ?>
 	</span>
 	<span class="pct40">
-		<input type="search" id="search" placeholder="<?php _e('search plugins'); ?>" tabindex="2">
+		<input type="search" id="search" placeholder="<?php _e('search plugins'); ?>" tabindex="2" autofocus="autofocus">
 	</span>
 </div>
 

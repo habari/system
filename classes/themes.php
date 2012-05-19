@@ -168,13 +168,48 @@ class Themes
 	}
 
 	/**
+	 * Ensure that a theme meets requirements for activation/preview
+	 * @static
+	 * @param string $theme_dir the directory of the theme
+	 * @return bool True if the theme meets all requirements
+	 */
+	public static function validate_theme( $theme_dir )
+	{
+		$all_themes = Themes::get_all_data();
+		// @todo Make this a closure in php 5.3
+		$fn = create_function('$theme_data', 'return $theme_data["name"];');
+		$theme_names = array_map($fn, $all_themes);
+
+		$theme_data = $all_themes[$theme_dir];
+
+		$ok = true;
+
+		if(isset($theme_data['info']->parent) && !in_array((string)$theme_data['info']->parent, $theme_names)) {
+			Session::error(_t('This theme requires the parent theme named "%s" to be present prior to activation.', array($theme_data['info']->parent)));
+			$ok = false;
+		}
+
+		if(isset($theme_data['info']->requires)) {
+			$provided = Plugins::provided();
+			foreach($theme_data['info']->requires->feature as $requirement) {
+				if(!isset($provided[(string)$requirement])) {
+					Session::error(_t('This theme requires the feature "<a href="%2$s">%1$s</a>" to be present prior to activation.', array((string)$requirement, $requirement['url'])));
+					$ok = false;
+				}
+			}
+		}
+
+		return $ok;
+	}
+	/**
 	 * function activate_theme
 	 * Updates the database with the name of the new theme to use
 	 * @param string the name of the theme
 	**/
 	public static function activate_theme( $theme_name, $theme_dir )
 	{
-		$ok = true;
+		$ok = Themes::validate_theme($theme_dir);
+
 		$ok = Plugins::filter( 'activate_theme', $ok, $theme_name ); // Allow plugins to reject activation
 		if($ok) {
 			$old_active_theme = Themes::create();
@@ -207,12 +242,18 @@ class Themes
 	 */
 	public static function preview_theme( $theme_name, $theme_dir )
 	{
-		$_SESSION['user_theme_name'] = $theme_name;
-		$_SESSION['user_theme_dir'] = $theme_dir;
-		// Execute the theme's activated action
-		$preview_theme = Themes::create();
-		Plugins::act_id( 'theme_activated', $preview_theme->plugin_id(), $theme_name, $preview_theme );
-		EventLog::log( _t( 'Previewed Theme: %s', array( $theme_name ) ), 'notice', 'theme', 'habari' );
+		$ok = Themes::validate_theme($theme_dir);
+
+		if($ok) {
+			$_SESSION['user_theme_name'] = $theme_name;
+			$_SESSION['user_theme_dir'] = $theme_dir;
+			// Execute the theme's activated action
+			$preview_theme = Themes::create();
+			Plugins::act_id( 'theme_activated', $preview_theme->plugin_id(), $theme_name, $preview_theme );
+			EventLog::log( _t( 'Previewed Theme: %s', array( $theme_name ) ), 'notice', 'theme', 'habari' );
+		}
+
+		return $ok;
 	}
 	
 	/**

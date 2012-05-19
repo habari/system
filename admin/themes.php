@@ -116,6 +116,8 @@ foreach ( $all_themes as $inactive_theme ):
 	    <?php
 	    if ( $inactive_theme['info']->getName() != 'pluggable' || (string) $inactive_theme['info']->attributes()->type != 'theme' ) : ?>
 		<p class="legacy"><?php _e( 'Legacy theme.' ); ?></p>
+      <?php elseif(isset($inactive_theme['req_parent'])): ?>
+		<p class="legacy"><?php _e( 'This theme requires the parent theme named "%s".', array($inactive_theme['req_parent']) ); ?></p>
 	    <?php else: ?>
 		<ul class="dropbutton"> 
 			<?php if ($previewed == $inactive_theme['dir']): ?>

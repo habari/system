@@ -1107,7 +1107,9 @@ class FormControl
 
 		switch ( $type ) {
 			case 'user':
-				User::identify()->info->{$location} = $this->value;
+				$user = User::identify();
+                $user->info->{$location} = $this->value;
+                $user->info->commit();
 				break;
 			case 'option':
 				Options::set( $location, $this->value );

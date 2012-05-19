@@ -758,6 +758,25 @@ class Plugins
 		Plugins::act_id( 'plugin_ui', $configure, $configure, $configaction );
 		Plugins::act( 'plugin_ui_any', $configure, $configaction );
 	}
+
+	public static function provided($exclude = null)
+	{
+		$active_plugins = Plugins::get_active();
+
+		$provided = array();
+		foreach($active_plugins as $plugin_id => $plugin) {
+			if($plugin->info->name == $exclude || $plugin_id == $exclude) {
+				continue;
+			}
+			if(isset($plugin->info->provides)) {
+				foreach($plugin->info->provides->feature as $provide) {
+					$provided[(string)$provide][] = (string)$plugin->info->name;
+				}
+			}
+		}
+
+		return $provided;
+	}
 }
 
 ?>
