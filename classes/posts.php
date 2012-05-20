@@ -191,18 +191,18 @@ class Posts extends ArrayObject implements IsContent
 				}
 
 				if ( isset( $paramset['status'] ) && ( $paramset['status'] != 'any' ) && ( 0 !== $paramset['status'] ) ) {
-					$where->in('{posts}.status', $paramset['status'], 'posts_status', create_function( '$a', 'return Post::status( $a );' ) );
+					$where->in('{posts}.status', $paramset['status'], 'posts_status', function($a) {return Post::status( $a );} );
 				}
 
 				if ( isset( $paramset['not:status'] ) && ( $paramset['not:status'] != 'any' ) && ( 0 !== $paramset['not:status'] ) ) {
-					$where->in('{posts}.status', $paramset['not:status'], 'posts_status', create_function( '$a', 'return Post::status( $a );' ), null, false );
+					$where->in('{posts}.status', $paramset['not:status'], 'posts_status', function($a) {return Post::status( $a );}, null, false );
 				}
 
 				if ( isset( $paramset['content_type'] ) && ( $paramset['content_type'] != 'any' ) && ( 0 !== $paramset['content_type'] ) ) {
-					$where->in('{posts}.content_type', $paramset['content_type'], 'posts_content_type', create_function( '$a', 'return Post::type( $a );' ) );
+					$where->in('{posts}.content_type', $paramset['content_type'], 'posts_content_type', function($a) {return Post::type( $a );} );
 				}
 				if ( isset( $paramset['not:content_type'] ) ) {
-					$where->in('{posts}.content_type', $paramset['not:content_type'], 'posts_not_content_type', create_function( '$a', 'return Post::type( $a );' ), false );
+					$where->in('{posts}.content_type', $paramset['not:content_type'], 'posts_not_content_type', function($a) {return Post::type( $a );}, false );
 				}
 
 				if ( isset( $paramset['slug'] ) ) {

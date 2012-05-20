@@ -178,9 +178,11 @@ class HabariSilo extends Plugin implements MediaSilo
 				$icon_url = Plugins::filter( 'habarisilo_icon_base_url', $this->get_url() . '/icons' );
 
 				if ( ( $icons = Utils::glob( $icon_path . '/*.{png,jpg,gif,svg}', GLOB_BRACE ) ) && $mimetype ) {
-					$icon_keys = array_map( create_function( '$a', 'return pathinfo($a, PATHINFO_FILENAME);' ), $icons );
+					$icon_keys = array_map( function($a) {return pathinfo($a, PATHINFO_FILENAME);}, $icons );
 					$icons = array_combine( $icon_keys, $icons );
-					$icon_filter = create_function( '$a, $b', "\$mime = '$mimetype';".'return (((strpos($mime, $a)===0) ? (strlen($a) / strlen($mime)) : 0) >= (((strpos($mime, $b)===0)) ? (strlen($b) / strlen($mime)) : 0)) ? $a : $b;' );
+					$icon_filter = function($a, $b) use ($mimetype) {
+						return (((strpos($mimetype, $a)===0) ? (strlen($a) / strlen($mimetype)) : 0) >= (((strpos($mimetype, $b)===0)) ? (strlen($b) / strlen($mimetype)) : 0)) ? $a : $b;
+					};
 					$icon_key = array_reduce( $icon_keys, $icon_filter );
 					if ($icon_key) {
 						$icon = basename( $icons[$icon_key] );

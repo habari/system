@@ -73,7 +73,7 @@ class AtomHandler extends ActionHandler
 		// Build the namespaces, plugins can alter it to override or insert their own.
 		$namespaces = array( 'default' => 'http://www.w3.org/2005/Atom' );
 		$namespaces = Plugins::filter( 'atom_get_collection_namespaces', $namespaces );
-		$namespaces = array_map( create_function( '$value,$key', 'return ( ( $key == "default" ) ? "xmlns" : "xmlns:" . $key ) . "=\"" . $value ."\"";' ), $namespaces, array_keys( $namespaces ) );
+		$namespaces = array_map( function($value, $key) {return ( ( $key == "default" ) ? "xmlns" : "xmlns:" . $key ) . "=\"" . $value ."\"";}, $namespaces, array_keys( $namespaces ) );
 		$namespaces = implode( ' ', $namespaces );
 
 		$xml = new SimpleXMLElement( '<feed ' . $namespaces . '></feed>' );
@@ -558,7 +558,7 @@ class AtomHandler extends ActionHandler
 			// Build the namespaces, plugins can alter it to override or insert their own.
 			$namespaces = array( 'default' => 'http://www.w3.org/2005/Atom' );
 			$namespaces = Plugins::filter( 'atom_get_entry_namespaces', $namespaces );
-			$namespaces = array_map( create_function( '$value,$key', 'return ( ( $key == "default" ) ? "xmlns" : "xmlns:" . $key ) . "=\"" . $value ."\"";' ), $namespaces, array_keys( $namespaces ) );
+			$namespaces = array_map( function($value, $key) {return ( ( $key == "default" ) ? "xmlns" : "xmlns:" . $key ) . "=\"" . $value ."\"";}, $namespaces, array_keys( $namespaces ) );
 			$namespaces = implode( ' ', $namespaces );
 
 			$xml = new SimpleXMLElement( '<entry ' . $namespaces . '></entry>' );

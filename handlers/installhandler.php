@@ -1438,7 +1438,7 @@ class InstallHandler extends ActionHandler
 	{
 
 		// Strip the base path off active plugins
-		$base_path = array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), array( HABARI_PATH ) );
+		$base_path = array_map( function($s) {return str_replace('\\', '/', $s);}, array( HABARI_PATH ) );
 		$activated = Options::get( 'active_plugins' );
 		if ( is_array( $activated ) ) {
 			foreach ( $activated as $plugin ) {

@@ -17,9 +17,7 @@ class AdminThemesHandler extends AdminHandler
 	public function get_themes()
 	{
 		$all_themes = Themes::get_all_data();
-		// @todo Make this a closure in php 5.3
-		$fn = create_function('$theme_data', 'return $theme_data["name"];');
-		$theme_names = array_map($fn, $all_themes);
+		$theme_names = Utils::array_map_field($all_themes, 'name');
 
 		$available_updates = Options::get( 'updates_available', array() );
 

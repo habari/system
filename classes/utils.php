@@ -29,7 +29,7 @@ class Utils
 	 */
 	public static function get_params( $params )
 	{
-		if ( is_array( $params ) || $params instanceof ArrayObject || $params instanceof ArrayIterator ) {
+		if ( is_array( $params ) || $params instanceof Traversable ) {
 			return $params;
 		}
 		$paramarray = array();
@@ -814,7 +814,7 @@ class Utils
 	 */
 	public static function single_array( $element )
 	{
-		if ( !is_array( $element ) ) {
+		if ( !is_array( $element ) && !$element instanceof Traversable ) {
 			return array( $element );
 		}
 		return $element;
@@ -1211,6 +1211,26 @@ class Utils
 			setcookie($key, false);
 			return false;
 		}
+	}
+
+	/**
+	 * Given an array of arrays, return an array that contains the value of a particular common field
+	 * Example:
+	 * $a = array(
+	 *   array('foo'=>1, 'bar'=>2),
+	 *   array('foo'=>3, 'bar'=>4),
+	 * );
+	 * $b = Utils::array_map_field($a, 'foo'); // $b = array(1, 3);
+	 *
+	 * @param Traversable $array An array of arrays or objects with similar keys or properties
+	 * @param string $field The name of a common field within each array/object
+	 * @return array An array of the values of the specified field within each array/object
+	 */
+	public static function array_map_field($array, $field)
+	{
+		return array_map( function( $element ) use ($field) {
+			return is_array($element) ? $element[$field] : (is_object($element) ? $element->$field : null);
+		}, $array);
 	}
 }
 ?>

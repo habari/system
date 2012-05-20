@@ -110,7 +110,7 @@ class RewriteRules extends ArrayObject
 		);
 		$default_rules = Plugins::filter( 'default_rewrite_rules', $default_rules );
 		$default_rules_properties = array( 'is_active' => 1, 'rule_class' => RewriteRule::RULE_SYSTEM );
-		$rule_names = array_flip( array_map( create_function( '$a', 'return $a->name;' ), $rules ) );
+		$rule_names = array_flip( Utils::array_map_field($rules, 'name') );
 		foreach ( $default_rules as $default_rule ) {
 			if ( !isset( $rule_names[$default_rule['name']] ) ) {
 				$rule_properties = array_merge( $default_rule, $default_rules_properties );

@@ -917,11 +917,10 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$form->tags->tabindex = 3;
 
 		$tags = (array)$this->get_tags();
-		array_map(
-			create_function( '$a',
-				'$a->term_display = MultiByte::strpos( $a->term_display, \',\' ) === false ? $a->term_display : $a->tag_text_searchable;' ),
-			$tags
-		);
+		array_walk($tags, function(&$element, $key) {
+			$element->term_display = MultiByte::strpos( $element->term_display, ',' ) === false ? $element->term_display : $element->tag_text_searchable;
+		});
+
 		$form->tags->value = implode( ', ', $tags );
 
 		// Create the splitter

@@ -27,69 +27,32 @@ class Format
 
 		foreach ( self::$formatters as $formatobj ) {
 			if ( method_exists( $formatobj, $format ) ) {
-				$index = array_search( $formatobj, self::$formatters );
-				$func = '$o = Format::by_index(' . $index . ');return $o->' . $format . '($a';
 				$args = func_get_args();
-				if ( count( $args ) > 2 ) {
-					$func.= ', ';
-					$args = array_map( create_function( '$a', 'return "\'{$a}\'";' ), array_slice( $args, 2 ) );
-					$func .= implode( ', ', $args );
-				}
-				$func .= ');';
-				$lambda = create_function( '$a', $func );
+				$args = array_slice($args, 2);
+				$lambda = function() use ($args, $formatobj, $format) {
+					$filterargs = func_get_args();
+					foreach($args as $arg) {
+						$filterargs[] = $arg;
+					}
+					return call_user_func_array(array($formatobj, $format), $filterargs);
+				};
 				Plugins::register( $lambda, 'filter', $onwhat );
 				break;  // We only look for one matching format function to apply.
 			}
 		}
-	}
-
-	/**
-	 *
-	 *
-	 */
-	public static function apply_with_hook_serialize( $arg )
-	{
-		$arg = serialize( $arg );
-		return "'{$arg}'";
-	}
-
-	public static function apply_with_hook_unserialize( $arg )
-	{
-		$arg = unserialize( $arg );
-		return $arg;
 	}
 
 	/**
 	 * Called to register a format function to a plugin hook, and passes all of the hook's parameters to the Format function.
 	 * @param string $format A function name that exists in a Format class
 	 * @param string $onwhat A plugin hook to apply that Format function to as a filter
+	 * @deprecated
+	 * @see Filter::apply()
 	 */
 	public static function apply_with_hook_params( $format, $onwhat )
 	{
-		if ( self::$formatters == null ) {
-			self::load_all();
-		}
-
-		foreach ( self::$formatters as $formatobj ) {
-			if ( method_exists( $formatobj, $format ) ) {
-				$index = array_search( $formatobj, self::$formatters );
-				$func = '$o = Format::by_index(' . $index . ');';
-				$func .= '$args = func_get_args();';
-				$func .= '$args = array_merge( $args';
-				$args = func_get_args();
-				if ( count( $args ) > 2 ) {
-
-					$func .= ', array_map( array( "Format", "apply_with_hook_unserialize" ),';
-					$args = array_map( array( "Format", "apply_with_hook_serialize" ), array_slice( $args, 2 ) );
-					$func .= 'array( ' . implode( ', ', $args ) . ' ))';
-				}
-				$func .= ');';
-				$func .= 'return call_user_func_array(array($o, "' . $format . '"), $args);';
-				$lambda = create_function( '$a', $func );
-				Plugins::register( $lambda, 'filter', $onwhat );
-				break;  // We only look for one matching format function to apply.
-			}
-		}
+		$args = func_get_args();
+		call_user_func_array(array('Format', 'apply'), $args);
 	}
 
 	/**
@@ -282,7 +245,9 @@ class Format
 			$between_last = _t( ' and ' );
 		}
 
-		$fn = create_function( '$a,$b', 'return "<a href=\\"" . URL::get("display_entries_by_tag", array( "tag" => $b) ) . "\\" rel=\\"tag\\">" . $a . "</a>";' );
+		$fn = function($a, $b) {
+			return "<a href=\"" . URL::get("display_entries_by_tag", array( "tag" => $b) ) . "\" rel=\"tag\">" . $a . "</a>";
+		};
 		$array = array_map( $fn, $array, array_keys( $array ) );
 		$last = array_pop( $array );
 		$out = implode( $between, $array );
@@ -430,6 +395,7 @@ class Format
 	public static function more( $content, $post, $properties = array() )
 	{
 		// If the post requested is the post under consideration, always return the full post
+Utils::debug();
 		if ( $post->slug == Controller::get_var( 'slug' ) ) {
 			return $content;
 		}

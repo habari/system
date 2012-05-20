@@ -86,10 +86,7 @@ class Update extends Singleton
 			
 			// add all the beacon versions as parameters
 			$request->set_params(
-				array_map(
-					create_function( '$a', 'return $a["version"];' ),
-					$instance->beacons
-				)
+				Utils::array_map_field($instance->beacons, 'version')
 			);
 			// we're not desperate enough to wait too long
 			$request->set_timeout( 5 );
