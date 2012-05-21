@@ -149,12 +149,16 @@ class Posts extends ArrayObject implements IsContent
 			$default_fields = array_merge($default_fields, $param_defaults);
 		}
 		foreach ( $default_fields as $field => $value ) {
-			$table = '{posts}';
-			if(strpos($field, '.') !== false) {
-				list($table, $field) = explode('.', $field);
+			if(preg_match('/(?:(?P<table>[\w\{\}]+)\.)?(?P<field>\w+)(?:(?:\s+as\s+)(?P<alias>\w+))?/i', $field, $fielddata)) {
+				if(empty($fielddata['table'])) {
+					$fielddata['table'] = '{posts}';
+				}
+				if(empty($fielddata['alias'])) {
+					$fielddata['alias'] = $fielddata['field'];
+				}
 			}
-			$select_ary[$field] = "$table.$field AS $field";
-			$select_distinct[$field] = "$table.$field";
+			$select_ary[$fielddata['alias']] = "{$fielddata['table']}.{$fielddata['field']} AS {$fielddata['alias']}";
+			$select_distinct[$fielddata['alias']] = "{$fielddata['table']}.{$fielddata['field']}";
 		}
 
 		// Default parameters
@@ -503,7 +507,12 @@ class Posts extends ArrayObject implements IsContent
 		if(isset($paramset['post_join'])) {
 			$post_joins = Utils::single_array($paramset['post_join']);
 			foreach($post_joins as $post_join) {
-				$query->join("LEFT JOIN {$post_join} ON {$post_join}.post_id = {posts}.id ");
+				if(preg_match('#^(\S+)(?:\s+as)?\s+(\S+)$#i', $post_join, $matches)) {
+					$query->join("LEFT JOIN {$matches[1]} {$matches[2]} ON {$matches[2]}.post_id = {posts}.id ");
+				}
+				else {
+					$query->join("LEFT JOIN {$post_join} ON {$post_join}.post_id = {posts}.id ");
+				}
 			}
 		}
 
@@ -712,6 +721,12 @@ class Posts extends ArrayObject implements IsContent
 		}
 		if(isset($having)) {
 			$query->having($having);
+		}
+
+		if(isset($paramarray['on_query_built'])) {
+			foreach(Utils::single_array($paramarray['on_query_built']) as $built) {
+				$built($query);
+			}
 		}
 
 		Plugins::act('posts_get_query', $query);
@@ -1249,6 +1264,16 @@ class Posts extends ArrayObject implements IsContent
 		foreach( $this as $post ) {
 			$post->delete();
 		}
+	}
+
+	/**
+	 * Serialize these posts as JSON
+	 * @return string Posts as JSON
+	 */
+	public function to_json()
+	{
+		$posts = array_map(function($e){return $e->to_json();}, $this->getArrayCopy());
+		return '[' . implode(',', $posts) . ']';
 	}
 }
 
