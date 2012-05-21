@@ -279,8 +279,8 @@ class Format
 	/**
 	 * function nice_date
 	 * Formats a date using a date format string
-	 * @param HabariDateTime A date as a HabariDateTime object
-	 * @param string A date format string
+	 * @param HabariDateTime $date A date as a HabariDateTime object
+	 * @param string $dateformat A date format string
 	 * @returns string The date formatted as a string
 	 */
 	public static function nice_date( $date, $dateformat = 'F j, Y' )
@@ -294,8 +294,8 @@ class Format
 	/**
 	 * function nice_time
 	 * Formats a time using a date format string
-	 * @param HabariDateTime A date as a HabariDateTime object
-	 * @param string A date format string
+	 * @param HabariDateTime $date A date as a HabariDateTime object
+	 * @param string $dateformat A date format string
 	 * @returns string The time formatted as a string
 	 */
 	public static function nice_time( $date, $dateformat = 'H:i:s' )
@@ -395,7 +395,6 @@ class Format
 	public static function more( $content, $post, $properties = array() )
 	{
 		// If the post requested is the post under consideration, always return the full post
-Utils::debug();
 		if ( $post->slug == Controller::get_var( 'slug' ) ) {
 			return $content;
 		}
