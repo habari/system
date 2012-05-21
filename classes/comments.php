@@ -510,7 +510,7 @@ class Comments extends ArrayObject
 
 	/**
 	 * Returns all comments for a supplied post ID
-	 * @param integer $post_id ID of the post
+	 * @param post_id ID of the post
 	 * @return array  an array of Comment objects for the given post
 	**/
 	public static function by_post_id( $post_id )
