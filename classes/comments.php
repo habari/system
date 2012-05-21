@@ -78,7 +78,7 @@ class Comments extends ArrayObject
 				if ( isset( $paramset['status'] ) && false !== $paramset['status'] ) {
 					if ( is_array( $paramset['status'] ) ) {
 						$paramset['status'] = array_diff( $paramset['status'], array( 'any' ) );
-						array_walk( $paramset['status'], create_function( '&$a,$b', '$a = Comment::status( $a );' ) );
+						array_walk( $paramset['status'], function(&$a) {$a = Comment::status( $a );} );
 						$where[] = "{comments}.status IN (" . Utils::placeholder_string( count( $paramset['status'] ) ) . ")";
 						$params = array_merge( $params, $paramset['status'] );
 					}
@@ -90,7 +90,7 @@ class Comments extends ArrayObject
 				if ( isset( $paramset['type'] ) && false !== $paramset['type'] ) {
 					if ( is_array( $paramset['type'] ) ) {
 						$paramset['type'] = array_diff( $paramset['type'], array( 'any' ) );
-						array_walk( $paramset['type'], create_function( '&$a,$b', '$a = Comment::type( $a );' ) );
+						array_walk( $paramset['type'], function( &$a ) { $a = Comment::type( $a ); } );
 						$where[] = "type IN (" . Utils::placeholder_string( count( $paramset['type'] ) ) . ")";
 						$params = array_merge( $params, $paramset['type'] );
 					}
@@ -418,13 +418,14 @@ class Comments extends ArrayObject
 
 	/**
 	 * Changes the status of comments
-	 * @param mixed Comment IDs to moderate.  May be a single ID, or an array of IDs
-	**/
+	 * @param array|Comments $comments Comments to be moderated
+	 * @param int $status The new status for the provided array of comments
+	 * @return bool True if all the comments were successfully changed
+	 * @internal param \Comment $mixed IDs to moderate.  May be a single ID, or an array of IDs
+	 */
 	public static function moderate_these( $comments, $status = Comment::STATUS_UNAPPROVED )
 	{
-		if ( ! is_array( $comments )  && ! $comments instanceOf Comments ) {
-			$comments = array( $comments );
-		}
+		$comments = Utils::single_array($comments);
 		if ( count( $comments ) == 0 ) {
 			return;
 		}
@@ -441,7 +442,7 @@ class Comments extends ArrayObject
 			$result = true;
 			foreach ( $comments as $commentid ) {
 				$result &= DB::update( DB::table( 'comments' ), array( 'status' => $status), array( 'id' => $commentid ) );
-				EventLog::log( _t( 'Comment Moderated on %s', array( $comment->post->title ) ), 'info', 'comment', 'habari' );
+				EventLog::log( _t( 'Comment %1$d moderated', array( $commentid ) ), 'info', 'comment', 'habari' );
 			}
 		}
 		else {

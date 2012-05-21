@@ -170,7 +170,7 @@ abstract class InfoRecords implements URLProperties
 	{
 		if ( !$this->url_args ) {
 			$this->_load();
-			$this->url_args = array_map( create_function( '$a', 'return $a["value"];' ), $this->__inforecord_array );
+			$this->url_args = array_map( function($element) { return $element['value']; }, $this->__inforecord_array );
 		}
 		return $this->url_args;
 	}

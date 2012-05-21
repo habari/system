@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-13 00:00+0000\n"
+"POT-Creation-Date: 2012-05-20 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,7 +111,7 @@ msgstr ""
 
 #: plugins/undelete/undelete.plugin.php:181
 #: plugins/flickrsilo/flickrsilo.plugin.php:876 themes/charcoal/theme.php:66
-#: admin/themes.php:68 handlers/adminthemeshandler.php:134
+#: admin/themes.php:68 handlers/adminthemeshandler.php:145
 #: classes/post.php:976
 msgid "Save"
 msgstr ""
@@ -1205,7 +1205,7 @@ msgstr ""
 msgid "Displaying posts tagged: %s and not %s"
 msgstr ""
 
-#: themes/charcoal/theme.php:150 classes/theme.php:902
+#: themes/charcoal/theme.php:150 classes/theme.php:903
 msgid "No Comments"
 msgstr ""
 
@@ -1790,7 +1790,7 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
-#: admin/formcontrols/formcontrol_textmulti.php:16 classes/formui.php:1707
+#: admin/formcontrols/formcontrol_textmulti.php:16 classes/formui.php:1709
 msgid "remove"
 msgstr ""
 
@@ -1836,15 +1836,20 @@ msgstr ""
 msgid "Legacy theme."
 msgstr ""
 
-#: admin/themes.php:122
-msgid "End Preview"
+#: admin/themes.php:120
+#, php-format
+msgid "This theme requires the parent theme named \"%s\"."
 msgstr ""
 
 #: admin/themes.php:124
+msgid "End Preview"
+msgstr ""
+
+#: admin/themes.php:126
 msgid "Preview"
 msgstr ""
 
-#: admin/themes.php:126 handlers/adminpluginshandler.php:92
+#: admin/themes.php:128 handlers/adminpluginshandler.php:92
 #: handlers/adminpluginshandler.php:96 handlers/installhandler.php:227
 msgid "Activate"
 msgstr ""
@@ -2088,53 +2093,53 @@ msgstr ""
 msgid "You did not save the changes you made. \\nLeaving this page will result in the lose of data."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:88
+#: handlers/adminthemeshandler.php:97
 #, php-format
 msgid "Activated theme '%s'"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:102
+#: handlers/adminthemeshandler.php:112
 #, php-format
 msgid "Ended the preview of the theme '%s'"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:106
+#: handlers/adminthemeshandler.php:116
 #, php-format
 msgid "Previewing theme '%s'"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:124 handlers/adminthemeshandler.php:127
+#: handlers/adminthemeshandler.php:135 handlers/adminthemeshandler.php:138
 msgid "Block Display Settings"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:130
+#: handlers/adminthemeshandler.php:141
 msgid "Block Title:"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:133
+#: handlers/adminthemeshandler.php:144
 msgid "Display Block Title:"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:188
+#: handlers/adminthemeshandler.php:199
 msgid "A new block must first have a name."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:204
+#: handlers/adminthemeshandler.php:215
 #, php-format
 msgid "Added new block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:227
+#: handlers/adminthemeshandler.php:238
 #, php-format
 msgid "Deleted block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:230
+#: handlers/adminthemeshandler.php:241
 #, php-format
 msgid "Failed to delete block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:278
+#: handlers/adminthemeshandler.php:289
 msgid "Saved block areas settings."
 msgstr ""
 
@@ -3398,11 +3403,11 @@ msgstr ""
 msgid "The value entered is greater than the maximum of %d."
 msgstr ""
 
-#: classes/formui.php:1707
+#: classes/formui.php:1709
 msgid "Remove item"
 msgstr ""
 
-#: classes/formui.php:1711
+#: classes/formui.php:1713
 msgid "Remove this item?"
 msgstr ""
 
@@ -3556,22 +3561,32 @@ msgstr ""
 msgid "There is no valid theme currently installed."
 msgstr ""
 
-#: classes/themes.php:197
+#: classes/themes.php:188
+#, php-format
+msgid "This theme requires the parent theme named \"%s\" to be present prior to activation."
+msgstr ""
+
+#: classes/themes.php:196
+#, php-format
+msgid "This theme requires the feature \"<a href=\"%2$s\">%1$s</a>\" to be present prior to activation."
+msgstr ""
+
+#: classes/themes.php:232
 #, php-format
 msgid "Activated Theme: %s"
 msgstr ""
 
-#: classes/themes.php:215
+#: classes/themes.php:253
 #, php-format
 msgid "Previewed Theme: %s"
 msgstr ""
 
-#: classes/themes.php:227
+#: classes/themes.php:268
 #, php-format
 msgid "Canceled Theme Preview: %s"
 msgstr ""
 
-#: classes/themes.php:257
+#: classes/themes.php:298
 msgid "Theme not installed."
 msgstr ""
 
@@ -3669,28 +3684,28 @@ msgid ""
 "  %s(%s)\n"
 msgstr ""
 
-#: classes/theme.php:262
+#: classes/theme.php:263
 msgid "Whoops! 404. The page you were trying to access is not really there. Please try again."
 msgstr ""
 
-#: classes/theme.php:670
+#: classes/theme.php:671
 #, php-format
 msgid "Content could not be displayed. One of the following templates - %s - has to be present in the active theme."
 msgstr ""
 
-#: classes/theme.php:828
+#: classes/theme.php:829
 msgid "Previous"
 msgstr ""
 
-#: classes/theme.php:855
+#: classes/theme.php:856
 msgid "Next"
 msgstr ""
 
-#: classes/theme.php:881
+#: classes/theme.php:882
 msgid "Read Comments"
 msgstr ""
 
-#: classes/theme.php:907
+#: classes/theme.php:908
 #, php-format
 msgid "%s Comment"
 msgid_plural "%s Comments"

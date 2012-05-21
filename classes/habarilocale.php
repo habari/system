@@ -118,7 +118,7 @@ class HabariLocale
 				$dirs = array_merge( $dirs, Utils::glob( $localedir . '*', GLOB_ONLYDIR | GLOB_MARK ) );
 			}
 		}
-		$dirs = array_filter( $dirs, create_function( '$a', 'return file_exists($a . "LC_MESSAGES/habari.mo");' ) );
+		$dirs = array_filter( $dirs, function( $a ) {return file_exists($a . "LC_MESSAGES/habari.mo"); } );
 
 		$locales = array_map( 'basename', $dirs );
 		ksort( $locales );

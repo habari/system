@@ -128,9 +128,8 @@ class DB extends Singleton
 
 	/**
 	 * Queries the database for a given SQL command.
-	 * @param query       the SQL query text
-	 * @param args        array of values to use for placeholder replacement
-	 * @param class_name  (optional) name of class name to wrangle returned data to
+	 * @param string $query the SQL query text
+	 * @param array $args array of values to use for placeholder replacement
 	 * @return bool
 	 */
 	public static function query( $query, $args = array() )
@@ -236,9 +235,9 @@ class DB extends Singleton
 
 	/**
 	 * Execute a query and return the results as an array of objects
-	 * @param query   the query to execute
-	 * @param args    array of arguments to pass for prepared statements
-	 * @param string Optional class name for row result objects
+	 * @param string $query the query to execute
+	 * @param array $args array of arguments to pass for prepared statements
+	 * @param string $class_name Optional class name for row result objects
 	 * @return array An array of QueryRecord or the named class each containing the row data
 	 * <code>$ary = DB::get_results( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>
 	 **/

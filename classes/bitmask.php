@@ -6,6 +6,9 @@
 
 /**
  * Class to wrap around bitmap field functionality
+ *
+ * @property integer $value The internal numeric value of the Bitmask
+ * @property integer $full The internal value of a fully-on Bitmask
  */
 class Bitmask
 {
@@ -19,6 +22,7 @@ class Bitmask
 	 *
 	 * @param array $flags An array of flag names
 	 * @param integer $value (optional) a combined bitmask value
+	 * @throws InvalidArgumentException
 	 */
 	public function __construct( $flags = null, $value = null )
 	{
@@ -58,8 +62,10 @@ class Bitmask
 	/**
 	 * Magic setter method for flag values.
 	 *
-	 * @param bit   integer representing the mask bit
-	 * @param on    on or off?
+	 * @param string $bit The name of the Bitmask part to set
+	 * @param mixed $on The value to set the bit to
+	 * @throws InvalidArgumentException
+	 * @return mixed The set value
 	 */
 	public function __set( $bit, $on )
 	{
@@ -131,7 +137,8 @@ class Bitmask
 	/**
 	 * Magic getter method for flag status
 	 *
-	 * @param bit integer representing the mask bit to test
+	 * @param int $bit representing the mask bit to test
+	 * @throws InvalidArgumentException
 	 * @return boolean
 	 */
 	public function __get( $bit )
@@ -150,11 +157,11 @@ class Bitmask
 			throw new InvalidArgumentException( _t( 'Bitmask cannot get non-existent flag' ) );
 		}
 	}
-	
+
 	/**
 	 * Magic check-whether-flag-exists method
-	 * 
-	 * @param flag string of flag name
+	 *
+	 * @param string $flag of flag name
 	 * @return boolean
 	 */
 	public function __isset( $flag )
@@ -162,6 +169,10 @@ class Bitmask
 		return $flag === 'full' || $flag === 'value' || in_array( $flag, $this->flags );
 	}
 
+	/**
+	 * Convert this Bitmask into a string, based ont he flags that are set
+	 * @return string Converted bitmask value
+	 */
 	public function __tostring()
 	{
 		if ( $this->value === $this->full ) {

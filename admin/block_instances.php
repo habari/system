@@ -26,5 +26,22 @@
 		</div>
 	</div>
 	<?php endforeach; ?>
+
+	<?php foreach ( $invalid_block_instances as $instance ): ?>
+	<div class="block_instance invalid_block">
+		<div class="block_drag block_instance_<?php echo $instance->id; ?>">
+			<h3><?php echo Utils::htmlspecialchars($instance->title); ?></h3>
+			<ul class="instance_controls dropbutton">
+				<li><a href="#"
+							 onclick="themeManage.delete_block(<?php echo $instance->id; ?>);return false;"><?php _e('Delete'); ?></a>
+				</li>
+			</ul>
+			<p>
+				<small><?php echo $instance->invalid_message; ?></small>
+			</p>
+		</div>
+	</div>
+	<?php endforeach; ?>
+
 </div>
 <script type="text/javascript">$(function(){findChildren();});</script>

@@ -311,7 +311,7 @@ class Plugins
 				}
 			}
 			// make sure things work on Windows
-			self::$plugin_files = array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), self::$plugin_files );
+			self::$plugin_files = array_map( function($s) {return str_replace('\\', '/', $s);}, self::$plugin_files );
 		}
 		return self::$plugin_files;
 	}
@@ -332,7 +332,7 @@ class Plugins
 	*/
 	public static function get_by_interface( $interface )
 	{
-		return array_filter( self::$plugins, create_function( '$a', 'return $a instanceof ' . $interface . ';' ) );
+		return array_filter( self::$plugins, function( $plugin_obj ) use ($interface) { return $plugin_obj instanceof $interface; } );
 	}
 
 	/**
@@ -361,7 +361,7 @@ class Plugins
 					// Use the basename of the file as the index to use the named plugin from the last directory in $dirs
 					array_map( 'basename', $dirfiles ),
 					// massage the filenames so that this works on Windows
-					array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), $dirfiles )
+					array_map( function($s) {return str_replace('\\', '/', $s);}, $dirfiles )
 				);
 				$plugins = array_merge( $plugins, $dirfiles );
 			}
@@ -660,12 +660,12 @@ class Plugins
 		}
 		// If the file list is not identical, then they've changed.
 		$new_plugin_files = Plugins::list_all();
-		$old_plugin_files = array_map( create_function( '$a', 'return $a["file"];' ), $old_plugins );
+		$old_plugin_files = Utils::array_map_field($old_plugins, 'file');
 		if ( count( array_intersect( $new_plugin_files, $old_plugin_files ) ) != count( $new_plugin_files ) ) {
 			return true;
 		}
 		// If the files are not identical, then they've changed.
-		$old_plugin_checksums = array_map( create_function( '$a', 'return $a["checksum"];' ), $old_plugins );
+		$old_plugin_checksums = Utils::array_map_field($old_plugins, 'checksum');
 		$new_plugin_checksums = array_map( 'md5_file', $new_plugin_files );
 		if ( count( array_intersect( $old_plugin_checksums, $new_plugin_checksums ) ) != count( $new_plugin_checksums ) ) {
 			return true;
@@ -685,7 +685,7 @@ class Plugins
 			$plugin_file = MultiByte::substr( $plugin_file, MultiByte::strlen( HABARI_PATH ) );
 		}
 
-		$plugin_data = array_map( create_function( '$a', 'return array( "file" => $a, "checksum" => md5_file( $a ) );' ), $plugin_files );
+		$plugin_data = array_map( function($a) {return array( 'file' => $a, 'checksum' => md5_file( $a ) ); }, $plugin_files );
 		Options::set( 'plugins_present', $plugin_data );
 	}
 

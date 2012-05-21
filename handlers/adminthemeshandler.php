@@ -17,9 +17,7 @@ class AdminThemesHandler extends AdminHandler
 	public function get_themes()
 	{
 		$all_themes = Themes::get_all_data();
-		// @todo Make this a closure in php 5.3
-		$fn = create_function('$theme_data', 'return $theme_data["name"];');
-		$theme_names = array_map($fn, $all_themes);
+		$theme_names = Utils::array_map_field($all_themes, 'name');
 
 		$available_updates = Options::get( 'updates_available', array() );
 
@@ -52,8 +50,8 @@ class AdminThemesHandler extends AdminHandler
 		$this->theme->areas = $this->get_areas(0);
 		$this->theme->previewed = Themes::get_theme_dir( false );
 
-		$this->theme->blocks = Plugins::filter( 'block_list', array() );
-		$this->theme->block_instances = DB::get_results( 'SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block' );
+		$this->prepare_block_list();
+
 		$blocks_areas_t = DB::get_results( 'SELECT b.*, ba.scope_id, ba.area, ba.display_order FROM {blocks} b INNER JOIN {blocks_areas} ba ON ba.block_id = b.id ORDER BY ba.scope_id ASC, ba.area ASC, ba.display_order ASC', array() );
 		$blocks_areas = array();
 		foreach ( $blocks_areas_t as $block ) {
@@ -206,8 +204,7 @@ class AdminThemesHandler extends AdminHandler
 			$block = new Block( array( 'title' => $title, 'type' => $type ) );
 			$block->insert();
 
-			$this->theme->blocks = Plugins::filter( 'block_list', array() );
-			$this->theme->block_instances = DB::get_results( 'SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block' );
+			$this->prepare_block_list();
 			$this->theme->active_theme = Themes::get_active_data( true );
 
 			$this->display( 'block_instances' );
@@ -241,8 +238,8 @@ class AdminThemesHandler extends AdminHandler
 			$msg = json_encode( _t( 'Failed to delete block "%1s" of type "%2s".', array( $block->title, $block->type ) ) );
 		}
 
-		$this->theme->blocks = Plugins::filter( 'block_list', array() );
-		$this->theme->block_instances = DB::get_results( 'SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block' );
+		$this->prepare_block_list();
+
 		$this->theme->active_theme = Themes::get_active_data( true );
 
 		$this->display( 'block_instances' );
@@ -327,6 +324,28 @@ class AdminThemesHandler extends AdminHandler
 		}
 		$areas = Plugins::filter('areas', $areas, $scope);
 		return $areas;
+	}
+
+	/**
+	 * Load the block types and block instances into the appropriate structures for the theme to output
+	 */
+	function prepare_block_list() {
+		$block_types = Plugins::filter( 'block_list', array() );
+		$all_block_instances = DB::get_results( 'SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block' );
+		$block_instances = array();
+		$invalid_block_instances = array();
+		foreach($all_block_instances as $instance) {
+			if(isset($block_types[$instance->type])) {
+				$block_instances[] = $instance;
+			}
+			else {
+				$instance->invalid_message = _t('This data is for a block of type "%s", which is no longer provided by a theme or plugin.', array($instance->type));
+				$invalid_block_instances[] = $instance;
+			}
+		}
+		$this->theme->blocks = $block_types;
+		$this->theme->block_instances = $block_instances;
+		$this->theme->invalid_block_instances = $invalid_block_instances;
 	}
 }
 ?>

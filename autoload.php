@@ -30,11 +30,13 @@ function habari_autoload( $class_name )
 			HABARI_PATH . '/user/handlers',
 		);
 
+		$lower_basename = function($string) { return strtolower(basename($string)); };
+
 		// For each directory, save the available files in the $files array.
 		foreach ( $dirs as $dir ) {
 			$glob = glob( $dir . '/*.php' );
 			if ( $glob === false || empty( $glob ) ) continue;
-			$fnames = array_map( create_function( '$a', 'return strtolower(basename($a));' ), $glob );
+			$fnames = array_map( $lower_basename, $glob );
 			$files = array_merge( $files, array_combine( $fnames, $glob ) );
 		}
 
@@ -51,7 +53,7 @@ function habari_autoload( $class_name )
 			$glob_handlers = glob( $site_user_dir . '/handlers/*.php' );
 			$glob = array_merge( $glob_classes, $glob_handlers );
 			if ( $glob !== false && !empty( $glob ) ) {
-				$fnames = array_map( create_function( '$a', 'return strtolower(basename($a));' ), $glob );
+				$fnames = array_map( $lower_basename, $glob );
 				$files = array_merge( $files, array_combine( $fnames, $glob ) );
 			}
 		}

@@ -29,7 +29,7 @@ class Themes
 				$themes = array_merge( $themes, Utils::glob( $dir, GLOB_ONLYDIR | GLOB_MARK ) );
 			}
 
-			$themes = array_filter( $themes, create_function( '$a', 'return file_exists( $a . "/theme.xml" );' ) );
+			$themes = array_filter( $themes, function($a) {return file_exists( $a . "/theme.xml" );} );
 			$themefiles = array_map( 'basename', $themes );
 			self::$all_themes = array_combine( $themefiles, $themes );
 		}
@@ -177,8 +177,7 @@ class Themes
 	{
 		$all_themes = Themes::get_all_data();
 		// @todo Make this a closure in php 5.3
-		$fn = create_function('$theme_data', 'return $theme_data["name"];');
-		$theme_names = array_map($fn, $all_themes);
+		$theme_names = Utils::array_map_field($all_themes, 'name');
 
 		$theme_data = $all_themes[$theme_dir];
 

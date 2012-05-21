@@ -937,7 +937,7 @@ class Theme extends Pluggable
 	 */
 	public function theme_query_time()
 	{
-		return array_sum( array_map( create_function( '$a', 'return $a->total_time;' ), DB::get_profiles() ) );
+		return array_sum( Utils::array_map_field(DB::get_profiles(), 'total_time') );
 	}
 
 	/**

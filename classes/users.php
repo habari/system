@@ -83,7 +83,7 @@ class Users extends ArrayObject
 
 				if ( isset( $paramset['not:id'] ) ) {
 					if ( is_array( $paramset['not:id'] ) ) {
-						array_walk( $paramset['not:id'], create_function( '&$a,$b', '$a = intval( $a );' ) );
+						array_walk( $paramset['not:id'], function(&$a) {$a = intval( $a );} );
 						$where[] = "{users}.id NOT IN (" . implode( ',', array_fill( 0, count( $paramset['not:id'] ), '?' ) ) . ")";
 						$params = array_merge( $params, $paramset['not:id'] );
 					}

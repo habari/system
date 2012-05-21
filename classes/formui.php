@@ -36,7 +36,7 @@ class FormContainer
 	 *
 	 * @param string $name The name of the control
 	 * @param string $type A classname, or the postfix of a class starting 'FormControl' that will be used to create the control
-	 * @return FormControl An instance of the named FormControl descendant.
+	 * @return FormControl|FormContainer An instance of the named FormControl descendant.
 	 */
 	public function append()
 	{
@@ -71,7 +71,7 @@ class FormContainer
 	 * @param string The name of the control to insert the new control in front of
 	 * @param string The type of the new control
 	 * @param string The name of the new control
-	 * @return FormControl The new control instance
+	 * @return FormControl|FormContainer The new control instance
 	 */
 	public function insert()
 	{

@@ -1920,11 +1920,8 @@ body.page-themes .currenttheme .thumb {
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
-	height: 18px;
 }
 #block_instances .block_instance h3 {
-	display: inline;
-	position: absolute;
 	color: #333;
 }
 #block_instances .block_instance h3 small {
@@ -1952,6 +1949,9 @@ body.page-themes .currenttheme .thumb {
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
+#block_instances .invalid_block {
+	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABZ0RVh0Q3JlYXRpb24gVGltZQAwNS8yMC8xMsEwy8oAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzbovLKMAAAAK0lEQVQImWXLsQ3AQAzDQHop77/ZpXKTJ6CGAkPVotsj0NxzzMz2yxY9An28ADPg8yUY/AAAAABJRU5ErkJggg==);
+}
 #block_instances .ui-draggable-dragging {
 	border-top: 3px double #888888;
 	border-bottom: 3px double #888888;
@@ -1963,6 +1963,7 @@ body.page-themes .currenttheme .thumb {
 }
 #block_instances .block_instance .dropbutton {
 	right: 320px;
+  margin-top: -1.8em;
 }
 #block_instances .ui-draggable-dragging .instance_controls {
 	display: none;

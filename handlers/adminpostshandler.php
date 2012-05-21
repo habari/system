@@ -246,12 +246,12 @@ class AdminPostsHandler extends AdminHandler
 		$statuses = array_keys( Post::list_post_statuses() );
 		array_shift( $statuses );
 		$labels = array_map(
-			create_function( '$a', 'return MultiByte::ucfirst(Plugins::filter("post_status_display", $a));' ),
+			function($a) {return MultiByte::ucfirst(Plugins::filter("post_status_display", $a));},
 			$statuses
 		);
 		$terms = array_map(
-				create_function( '$a', 'return "status:{$a}";' ),
-				$statuses
+			function($a) {return "status:{$a}";},
+			$statuses
 		);
 		$statuses = array_combine( $terms, $labels );
 
@@ -259,11 +259,11 @@ class AdminPostsHandler extends AdminHandler
 		$types = array_keys( Post::list_active_post_types() );
 		array_shift( $types );
 		$labels = array_map(
-			create_function( '$a', 'return Plugins::filter("post_type_display", $a, "singular");' ),
+			function($a) {return Plugins::filter("post_type_display", $a, "singular");},
 			$types
 		);
 		$terms = array_map(
-			create_function( '$a', 'return "type:{$a}";' ),
+			function($a) {return "type:{$a}";},
 			$types
 		);
 		$types = array_combine( $terms, $labels );

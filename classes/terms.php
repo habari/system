@@ -76,10 +76,9 @@ class Terms extends ArrayObject implements FormStorage
 						$terms[$k] = new $term_class( $term );
 					}
 				}
-//Utils::debug($terms);
 			}
 			else {
-				array_walk( $terms, create_function( '&$tag', '$tag = new ' . $term_class . '($tag);' ) );
+				array_walk( $terms, function( &$tag ) use ($term_class) {$tag = new $term_class($tag);} );
 			}
 			return new Terms( $terms );
 		}
