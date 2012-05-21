@@ -17,6 +17,29 @@
  * unset ( $this->info->option1 ); // delete "option1" info record
  * </code>
  *
+ * @property integer $id The unique id for this post in the posts table
+ * @property string $slug The URL-readable identifier for this post
+ * @property string $title The user-supplied title of this post
+ * @property string $guid The globally-unique identifier for this post
+ * @property string $content The content of this post
+ * @property string $cached_content Nobody really knows what this is for
+ * @property integer $user_id The User id of the author of this post
+ * @property integer $status The integer status of this post
+ * @property HabariDateTime $pubdate The published date of this post
+ * @property HabariDateTime $updated The last publicly-accessible updated date of this post
+ * @property HabariDateTime $modified The last modified date of this post
+ * @property integer $content_type The integer representation of the content type of this post
+ * @property string $permalink The URL for this single post
+ * @property string $statusname The string representation of the status of the post
+ * @property string $typename The string representation of the type of the post
+ * @property Terms $tags A Terms object holding tag terms for this post
+ * @property Comments $comments A Comments object holding Comment objects for this post
+ * @property integer $comment_count The number of comments on this post
+ * @property integer $approved_comment_cound The number of approved comments on this post
+ * @property string $comment_feed_link The URL of the feed for comments on this post
+ * @property User $author The User object for the author of this post
+ * @property InfoRecords $info The InfoRecords for the postinfo of this post
+ *
  */
 class Post extends QueryRecord implements IsContent, FormStorage
 {
@@ -28,15 +51,18 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	private $tags_object = null;
 	private $comments_object = null;
 	private $author_object = null;
+	/** @var array $tokens */
 	private $tokens = null;
 
+	/** @var InfoRecords $inforecords */
 	private $inforecords = null;
 
 	protected $url_args;
+	public $schema;
 
 	/**
 	 * returns an associative array of active post types
-	 * @param bool whether to force a refresh of the cached values
+	 * @param bool $refresh whether to force a refresh of the cached values
 	 * @return array An array of post type names => integer values
 	 */
 	public static function list_active_post_types( $refresh = false )
@@ -58,7 +84,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 	/**
 	 * returns an associative array of all post types
-	 * @param bool whether to force a refresh of the cached values
+	 * @param bool $refresh whether to force a refresh of the cached values
 	 * @return array An array of post type names => (integer values, active values)
 	 */
 	public static function list_all_post_types( $refresh = false )
@@ -84,7 +110,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	/**
 	 * Activate an existing post type
 	 *
-	 * @param string The post type to activate
+	 * @param string $type The post type to activate
+	 * @return bool True on success
 	 */
 	public static function activate_post_type( $type )
 	{
@@ -107,7 +134,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	/**
 	 * Deactivate a post type
 	 *
-	 * @param string The post type to deactivate
+	 * @param string $type The post type to deactivate
+	 * @return bool True on success
 	 */
 	public static function deactivate_post_type( $type )
 	{
@@ -126,7 +154,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 * returns an associative array of post statuses
 	 * @param mixed $all true to list all statuses, not just external ones, Post to list external and any that match the Post status
 	 * @param boolean $refresh true to force a refresh of the cached values
-	 * @return array An array of post statuses names => interger values
+	 * @return array An array of post statuses names => integer values
 	 */
 	public static function list_post_statuses( $all = true, $refresh = false )
 	{
@@ -158,8 +186,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 	/**
 	 * returns the integer value of the specified post status, or false
-	 * @param mixed a post status name or value
-	 * @return mixed an integer or boolean false
+	 * @param string|integer $name a post status name or value
+	 * @return integer|boolean an integer or boolean false
 	 */
 	public static function status( $name )
 	{
@@ -175,8 +203,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 	/**
 	 * returns the friendly name of a post status, or null
-	 * @param mixed a post status value, or name
-	 * @return mixed a string of the status name, or null
+	 * @param string|integer $status a post status value, or name
+	 * @return string|null a string of the status name, or null
 	 */
 	public static function status_name( $status )
 	{
@@ -226,9 +254,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 	/**
 	 * inserts a new post type into the database, if it doesn't exist
-	 * @param string The name of the new post type
-	 * @param bool Whether the new post type is active or not
-	 * @return none
+	 * @param string $type The name of the new post type
+	 * @param bool $active Whether the new post type is active or not
 	 */
 	public static function add_new_type( $type, $active = true )
 	{
@@ -247,14 +274,14 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 		// now force a refresh of the caches, so the new/activated type
 		// is available for immediate use
-		$types = self::list_active_post_types( true );
-		$types = self::list_all_post_types( true );
+		self::list_active_post_types( true );
+		self::list_all_post_types( true );
 	}
 
 	/**
 	 * removes a post type from the database, if it exists and there are no posts
 	 * of the type
-	 * @param string The post type name
+	 * @param string $type The post type name
 	 * @return boolean
 	 *   true if post type has been deleted
 	 *   false if it has not been deleted (does not exist or there are posts using
@@ -276,8 +303,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 				// now force a refresh of the caches, so the removed type is no longer
 				// available for use
-				$types = self::list_active_post_types( true );
-				$types = self::list_all_post_types( true );
+				self::list_active_post_types( true );
+				self::list_all_post_types( true );
 
 				return true;
 			}
@@ -288,9 +315,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 	/**
 	 * inserts a new post status into the database, if it doesn't exist
-	 * @param string The name of the new post status
-	 * @param bool Whether this status is for internal use only.  If true, this status will NOT be presented to the user
-	 * @return none
+	 * @param string $status The name of the new post status
+	 * @param bool $internal Whether this status is for internal use only.  If true, this status will NOT be presented to the user
 	 */
 	public static function add_new_status( $status, $internal = false )
 	{
@@ -302,10 +328,15 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			DB::query( 'INSERT INTO {poststatus} (name, internal) VALUES (?, ?)', array( $status, $internal ) );
 			// force a refresh of the cache, so the new status
 			// is available for immediate use
-			$statuses = self::list_post_statuses( true, true );
+			self::list_post_statuses( true, true );
 		}
 	}
-	
+
+	/**
+	 * Delete a post status
+	 * @static
+	 * @param string $status The name of the status to delete
+	 */
 	public static function delete_post_status( $status )
 	{
 		
@@ -316,7 +347,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			DB::query( 'DELETE FROM {poststatus} WHERE name = :name', array( ':name' => $status ) );
 			
 			// force a refresh of the cache, so the status is removed immediately
-			$statuses = self::list_post_statuses( true, true );
+			self::list_post_statuses( true, true );
 			
 		}
 		
@@ -511,10 +542,9 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	}
 
 	/**
-	 * function setstatus
-	 * @param mixed the status to set it to. String or integer.
-	 * @return integer the status of the post, or false if the new status isn't valid
 	 * Sets the status for a post, given a string or integer.
+	 * @param string|integer $value the status to set it to
+	 * @return integer|boolean the status of the post, or false if the new status isn't valid
 	 */
 	private function setstatus( $value )
 	{
@@ -533,6 +563,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 	/**
 	 * Save the tags associated to this post into the terms and object_terms tables
+	 * @return bool True on success
 	 */
 	private function save_tags()
 	{
@@ -563,8 +594,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	}
 
 	/**
-	 * function insert
 	 * Saves a new post to the posts table
+	 * @return int|null The new post id on success, or false on failure
 	 */
 	public function insert()
 	{
@@ -579,7 +610,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$allow = true;
 		$allow = Plugins::filter( 'post_insert_allow', $allow, $this );
 		if ( ! $allow ) {
-			return;
+			return false;
 		}
 		
 		Plugins::act( 'post_insert_before', $this );
@@ -598,7 +629,9 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$this->newfields = array();
 		$this->info->commit( DB::last_insert_id() );
 		$this->save_tags();
+		// This fires __call() which dispatches to any plugins on action_post_call_create_default_permissions()
 		$this->create_default_permissions();
+		$this->create_default_tokens();
 		EventLog::log( _t( 'New post %1$s (%2$s);  Type: %3$s; Status: %4$s', array( $this->id, $this->slug, Post::type_name( $this->content_type ), $this->statusname ) ), 'info', 'content', 'habari' );
 		Plugins::act( 'post_insert_after', $this );
 
@@ -611,9 +644,9 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	}
 
 	/**
-	 * function update
 	 * Updates an existing post in the posts table
 	 * @param bool $minor Indicates if this is a major or minor update
+	 * @return bool True on success
 	 */
 	public function update( $minor = true )
 	{
@@ -633,7 +666,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$allow = true;
 		$allow = Plugins::filter( 'post_update_allow', $allow, $this );
 		if ( ! $allow ) {
-			return;
+			return false;
 		}
 		Plugins::act( 'post_update_before', $this );
 
@@ -674,15 +707,15 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	}
 
 	/**
-	 * function delete
-	 * Deletes an existing post
+	 * Deletes this post instance
+	 * @return bool True on success
 	 */
 	public function delete()
 	{
 		$allow = true;
 		$allow = Plugins::filter( 'post_delete_allow', $allow, $this );
 		if ( ! $allow ) {
-			return;
+			return false;
 		}
 		// invoke plugins
 		Plugins::act( 'post_delete_before', $this );
@@ -713,7 +746,6 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	}
 
 	/**
-	 * function publish
 	 * Updates an existing post to published status
 	 * @return boolean True on success, false if not
 	 */
@@ -725,7 +757,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$allow = true;
 		$allow = Plugins::filter( 'post_publish_allow', $allow, $this );
 		if ( ! $allow ) {
-			return;
+			return false;
 		}
 		Plugins::act( 'post_publish_before', $this );
 
@@ -750,9 +782,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	}
 
 	/**
-	 * function __get
 	 * Overrides QueryRecord __get to implement custom object properties
-	 * @param string Name of property to return
+	 * @param string $name Name of property to return
 	 * @return mixed The requested field value
 	 */
 	public function __get( $name )
@@ -814,9 +845,9 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	}
 
 	/**
-	 * function __set
 	 * Overrides QueryRecord __set to implement custom object properties
-	 * @param string Name of property to return
+	 * @param string $name Name of property to return
+	 * @param mixed $value Value to set
 	 * @return mixed The requested field value
 	 */
 	public function __set( $name, $value )
@@ -1118,7 +1149,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	/**
 	 * Manage this post's comment form
 	 *
-	 * @param String context // What is $context for ?
+	 * @param string $context The context in which the form is used, used to facilitate plugin alteration of the comment form in different circumstances
 	 * @return FormUI The comment form for this post
 	 */
 	public function comment_form( $context = 'public' )
@@ -1325,9 +1356,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 
 	/**
-	 * function get_comments
 	 * Gets the comments for the post
-	 * @return &array A reference to the comments array for this post
+	 * @return Comments A reference to the comments array for this post
 	 */
 	private function &get_comments()
 	{
@@ -1402,7 +1432,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 	/**
 	 * Returns the ascending post, relative to this post, according to params
-	 * @params The params by which to work out what is the ascending post
+	 * @param null $params The params by which to work out what is the ascending post
 	 * @return Post The ascending post
 	 */
 	public function ascend( $params = null )
@@ -1412,7 +1442,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 	/**
 	 * Returns the descending post, relative to this post, according to params
-	 * @params The params by which to work out what is the descending post
+	 * @param $params The params by which to work out what is the descending post
 	 * @return Post The descending post
 	 */
 	public function descend( $params = null )
@@ -1438,9 +1468,9 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function create_default_tokens()
 	{
-		$tokens = array();
+		$tokens = $this->content_type();
 		$tokens = Plugins::filter( 'post_tokens', $tokens, $this );
-		$this->add_tokens( $this->content_type() );
+		$this->add_tokens( $tokens );
 	}
 
 	/**
@@ -1463,13 +1493,14 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 	/**
 	 * Add a token to a post
-	 * @param mixed $token The name of the permission to add, or an array of permissions to add
+	 * @param array|string $tokens The name of the permission to add, or an array of permissions to add
 	 */
 	public function add_tokens( $tokens )
 	{
 		$this->get_tokens();
 		$tokens = Utils::single_array( $tokens );
 		$tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
+		$tokens = array_filter($tokens);
 		$add_tokens = array_diff( $tokens, $this->tokens );
 		$add_tokens = array_unique( $add_tokens );
 		foreach ( $add_tokens as $token_id ) {
@@ -1490,7 +1521,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 	/**
 	 * Deletes tokens from a post
-	 * @param mixed $token The name of the permission to remove, or an array of permissions to remove
+	 * @param array|string $tokens The name of the permission to remove, or an array of permissions to remove
 	 */
 	public function remove_tokens( $tokens )
 	{
@@ -1580,7 +1611,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	/**
 	 * How to display the built-in post types.
 	 *
-	 * @param string $status The built-in type name
+	 * @param string $type The type of Post
 	 * @param string $foruse Either 'singular' or 'plural'
 	 * @return string The translated type name, or the built-in name if there is no translation
 	 */
