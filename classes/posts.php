@@ -199,7 +199,7 @@ class Posts extends ArrayObject implements IsContent
 				}
 
 				if ( isset( $paramset['not:status'] ) && ( $paramset['not:status'] != 'any' ) && ( 0 !== $paramset['not:status'] ) ) {
-					$where->in('{posts}.status', $paramset['not:status'], 'posts_status', function($a) {return Post::status( $a );}, null, false );
+					$where->in('{posts}.status', $paramset['not:status'], 'posts_not_status', function($a) {return Post::status( $a );}, null, false );
 				}
 
 				if ( isset( $paramset['content_type'] ) && ( $paramset['content_type'] != 'any' ) && ( 0 !== $paramset['content_type'] ) ) {
@@ -220,7 +220,7 @@ class Posts extends ArrayObject implements IsContent
 					$where->in('{posts}.user_id', $paramset['user_id'], 'posts_user_id', 'intval');
 				}
 				if ( isset( $paramset['not:user_id'] ) && 0 !== $paramset['not:user_id'] ) {
-					$where->in('{posts}.user_id', $paramset['not:user_id'], 'posts_user_id', 'intval', false);
+					$where->in('{posts}.user_id', $paramset['not:user_id'], 'posts_not_user_id', 'intval', false);
 				}
 
 				if ( isset( $paramset['vocabulary'] ) ) {
