@@ -1224,13 +1224,23 @@ class Utils
 	 *
 	 * @param Traversable $array An array of arrays or objects with similar keys or properties
 	 * @param string $field The name of a common field within each array/object
+	 * @param string $keyfield The name of a common field within each array/object to use as a key
 	 * @return array An array of the values of the specified field within each array/object
+	 * If no keyfield is supplied, the keys of the original array are preserved.
 	 */
-	public static function array_map_field($array, $field)
+	public static function array_map_field($array, $field, $keyfield = null)
 	{
-		return array_map( function( $element ) use ($field) {
-			return is_array($element) ? $element[$field] : (is_object($element) ? $element->$field : null);
-		}, $array);
+		if(empty($keyfield)) {
+			return array_map( function( $element ) use ($field) {
+				return is_array($element) ? $element[$field] : (is_object($element) ? $element->$field : null);
+			}, $array);
+		}
+		else {
+			return array_combine(
+				Utils::array_map_field($array, $keyfield),
+				Utils::array_map_field($array, $field)
+			);
+		}
 	}
 }
 ?>
