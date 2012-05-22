@@ -192,7 +192,7 @@ class AdminHandler extends ActionHandler
 		// Assemble Site Info
 		$siteinfo[ _t( 'Habari Version' ) ] = Version::get_habariversion();
 		if ( Version::is_devel() ) {
-			$siteinfo[ _t( 'Habari Version' ) ] .= " r" . Version::get_svn_revision();
+			$siteinfo[ _t( 'Habari Version' ) ] .= " " . Version::get_git_short_hash();
 		}
 
 		$siteinfo[ _t( 'Habari API Version' ) ] = Version::get_apiversion();
