@@ -192,13 +192,13 @@ class AdminHandler extends ActionHandler
 		// Assemble Site Info
 		$siteinfo[ _t( 'Habari Version' ) ] = Version::get_habariversion();
 		if ( Version::is_devel() ) {
-			$siteinfo[ _t( 'Habari Version' ) ] .= " r" . Version::get_svn_revision();
+			$siteinfo[ _t( 'Habari Version' ) ] .= " " . Version::get_git_short_hash();
 		}
 
 		$siteinfo[ _t( 'Habari API Version' ) ] = Version::get_apiversion();
 		$siteinfo[ _t( 'Habari DB Version' ) ] = Version::get_dbversion();
 		$siteinfo[ _t( 'Active Theme' ) ] = Options::get( 'theme_name' );
-		$siteinfo[ _t( 'Site Language' ) ] =  strlen( Options::get( 'system_locale' ) ) ? Options::get( 'system_locale' ) : 'en-us';
+		$siteinfo[ _t( 'System Locale' ) ] =  Options::get( 'system_locale', 'en-us' );
 		$this->theme->siteinfo = $siteinfo;
 
 		// Assemble System Info

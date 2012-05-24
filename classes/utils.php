@@ -1195,16 +1195,31 @@ class Utils
 	/**
 	 * Are we in a testing environment?
 	 * @static
+	 * @param string $key The querystring key that can specify the environment to use
 	 * @return bool True if this is a test environment.
 	 */
-	public static function env_test($key = 'usetest')
+	public static function env_test($key = '_useenv')
 	{
+		return Utils::env_is('test', $key);
+	}
+
+	/**
+	 * Are we in a specific environment?
+	 * @static
+	 * @param string $env The environment to test for
+	 * @param string $key The querystring key that can specify the environment to use
+	 * @return bool True if this is a test environment.
+	 */
+	public static function env_is($env, $key = '_useenv')
+	{
+		if(defined('UNIT_TEST')) {
+			$_GET[$key] = is_string(UNIT_TEST) ? UNIT_TEST : 'test';
+		}
 		if(
-			defined('UNIT_TEST') ||
-			(isset($_GET[$key]) && $_GET[$key] == 1) ||
-			(isset($_COOKIE[$key]) && $_COOKIE[$key] = 1 && (!isset($_GET[$key]) || $_GET[$key] == 1))
+			(isset($_GET[$key]) && $_GET[$key] == $env) ||
+			(isset($_COOKIE[$key]) && $_COOKIE[$key] == $env && (!isset($_GET[$key]) || $_GET[$key] == $env))
 		) {
-			setcookie($key, 1);
+			setcookie($key, $env);
 			return true;
 		}
 		else {
@@ -1212,7 +1227,6 @@ class Utils
 			return false;
 		}
 	}
-
 	/**
 	 * Given an array of arrays, return an array that contains the value of a particular common field
 	 * Example:
@@ -1224,23 +1238,13 @@ class Utils
 	 *
 	 * @param Traversable $array An array of arrays or objects with similar keys or properties
 	 * @param string $field The name of a common field within each array/object
-	 * @param string $keyfield The name of a common field within each array/object to use as a key
 	 * @return array An array of the values of the specified field within each array/object
-	 * If no keyfield is supplied, the keys of the original array are preserved.
 	 */
-	public static function array_map_field($array, $field, $keyfield = null)
+	public static function array_map_field($array, $field)
 	{
-		if(empty($keyfield)) {
-			return array_map( function( $element ) use ($field) {
-				return is_array($element) ? $element[$field] : (is_object($element) ? $element->$field : null);
-			}, $array);
-		}
-		else {
-			return array_combine(
-				Utils::array_map_field($array, $keyfield),
-				Utils::array_map_field($array, $field)
-			);
-		}
+		return array_map( function( $element ) use ($field) {
+			return is_array($element) ? $element[$field] : (is_object($element) ? $element->$field : null);
+		}, $array);
 	}
 }
 ?>
