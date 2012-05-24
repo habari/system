@@ -75,7 +75,7 @@ class AdminHandler extends ActionHandler
 	{
 		if ( !isset( $this->theme ) ) {
 			$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
-			$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+			$this->theme = Themes::create( '_admin', 'RawPHPEngine', $theme_dir );
 
 			// Add some default stylesheets
 			Stack::add( 'admin_stylesheet', array( Site::get_url( 'admin_theme' ) . '/css/admin.css', 'screen' ), 'admin' );
@@ -331,8 +331,8 @@ class AdminHandler extends ActionHandler
 			'create' => array( 'url' => '', 'title' => _t( 'Create content' ), 'text' => _t( 'New' ), 'hotkey' => 'N', 'submenu' => $createmenu ),
 			'manage' => array( 'url' => '', 'title' => _t( 'Manage content' ), 'text' => _t( 'Manage' ), 'hotkey' => 'M', 'submenu' => $managemenu ),
 			'comments' => array( 'url' => URL::get( 'admin', 'page=comments' ), 'title' => _t( 'Manage comments' ), 'text' => _t( 'Comments' ), 'hotkey' => 'C', 'access' => array( 'manage_all_comments' => true, 'manage_own_post_comments' => true ) ),
-			'tags' => array( 'url' => URL::get( 'admin', 'page=tags' ), 'title' => _t( 'Manage tags' ), 'text' => _t( 'Tags' ), 'hotkey' => 'A', 'access'=>array( 'manage_tags'=>true ), 'class' => 'over-spacer' ),
-			'dashboard' => array( 'url' => URL::get( 'admin', 'page=' ), 'title' => _t( 'View your user dashboard' ), 'text' => _t( 'Dashboard' ), 'hotkey' => 'D', 'class' => 'under-spacer' ),
+			'tags' => array( 'url' => URL::get( 'admin', 'page=tags' ), 'title' => _t( 'Manage tags' ), 'text' => _t( 'Tags' ), 'hotkey' => 'A', 'access'=>array( 'manage_tags'=>true ) ),
+			'dashboard' => array( 'url' => URL::get( 'admin', 'page=' ), 'title' => _t( 'View your user dashboard' ), 'text' => _t( 'Dashboard' ), 'hotkey' => 'D' ),
 			'options' => array( 'url' => URL::get( 'admin', 'page=options' ), 'title' => _t( 'View and configure site options' ), 'text' => _t( 'Options' ), 'hotkey' => 'O', 'access'=>array( 'manage_options'=>true ) ),
 			'themes' => array( 'url' => URL::get( 'admin', 'page=themes' ), 'title' => _t( 'Preview and activate themes' ), 'text' => _t( 'Themes' ), 'hotkey' => 'T', 'access'=>array( 'manage_theme'=>true ) ),
 			'plugins' => array( 'url' => URL::get( 'admin', 'page=plugins' ), 'title' => _t( 'Activate, deactivate, and configure plugins' ), 'text' => _t( 'Plugins' ), 'hotkey' => 'P', 'access'=>array( 'manage_plugins'=>true, 'manage_plugins_config' => true ) ),
@@ -340,8 +340,8 @@ class AdminHandler extends ActionHandler
 			'users' => array( 'url' => URL::get( 'admin', 'page=users' ), 'title' => _t( 'View and manage users' ), 'text' => _t( 'Users' ), 'hotkey' => 'U', 'access'=>array( 'manage_users'=>true ) ),
 			'profile' => array( 'url' => URL::get( 'admin', 'page=user' ), 'title' => _t( 'Manage your user profile' ), 'text' => _t( 'My Profile' ), 'hotkey' => 'Y', 'access'=>array( 'manage_self'=>true, 'manage_users'=>true ) ),
 			'groups' => array( 'url' => URL::get( 'admin', 'page=groups' ), 'title' => _t( 'View and manage groups' ), 'text' => _t( 'Groups' ), 'hotkey' => 'G', 'access'=>array( 'manage_groups'=>true ) ),
-			'logs' => array( 'url' => URL::get( 'admin', 'page=logs' ), 'title' => _t( 'View system log messages' ), 'text' => _t( 'Logs' ), 'hotkey' => 'L', 'access'=>array( 'manage_logs'=>true ), 'class' => 'over-spacer' ) ,
-			'logout' => array( 'url' => URL::get( 'auth', 'page=logout' ), 'title' => _t( 'Log out of the administration interface' ), 'text' => _t( 'Logout' ), 'hotkey' => 'X', 'class' => 'under-spacer' ),
+			'logs' => array( 'url' => URL::get( 'admin', 'page=logs' ), 'title' => _t( 'View system log messages' ), 'text' => _t( 'Logs' ), 'hotkey' => 'L', 'access'=>array( 'manage_logs'=>true ) ) ,
+			'logout' => array( 'url' => URL::get( 'auth', 'page=logout' ), 'title' => _t( 'Log out of the administration interface' ), 'text' => _t( 'Logout' ), 'hotkey' => 'X' ),
 		);
 
 		$mainmenus = array_merge( $adminmenu );
@@ -356,7 +356,7 @@ class AdminHandler extends ActionHandler
 		$mainmenus = Plugins::filter( 'adminhandler_post_loadplugins_main_menu', $mainmenus );
 
 		foreach ( $mainmenus as $key => $attrs ) {
-			if ( $page == $key ) {
+			if ( $page == $key && !isset($mainmenus[$key]['submenu'])) {
 				$mainmenus[$key]['selected'] = true;
 			}
 		}

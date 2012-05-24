@@ -284,11 +284,11 @@ a#site:hover {
 	background-color: #444;
 }
 
-#menulist li.selected a {
+#menulist li.selected > a {
 	background: url('../images/currentpageindicator.png') 8px center no-repeat;
 }
 
-#menulist li.selected a:hover, #menulist li.selected.carrot a {
+#menulist li.selected > a:hover, #menulist li.selected.carrot > a {
 	background: #444 url('../images/currentpageindicator.png') 8px center no-repeat;
 }
 
