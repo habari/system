@@ -189,6 +189,13 @@ class FormContainer
 				$template_name = basename($template, '.php');
 				$this->theme_obj->add_template($template_name, $template);
 			}
+			$list = array();
+			$list = Plugins::filter('available_templates', $list);
+			foreach($list as $template_name) {
+				if($template = Plugins::filter('include_template_file', null, $template_name)) {
+					$this->theme_obj->add_template($template_name, $template);
+				}
+			}
 		}
 		$this->theme_obj->start_buffer();
 		if ( $control instanceof FormControl ) {

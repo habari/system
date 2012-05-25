@@ -284,19 +284,19 @@ a#site:hover {
 	background-color: #444;
 }
 
-#menulist li.selected a {
+#menulist li.selected > a {
 	background: url('../images/currentpageindicator.png') 8px center no-repeat;
 }
 
-#menulist li.selected a:hover, #menulist li.selected.carrot a {
+#menulist li.selected > a:hover, #menulist li.selected.carrot > a {
 	background: #444 url('../images/currentpageindicator.png') 8px center no-repeat;
 }
 
-#menulist li#link-tags, #menulist li#link-logs {
+#menulist li.over-spacer {
 	padding-bottom: 5px;
 }
 
-#menulist li#link-dashboard, #menulist li#link-logout {
+#menulist li.under-spacer {
 	border-top: 1px solid #444;
 	padding-top: 5px;
 }
