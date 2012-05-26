@@ -197,6 +197,9 @@ class Comments extends ArrayObject
 		// Only show comments to which the current user has permission to read the associated post
 		if ( isset( $paramset['ignore_permissions'] ) ) {
 			$master_perm_where = '';
+			// Set up the merge params
+			$merge_params = array( $join_params, $params );
+			$params = call_user_func_array( 'array_merge', $merge_params );
 		}
 		else {
 			// This set of wheres will be used to generate a list of comment_ids that this user can read
