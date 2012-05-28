@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-20 00:00+0000\n"
+"POT-Creation-Date: 2012-05-27 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,8 +111,8 @@ msgstr ""
 
 #: plugins/undelete/undelete.plugin.php:181
 #: plugins/flickrsilo/flickrsilo.plugin.php:876 themes/charcoal/theme.php:66
-#: admin/themes.php:68 handlers/adminthemeshandler.php:145
-#: classes/post.php:976
+#: admin/themes.php:68 handlers/adminthemeshandler.php:143
+#: classes/post.php:1006
 msgid "Save"
 msgstr ""
 
@@ -195,143 +195,143 @@ msgstr ""
 msgid "Delete files from media silos"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:414
+#: plugins/habarisilo/habarisilo.plugin.php:416
 msgid "Browse"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:416
-#: plugins/habarisilo/habarisilo.plugin.php:574 admin/plugins.php:88
+#: plugins/habarisilo/habarisilo.plugin.php:418
+#: plugins/habarisilo/habarisilo.plugin.php:576 admin/plugins.php:88
 msgid "Upload"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:419
+#: plugins/habarisilo/habarisilo.plugin.php:421
 msgid "Create Directory"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:422
+#: plugins/habarisilo/habarisilo.plugin.php:424
 msgid "Delete Directory"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:458
+#: plugins/habarisilo/habarisilo.plugin.php:460
 msgid "Parent Directory:"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:463
+#: plugins/habarisilo/habarisilo.plugin.php:465
 msgid "What would you like to call the new directory?"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:465 themes/mzingi/theme.php:114
-#: themes/charcoal/theme.php:224 classes/post.php:1241
+#: plugins/habarisilo/habarisilo.plugin.php:467 themes/mzingi/theme.php:114
+#: themes/charcoal/theme.php:224 classes/post.php:1271
 msgid "Submit"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:477
+#: plugins/habarisilo/habarisilo.plugin.php:479
 msgid "Directory:"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:482
+#: plugins/habarisilo/habarisilo.plugin.php:484
 msgid "Are you sure you want to delete this directory?"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:483
-#: plugins/habarisilo/habarisilo.plugin.php:500 admin/posts_items.php:29
-#: admin/groups_item.php:8 admin/block_instances.php:24 admin/group.php:127
-#: admin/publish.php:15 handlers/admincommentshandler.php:457
-#: handlers/adminusershandler.php:172
+#: plugins/habarisilo/habarisilo.plugin.php:485
+#: plugins/habarisilo/habarisilo.plugin.php:502 admin/posts_items.php:29
+#: admin/groups_item.php:8 admin/block_instances.php:24
+#: admin/block_instances.php:36 admin/group.php:127 admin/publish.php:15
+#: handlers/admincommentshandler.php:457 handlers/adminusershandler.php:172
 msgid "Delete"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:495
+#: plugins/habarisilo/habarisilo.plugin.php:497
 msgid "File:"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:499
+#: plugins/habarisilo/habarisilo.plugin.php:501
 msgid "Are you sure you want to delete this file?"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:511
+#: plugins/habarisilo/habarisilo.plugin.php:513
 msgid "File: "
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:520
+#: plugins/habarisilo/habarisilo.plugin.php:522
 msgid "File added successfully."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:524
+#: plugins/habarisilo/habarisilo.plugin.php:526
 msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:525
+#: plugins/habarisilo/habarisilo.plugin.php:527
 msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:526
+#: plugins/habarisilo/habarisilo.plugin.php:528
 msgid "The uploaded file was only partially uploaded."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:527
+#: plugins/habarisilo/habarisilo.plugin.php:529
 msgid "No file was uploaded."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:528
+#: plugins/habarisilo/habarisilo.plugin.php:530
 msgid "Missing a temporary folder."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:529
+#: plugins/habarisilo/habarisilo.plugin.php:531
 msgid "Failed to write file to disk."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:530
+#: plugins/habarisilo/habarisilo.plugin.php:532
 msgid "A PHP extension stopped the file upload. PHP does not provide a way to ascertain which extension caused the file upload to stop; examining the list of loaded extensions with phpinfo() may help."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:533
+#: plugins/habarisilo/habarisilo.plugin.php:535
 msgid "File could not be added to the silo."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:537
-#: plugins/habarisilo/habarisilo.plugin.php:650
+#: plugins/habarisilo/habarisilo.plugin.php:539
+#: plugins/habarisilo/habarisilo.plugin.php:652
 msgid "Browse the current silo path."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:539
+#: plugins/habarisilo/habarisilo.plugin.php:541
 msgid "Suspicious behaviour or too much time has elapsed.  Please upload your file again."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:574
+#: plugins/habarisilo/habarisilo.plugin.php:576
 msgid "Upload to:"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:592
+#: plugins/habarisilo/habarisilo.plugin.php:594
 #, php-format
 msgid "The directory name contains invalid characters: %s."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:599
+#: plugins/habarisilo/habarisilo.plugin.php:601
 #, php-format
 msgid "Webserver does not have permission to create directory: %s."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:602
+#: plugins/habarisilo/habarisilo.plugin.php:604
 #, php-format
 msgid "Directory: %s already exists."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:621
+#: plugins/habarisilo/habarisilo.plugin.php:623
 #, php-format
 msgid "Directory Deleted: %s"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:626
+#: plugins/habarisilo/habarisilo.plugin.php:628
 #, php-format
 msgid "Directory Created: %s"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:645
+#: plugins/habarisilo/habarisilo.plugin.php:647
 msgid "File deleted successfully."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:647
+#: plugins/habarisilo/habarisilo.plugin.php:649
 msgid "Failed to delete file."
 msgstr ""
 
@@ -990,7 +990,7 @@ msgid "Feed for this Entry"
 msgstr ""
 
 #: themes/mzingi/commentform.php:28 handlers/admincommentshandler.php:49
-#: classes/post.php:1233
+#: classes/post.php:1263
 msgid "Comment"
 msgid_plural "Comments"
 msgstr[0] ""
@@ -1255,7 +1255,7 @@ msgstr ""
 msgid "- Required)"
 msgstr ""
 
-#: themes/charcoal/theme.php:221 classes/post.php:1220
+#: themes/charcoal/theme.php:221 classes/post.php:1250
 msgid "Website"
 msgstr ""
 
@@ -1286,7 +1286,7 @@ msgid "Atom Entries"
 msgstr ""
 
 #: themes/charcoal/footer.php:10 admin/plugin.php:42 admin/themes.php:15
-#: admin/themes.php:102 classes/format.php:247 classes/format.php:282
+#: admin/themes.php:102 classes/format.php:210 classes/format.php:245
 msgid " and "
 msgstr ""
 
@@ -1355,7 +1355,7 @@ msgid "No posts could be found to match the query criteria."
 msgstr ""
 
 #: admin/sysinfo.php:2 admin/sysinfo.php:7 admin/sysinfo.php:8
-#: admin/footer.php:24 handlers/adminhandler.php:253
+#: admin/footer.php:21 handlers/adminhandler.php:253
 msgid "System Information"
 msgstr ""
 
@@ -1790,7 +1790,7 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
-#: admin/formcontrols/formcontrol_textmulti.php:16 classes/formui.php:1709
+#: admin/formcontrols/formcontrol_textmulti.php:16 classes/formui.php:1716
 msgid "remove"
 msgstr ""
 
@@ -1803,7 +1803,7 @@ msgid "Current Theme"
 msgstr ""
 
 #: admin/themes.php:20 handlers/admincommentshandler.php:73
-#: classes/post.php:936
+#: classes/post.php:966
 msgid "Settings"
 msgstr ""
 
@@ -1905,23 +1905,23 @@ msgstr ""
 msgid "Go to the Habari site"
 msgstr ""
 
-#: admin/footer.php:12
+#: admin/footer.php:9
 msgid "Logged in as"
 msgstr ""
 
-#: admin/footer.php:14
+#: admin/footer.php:11
 msgid "Go to your user page"
 msgstr ""
 
-#: admin/footer.php:19
+#: admin/footer.php:16
 msgid "Open the Habari manual in a new window"
 msgstr ""
 
-#: admin/footer.php:19 installer/header.php:28
+#: admin/footer.php:16 installer/header.php:28
 msgid "Manual"
 msgstr ""
 
-#: admin/footer.php:24
+#: admin/footer.php:21
 msgid "Display information about the server and Habari"
 msgstr ""
 
@@ -2093,54 +2093,59 @@ msgstr ""
 msgid "You did not save the changes you made. \\nLeaving this page will result in the lose of data."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:97
+#: handlers/adminthemeshandler.php:95
 #, php-format
 msgid "Activated theme '%s'"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:112
+#: handlers/adminthemeshandler.php:110
 #, php-format
 msgid "Ended the preview of the theme '%s'"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:116
+#: handlers/adminthemeshandler.php:114
 #, php-format
 msgid "Previewing theme '%s'"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:135 handlers/adminthemeshandler.php:138
+#: handlers/adminthemeshandler.php:133 handlers/adminthemeshandler.php:136
 msgid "Block Display Settings"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:141
+#: handlers/adminthemeshandler.php:139
 msgid "Block Title:"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:144
+#: handlers/adminthemeshandler.php:142
 msgid "Display Block Title:"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:199
+#: handlers/adminthemeshandler.php:197
 msgid "A new block must first have a name."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:215
+#: handlers/adminthemeshandler.php:212
 #, php-format
 msgid "Added new block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:238
+#: handlers/adminthemeshandler.php:235
 #, php-format
 msgid "Deleted block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:241
+#: handlers/adminthemeshandler.php:238
 #, php-format
 msgid "Failed to delete block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:289
+#: handlers/adminthemeshandler.php:286
 msgid "Saved block areas settings."
+msgstr ""
+
+#: handlers/adminthemeshandler.php:342
+#, php-format
+msgid "This data is for a block of type \"%s\", which is no longer provided by a theme or plugin."
 msgstr ""
 
 #: handlers/adminpluginshandler.php:39 handlers/adminpluginshandler.php:78
@@ -2263,8 +2268,8 @@ msgstr ""
 msgid "Active Theme"
 msgstr ""
 
-#: handlers/adminhandler.php:201
-msgid "Site Language"
+#: handlers/adminhandler.php:201 handlers/adminoptionshandler.php:107
+msgid "System Locale"
 msgstr ""
 
 #: handlers/adminhandler.php:205
@@ -2567,8 +2572,8 @@ msgid "Permissions to other users' unpublished posts"
 msgstr ""
 
 #: handlers/installhandler.php:1699 classes/acl.php:780 classes/acl.php:781
-#: classes/acl.php:782 classes/acl.php:784 classes/post.php:246
-#: classes/post.php:907
+#: classes/acl.php:782 classes/acl.php:784 classes/post.php:273
+#: classes/post.php:938
 msgid "Content"
 msgstr ""
 
@@ -2711,7 +2716,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: handlers/adminpostshandler.php:28 handlers/adminpostshandler.php:32
-#: classes/post.php:1014
+#: classes/post.php:1044
 msgid "You don't have permission to edit that post"
 msgstr ""
 
@@ -2817,7 +2822,7 @@ msgstr ""
 msgid "User Name"
 msgstr ""
 
-#: handlers/adminusershandler.php:98 classes/post.php:1203
+#: handlers/adminusershandler.php:98 classes/post.php:1233
 msgid "Email"
 msgstr ""
 
@@ -3043,10 +3048,6 @@ msgstr ""
 msgid "International language code"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:107
-msgid "System Locale"
-msgstr ""
-
 #: handlers/adminoptionshandler.php:109
 msgid "The appropriate locale code for your server"
 msgstr ""
@@ -3182,15 +3183,15 @@ msgstr ""
 msgid "Beacon updater failed! %s"
 msgstr ""
 
-#: classes/update.php:211
+#: classes/update.php:208
 msgid "Updates check CronJob completed successfully."
 msgstr ""
 
-#: classes/update.php:219
+#: classes/update.php:216
 msgid "Updates check CronJob failed!"
 msgstr ""
 
-#: classes/update.php:287
+#: classes/update.php:284
 msgid "Perform a single check for plugin updates, the plugin set has changed."
 msgstr ""
 
@@ -3363,51 +3364,51 @@ msgstr ""
 msgid "The cache directory '%s' is not writable - the cache is disabled."
 msgstr ""
 
-#: classes/formui.php:809
+#: classes/formui.php:816
 msgid "Relative urls are not allowed"
 msgstr ""
 
-#: classes/formui.php:815
+#: classes/formui.php:822
 #, php-format
 msgid "Only %s urls are allowed"
 msgstr ""
 
-#: classes/formui.php:836
+#: classes/formui.php:843
 msgid "Value must be a valid Email Address."
 msgstr ""
 
-#: classes/formui.php:855
+#: classes/formui.php:862
 msgid "A value for this field is required."
 msgstr ""
 
-#: classes/formui.php:877
+#: classes/formui.php:884
 msgid "That username is already in use!"
 msgstr ""
 
-#: classes/formui.php:897
+#: classes/formui.php:904
 #, php-format
 msgid "The value of this field must match the value of %s."
 msgstr ""
 
-#: classes/formui.php:920
+#: classes/formui.php:927
 msgid "The value does not meet submission requirements"
 msgstr ""
 
-#: classes/formui.php:941
+#: classes/formui.php:948
 #, php-format
 msgid "The value entered is lesser than the minimum of %d."
 msgstr ""
 
-#: classes/formui.php:947
+#: classes/formui.php:954
 #, php-format
 msgid "The value entered is greater than the maximum of %d."
 msgstr ""
 
-#: classes/formui.php:1709
+#: classes/formui.php:1716
 msgid "Remove item"
 msgstr ""
 
-#: classes/formui.php:1713
+#: classes/formui.php:1720
 msgid "Remove this item?"
 msgstr ""
 
@@ -3471,55 +3472,55 @@ msgid "Failed to register HiEngine stream protocol"
 msgstr ""
 
 #. @locale Habari tried to create a Bitmask with the wrong arguments
-#: classes/bitmask.php:27
+#: classes/bitmask.php:31
 msgid "Bitmask constructor expects either no arguments or an array as a first argument"
 msgstr ""
 
 #. @locale Habari tried to create a new Bitmask with too many flags
-#: classes/bitmask.php:32
+#: classes/bitmask.php:36
 msgid "Bitmask can have a maximum of PHP_INT_MAX >> 1 flags"
 msgstr ""
 
 #. @locale Habari tried to create a new Bitmask object with invalid values in the second argument
-#: classes/bitmask.php:52
+#: classes/bitmask.php:56
 msgid "Bitmask constructor second argument must either be an integer within the valid range, the name of a flag, or full"
 msgstr ""
 
 #. @locale Habari tried to set the wrong type of value
-#: classes/bitmask.php:70
+#: classes/bitmask.php:76
 msgid "Bitmask full toggle must be boolean"
 msgstr ""
 
 #. @locale Habari tried to set the wrong kind of value
-#: classes/bitmask.php:84
+#: classes/bitmask.php:90
 msgid "Setting bitmask value by array must use array with same length as number of flags"
 msgstr ""
 
 #. @locale Habari tried to set the wrong kind of value
-#: classes/bitmask.php:90 classes/bitmask.php:110
+#: classes/bitmask.php:96 classes/bitmask.php:116
 msgid "Bitmask values must be boolean"
 msgstr ""
 
 #. @locale Habari tried to set the wrong kind of value
-#: classes/bitmask.php:104
+#: classes/bitmask.php:110
 msgid "Bitmask value must either be an integer within the valid range or an array of booleans"
 msgstr ""
 
 #. @locale Habari tried to set a value that doesn't exist
-#: classes/bitmask.php:117
+#: classes/bitmask.php:123
 msgid "Bitmask cannot set non-existent flag"
 msgstr ""
 
 #. @locale Habari tried to get a flag that doesn't exist
-#: classes/bitmask.php:150
+#: classes/bitmask.php:157
 msgid "Bitmask cannot get non-existent flag"
 msgstr ""
 
-#: classes/bitmask.php:168
+#: classes/bitmask.php:179
 msgid "full"
 msgstr ""
 
-#: classes/bitmask.php:177 classes/logentry.php:26
+#: classes/bitmask.php:188 classes/logentry.php:26
 msgid "none"
 msgstr ""
 
@@ -3561,32 +3562,32 @@ msgstr ""
 msgid "There is no valid theme currently installed."
 msgstr ""
 
-#: classes/themes.php:188
+#: classes/themes.php:187
 #, php-format
 msgid "This theme requires the parent theme named \"%s\" to be present prior to activation."
 msgstr ""
 
-#: classes/themes.php:196
+#: classes/themes.php:195
 #, php-format
 msgid "This theme requires the feature \"<a href=\"%2$s\">%1$s</a>\" to be present prior to activation."
 msgstr ""
 
-#: classes/themes.php:232
+#: classes/themes.php:231
 #, php-format
 msgid "Activated Theme: %s"
 msgstr ""
 
-#: classes/themes.php:253
+#: classes/themes.php:252
 #, php-format
 msgid "Previewed Theme: %s"
 msgstr ""
 
-#: classes/themes.php:268
+#: classes/themes.php:267
 #, php-format
 msgid "Canceled Theme Preview: %s"
 msgstr ""
 
-#: classes/themes.php:298
+#: classes/themes.php:297
 msgid "Theme not installed."
 msgstr ""
 
@@ -4150,7 +4151,7 @@ msgstr ""
 msgid "Permissions to all posts"
 msgstr ""
 
-#: classes/acl.php:784 classes/post.php:246
+#: classes/acl.php:784 classes/post.php:273
 #, php-format
 msgid "Permissions to posts of type \"%s\""
 msgstr ""
@@ -4172,17 +4173,17 @@ msgstr ""
 msgid "create"
 msgstr ""
 
-#: classes/comments.php:437
+#: classes/comments.php:441
 #, php-format
 msgid "Comment %1$s moderated from %2$s"
 msgstr ""
 
-#: classes/comments.php:444
+#: classes/comments.php:448
 #, php-format
-msgid "Comment Moderated on %s"
+msgid "Comment %1$d moderated"
 msgstr ""
 
-#: classes/comments.php:641
+#: classes/comments.php:645
 #, php-format
 msgid "Comment %1$s deleted from %2$s"
 msgstr ""
@@ -4273,157 +4274,157 @@ msgstr ""
 msgid "Term %1$s (%2$s) deleted."
 msgstr ""
 
-#: classes/post.php:602
+#: classes/post.php:635
 #, php-format
 msgid "New post %1$s (%2$s);  Type: %3$s; Status: %4$s"
 msgstr ""
 
-#: classes/post.php:703
+#: classes/post.php:736
 #, php-format
 msgid "Post %1$s (%2$s) deleted."
 msgstr ""
 
-#: classes/post.php:737
+#: classes/post.php:769
 #, php-format
 msgid "Scheduled Post %1$s (%2$s) published at %3$s."
 msgstr ""
 
-#: classes/post.php:740
+#: classes/post.php:772
 #, php-format
 msgid "Post %1$s (%2$s) published."
 msgstr ""
 
-#: classes/post.php:886
+#: classes/post.php:917
 msgid "Preview Post"
 msgstr ""
 
-#: classes/post.php:886
+#: classes/post.php:917
 msgid "View Post"
 msgstr ""
 
-#: classes/post.php:891 classes/post.php:894
+#: classes/post.php:922 classes/post.php:925
 msgid "Title"
 msgstr ""
 
-#: classes/post.php:915
+#: classes/post.php:946
 msgid "Tags, separated by, commas"
 msgstr ""
 
-#: classes/post.php:938
+#: classes/post.php:968
 msgid "Content State"
 msgstr ""
 
-#: classes/post.php:947
+#: classes/post.php:977
 msgid "Minor Edit"
 msgstr ""
 
-#: classes/post.php:952
+#: classes/post.php:982
 msgid "Comments Allowed"
 msgstr ""
 
-#: classes/post.php:955
+#: classes/post.php:985
 msgid "Publication Time"
 msgstr ""
 
-#: classes/post.php:957
+#: classes/post.php:987
 msgid "YYYY-MM-DD HH:MM:SS"
 msgstr ""
 
-#: classes/post.php:962
+#: classes/post.php:992
 msgid "Content Address"
 msgstr ""
 
-#: classes/post.php:1021
+#: classes/post.php:1051
 msgid "Changing content types is not allowed"
 msgstr ""
 
-#: classes/post.php:1032
+#: classes/post.php:1062
 msgid "Creating that post type is denied"
 msgstr ""
 
-#: classes/post.php:1045
+#: classes/post.php:1075
 msgid "Editing that post type is denied"
 msgstr ""
 
-#: classes/post.php:1052
+#: classes/post.php:1082
 #, php-format
 msgid "The post %1$s was updated since you made changes.  Please review those changes before overwriting them."
 msgstr ""
 
-#: classes/post.php:1059
+#: classes/post.php:1089
 msgid "A post slug cannot be empty. Keeping old slug."
 msgstr ""
 
-#: classes/post.php:1114
+#: classes/post.php:1144
 #, php-format
 msgid "The post %1$s has been saved as %2$s."
 msgstr ""
 
-#: classes/post.php:1163
+#: classes/post.php:1193
 msgid "Comments are disabled site-wide."
 msgstr ""
 
-#: classes/post.php:1168
+#: classes/post.php:1198
 msgid "Comments for this post are disabled."
 msgstr ""
 
-#: classes/post.php:1173
+#: classes/post.php:1203
 msgid "Commenting on this site requires authentication."
 msgstr ""
 
-#: classes/post.php:1178
+#: classes/post.php:1208
 msgid "You do not have permission to comment on this site."
 msgstr ""
 
-#: classes/post.php:1191
+#: classes/post.php:1221
 msgid "Name <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: classes/post.php:1193
+#: classes/post.php:1223
 msgid "The Name field value is required"
 msgstr ""
 
-#: classes/post.php:1205 classes/post.php:1210
+#: classes/post.php:1235 classes/post.php:1240
 msgid "The Email field value must be a valid email address"
 msgstr ""
 
-#: classes/post.php:1211
+#: classes/post.php:1241
 msgid "Email <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: classes/post.php:1222
+#: classes/post.php:1252
 msgid "The Web Site field value must be a valid URL"
 msgstr ""
 
-#: classes/post.php:1235
+#: classes/post.php:1265
 msgid "The Content field value is required"
 msgstr ""
 
-#: classes/post.php:1592
+#: classes/post.php:1622
 msgid "Entry"
 msgstr ""
 
-#: classes/post.php:1593
+#: classes/post.php:1623
 msgid "Entries"
 msgstr ""
 
-#: classes/post.php:1596
+#: classes/post.php:1626
 msgid "Page"
 msgstr ""
 
-#: classes/post.php:1597
+#: classes/post.php:1627
 msgid "Pages"
 msgstr ""
 
-#: classes/post.php:1612
+#: classes/post.php:1642
 msgid "draft"
 msgstr ""
 
-#: classes/post.php:1613
+#: classes/post.php:1643
 msgid "published"
 msgstr ""
 
-#: classes/post.php:1614
+#: classes/post.php:1644
 msgid "scheduled"
 msgstr ""
 
