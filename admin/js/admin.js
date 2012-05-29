@@ -84,6 +84,10 @@ var dashboard = {
 			}, function() {
 				$(this).parents('li').removeClass('viewingoptions');
 			});
+			
+		$('.optionswindow form.formui').submit(function() {
+			return dashboard.updateModule( $(this) );
+		});
 
 		$('.close', '.modules').click( function() {
 			// grab the module ID from the parent DIV id attribute.
@@ -109,11 +113,34 @@ var dashboard = {
 			}
 		);
 	},
-	updateModule: function() {
+	updateModule: function( form ) {
 		//spinner.start();
 		// disable dragging and dropping while we update
 		// here we would update the modules options then
 		// reload the modules
+		
+		// still a work in progress
+		
+		// var query = {};
+		// 		query.options = {};
+		// 		query.slugger = $(form).parents('li').attr('id');
+		// 				
+		// 		query.options[ 'moduleID' ]= $(this).parents('li').attr('id');
+		// 		
+		// 		$('input', form).each( function() {
+		// 			query.options[ $(this).attr('name') ] = $(this).val();
+		// 		});
+		// 		
+		// 		query.action = 'updateModule';
+		// 		habari_ajax.post(
+		// 			habari.url.ajaxDashboard,
+		// 			query,
+		// 			function() {
+		// 				console.log( 'done' );
+		// 			}
+		// 		);
+		
+		return true;
 	},
 	add: function() {
 		spinner.start();
