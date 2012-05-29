@@ -1227,6 +1227,7 @@ class Utils
 			return false;
 		}
 	}
+
 	/**
 	 * Given an array of arrays, return an array that contains the value of a particular common field
 	 * Example:
@@ -1240,11 +1241,19 @@ class Utils
 	 * @param string $field The name of a common field within each array/object
 	 * @return array An array of the values of the specified field within each array/object
 	 */
-	public static function array_map_field($array, $field)
+	public static function array_map_field($array, $field, $key = null)
 	{
-		return array_map( function( $element ) use ($field) {
-			return is_array($element) ? $element[$field] : (is_object($element) ? $element->$field : null);
-		}, $array);
+		if(is_null($key)) {
+			return array_map( function( $element ) use ($field) {
+				return is_array($element) ? $element[$field] : (is_object($element) ? $element->$field : null);
+			}, $array);
+		}
+		else {
+			return array_combine(
+				Utils::array_map_field($array, $key),
+				Utils::array_map_field($array, $field)
+			);
+		}
 	}
 }
 ?>
