@@ -341,7 +341,7 @@ GROUP BY child.term
 HAVING COUNT(child.term)=1
 ORDER BY mptt_left
 SQL;
-		return DB::get_results( $query, $params, 'Term' );
+		return new Terms(DB::get_results( $query, $params, 'Term' ));
 	}
 
 	/**
