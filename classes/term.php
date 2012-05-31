@@ -339,7 +339,7 @@ WHERE parent.mptt_left > :left AND parent.mptt_right < :right
 	AND parent.vocabulary_id = :vocab
 GROUP BY child.term
 HAVING COUNT(child.term)=1
-ORDER BY NULL
+ORDER BY mptt_left
 SQL;
 		return DB::get_results( $query, $params, 'Term' );
 	}
