@@ -31,6 +31,7 @@ class Format
 				$args = array_slice($args, 2);
 				$lambda = function() use ($args, $formatobj, $format) {
 					$filterargs = func_get_args();
+					$filterargs = array_slice($filterargs, 0, 1);
 					foreach($args as $arg) {
 						$filterargs[] = $arg;
 					}
@@ -46,13 +47,28 @@ class Format
 	 * Called to register a format function to a plugin hook, and passes all of the hook's parameters to the Format function.
 	 * @param string $format A function name that exists in a Format class
 	 * @param string $onwhat A plugin hook to apply that Format function to as a filter
-	 * @deprecated
-	 * @see Filter::apply()
 	 */
 	public static function apply_with_hook_params( $format, $onwhat )
 	{
-		$args = func_get_args();
-		call_user_func_array(array('Format', 'apply'), $args);
+		if ( self::$formatters == null ) {
+			self::load_all();
+		}
+
+		foreach ( self::$formatters as $formatobj ) {
+			if ( method_exists( $formatobj, $format ) ) {
+				$args = func_get_args();
+				$args = array_slice($args, 2);
+				$lambda = function() use ($args, $formatobj, $format) {
+					$filterargs = func_get_args();
+					foreach($args as $arg) {
+						$filterargs[] = $arg;
+					}
+					return call_user_func_array(array($formatobj, $format), $filterargs);
+				};
+				Plugins::register( $lambda, 'filter', $onwhat );
+				break;  // We only look for one matching format function to apply.
+			}
+		}
 	}
 
 	/**

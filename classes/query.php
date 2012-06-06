@@ -224,7 +224,7 @@ class Query {
 			$sql .= "\n" . $join;
 		}
 		$where = $this->where()->get();
-		if(isset($where)) {
+		if(!empty($where)) {
 			$sql .= "\nWHERE\n" . $this->where()->get();
 		}
 
