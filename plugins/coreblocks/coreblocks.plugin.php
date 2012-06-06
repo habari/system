@@ -31,8 +31,15 @@ class CoreBlocks extends Plugin
 		$this->add_template( "block.dropdown.category_archives", dirname( __FILE__ ) . "/block.dropdown.category_archives.php" );
 		$this->add_template( "block.dropdown.tag_archives", dirname( __FILE__ ) . "/block.dropdown.tag_archives.php" );
 		$this->add_template( "block.dropdown.monthly_archives", dirname( __FILE__ ) . "/block.dropdown.monthly_archives.php" );
+	}
 
-		$this->meta_urls = array(
+	/**
+	 * Encapsulate the list of URLs the block can display
+	 * @return array A list of URLs that can be displayed
+	 */
+	function meta_urls()
+	{
+		return array(
 			_t( 'Site Feed' ) => URL::get( 'atom_feed', array( 'index' => '1' ) ),
 			_t( 'Comments Feed' ) => URL::get( 'atom_feed_comments' ),
 			'Habari' => 'http://habariproject.org/',
@@ -308,7 +315,7 @@ class CoreBlocks extends Plugin
 	 */
 	public function action_block_form_meta_links( $form, $block )
 	{
-		$content = $form->append('checkboxes', 'links', $block, _t( 'Links to show:' ), array_flip( $this->meta_urls ) );
+		$content = $form->append('checkboxes', 'links', $block, _t( 'Links to show:' ), array_flip( $this->meta_urls() ) );
 	}
 
 	/**
@@ -328,7 +335,7 @@ class CoreBlocks extends Plugin
 		else {
 			$list[ Site::get_url( 'login' ) ] = _t( 'Login' );
 		}
-		$meta_urls = array_flip( $this->meta_urls );
+		$meta_urls = array_flip( $this->meta_urls() );
 		$links = $block->links;
 		if ( count( $links ) > 0 ) {
 			foreach ( $links as $link ) {
