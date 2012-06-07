@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-07 18:45+0000\n"
+"POT-Creation-Date: 2012-06-07 18:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4690,6 +4690,10 @@ msgstr ""
 
 #: installer/header.php:29
 msgid "Read the Habari wiki"
+msgstr ""
+
+#: installer/header.php:29
+msgid "Wiki"
 msgstr ""
 
 #: installer/header.php:30
