@@ -597,9 +597,9 @@ INNER JOIN {terms} as child
 WHERE parent.vocabulary_id = ?
 GROUP BY child.term
 HAVING COUNT(child.term)=1
-ORDER BY NULL
+ORDER BY mptt_left ASC
 SQL;
-		return DB::get_results( $query, array( $this->id ), 'Term' );
+		return new Terms(DB::get_results( $query, array( $this->id ), 'Term' ));
 	}
 
 	/**

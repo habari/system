@@ -619,7 +619,7 @@ class Posts extends ArrayObject implements IsContent
 			}
 
 		}
-		$query->where()->add($master_perm_where);
+		$query->where()->add($master_perm_where, array(), 'master_perm_where');
 
 		// Extract the remaining parameters which will be used onwards
 		// For example: page number, fetch function, limit

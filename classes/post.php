@@ -832,6 +832,13 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			case 'info':
 				$out = $this->get_info();
 				break;
+			case 'excerpt':
+				$field = 'content' . ($filter ? '_' . $filter : '_out');
+				$out = $this->__get($field);
+				if(!Plugins::implemented('post_excerpt', 'filter')) {
+					$out = Format::more($out, $this, Options::get('excerpt_settings', array('max_paragraphs' => 2)));
+				}
+				break;
 			default:
 				$out = parent::__get( $name );
 				break;

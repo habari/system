@@ -142,5 +142,5 @@ var human_msg = {
 
 jQuery(document).ready( function() {
 	// broken out into a function so you can add default parameters
-	human_msg.init();
+	human_msg.init('body', _t('Message Log'), 0.8);
 } );
