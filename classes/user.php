@@ -258,9 +258,7 @@ class User extends QueryRecord implements FormStorage
 	* Check a user's credentials to see if they are legit
 	* -- calls all auth plugins BEFORE checking local database.
 	*
-	* @todo Actually call plugins
-	*
-	* @param string $who A username or email address
+	* @param string $who A username
 	* @param string $pw A password
 	* @return User|boolean a User object, or false
 	*/
