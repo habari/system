@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-07 16:45+0000\n"
+"POT-Creation-Date: 2012-06-07 16:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -112,7 +112,7 @@ msgstr ""
 #: plugins/undelete/undelete.plugin.php:181
 #: plugins/flickrsilo/flickrsilo.plugin.php:876 themes/charcoal/theme.php:66
 #: admin/themes.php:68 handlers/adminthemeshandler.php:143
-#: classes/post.php:1006
+#: classes/post.php:1013
 msgid "Save"
 msgstr ""
 
@@ -221,7 +221,7 @@ msgid "What would you like to call the new directory?"
 msgstr ""
 
 #: plugins/habarisilo/habarisilo.plugin.php:467 themes/mzingi/theme.php:114
-#: themes/charcoal/theme.php:224 classes/post.php:1271
+#: themes/charcoal/theme.php:224 classes/post.php:1278
 msgid "Submit"
 msgstr ""
 
@@ -367,74 +367,74 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:36
+#: plugins/coreblocks/coreblocks.plugin.php:43
 msgid "Site Feed"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:37
+#: plugins/coreblocks/coreblocks.plugin.php:44
 msgid "Comments Feed"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:68
+#: plugins/coreblocks/coreblocks.plugin.php:75
 msgid "Comments to show:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:126
+#: plugins/coreblocks/coreblocks.plugin.php:133
 msgid "Posts to show:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:136
+#: plugins/coreblocks/coreblocks.plugin.php:143
 msgid "Content Types to Include:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:176
+#: plugins/coreblocks/coreblocks.plugin.php:183
 msgid "Display full month names:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:177
-#: plugins/coreblocks/coreblocks.plugin.php:250
+#: plugins/coreblocks/coreblocks.plugin.php:184
+#: plugins/coreblocks/coreblocks.plugin.php:257
 msgid "Append post count:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:178
-#: plugins/coreblocks/coreblocks.plugin.php:251
+#: plugins/coreblocks/coreblocks.plugin.php:185
+#: plugins/coreblocks/coreblocks.plugin.php:258
 msgid "Preferred Output Style:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:179
-#: plugins/coreblocks/coreblocks.plugin.php:252
+#: plugins/coreblocks/coreblocks.plugin.php:186
+#: plugins/coreblocks/coreblocks.plugin.php:259
 msgid "Dropdown"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:179
-#: plugins/coreblocks/coreblocks.plugin.php:252
+#: plugins/coreblocks/coreblocks.plugin.php:186
+#: plugins/coreblocks/coreblocks.plugin.php:259
 msgid "List"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:311
+#: plugins/coreblocks/coreblocks.plugin.php:318
 msgid "Links to show:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:326 handlers/adminhandler.php:344
+#: plugins/coreblocks/coreblocks.plugin.php:333 handlers/adminhandler.php:344
 msgid "Logout"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:329 themes/charcoal/header.php:41
+#: plugins/coreblocks/coreblocks.plugin.php:336 themes/charcoal/header.php:41
 #: admin/login.php:51
 msgid "Login"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:351
+#: plugins/coreblocks/coreblocks.plugin.php:358
 msgid "Button:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:366
+#: plugins/coreblocks/coreblocks.plugin.php:373
 #: plugins/flickrsilo/flickrsilo.plugin.php:609
 #: plugins/flickrsilo/flickrsilo.plugin.php:982 themes/mzingi/searchform.php:5
 msgid "Search"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:381
+#: plugins/coreblocks/coreblocks.plugin.php:388
 msgid "Content:"
 msgstr ""
 
@@ -990,7 +990,7 @@ msgid "Feed for this Entry"
 msgstr ""
 
 #: themes/mzingi/commentform.php:28 handlers/admincommentshandler.php:49
-#: classes/post.php:1263
+#: classes/post.php:1270
 msgid "Comment"
 msgid_plural "Comments"
 msgstr[0] ""
@@ -1255,7 +1255,7 @@ msgstr ""
 msgid "- Required)"
 msgstr ""
 
-#: themes/charcoal/theme.php:221 classes/post.php:1250
+#: themes/charcoal/theme.php:221 classes/post.php:1257
 msgid "Website"
 msgstr ""
 
@@ -1286,7 +1286,7 @@ msgid "Atom Entries"
 msgstr ""
 
 #: themes/charcoal/footer.php:10 admin/plugin.php:42 admin/themes.php:15
-#: admin/themes.php:102 classes/format.php:210 classes/format.php:245
+#: admin/themes.php:102 classes/format.php:259 classes/format.php:294
 msgid " and "
 msgstr ""
 
@@ -1505,7 +1505,7 @@ msgid "name"
 msgstr ""
 
 #: admin/login.php:47 admin/users.php:48 installer/db_setup.php:62
-#: installer/db_setup.php:109 installer/db_setup.php:191
+#: installer/db_setup.php:109 installer/db_setup.php:190
 msgid "Password"
 msgstr ""
 
@@ -1633,7 +1633,7 @@ msgid "Complete User List"
 msgstr ""
 
 #: admin/users.php:42 installer/db_setup.php:51 installer/db_setup.php:98
-#: installer/db_setup.php:181
+#: installer/db_setup.php:180
 msgid "Username"
 msgstr ""
 
@@ -1691,7 +1691,7 @@ msgstr ""
 msgid "Show Error"
 msgstr ""
 
-#: admin/plugin.php:18 installer/db_setup.php:228
+#: admin/plugin.php:18 installer/db_setup.php:227
 #, php-format
 msgid "The plugin file %s is a legacy plugin, and does not include an XML info file."
 msgstr ""
@@ -1803,7 +1803,7 @@ msgid "Current Theme"
 msgstr ""
 
 #: admin/themes.php:20 handlers/admincommentshandler.php:73
-#: classes/post.php:966
+#: classes/post.php:973
 msgid "Settings"
 msgstr ""
 
@@ -2158,7 +2158,7 @@ msgid "?"
 msgstr ""
 
 #: handlers/adminpluginshandler.php:127 installer/db_setup.php:11
-#: installer/db_setup.php:166 installer/db_setup.php:221
+#: installer/db_setup.php:166 installer/db_setup.php:220
 msgid "Help"
 msgstr ""
 
@@ -2573,7 +2573,7 @@ msgstr ""
 
 #: handlers/installhandler.php:1699 classes/acl.php:780 classes/acl.php:781
 #: classes/acl.php:782 classes/acl.php:784 classes/post.php:273
-#: classes/post.php:938
+#: classes/post.php:945
 msgid "Content"
 msgstr ""
 
@@ -2716,7 +2716,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: handlers/adminpostshandler.php:28 handlers/adminpostshandler.php:32
-#: classes/post.php:1044
+#: classes/post.php:1051
 msgid "You don't have permission to edit that post"
 msgstr ""
 
@@ -2822,7 +2822,7 @@ msgstr ""
 msgid "User Name"
 msgstr ""
 
-#: handlers/adminusershandler.php:98 classes/post.php:1233
+#: handlers/adminusershandler.php:98 classes/post.php:1240
 msgid "Email"
 msgstr ""
 
@@ -3297,46 +3297,46 @@ msgstr ""
 msgid "User deleted: %s"
 msgstr ""
 
-#: classes/user.php:279 classes/user.php:308
+#: classes/user.php:277 classes/user.php:306
 #, php-format
 msgid "Successful login for %s"
 msgstr ""
 
-#: classes/user.php:286
+#: classes/user.php:284
 #, php-format
 msgid "Login attempt (via authentication plugin) for non-existent user %s"
 msgstr ""
 
-#: classes/user.php:287 classes/user.php:299 classes/user.php:317
+#: classes/user.php:285 classes/user.php:297 classes/user.php:315
 msgid "Invalid username/password"
 msgstr ""
 
-#: classes/user.php:298
+#: classes/user.php:296
 #, php-format
 msgid "Login attempt for non-existent user %s"
 msgstr ""
 
-#: classes/user.php:316
+#: classes/user.php:314
 #, php-format
 msgid "Wrong password for user %s"
 msgstr ""
 
-#: classes/user.php:534
+#: classes/user.php:532
 #, php-format
 msgid "User %1$s: Access to %2$s changed to %3$s"
 msgstr ""
 
-#: classes/user.php:558
+#: classes/user.php:556
 #, php-format
 msgid "User %1$s: Permission to %2$s revoked."
 msgstr ""
 
-#: classes/user.php:597
+#: classes/user.php:595
 #, php-format
 msgid " User %1$s: Added to %2$s group."
 msgstr ""
 
-#: classes/user.php:611
+#: classes/user.php:609
 #, php-format
 msgid " User %1$s: Removed from %2$s group."
 msgstr ""
@@ -4294,137 +4294,137 @@ msgstr ""
 msgid "Post %1$s (%2$s) published."
 msgstr ""
 
-#: classes/post.php:917
+#: classes/post.php:924
 msgid "Preview Post"
 msgstr ""
 
-#: classes/post.php:917
+#: classes/post.php:924
 msgid "View Post"
 msgstr ""
 
-#: classes/post.php:922 classes/post.php:925
+#: classes/post.php:929 classes/post.php:932
 msgid "Title"
 msgstr ""
 
-#: classes/post.php:946
+#: classes/post.php:953
 msgid "Tags, separated by, commas"
 msgstr ""
 
-#: classes/post.php:968
+#: classes/post.php:975
 msgid "Content State"
 msgstr ""
 
-#: classes/post.php:977
+#: classes/post.php:984
 msgid "Minor Edit"
 msgstr ""
 
-#: classes/post.php:982
+#: classes/post.php:989
 msgid "Comments Allowed"
 msgstr ""
 
-#: classes/post.php:985
+#: classes/post.php:992
 msgid "Publication Time"
 msgstr ""
 
-#: classes/post.php:987
+#: classes/post.php:994
 msgid "YYYY-MM-DD HH:MM:SS"
 msgstr ""
 
-#: classes/post.php:992
+#: classes/post.php:999
 msgid "Content Address"
 msgstr ""
 
-#: classes/post.php:1051
+#: classes/post.php:1058
 msgid "Changing content types is not allowed"
 msgstr ""
 
-#: classes/post.php:1062
+#: classes/post.php:1069
 msgid "Creating that post type is denied"
 msgstr ""
 
-#: classes/post.php:1075
+#: classes/post.php:1082
 msgid "Editing that post type is denied"
 msgstr ""
 
-#: classes/post.php:1082
+#: classes/post.php:1089
 #, php-format
 msgid "The post %1$s was updated since you made changes.  Please review those changes before overwriting them."
 msgstr ""
 
-#: classes/post.php:1089
+#: classes/post.php:1096
 msgid "A post slug cannot be empty. Keeping old slug."
 msgstr ""
 
-#: classes/post.php:1144
+#: classes/post.php:1151
 #, php-format
 msgid "The post %1$s has been saved as %2$s."
 msgstr ""
 
-#: classes/post.php:1193
+#: classes/post.php:1200
 msgid "Comments are disabled site-wide."
 msgstr ""
 
-#: classes/post.php:1198
+#: classes/post.php:1205
 msgid "Comments for this post are disabled."
 msgstr ""
 
-#: classes/post.php:1203
+#: classes/post.php:1210
 msgid "Commenting on this site requires authentication."
 msgstr ""
 
-#: classes/post.php:1208
+#: classes/post.php:1215
 msgid "You do not have permission to comment on this site."
 msgstr ""
 
-#: classes/post.php:1221
+#: classes/post.php:1228
 msgid "Name <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: classes/post.php:1223
+#: classes/post.php:1230
 msgid "The Name field value is required"
 msgstr ""
 
-#: classes/post.php:1235 classes/post.php:1240
+#: classes/post.php:1242 classes/post.php:1247
 msgid "The Email field value must be a valid email address"
 msgstr ""
 
-#: classes/post.php:1241
+#: classes/post.php:1248
 msgid "Email <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: classes/post.php:1252
+#: classes/post.php:1259
 msgid "The Web Site field value must be a valid URL"
 msgstr ""
 
-#: classes/post.php:1265
+#: classes/post.php:1272
 msgid "The Content field value is required"
 msgstr ""
 
-#: classes/post.php:1622
+#: classes/post.php:1629
 msgid "Entry"
 msgstr ""
 
-#: classes/post.php:1623
+#: classes/post.php:1630
 msgid "Entries"
 msgstr ""
 
-#: classes/post.php:1626
+#: classes/post.php:1633
 msgid "Page"
 msgstr ""
 
-#: classes/post.php:1627
+#: classes/post.php:1634
 msgid "Pages"
 msgstr ""
 
-#: classes/post.php:1642
+#: classes/post.php:1649
 msgid "draft"
 msgstr ""
 
-#: classes/post.php:1643
+#: classes/post.php:1650
 msgid "published"
 msgstr ""
 
-#: classes/post.php:1644
+#: classes/post.php:1651
 msgid "scheduled"
 msgstr ""
 
@@ -4450,9 +4450,9 @@ msgstr ""
 #: installer/db_setup.php:79 installer/db_setup.php:93
 #: installer/db_setup.php:104 installer/db_setup.php:115
 #: installer/db_setup.php:126 installer/db_setup.php:139
-#: installer/db_setup.php:152 installer/db_setup.php:176
-#: installer/db_setup.php:186 installer/db_setup.php:198
-#: installer/db_setup.php:209 installer/config.php:21 installer/sqlite.php:15
+#: installer/db_setup.php:152 installer/db_setup.php:175
+#: installer/db_setup.php:185 installer/db_setup.php:197
+#: installer/db_setup.php:208 installer/config.php:21 installer/sqlite.php:15
 #: installer/htaccess.php:15
 msgid "Learn More&hellip;"
 msgstr ""
@@ -4534,45 +4534,43 @@ msgid "Site Configuration"
 msgstr ""
 
 #: installer/db_setup.php:175
-msgid ""
-"<strong>Site Name</strong> is the name of your site as it will appear\n"
-"\t\t\t\tto your visitors."
+msgid "<strong>Site Name</strong> is the name of your site as it will appear to your visitors."
 msgstr ""
 
-#: installer/db_setup.php:186
+#: installer/db_setup.php:185
 msgid "<strong>Username</strong> is the username of the initial user in Habari."
 msgstr ""
 
-#: installer/db_setup.php:193
+#: installer/db_setup.php:192
 msgid "Password (again)"
 msgstr ""
 
-#: installer/db_setup.php:198
+#: installer/db_setup.php:197
 msgid "<strong>Password</strong> is the password of the initial user in Habari. Both password fields must match."
 msgstr ""
 
-#: installer/db_setup.php:203
+#: installer/db_setup.php:202
 msgid "Admin Email"
 msgstr ""
 
-#: installer/db_setup.php:208
+#: installer/db_setup.php:207
 msgid "<strong>Admin Email</strong> is the email address of the first user account."
 msgstr ""
 
-#: installer/db_setup.php:220
+#: installer/db_setup.php:219
 msgid "Plugin Activation"
 msgstr ""
 
-#: installer/db_setup.php:253 installer/config.php:31 installer/sqlite.php:25
+#: installer/db_setup.php:252 installer/config.php:31 installer/sqlite.php:25
 #: installer/htaccess.php:25
 msgid "Install"
 msgstr ""
 
-#: installer/db_setup.php:256
+#: installer/db_setup.php:255
 msgid "Habari now has all of the information needed to install itself on your server."
 msgstr ""
 
-#: installer/db_setup.php:257 installer/header.php:20
+#: installer/db_setup.php:256 installer/header.php:20
 msgid "Install Habari"
 msgstr ""
 
@@ -4708,6 +4706,10 @@ msgstr ""
 
 #: installer/htaccess.php:14
 msgid "<strong>.htaccess</strong> is a file that tells your Apache web server to send requests to Habari for handling. Habari is not able to write this file to your server automatically, so you must create this file yourself to continue the installation."
+msgstr ""
+
+#: vendor/humanmsg/humanmsg.js:145
+msgid "Message Log"
 msgstr ""
 
 #: admin/js/admin.js:59 admin/js/admin.js:63
