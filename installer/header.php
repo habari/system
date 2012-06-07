@@ -26,7 +26,7 @@
 			<h1>Habari</h1>
 			<div id="footer">
 				<p class="left"><a href="<?php Site::out_url( 'habari' ); ?>/doc/manual/index.html" onclick="popUp(this.href); return false;" title="<?php _e('Read the user manual'); ?>" tabindex="<?php echo $tab++ ?>"><?php _e('Manual'); ?></a> &middot;
-					<a href="http://wiki.habariproject.org/" title="<?php _e('Read the Habari wiki'); ?>" tabindex="<?php echo $tab++ ?>">Wiki</a> &middot;
+					<a href="http://wiki.habariproject.org/" title="<?php _e('Read the Habari wiki'); ?>" tabindex="<?php echo $tab++ ?>"><?php _e('Wiki'); ?></a> &middot;
 					<a href="http://groups.google.com/group/habari-users" title="<?php _e('Ask the community'); ?>" tabindex="<?php echo $tab++ ?>"><?php _e('Mailing List'); ?></a>
 				</p>
 			</div>
