@@ -25,21 +25,37 @@ class Format
 			self::load_all();
 		}
 
-		foreach ( self::$formatters as $formatobj ) {
-			if ( method_exists( $formatobj, $format ) ) {
-				$args = func_get_args();
-				$args = array_slice($args, 2);
-				$lambda = function() use ($args, $formatobj, $format) {
-					$filterargs = func_get_args();
-					$filterargs = array_slice($filterargs, 0, 1);
-					foreach($args as $arg) {
-						$filterargs[] = $arg;
-					}
-					return call_user_func_array(array($formatobj, $format), $filterargs);
-				};
-				Plugins::register( $lambda, 'filter', $onwhat );
-				break;  // We only look for one matching format function to apply.
+		$priority = 8;
+		if(preg_match('#^(.+)_(\d+)$#', $onwhat, $matches)) {
+			$priority = intval($matches[2]);
+			$onwhat = $matches[1];
+		}
+
+		$method = false;
+		if (is_callable($format)) {
+			$method = $format;
+		}
+		else {
+			foreach ( self::$formatters as $formatobj ) {
+				if ( method_exists( $formatobj, $format ) ) {
+					$method = array($formatobj, $format);
+					break;
+				}
 			}
+		}
+
+		if($method) {
+			$args = func_get_args();
+			$args = array_slice($args, 2);
+			$lambda = function() use ($args, $method) {
+				$filterargs = func_get_args();
+				$filterargs = array_slice($filterargs, 0, 1);
+				foreach($args as $arg) {
+					$filterargs[] = $arg;
+				}
+				return call_user_func_array($method, $filterargs);
+			};
+			Plugins::register( $lambda, 'filter', $onwhat );
 		}
 	}
 
@@ -54,20 +70,37 @@ class Format
 			self::load_all();
 		}
 
-		foreach ( self::$formatters as $formatobj ) {
-			if ( method_exists( $formatobj, $format ) ) {
-				$args = func_get_args();
-				$args = array_slice($args, 2);
-				$lambda = function() use ($args, $formatobj, $format) {
-					$filterargs = func_get_args();
-					foreach($args as $arg) {
-						$filterargs[] = $arg;
-					}
-					return call_user_func_array(array($formatobj, $format), $filterargs);
-				};
-				Plugins::register( $lambda, 'filter', $onwhat );
-				break;  // We only look for one matching format function to apply.
+		$priority = 8;
+		if(preg_match('#^(.+)_(\d+)$#', $onwhat, $matches)) {
+			$priority = intval($matches[2]);
+			$onwhat = $matches[1];
+		}
+
+		$method = false;
+		if (is_callable($format)) {
+			$method = $format;
+		}
+		else {
+			foreach ( self::$formatters as $formatobj ) {
+				if ( method_exists( $formatobj, $format ) ) {
+					$method = array($formatobj, $format);
+					break;
+				}
 			}
+		}
+
+		if($method) {
+			$args = func_get_args();
+			$args = array_slice($args, 2);
+			$lambda = function() use ($args, $method) {
+				$filterargs = func_get_args();
+				//$filterargs = array_slice($filterargs, 0, 1);
+				foreach($args as $arg) {
+					$filterargs[] = $arg;
+				}
+				return call_user_func_array($method, $filterargs);
+			};
+			Plugins::register( $lambda, 'filter', $onwhat );
 		}
 	}
 
