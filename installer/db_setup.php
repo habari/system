@@ -172,8 +172,7 @@
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="" />
 			<div class="warning"><?php echo elem_if_set( $form_errors, 'blog_title'); ?></div>
 			<div class="help">
-				<?php _e('<strong>Site Name</strong> is the name of your site as it will appear
-				to your visitors.'); ?>  <a href="#"><?php _e('Learn More&hellip;'); ?></a>
+				<?php _e('<strong>Site Name</strong> is the name of your site as it will appear to your visitors.'); ?>  <a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 
