@@ -729,7 +729,7 @@ class Posts extends ArrayObject implements IsContent
 			}
 		}
 
-		Plugins::act('posts_get_query', $query);
+		Plugins::act('posts_get_query', $query, $paramarray);
 		/* All SQL parts are constructed, on to real business! */
 
 		/**
