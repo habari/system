@@ -1156,6 +1156,7 @@ class Utils
 	{
 		$out = '';
 		foreach($attrs as $key => $value) {
+			$value = is_array($value) ? implode(' ', $value) : $value;
 			if($value != '') {
 				$out .= ($out == '' ? '' : ' ') . $key . '="' . Utils::htmlspecialchars($value) . '"';
 			}
