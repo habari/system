@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-07 18:48+0000\n"
+"POT-Creation-Date: 2012-06-17 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1432,7 +1432,7 @@ msgstr ""
 
 #: admin/tags.php:22 admin/logs.php:15 admin/logs.php:78 admin/users.php:65
 #: admin/posts.php:13 admin/posts.php:39 admin/comments.php:16
-#: admin/comments.php:40 admin/js/admin.js:286
+#: admin/comments.php:40 admin/js/admin.js:286 installer/script.js:388
 msgid "None selected"
 msgstr ""
 
@@ -4730,7 +4730,7 @@ msgstr ""
 msgid "All %s selected"
 msgstr ""
 
-#: admin/js/admin.js:309
+#: admin/js/admin.js:309 installer/script.js:398
 #, perl-format
 msgid "%s selected"
 msgstr ""
@@ -4738,4 +4738,8 @@ msgstr ""
 #: admin/js/admin.js:312
 #, perl-format
 msgid "%1$s selected (%2$s visible)"
+msgstr ""
+
+#: installer/script.js:393
+msgid "All selected"
 msgstr ""
