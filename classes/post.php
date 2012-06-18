@@ -1256,7 +1256,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 				'null:null',
 				_t( 'Website' ),
 				'formcontrol_text'
-			)->add_validator( 'validate_url', _t( 'The Web Site field value must be a valid URL' ) )
+			)->add_validator( 'validate_url', _t( 'The Website field value must be a valid URL' ) )
 			->id = 'comment_url';
 			$form->cf_url->type = 'url';
 			$form->cf_url->tabindex = 3;
@@ -1269,7 +1269,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 				'null:null',
 				_t( 'Comment' ),
 				'formcontrol_textarea'
-			)->add_validator( 'validate_required', _t( 'The Content field value is required' ) )
+			)->add_validator( 'validate_required', _t( 'The Comment field value is required' ) )
 			->id = 'comment_content';
 			$form->cf_content->tabindex = 4;
 			$form->cf_content->value = $commenter_content;
