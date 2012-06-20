@@ -108,15 +108,20 @@ var installer = {
 
 		if (installok) {
 //			installer.checkDBCredentials();
-			$('#siteconfiguration, #pluginactivation, #install').addClass('ready').addClass('done').children('.options').fadeIn().children('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
-			$('#pluginactivation').children('.help-me').show();
-			$('#submitinstall').removeAttr( 'disabled' );
+			$('#siteconfiguration, #themeselection').addClass('ready').addClass('done').children('.options').fadeIn().children('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
+			$('#themeselection').children('.help-me').show();
 		}
 		else {
 			$('#siteconfiguration').removeClass('done');
-			$('#pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
-			$('#pluginactivation').children('.help-me').hide();
+			$('#themeselection, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
+			$('#themeselection').children('.help-me').hide();
 		}
+	},
+
+	checkThemeConfiguration: function() {
+		$('#siteconfiguration, #pluginactivation, #install').addClass('ready').addClass('done').children('.options').fadeIn().children('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
+		$('#pluginactivation').children('.help-me').show();
+		$('#submitinstall').removeAttr( 'disabled' );
 	},
 
 	noVerify: function() {
@@ -336,7 +341,7 @@ installer.sqlite = {
 			$('#siteconfiguration, #pluginactivation').children('.help-me').hide();
 		}
 	},
-	
+
 	validDBCredentials: function() {
 		$('#databasefile, #tableprefix').each(function() {
 			$(this).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
@@ -430,5 +435,6 @@ $(document).ready(function() {
 	$('#databasesetup input').keyup(function(){queueTimer(installer.checkDBFields)});
 	$('#check_db_connection').click(function(){installer.checkDBCredentials()});
 	$('#siteconfiguration input').keyup(function(){queueTimer(installer.checkSiteConfigurationCredentials)});
+	$('#themeselection input').click(function(){queueTimer(installer.checkThemeConfiguration)})
 	$('#locale').focus().change(function() { $('#locale-form').submit();	});
 });

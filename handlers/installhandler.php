@@ -180,6 +180,7 @@ class InstallHandler extends ActionHandler
 
 		// activate plugins on POST
 		if ( count( $_POST ) > 0 ) {
+			$this->activate_theme();
 			$this->activate_plugins();
 		}
 
@@ -243,6 +244,16 @@ class InstallHandler extends ActionHandler
 	}
 
 	/**
+	 * Helper function to grab list of themes
+	 */
+	public function get_themes()
+	{
+		$all_themes = Themes::get_all_data();
+
+		return $all_themes;
+	}
+
+	/**
 	 * Helper function to remove code repetition
 	 *
 	 * @param template_name Name of template to use
@@ -252,6 +263,8 @@ class InstallHandler extends ActionHandler
 		foreach ( $this->handler_vars as $key=>$value ) {
 			$this->theme->assign( $key, $value );
 		}
+
+		$this->theme->assign( 'themes', $this->get_themes() );
 
 		$this->theme->assign( 'plugins', $this->get_plugins() );
 
@@ -977,6 +990,27 @@ class InstallHandler extends ActionHandler
 			return false;
 		}
 		return false;  // Only happens when config.php template does not exist.
+	}
+
+
+	public function activate_theme()
+	{
+		$theme_dir = $this->handler_vars['theme'];
+
+		// set the user_id in the session in case theme activation methods need it
+		if ( ! $u = User::get_by_name( $this->handler_vars['admin_username'] ) ) {
+			// @todo die gracefully
+			die( _t( 'No admin user found' ) );
+		}
+		$u->remember();
+
+		$themes = Themes::get_all_data();
+		$theme = $themes[$theme_dir];
+		Themes::activate_theme($theme['info']->name, $theme_dir);
+
+		// unset the user_id session variable
+		Session::clear_userid( $_SESSION['user_id'] );
+		unset( $_SESSION['user_id'] );
 	}
 
 	public function activate_plugins()
