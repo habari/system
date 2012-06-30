@@ -6,6 +6,7 @@
  */
 class Query {
 
+	/** @var QueryWhere $where Internal QueryWhere object */
 	private $where = null;
 	public $primary_table = null;
 	protected $fields = array();
@@ -48,7 +49,10 @@ class Query {
 	 */
 	public function select($fields)
 	{
-		$this->fields = array_merge($this->fields, Utils::single_array($fields));
+		$args = func_get_args();
+		foreach($args as $fields) {
+			$this->fields = array_merge($this->fields, Utils::single_array($fields));
+		}
 		return $this;
 	}
 
@@ -275,6 +279,52 @@ class Query {
 		return $prefix . '_' . $param_names[$prefix];
 	}
 
+	/**
+	 * Execute and return the first row of this query
+	 * @param string $class The optional class to return results as
+	 * @return object The result object, a QueryRecord or the specified class
+	 */
+	public function row($class = null)
+	{
+		return DB::get_row($this->get(), $this->params(), $class);
+	}
+
+	/**
+	 * Execute and return the returns of this query
+	 * @param string $class The optional class to return results as
+	 * @return array The results array of QueryRecords or the specified class
+	 */
+	public function results($class = null)
+	{
+		return DB::get_results($this->get(), $this->params(), $class);
+	}
+
+	/**
+	 * Execute and return key-value pairs from this query
+	 * @return array The results array of QueryRecords or the specified class
+	 */
+	public function keyvalue()
+	{
+		return DB::get_keyvalue($this->get(), $this->params());
+	}
+
+	/**
+	 * Execute and return the first first field from each row of this query
+	 * @return array The result array of values
+	 */
+	public function column()
+	{
+		return DB::get_column($this->get(), $this->params());
+	}
+
+	/**
+	 * Execute and return the first row of this query
+	 * @return object The result object, a QueryRecord or the specified class
+	 */
+	public function value()
+	{
+		return DB::get_value($this->get(), $this->params());
+	}
 }
 
 /**
@@ -294,6 +344,16 @@ class QueryWhere {
 	public function __construct($operator = 'AND')
 	{
 		$this->operator = $operator;
+	}
+
+	/**
+	 * Convenience function for fluid interface
+	 * @param string $operator The operator (AND/OR) to user between expressions in this clause
+	 * @return QueryWhere Configured instance of the QueryWhere
+	 */
+	public function create($operator = 'AND')
+	{
+		return new QueryWhere($operator);
 	}
 
 	/**
