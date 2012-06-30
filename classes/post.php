@@ -420,16 +420,18 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	{
 		// Defaults
 		$defaults = array (
-			'where' => array(
-				array(
-					'status' => Post::status( 'published' ),
-				),
-			),
 			'fetch_fn' => 'get_row',
 		);
-		foreach ( $defaults['where'] as $index => $where ) {
-			$defaults['where'][$index] = array_merge( $where, Utils::get_params( $paramarray ) );
+		if(is_array($paramarray)) {
+			$defaults = array_merge( $defaults, Utils::get_params( $paramarray ) );
 		}
+		elseif(is_numeric($paramarray)) {
+			$defaults['id'] = $paramarray;
+		}
+		elseif(is_string($paramarray)) {
+			$defaults['slug'] = $paramarray;
+		}
+
 		// make sure we get at most one result
 		$defaults['limit'] = 1;
 
