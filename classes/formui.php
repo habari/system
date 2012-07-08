@@ -1880,7 +1880,7 @@ controls.init(function(){
 		disableNesting: 'no-nest',
 		forcePlaceholderSize: true,
 		handle: 'div',
-		items: 'li',
+		items: 'li.treeitem',
 		opacity: .6,
 		placeholder: 'placeholder',
 		tabSize: 25,

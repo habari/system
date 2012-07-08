@@ -1445,12 +1445,13 @@ class Theme extends Pluggable
 		$themedirs = $this->theme_dir;
 
 		if(!$overrideok) {
-			$themedirs = end($this->theme_dir);
+			$themedirs = reset($this->theme_dir);
 		}
 
 		foreach($themedirs as $dir) {
 			if(file_exists(Utils::end_in_slash($dir) . trim($resource, '/'))) {
 				$url = $this->dir_to_url(Utils::end_in_slash($dir) . trim($resource, '/'));
+				break;
 			}
 		}
 

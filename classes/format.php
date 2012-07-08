@@ -603,7 +603,7 @@ class Format
 			'listattr' => array(),
 			'listend' => '</ol>',
 			'itemstart' => '<li %s>',
-			'itemattr' => array(),
+			'itemattr' => array('class' => 'treeitem'),
 			'itemend' => '</li>',
 			'wrapper' => '<div>%s</div>',
 			'linkcallback' => null,
