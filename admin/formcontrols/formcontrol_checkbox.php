@@ -1,5 +1,10 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-<div<?php echo ($class) ? ' class="' . $class . '"' : ''?><?php echo ($id) ? ' id="' . $id . '"' : ''?>>
+<div<?php
+		echo $control->parameter_map(
+			array(
+				'class', 'id' => 'name'
+			)
+		); ?>>
 	<label for="<?php echo $field; ?>"><?php echo $this->caption; ?></label>
 	<input type="checkbox" name="<?php echo $field; ?>" id="<?php echo $field; ?>" value="1" <?php echo $value ? 'checked' : ''; ?>>
 	<input type="hidden" name="<?php echo $field; ?>_submitted" value="1" >

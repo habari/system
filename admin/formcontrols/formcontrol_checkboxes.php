@@ -1,5 +1,10 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-<div<?php echo ($class) ? ' class="' . $class . '"' : ''?><?php echo ($id) ? ' id="' . $id . '"' : ''?>>
+<div<?php
+		echo $control->parameter_map(
+			array(
+				'class', 'id' => 'name'
+			)
+		); ?>>
 <ul>
 <?php foreach($options as $key => $text) : ?>
 	<li>
