@@ -14,7 +14,39 @@
  * FormControl*		Every control needs a FormControl* class, FormUI literally looks for example, FormControlCheckbox.
  *
  */
-class FormContainer
+
+class FormComponents
+{
+	function parameter_map($map = array(), $additional = array()) {
+		$output = '';
+		foreach($map as $tag_param => $tag_fields) {
+			$value_out = false;
+			if(is_numeric($tag_param)) {
+				$tag_param = $tag_fields;
+			}
+			foreach(Utils::single_array($tag_fields) as $tag_field) {
+				if(isset($this->$tag_field)) {
+					$value_out = $this->$tag_field;
+					break;
+				}
+			}
+			if($value_out) {
+				if(is_array($value_out)) {
+					$output .= ' ' . $tag_param . '="' . implode(' ', $value_out) . '"';
+				}
+				else {
+					$output .= ' ' . $tag_param . '="' . $value_out . '"';
+				}
+			}
+		}
+		foreach($additional as $tag_param => $value_out) {
+			$output .= ' ' . $tag_param . '="' . $value_out . '"';
+		}
+		return $output;
+	}
+}
+
+class FormContainer extends FormComponents
 {
 	public $name = '';
 	public $class = '';
@@ -166,6 +198,7 @@ class FormContainer
 		$theme->class = $this->class;
 		$theme->id = $this->name;
 		$theme->caption = $this->caption;
+		$theme->control = $this;
 
 		return $theme->fetch( $this->template, true );
 	}
@@ -964,7 +997,7 @@ class FormValidators
 /**
  * A base class from which form controls to be used with FormUI can descend
  */
-class FormControl
+class FormControl extends FormComponents
 {
 	public $caption;
 	protected $default = null;
@@ -1195,7 +1228,7 @@ class FormControl
 	 */
 	public function pre_out()
 	{
-		return '';
+		return isset($this->properties['pre_out']) ? $this->properties['pre_out'] : '';
 	}
 
 	/**
@@ -1478,35 +1511,6 @@ class FormControl
 	{
 		$this->container->remove( $this );
 	}
-
-	function parameter_map($map = array(), $additional = array()) {
-		$output = '';
-		foreach($map as $tag_param => $tag_fields) {
-			$value_out = false;
-			if(is_numeric($tag_param)) {
-				$tag_param = $tag_fields;
-			}
-			foreach(Utils::single_array($tag_fields) as $tag_field) {
-				if(isset($this->$tag_field)) {
-					$value_out = $this->$tag_field;
-					break;
-				}
-			}
-			if($value_out) {
-				if(is_array($value_out)) {
-					$output .= ' ' . $tag_param . '="' . implode(' ', $value_out) . '"';
-				}
-				else {
-					$output .= ' ' . $tag_param . '="' . $value_out . '"';
-				}
-			}
-		}
-		foreach($additional as $tag_param => $value_out) {
-			$output .= ' ' . $tag_param . '="' . $value_out . '"';
-		}
-		return $output;
-	}
-
 }
 
 /**
@@ -1640,6 +1644,67 @@ class FormControlTag extends FormControl
 		return $theme->fetch( $this->get_template(), true );
 	}
 
+}
+
+/**
+ * A password control based on FormControlText for output via a FormUI.
+ */
+class FormControlTags extends FormControlText
+{
+	public static $outpre = false;
+
+	public function pre_out()
+	{
+		$out = '';
+		if ( !FormControlTextMulti::$outpre ) {
+			FormControlTextMulti::$outpre = true;
+			$out = <<< TAGS_PRE_OUT
+<script type="text/javascript">
+$(function(){
+	$('input.tags_control').each(function(){
+
+		for(var z in tc_tags=$(this).val().split(/\s*,\s*/)) {
+			tc_tags[z]=tc_tags[z].replace(/^(["'])(.*)\1$/, '$2');
+		}
+		console.log(tc_tags);
+
+		\$this = $(this);
+		ajax_url = $(this).data('ajax_url');
+		console.log(ajax_url);
+		\$this.select2({
+			tags: tc_tags,
+			placeholder: "Tags",
+			minimumInputLength: 1,
+			ajax: {
+				url: ajax_url,
+				dataType: 'json',
+				quietMillis: 100,
+				data: function (term, page) {
+					return { q: term };
+				},
+				results: function (data, page) {
+					var results = {};
+					for(var z in data.data) {
+						results[parseInt(z)] = {id: parseInt(z), text: data.data[z]};
+					}
+					return {results: results, more: false};
+				},
+				formatSelection: function(item) {
+					return item.text;
+				},
+				formatResult: function(item) {
+					return item.text;
+				}
+			}
+		});
+
+	});
+});
+</script>
+TAGS_PRE_OUT;
+		}
+		return $out;
+	}
 }
 
 /**
