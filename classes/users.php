@@ -83,7 +83,7 @@ class Users extends ArrayObject
 				}
 
 				if ( isset( $paramset['group'] ) && is_array( $paramset['group'] ) ) {
-					$join .= 'INNER JOIN {users_groups} ON {users}.id = {users_groups}.user_id';
+					$join .= ' INNER JOIN {users_groups} ON {users}.id = {users_groups}.user_id';
 					foreach ( $paramset['group'] as $group ) {
 						$group_id = UserGroup::get_by_name( $group )->id;
 						$where[] = '{users_groups}.group_id = ?';
