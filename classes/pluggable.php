@@ -248,8 +248,9 @@ abstract class Pluggable
 	 *
 	 * @param mixed $rule An old-style rewrite rule string, where quoted segments are literals and unquoted segments are variable names, OR a RewriteRule object
 	 * @param string $hook The suffix of the hook function: action_plugin_act_{$suffix}
+	 * #param Callback $fn A potential function/method to register directly to the newly created hook
 	 */
-	public function add_rule( $rule, $hook )
+	public function add_rule( $rule, $hook, $fn = null )
 	{
 		if ( count( $this->_new_rules ) == 0 ) {
 			Plugins::register( array( $this, '_filter_rewrite_rules' ), 'filter', 'rewrite_rules', 7 );
@@ -259,6 +260,9 @@ abstract class Pluggable
 		}
 		else {
 			$this->_new_rules[] = RewriteRule::create_url_rule( $rule, 'PluginHandler', $hook );
+		}
+		if(!is_null($fn)) {
+			Plugins::register($fn, 'theme', 'route_' . $hook);
 		}
 	}
 
