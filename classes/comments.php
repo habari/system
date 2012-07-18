@@ -42,6 +42,9 @@ class Comments extends ArrayObject
 		// Put incoming parameters into the local scope
 		$paramarray = Utils::get_params( $paramarray );
 
+		// let plugins alter the param array before we use it. could be useful for modifying search results, etc.
+		$paramarray = Plugins::filter( 'comments_get_paramarray', $paramarray );
+
 		// Transact on possible multiple sets of where information that is to be OR'ed
 		if ( isset( $paramarray['where'] ) && is_array( $paramarray['where'] ) ) {
 			$wheresets = $paramarray['where'];
