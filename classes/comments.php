@@ -45,6 +45,8 @@ class Comments extends ArrayObject
 		// let plugins alter the param array before we use it. could be useful for modifying search results, etc.
 		$paramarray = Plugins::filter( 'comments_get_paramarray', $paramarray );
 
+		$join_params = array();
+
 		// Transact on possible multiple sets of where information that is to be OR'ed
 		if ( isset( $paramarray['where'] ) && is_array( $paramarray['where'] ) ) {
 			$wheresets = $paramarray['where'];
