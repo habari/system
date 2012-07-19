@@ -420,16 +420,18 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	{
 		// Defaults
 		$defaults = array (
-			'where' => array(
-				array(
-					'status' => Post::status( 'published' ),
-				),
-			),
 			'fetch_fn' => 'get_row',
 		);
-		foreach ( $defaults['where'] as $index => $where ) {
-			$defaults['where'][$index] = array_merge( $where, Utils::get_params( $paramarray ) );
+		if(is_array($paramarray)) {
+			$defaults = array_merge( $defaults, Utils::get_params( $paramarray ) );
 		}
+		elseif(is_numeric($paramarray)) {
+			$defaults['id'] = $paramarray;
+		}
+		elseif(is_string($paramarray)) {
+			$defaults['slug'] = $paramarray;
+		}
+
 		// make sure we get at most one result
 		$defaults['limit'] = 1;
 
@@ -1256,7 +1258,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 				'null:null',
 				_t( 'Website' ),
 				'formcontrol_text'
-			)->add_validator( 'validate_url', _t( 'The Web Site field value must be a valid URL' ) )
+			)->add_validator( 'validate_url', _t( 'The Website field value must be a valid URL' ) )
 			->id = 'comment_url';
 			$form->cf_url->type = 'url';
 			$form->cf_url->tabindex = 3;
@@ -1269,7 +1271,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 				'null:null',
 				_t( 'Comment' ),
 				'formcontrol_textarea'
-			)->add_validator( 'validate_required', _t( 'The Content field value is required' ) )
+			)->add_validator( 'validate_required', _t( 'The Comment field value is required' ) )
 			->id = 'comment_content';
 			$form->cf_content->tabindex = 4;
 			$form->cf_content->value = $commenter_content;

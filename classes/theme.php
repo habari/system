@@ -213,7 +213,6 @@ class Theme extends Pluggable
 
 		if ( !isset( $posts ) ) {
 			$user_filters = Plugins::filter( 'template_user_filters', $user_filters );
-			$user_filters = array_intersect_key( $user_filters, array_flip( $this->valid_filters ) );
 
 			// Work around the tags parameters to Posts::get() being subsumed by the vocabulary parameter
 			if( isset( $user_filters['not:tag'] ) ) {
@@ -1445,12 +1444,13 @@ class Theme extends Pluggable
 		$themedirs = $this->theme_dir;
 
 		if(!$overrideok) {
-			$themedirs = end($this->theme_dir);
+			$themedirs = reset($this->theme_dir);
 		}
 
 		foreach($themedirs as $dir) {
 			if(file_exists(Utils::end_in_slash($dir) . trim($resource, '/'))) {
 				$url = $this->dir_to_url(Utils::end_in_slash($dir) . trim($resource, '/'));
+				break;
 			}
 		}
 

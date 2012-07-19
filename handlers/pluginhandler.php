@@ -46,10 +46,15 @@ class PluginHandler extends ActionHandler
 
 		$action_hook = 'plugin_act_' . $action;
 		$before_action_hook = 'before_' . $action_hook;
+		$theme_hook = 'route_' . $action;
 		$after_action_hook = 'after_' . $action_hook;
 
 		Plugins::act( $before_action_hook, $this );
 		Plugins::act( $action_hook, $this );
+		if(Plugins::implemented($theme_hook, 'theme')) {
+			$theme = Themes::create();
+			Plugins::theme( $theme_hook, $theme, $this );
+		}
 		Plugins::act( $after_action_hook );
 	}
 

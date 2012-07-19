@@ -13,12 +13,13 @@ class Vocabulary extends QueryRecord
 	 *
 	 * @var Array of strings $features. An array of the features that limit the behaviour of the vocabulary.
 	 * Default values can include:
-	 *		hierarchical:	The vocabulary's terms exist in a parent child hierarchy
-	 *		required:
-	 *		multiple:		More than one term in the vocabulary can be associated with an object
-	 *		free:			Terms within the vocabulary can have any value
+	 *  hierarchical: The vocabulary's terms exist in a parent child hierarchy
+	 *  required:
+	 *  multiple: More than one term in the vocabulary can be associated with an object
+	 *  free: Terms within the vocabulary can have any value
+	 *  unique: A term may be associated with exactly 0 or 1 object
 	 */
-	public static $features = array( 'hierarchical', 'required', 'multiple', 'free' );
+	public static $features = array( 'hierarchical', 'required', 'multiple', 'free', 'unique' );
 
 	/**
 	 * Return the defined database columns for a Vocabulary.
@@ -97,7 +98,9 @@ class Vocabulary extends QueryRecord
 	 **/
 	public static function get( $name )
 	{
-		return DB::get_row( 'SELECT * FROM {vocabularies} WHERE name=?', array( $name ), 'Vocabulary' );
+		$query = Query::create('{vocabularies}')->select('*');
+		$query->where()->add('name = :name', array('name' => $name));
+		return $query->row('Vocabulary');
 	}
 
 	/**
@@ -108,7 +111,9 @@ class Vocabulary extends QueryRecord
 	 */
 	public static function get_by_id( $id )
 	{
-		return DB::get_row( 'SELECT * FROM {vocabularies} WHERE id=?', array( $id ), 'Vocabulary' );
+		$query = Query::create('{vocabularies}')->select('*');
+		$query->where()->add('id = :id', array('id' => $id));
+		return $query->row('Vocabulary');
 	}
 
 	/**
@@ -118,7 +123,8 @@ class Vocabulary extends QueryRecord
 	 */
 	public static function get_all()
 	{
-		return DB::get_results( 'SELECT * FROM {vocabularies}', array(), 'Vocabulary' );
+		$query = Query::create('{vocabularies}')->select('*');
+		return $query->results('Vocabulary');
 	}
 
 	/**
@@ -139,12 +145,8 @@ class Vocabulary extends QueryRecord
 	 **/
 	public static function names()
 	{
-		$names = array();
-		$vocabs = DB::get_results( 'SELECT name FROM {vocabularies}' );
-		foreach ( $vocabs as $vocab ) {
-			$names[] = $vocab->name;
-		}
-		return $names;
+		$query = Query::create('{vocabularies}')->select('name');
+		return $query->column();
 	}
 
 	/**
@@ -155,16 +157,11 @@ class Vocabulary extends QueryRecord
 	 **/
 	public static function get_all_object_terms( $object_type, $id )
 	{
-		$results = DB::get_results(
-			'SELECT id, term, term_display, vocabulary_id, mptt_left, mptt_right FROM {terms}
-			JOIN {object_terms} ON {terms}.id = {object_terms}.term_id
-			WHERE {object_terms}.object_type_id = ?
-				AND {object_terms}.object_id = ?',
-			array( self::object_type_id( $object_type ), $id ),
-			'Term'
-		);
-
-		return new Terms( $results );
+		$query = Query::create('{terms}')->select('id', 'term', 'term_display', 'vocabulary_id', 'mptt_left', 'mptt_right');
+		$query->join('JOIN {object_terms} ON {terms}.id = {object_terms}.term_id', array(), 'object_terms');
+		$query->where()->in('{object_terms}.object_type_id', self::object_type_id( $object_type ));
+		$query->where()->in('{object_terms}.object_id', $id);
+		return new Terms($query->results('Term'));
 	}
 
 	/**
@@ -174,7 +171,9 @@ class Vocabulary extends QueryRecord
 	**/
 	public static function exists( $name )
 	{
-		return ( (int) DB::get_value( "SELECT COUNT(id) FROM {vocabularies} WHERE name=?", array( $name ) ) > 0 );
+		$query = Query::create('{vocabularies}')->select('count(id)');
+		$query->where()->add('name = :name', array('name' => $name));
+		return ((int) $query->value()) > 0;
 	}
 
 	/**
@@ -416,17 +415,12 @@ class Vocabulary extends QueryRecord
 	 **/
 	public function get_object_terms( $object_type, $id )
 	{
-		$results = DB::get_results(
-			'SELECT id, term, term_display, vocabulary_id, mptt_left, mptt_right FROM {terms}
-			JOIN {object_terms} ON {terms}.id = {object_terms}.term_id
-			WHERE {terms}.vocabulary_id = ?
-				AND {object_terms}.object_type_id = ?
-				AND {object_terms}.object_id = ?',
-			array( $this->id, self::object_type_id( $object_type ), $id ),
-			'Term'
-		);
-
-		return $results;
+		$query = Query::create('{terms}')->select('id', 'term', 'term_display', 'vocabulary_id', 'mptt_left', 'mptt_right');
+		$query->join('JOIN {object_terms} ON {terms}.id = {object_terms}.term_id', array(), 'object_terms');
+		$query->where()->in('{terms}.vocabulary_id', $this->id);
+		$query->where()->in('{object_terms}.object_type_id', self::object_type_id( $object_type ));
+		$query->where()->in('{object_terms}.object_id', $id);
+		return new Terms($query->results('Term'));
 	}
 
 	/**
@@ -523,7 +517,9 @@ class Vocabulary extends QueryRecord
 	 **/
 	public function is_empty()
 	{
-		return ( (int) DB::get_value( "SELECT COUNT(id) FROM {terms} WHERE vocabulary_id=?", array( $this->id ) ) == 0 );
+		$query = Query::create('{terms}')->select('count(id)');
+		$query->where()->in('vocabulary_id', $this->id);
+		return ((int) $query->value()) == 0;
 	}
 
 
@@ -533,7 +529,17 @@ class Vocabulary extends QueryRecord
 	 **/
 	public function get_tree( $orderby = 'mptt_left ASC' )
 	{
-		return new Terms(DB::get_results( "SELECT * FROM {terms} WHERE vocabulary_id=:vid ORDER BY {$orderby}", array( 'vid' => $this->id ), 'Term' ));
+		$query = Query::create('{terms}')->select('{terms}.*');
+		$query->where()->in('vocabulary_id', $this->id);
+		// If the vocabulary is unique, save the extra mess of queries and fetch the object data, too
+		if(in_array('unique', $this->features)) {
+			$query->join('LEFT JOIN {object_terms} on {object_terms}.term_id = {terms}.id', array(), 'object_terms');
+			$query->join('LEFT JOIN {object_types} on {object_types}.id = {object_terms}.object_type_id', array(), 'object_types');
+			$query->select('{object_terms}.object_id');
+			$query->select('{object_types}.name AS type');
+		}
+		$query->orderby($orderby);
+		return new Terms($query->results('Term'));
 	}
 
 	/**
