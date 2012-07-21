@@ -19,6 +19,7 @@ class RawPHPEngine extends TemplateEngine
 	protected $available_templates = array();
 	protected $template_map =array();
 	protected $var_stack = array();
+	protected $loaded_templates = false;
 
 	/**
 	 * Constructor for RawPHPEngine
@@ -105,8 +106,7 @@ class RawPHPEngine extends TemplateEngine
 	 */
 	public function template_exists( $template )
 	{
-		static $loaded_templates = false;
-		if ( !$loaded_templates ) {
+		if ( !$this->loaded_templates ) {
 			if ( !is_array( $this->template_dir ) ) {
 				$this->template_dir = array( $this->template_dir );
 			}
@@ -122,7 +122,7 @@ class RawPHPEngine extends TemplateEngine
 			array_unique( $available_templates );
 			$available_templates = Plugins::filter( 'available_templates', $available_templates, __CLASS__ );
 			$this->available_templates = array_merge($this->available_templates, $available_templates);
-			$loaded_templates = true;
+			$this->loaded_templates = true;
 		}
 		return in_array( $template, $this->available_templates );
 	}
