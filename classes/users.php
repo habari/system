@@ -57,6 +57,7 @@ class Users extends ArrayObject
 				$paramset = array_merge( (array) $paramarray, (array) $paramset );
 
 				$default_fields = User::default_fields();
+
 				foreach ( User::default_fields() as $field => $scrap ) {
 					if ( !isset( $paramset[$field] ) ) {
 						continue;
@@ -78,6 +79,15 @@ class Users extends ArrayObject
 						$where[] = '{userinfo}.name = ? AND {userinfo}.value = ?';
 						$params[] = $info_name;
 						$params[] = $info_value;
+					}
+				}
+
+				if ( isset( $paramset['group'] ) && is_array( $paramset['group'] ) ) {
+					$join .= ' INNER JOIN {users_groups} ON {users}.id = {users_groups}.user_id';
+					foreach ( $paramset['group'] as $group ) {
+						$group_id = UserGroup::get_by_name( $group )->id;
+						$where[] = '{users_groups}.group_id = ?';
+						$params[] = $group_id;
 					}
 				}
 
@@ -168,7 +178,7 @@ class Users extends ArrayObject
 			$query .= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
 		$query .= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
-		//Utils::debug($paramarray, $fetch_fn, $query, $params);
+		// Utils::debug($paramarray, $fetch_fn, $query, $params);
 
 		DB::set_fetch_mode( PDO::FETCH_CLASS );
 		DB::set_fetch_class( 'User' );

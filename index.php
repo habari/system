@@ -20,8 +20,8 @@ if ( !defined( 'HABARI_PATH' ) ) {
 }
 
 // Compares PHP version against our requirement.
-if ( !version_compare( PHP_VERSION, '5.2.0', '>=' ) ) {
-	die( 'Habari needs PHP 5.2.x or higher to run. You are currently running PHP ' . PHP_VERSION . '.' );
+if ( !version_compare( PHP_VERSION, '5.3.3', '>=' ) ) {
+	die( 'Habari needs PHP 5.3.3 or higher to run. You are currently running PHP ' . PHP_VERSION . '.' );
 }
 
 // Increase the error reporting level: E_ALL, E_NOTICE, and E_STRICT

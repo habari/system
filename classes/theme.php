@@ -213,7 +213,6 @@ class Theme extends Pluggable
 
 		if ( !isset( $posts ) ) {
 			$user_filters = Plugins::filter( 'template_user_filters', $user_filters );
-			$user_filters = array_intersect_key( $user_filters, array_flip( $this->valid_filters ) );
 
 			// Work around the tags parameters to Posts::get() being subsumed by the vocabulary parameter
 			if( isset( $user_filters['not:tag'] ) ) {

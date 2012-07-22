@@ -16,9 +16,10 @@ class RawPHPEngine extends TemplateEngine
 {
 	// Internal data to be extracted into template symbol table
 	protected $engine_vars = array();
-	protected $available_templates = null;
+	protected $available_templates = array();
 	protected $template_map =array();
 	protected $var_stack = array();
+	protected $loaded_templates = false;
 
 	/**
 	 * Constructor for RawPHPEngine
@@ -105,7 +106,7 @@ class RawPHPEngine extends TemplateEngine
 	 */
 	public function template_exists( $template )
 	{
-		if ( empty( $this->available_templates ) ) {
+		if ( !$this->loaded_templates ) {
 			if ( !is_array( $this->template_dir ) ) {
 				$this->template_dir = array( $this->template_dir );
 			}
@@ -115,10 +116,13 @@ class RawPHPEngine extends TemplateEngine
 				$templates = Utils::glob( $dir . '*.*' );
 				$alltemplates = array_merge( $alltemplates, $templates );
 			}
-			$this->available_templates = array_map( 'basename', $alltemplates, array_fill( 1, count( $alltemplates ), '.php' ) );
-			$this->template_map = array_combine( $this->available_templates, $alltemplates );
-			array_unique( $this->available_templates );
-			$this->available_templates = Plugins::filter( 'available_templates', $this->available_templates, __CLASS__ );
+			$available_templates = array_map( 'basename', $alltemplates, array_fill( 1, count( $alltemplates ), '.php' ) );
+			$template_map = array_combine( $available_templates, $alltemplates );
+			$this->template_map = array_merge($this->template_map, $template_map);
+			array_unique( $available_templates );
+			$available_templates = Plugins::filter( 'available_templates', $available_templates, __CLASS__ );
+			$this->available_templates = array_merge($this->available_templates, $available_templates);
+			$this->loaded_templates = true;
 		}
 		return in_array( $template, $this->available_templates );
 	}

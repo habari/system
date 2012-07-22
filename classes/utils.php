@@ -1244,6 +1244,9 @@ class Utils
 	 */
 	public static function array_map_field($array, $field, $key = null)
 	{
+		if(count($array) == 0) {
+			return $array;
+		}
 		if(is_null($key)) {
 			if($array instanceof ArrayObject) {
 				$array = $array->getArrayCopy();
