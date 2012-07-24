@@ -845,8 +845,10 @@ class Post extends QueryRecord implements IsContent, FormStorage
 				$out = parent::__get( $name );
 				break;
 		}
-		$out = Plugins::filter( "post_get", $out, $name, $this );
-		$out = Plugins::filter( "post_{$name}", $out, $this );
+		if ( $filter != 'internal' ) {
+			$out = Plugins::filter( "post_get", $out, $name, $this );
+			$out = Plugins::filter( "post_{$name}", $out, $this );
+		}
 		if ( $filter ) {
 			$out = Plugins::filter( "post_{$name}_{$filter}", $out, $this );
 		}
@@ -935,7 +937,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$form->title->class[] = 'important';
 		$form->title->class[] = 'check-change';
 		$form->title->tabindex = 1;
-		$form->title->value = $this->title;
+		$form->title->value = $this->title_internal;
 
 		// Create the silos
 		if ( count( Plugins::get_by_interface( 'MediaSilo' ) ) ) {
@@ -948,7 +950,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$form->content->class[] = 'resizable';
 		$form->content->class[] = 'check-change';
 		$form->content->tabindex = 2;
-		$form->content->value = $this->content;
+		$form->content->value = $this->content_internal;
 		$form->content->raw = true;
 
 		// Create the tags field
@@ -1653,6 +1655,34 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			'scheduled' => _t( 'scheduled' ),
 		);
 		return isset( $names[$status] ) ? $names[$status] : $status;
+	}
+
+	/**
+	 * Filter post content and titles for shortcodes
+	 * @static
+	 * @param string $content The field value to filter
+	 * @param string $field The name of the field to filter
+	 * @param Post $post The post that is being filtered
+	 * @return string The fitlered field value
+	 */
+	public static function filter_post_get_7( $content, $field, $post )
+	{
+		$regex = '%\[(\w+?)(?:\s+(.+?))?/\]|\[(\w+?)(?:\s+(.+?))?(?<!/)](?:(.*?)\[/(\w+?)])%si';
+		$shortcode_fields = Plugins::filter('shortcode_fields', array('title', 'content'), $post);
+		if(in_array($field, $shortcode_fields) && preg_match($regex, $content, $matches)) {
+			$matches = array_pad($matches, 6, '');
+			$code = $matches[1] . $matches[3];
+			$attrs = $matches[2] . $matches[4];
+			$code_contents = $matches[5];
+			preg_match_all('#(\w+)\s*=\s*(?:(["\'])?(.*?)\2|(\S+))#i', $attrs, $attr_match, PREG_SET_ORDER);
+			$attrs = array();
+			foreach($attr_match as $attr) {
+				$attrs[$attr[1]] = $attr[3] . $attr[4];
+			}
+			$replacement = Plugins::filter('shortcode_' . $code, $matches[0], $code, $attrs, $code_contents, $post);
+			$content = str_replace($matches[0], $replacement, $content);
+		}
+		return $content;
 	}
 
 	/**
