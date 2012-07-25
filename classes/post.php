@@ -1677,6 +1677,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			preg_match_all('#(\w+)\s*=\s*(?:(["\'])?(.*?)\2|(\S+))#i', $attrs, $attr_match, PREG_SET_ORDER);
 			$attrs = array();
 			foreach($attr_match as $attr) {
+				$attr = array_pad($attr, 5, '');
 				$attrs[$attr[1]] = $attr[3] . $attr[4];
 			}
 			$replacement = Plugins::filter('shortcode_' . $code, $matches[0], $code, $attrs, $code_contents, $post);
