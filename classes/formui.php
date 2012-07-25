@@ -57,6 +57,8 @@ class FormContainer extends FormComponents
 	protected $checksum;
 	public $template = 'formcontainer';
 	public $properties = array();
+	public $prefix = '';
+	public $postfix = '';
 
 	/**
 	 * Constructor for FormContainer prevents construction of this class directly
@@ -506,7 +508,7 @@ class FormContainer extends FormComponents
  *
  * For a list of options to customize its output or behavior see FormUI::set_option()
  */
-class FormUI extends FormContainer
+class FormUI extends FormContainer implements IsContent
 {
 	private $success_callback;
 	private $success_callback_params = array();
@@ -633,7 +635,7 @@ class FormUI extends FormContainer
 		$theme->salted_name = $this->salted_name();
 		$theme->pre_out = $this->pre_out_controls();
 
-		$out = $theme->display_fallback( $this->options['template'], 'fetch' );
+		$out = $this->prefix . $theme->display_fallback( $this->options['template'], 'fetch' ) . $this->postfix;
 		$theme->end_buffer();
 
 		return $out;
@@ -762,7 +764,7 @@ class FormUI extends FormContainer
 		foreach ( $this->on_save as $save ) {
 			$callback = array_shift( $save );
 			if ( is_callable( $callback ) ) {
-				array_unshift( $this, $save );
+				array_unshift( $save, $this );
 				call_user_func_array( $callback, $save );
 			}
 			else {
@@ -812,12 +814,32 @@ class FormUI extends FormContainer
 		$this->properties['onsubmit'] = "habari.media.submitPanel('$path', '$panel', this, '{$callback}');return false;";
 	}
 
+	/**
+	 * Redirect the user back to the stored URL value in session
+	 */
 	public function bounce()
 	{
 		$_SESSION['forms'][$this->salted_name()]['error_data'] = $_POST;
 		Utils::redirect( $_SESSION['forms'][$this->salted_name()]['url'] );
 	}
 
+	/**
+	 * Implementation of IsContent
+	 * @return array An array of content types that this object represents, starting with the most specific
+	 */
+	public function content_type()
+	{
+		return array('form');
+	}
+
+	/**
+	 * Convert this object instance to a string
+	 * @return string The form as HTML
+	 */
+	public function __toString()
+	{
+		return $this->get();
+	}
 }
 
 /**
