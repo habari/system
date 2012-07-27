@@ -21,7 +21,7 @@
  * </code>
  *
  */
-class User extends QueryRecord implements FormStorage
+class User extends QueryRecord implements FormStorage, IsContent
 {
 	/**
 	 * Static storage for the currently logged-in User record
@@ -258,9 +258,7 @@ class User extends QueryRecord implements FormStorage
 	* Check a user's credentials to see if they are legit
 	* -- calls all auth plugins BEFORE checking local database.
 	*
-	* @todo Actually call plugins
-	*
-	* @param string $who A username or email address
+	* @param string $who A username
 	* @param string $pw A password
 	* @return User|boolean a User object, or false
 	*/
@@ -714,6 +712,20 @@ class User extends QueryRecord implements FormStorage
 	function field_load($key)
 	{
 		return $this->info->$key;
+	}
+
+	/**
+	 * Returns the content type of the object instance
+	 *
+	 * @return array An array of content types that this object represents, starting with the most specific
+	 */
+	function content_type()
+	{
+		return array(
+			$this->id . '.user',
+			$this->username . '.user',
+			'user'
+		);
 	}
 }
 

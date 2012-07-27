@@ -63,7 +63,7 @@ class MySQLConnection extends DatabaseConnection
 	 */
 	function dbdelta( $queries, $execute = true, $silent = true, $doinserts = false )
 	{
-		$queries = preg_replace("/({\$prefix})/",$this->prefix,$queries);	//Converts {$prefix}table_name to prefix__table_name
+		$queries = str_replace('{$prefix}', $this->prefix, $queries);	//Converts {$prefix}table_name to prefix__table_name
 		$queries = $this->filter_tables( $queries );	//Converts {table_name} to prefix__table_name
 
 		if ( !is_array($queries) ) {

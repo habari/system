@@ -385,17 +385,17 @@ var itemManage = {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 0;
 			});
-			$('.item.controls label').addClass('none').removeClass('all').text('None selected');
+			$('.item.controls label').addClass('none').removeClass('all').text(_t('None selected'));
 		} else if(count == $('.item:not(.hidden):not(.ignore):not(.controls) .checkbox input[type=checkbox]').length) {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 1;
 			});
-			$('.item.controls label').removeClass('none').addClass('all').text('All selected');
+			$('.item.controls label').removeClass('none').addClass('all').text(_t('All selected'));
 		} else {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 0;
 			});
-			$('.item.controls label').removeClass('none').removeClass('all').text(count + ' selected');
+			$('.item.controls label').removeClass('none').removeClass('all').text(_t('%s selected', count));
 		}
 	},
 	uncheckAll: function() {

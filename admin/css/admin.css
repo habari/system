@@ -1388,6 +1388,10 @@ body.page-users .item .user a {
 	color: #444;
 }
 
+body.page-groups .allgroups .users {
+	width: 650px;
+}
+
 body.page-groups .allgroups .users, body.page-users .item .aka, body.page-users .item .userlogin {
 	color: #999;
 }
@@ -1480,6 +1484,7 @@ body.page-group .container.groupmembers a.user {
 	padding-right:14px;
 	line-height:14px;
 	background:url('../images/closebutton.png') no-repeat right center;
+	float: left;
 }
 
 body.page-group .container.groupmembers a.user:hover, body.page-group .container.groupmembers #currentusers a.user:focus {

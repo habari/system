@@ -420,16 +420,18 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	{
 		// Defaults
 		$defaults = array (
-			'where' => array(
-				array(
-					'status' => Post::status( 'published' ),
-				),
-			),
 			'fetch_fn' => 'get_row',
 		);
-		foreach ( $defaults['where'] as $index => $where ) {
-			$defaults['where'][$index] = array_merge( $where, Utils::get_params( $paramarray ) );
+		if(is_array($paramarray)) {
+			$defaults = array_merge( $defaults, Utils::get_params( $paramarray ) );
 		}
+		elseif(is_numeric($paramarray)) {
+			$defaults['id'] = $paramarray;
+		}
+		elseif(is_string($paramarray)) {
+			$defaults['slug'] = $paramarray;
+		}
+
 		// make sure we get at most one result
 		$defaults['limit'] = 1;
 
@@ -832,12 +834,21 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			case 'info':
 				$out = $this->get_info();
 				break;
+			case 'excerpt':
+				$field = 'content' . ($filter ? '_' . $filter : '_out');
+				$out = $this->__get($field);
+				if(!Plugins::implemented('post_excerpt', 'filter')) {
+					$out = Format::more($out, $this, Options::get('excerpt_settings', array('max_paragraphs' => 2)));
+				}
+				break;
 			default:
 				$out = parent::__get( $name );
 				break;
 		}
-		$out = Plugins::filter( "post_get", $out, $name, $this );
-		$out = Plugins::filter( "post_{$name}", $out, $this );
+		if ( $filter != 'internal' ) {
+			$out = Plugins::filter( "post_get", $out, $name, $this );
+			$out = Plugins::filter( "post_{$name}", $out, $this );
+		}
 		if ( $filter ) {
 			$out = Plugins::filter( "post_{$name}_{$filter}", $out, $this );
 		}
@@ -926,7 +937,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$form->title->class[] = 'important';
 		$form->title->class[] = 'check-change';
 		$form->title->tabindex = 1;
-		$form->title->value = $this->title;
+		$form->title->value = $this->title_internal;
 
 		// Create the silos
 		if ( count( Plugins::get_by_interface( 'MediaSilo' ) ) ) {
@@ -939,7 +950,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$form->content->class[] = 'resizable';
 		$form->content->class[] = 'check-change';
 		$form->content->tabindex = 2;
-		$form->content->value = $this->content;
+		$form->content->value = $this->content_internal;
 		$form->content->raw = true;
 
 		// Create the tags field
@@ -1249,7 +1260,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 				'null:null',
 				_t( 'Website' ),
 				'formcontrol_text'
-			)->add_validator( 'validate_url', _t( 'The Web Site field value must be a valid URL' ) )
+			)->add_validator( 'validate_url', _t( 'The Website field value must be a valid URL' ) )
 			->id = 'comment_url';
 			$form->cf_url->type = 'url';
 			$form->cf_url->tabindex = 3;
@@ -1262,7 +1273,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 				'null:null',
 				_t( 'Comment' ),
 				'formcontrol_textarea'
-			)->add_validator( 'validate_required', _t( 'The Content field value is required' ) )
+			)->add_validator( 'validate_required', _t( 'The Comment field value is required' ) )
 			->id = 'comment_content';
 			$form->cf_content->tabindex = 4;
 			$form->cf_content->value = $commenter_content;
@@ -1644,6 +1655,42 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			'scheduled' => _t( 'scheduled' ),
 		);
 		return isset( $names[$status] ) ? $names[$status] : $status;
+	}
+
+	/**
+	 * Filter post content and titles for shortcodes
+	 * @static
+	 * @param string $content The field value to filter
+	 * @param string $field The name of the field to filter
+	 * @param Post $post The post that is being filtered
+	 * @return string The fitlered field value
+	 */
+	public static function filter_post_get_7( $content, $field, $post )
+	{
+		$regex = '%\[(\w+?)(?:\s+(.+?))?/\]|\[(\w+?)(?:\s+(.+?))?(?<!/)](?:(.*?)\[/(\w+?)])%si';
+		$shortcode_fields = Plugins::filter('shortcode_fields', array('title', 'content'), $post);
+		if(in_array($field, $shortcode_fields)) {
+			if(preg_match_all($regex, $content, $match_set, PREG_SET_ORDER)) {
+				foreach($match_set as $matches) {
+					$matches = array_pad($matches, 6, '');
+					$code = $matches[1] . $matches[3];
+					$attrs = $matches[2] . $matches[4];
+					$code_contents = $matches[5];
+					if(preg_match($regex, $code_contents)) {
+						$code_contents = self::filter_post_get_7($code_contents, $field, $post);
+					}
+					preg_match_all('#(\w+)\s*=\s*(?:(["\'])?(.*?)\2|(\S+))#i', $attrs, $attr_match, PREG_SET_ORDER);
+					$attrs = array();
+					foreach($attr_match as $attr) {
+						$attr = array_pad($attr, 5, '');
+						$attrs[$attr[1]] = $attr[3] . $attr[4];
+					}
+					$replacement = Plugins::filter('shortcode_' . $code, $matches[0], $code, $attrs, $code_contents, $post);
+					$content = str_replace($matches[0], $replacement, $content);
+				}
+			}
+		}
+		return $content;
 	}
 
 	/**

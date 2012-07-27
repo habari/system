@@ -17,6 +17,11 @@
 class Term extends QueryRecord
 {
 	protected $inforecords = null;
+
+	public $unsetfields = array(
+		'object_id' => 'object_id',
+		'type' => 'type',
+	);
 	
 	/**
 	 * Return the defined database columns for a Term.
@@ -339,9 +344,9 @@ WHERE parent.mptt_left > :left AND parent.mptt_right < :right
 	AND parent.vocabulary_id = :vocab
 GROUP BY child.term
 HAVING COUNT(child.term)=1
-ORDER BY NULL
+ORDER BY mptt_left
 SQL;
-		return DB::get_results( $query, $params, 'Term' );
+		return new Terms(DB::get_results( $query, $params, 'Term' ));
 	}
 
 	/**

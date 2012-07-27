@@ -23,7 +23,6 @@ class Posts extends ArrayObject implements IsContent
 	public $get_param_cache; // Stores info about the last set of data fetched that was not a single value
 
 	/**
-	 * function __get
 	 * Returns properties of a Posts object.
 	 * This is the function that returns information about the set of posts that
 	 * was requested.  This function should offer property names that are identical
@@ -39,6 +38,10 @@ class Posts extends ArrayObject implements IsContent
 		switch ( $name ) {
 			case 'onepost':
 				return ( count( $this ) == 1 );
+			case 'first':
+				return reset($this);
+			case 'preset':
+				return isset($this->get_param_cache['preset']) ? $this->get_param_cache['preset'] : array();
 		}
 
 		return false;
@@ -619,7 +622,7 @@ class Posts extends ArrayObject implements IsContent
 			}
 
 		}
-		$query->where()->add($master_perm_where);
+		$query->where()->add($master_perm_where, array(), 'master_perm_where');
 
 		// Extract the remaining parameters which will be used onwards
 		// For example: page number, fetch function, limit
@@ -679,7 +682,7 @@ class Posts extends ArrayObject implements IsContent
 		 */
 		if ( isset( $count ) ) {
 			$query->set_select( "COUNT({$count})" );
-			$fetch_fn = 'get_value';
+			$fetch_fn = isset($paramarray['fetch_fn']) ? $fetch_fn : 'get_value';
 			$orderby = null;
 			$groupby = null;
 			$having = null;
@@ -729,7 +732,7 @@ class Posts extends ArrayObject implements IsContent
 			}
 		}
 
-		Plugins::act('posts_get_query', $query);
+		Plugins::act('posts_get_query', $query, $paramarray);
 		/* All SQL parts are constructed, on to real business! */
 
 		/**
@@ -1161,14 +1164,18 @@ class Posts extends ArrayObject implements IsContent
 	/**
 	 * Return the type of the content represented by this object
 	 *
-	 * @return string The name of the content representedt by this object
+	 * @return array The names of the possible content represented by this object
 	 */
 	function content_type ()
 	{
-		if ( isset( $this->preset ) ) {
-			return 'posts.' . $this->preset;
-		}
-		return 'posts';
+		$content_type = array_map(
+			function($a){
+				return 'posts.' . $a;
+			},
+			$this->preset
+		);
+		$content_type[] = 'posts';
+		return $content_type;
 	}
 
 	/**

@@ -19,19 +19,19 @@ class LogEntry extends QueryRecord
 	 *
 	 * @final
 	 */
-	private static function severities()
+	private static function severities($translate = true)
 	{
 		return array(
-			0 => _t( 'any' ),
-			1 => _t( 'none' ),
-			2 => _t( 'debug' ),
-			3 => _t( 'info' ),
-			4 => _t( 'notice' ),
-			5 => _t( 'warning' ),
-			6 => _t( 'err' ),
-			7 => _t( 'crit' ),
-			8 => _t( 'alert' ),
-			9 => _t( 'emerg' ),
+			0 => $translate ? _t( 'any' ) : 'any',
+			1 => $translate ? _t( 'none' ) : 'none',
+			2 => $translate ? _t( 'debug' ) : 'debug',
+			3 => $translate ? _t( 'info' ) : 'info',
+			4 => $translate ? _t( 'notice' ) : 'notice',
+			5 => $translate ? _t( 'warning' ) : 'warning',
+			6 => $translate ? _t( 'err' ) : 'err',
+			7 => $translate ? _t( 'crit' ) : 'crit',
+			8 => $translate ? _t( 'alert' ) : 'alert',
+			9 => $translate ? _t( 'emerg' ) : 'emerg',
 		);
 	}
 	
@@ -111,14 +111,8 @@ class LogEntry extends QueryRecord
 	**/
 	public static function list_severities()
 	{
-		$results = array();
-		
-		foreach ( self::severities() as $id => $name ) {
-			if ( 'none' == $name ) {
-				continue;
-			}
-			$results[$id] = $name;
-		}
+		$results = self::severities();
+		unset($results[1]);
 		return $results;
 	}
 
@@ -161,7 +155,7 @@ class LogEntry extends QueryRecord
 		if ( is_numeric( $severity ) && array_key_exists( $severity, self::severities() ) ) {
 			return $severity;
 		}
-		return array_search( $severity, self::severities() );
+		return array_search( $severity, self::severities(false) );
 	}
 
 	/**
