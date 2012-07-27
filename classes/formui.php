@@ -1123,6 +1123,10 @@ class FormControl extends FormComponents
 						$this->default = $session_set[$this->name];
 					}
 					break;
+				case 'module':
+					// $this->default = 'sim';
+					$this->default = Modules::get_option( $this->container->module_id->value, $location );
+					break;
 				case 'formstorage':
 					$this->default = $this->storage->field_load( $this->name );
 					break;
@@ -1187,6 +1191,9 @@ class FormControl extends FormComponents
 				break;
 			case 'session';
 				Session::add_to_set( $location, $this->value, $this->name );
+				break;
+			case 'module':
+				Modules::set_option( $this->container->module_id->value, $location, $this->value );
 				break;
 			case 'formstorage':
 				$storage->field_save( $this->name, $this->value );

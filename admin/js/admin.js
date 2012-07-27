@@ -84,6 +84,10 @@ var dashboard = {
 			}, function() {
 				$(this).parents('li').removeClass('viewingoptions');
 			});
+			
+		$('.optionswindow form.formui').submit(function() {
+			return dashboard.updateModule( $(this) );
+		});
 
 		$('.close', '.modules').click( function() {
 			// grab the module ID from the parent DIV id attribute.
@@ -109,11 +113,34 @@ var dashboard = {
 			}
 		);
 	},
-	updateModule: function() {
+	updateModule: function( form ) {
 		//spinner.start();
 		// disable dragging and dropping while we update
 		// here we would update the modules options then
 		// reload the modules
+		
+		// still a work in progress
+		
+		// var query = {};
+		// 		query.options = {};
+		// 		query.slugger = $(form).parents('li').attr('id');
+		// 				
+		// 		query.options[ 'moduleID' ]= $(this).parents('li').attr('id');
+		// 		
+		// 		$('input', form).each( function() {
+		// 			query.options[ $(this).attr('name') ] = $(this).val();
+		// 		});
+		// 		
+		// 		query.action = 'updateModule';
+		// 		habari_ajax.post(
+		// 			habari.url.ajaxDashboard,
+		// 			query,
+		// 			function() {
+		// 				console.log( 'done' );
+		// 			}
+		// 		);
+		
+		return true;
 	},
 	add: function() {
 		spinner.start();
@@ -422,21 +449,12 @@ var itemManage = {
 	}
 };
 
-// Plugin Management
-var pluginManage = {
+// Help Toggler
+var helpToggler = {
 	init: function() {
-		// Return if we're not on the plugins page
-		if (!$('.page-plugins').length) {return;}
-
-		$('.plugins .item').hover( function() {
-			$(this).find('#pluginconfigure:visible').parent().css('background', '#FAFAFA');
-		}, function() {
-			$(this).find('#pluginconfigure:visible').parent().css('background', '');
-	  	});
-		
-		$('.plugins .item a.help').click(function() {
-			var help = $('.pluginhelp', $(this).parents('.item'));
-						
+		$('.plugins .item a.help, .currenttheme a.help').click(function() {
+			var help = $('.pluginhelp', $(this).parents('.item')).add( $('.currenttheme #themehelp') );
+									
 			if( help.hasClass('active') ) {
 				help.slideUp();
 				help.add(this).removeClass('active');
@@ -450,6 +468,22 @@ var pluginManage = {
 			
 		});
 	}
+}
+
+// Plugin Management
+var pluginManage = {
+	init: function() {
+		// Return if we're not on the plugins page
+		if (!$('.page-plugins').length) {return;}
+
+		$('.plugins .item').hover( function() {
+			$(this).find('#pluginconfigure:visible').parent().css('background', '#FAFAFA');
+		}, function() {
+			$(this).find('#pluginconfigure:visible').parent().css('background', '');
+	  	});
+	
+		helpToggler.init();
+	}
 };
 
 // Theme Management
@@ -462,8 +496,10 @@ var themeManage = {
 		axis: 'y'
 	},
 	init: function() {
-		// Return if we're not on the plugins page
+		// Return if we're not on the themes page
 		if (!$('.page-themes').length) {return;}
+		
+		helpToggler.init();
 
 		// Adding available blocks
 		$('#block_instance_add').live('click', function() {
