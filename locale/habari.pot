@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-22 00:00+0000\n"
+"POT-Creation-Date: 2012-07-29 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -112,7 +112,7 @@ msgstr ""
 #: plugins/undelete/undelete.plugin.php:181
 #: plugins/flickrsilo/flickrsilo.plugin.php:876 themes/charcoal/theme.php:66
 #: admin/themes.php:68 handlers/adminthemeshandler.php:143
-#: classes/post.php:1015
+#: classes/post.php:1017
 msgid "Save"
 msgstr ""
 
@@ -221,7 +221,7 @@ msgid "What would you like to call the new directory?"
 msgstr ""
 
 #: plugins/habarisilo/habarisilo.plugin.php:467 themes/mzingi/theme.php:114
-#: themes/charcoal/theme.php:224 classes/post.php:1280
+#: themes/charcoal/theme.php:224 classes/post.php:1282
 msgid "Submit"
 msgstr ""
 
@@ -990,7 +990,7 @@ msgid "Feed for this Entry"
 msgstr ""
 
 #: themes/mzingi/commentform.php:28 handlers/admincommentshandler.php:49
-#: classes/post.php:1272
+#: classes/post.php:1274
 msgid "Comment"
 msgid_plural "Comments"
 msgstr[0] ""
@@ -1255,7 +1255,7 @@ msgstr ""
 msgid "- Required)"
 msgstr ""
 
-#: themes/charcoal/theme.php:221 classes/post.php:1259
+#: themes/charcoal/theme.php:221 classes/post.php:1261
 msgid "Website"
 msgstr ""
 
@@ -1803,7 +1803,7 @@ msgid "Current Theme"
 msgstr ""
 
 #: admin/themes.php:20 handlers/admincommentshandler.php:73
-#: classes/post.php:975
+#: classes/post.php:977
 msgid "Settings"
 msgstr ""
 
@@ -2573,7 +2573,7 @@ msgstr ""
 
 #: handlers/installhandler.php:1699 classes/acl.php:780 classes/acl.php:781
 #: classes/acl.php:782 classes/acl.php:784 classes/post.php:273
-#: classes/post.php:947
+#: classes/post.php:949
 msgid "Content"
 msgstr ""
 
@@ -2716,7 +2716,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: handlers/adminpostshandler.php:28 handlers/adminpostshandler.php:32
-#: classes/post.php:1053
+#: classes/post.php:1055
 msgid "You don't have permission to edit that post"
 msgstr ""
 
@@ -2822,7 +2822,7 @@ msgstr ""
 msgid "User Name"
 msgstr ""
 
-#: handlers/adminusershandler.php:98 classes/post.php:1242
+#: handlers/adminusershandler.php:98 classes/post.php:1244
 msgid "Email"
 msgstr ""
 
@@ -4294,137 +4294,137 @@ msgstr ""
 msgid "Post %1$s (%2$s) published."
 msgstr ""
 
-#: classes/post.php:926
+#: classes/post.php:928
 msgid "Preview Post"
 msgstr ""
 
-#: classes/post.php:926
+#: classes/post.php:928
 msgid "View Post"
 msgstr ""
 
-#: classes/post.php:931 classes/post.php:934
+#: classes/post.php:933 classes/post.php:936
 msgid "Title"
 msgstr ""
 
-#: classes/post.php:955
+#: classes/post.php:957
 msgid "Tags, separated by, commas"
 msgstr ""
 
-#: classes/post.php:977
+#: classes/post.php:979
 msgid "Content State"
 msgstr ""
 
-#: classes/post.php:986
+#: classes/post.php:988
 msgid "Minor Edit"
 msgstr ""
 
-#: classes/post.php:991
+#: classes/post.php:993
 msgid "Comments Allowed"
 msgstr ""
 
-#: classes/post.php:994
+#: classes/post.php:996
 msgid "Publication Time"
 msgstr ""
 
-#: classes/post.php:996
+#: classes/post.php:998
 msgid "YYYY-MM-DD HH:MM:SS"
 msgstr ""
 
-#: classes/post.php:1001
+#: classes/post.php:1003
 msgid "Content Address"
 msgstr ""
 
-#: classes/post.php:1060
+#: classes/post.php:1062
 msgid "Changing content types is not allowed"
 msgstr ""
 
-#: classes/post.php:1071
+#: classes/post.php:1073
 msgid "Creating that post type is denied"
 msgstr ""
 
-#: classes/post.php:1084
+#: classes/post.php:1086
 msgid "Editing that post type is denied"
 msgstr ""
 
-#: classes/post.php:1091
+#: classes/post.php:1093
 #, php-format
 msgid "The post %1$s was updated since you made changes.  Please review those changes before overwriting them."
 msgstr ""
 
-#: classes/post.php:1098
+#: classes/post.php:1100
 msgid "A post slug cannot be empty. Keeping old slug."
 msgstr ""
 
-#: classes/post.php:1153
+#: classes/post.php:1155
 #, php-format
 msgid "The post %1$s has been saved as %2$s."
 msgstr ""
 
-#: classes/post.php:1202
+#: classes/post.php:1204
 msgid "Comments are disabled site-wide."
 msgstr ""
 
-#: classes/post.php:1207
+#: classes/post.php:1209
 msgid "Comments for this post are disabled."
 msgstr ""
 
-#: classes/post.php:1212
+#: classes/post.php:1214
 msgid "Commenting on this site requires authentication."
 msgstr ""
 
-#: classes/post.php:1217
+#: classes/post.php:1219
 msgid "You do not have permission to comment on this site."
 msgstr ""
 
-#: classes/post.php:1230
+#: classes/post.php:1232
 msgid "Name <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: classes/post.php:1232
+#: classes/post.php:1234
 msgid "The Name field value is required"
 msgstr ""
 
-#: classes/post.php:1244 classes/post.php:1249
+#: classes/post.php:1246 classes/post.php:1251
 msgid "The Email field value must be a valid email address"
 msgstr ""
 
-#: classes/post.php:1250
+#: classes/post.php:1252
 msgid "Email <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: classes/post.php:1261
+#: classes/post.php:1263
 msgid "The Website field value must be a valid URL"
 msgstr ""
 
-#: classes/post.php:1274
+#: classes/post.php:1276
 msgid "The Comment field value is required"
 msgstr ""
 
-#: classes/post.php:1631
+#: classes/post.php:1633
 msgid "Entry"
 msgstr ""
 
-#: classes/post.php:1632
+#: classes/post.php:1634
 msgid "Entries"
 msgstr ""
 
-#: classes/post.php:1635
+#: classes/post.php:1637
 msgid "Page"
 msgstr ""
 
-#: classes/post.php:1636
+#: classes/post.php:1638
 msgid "Pages"
 msgstr ""
 
-#: classes/post.php:1651
+#: classes/post.php:1653
 msgid "draft"
 msgstr ""
 
-#: classes/post.php:1652
+#: classes/post.php:1654
 msgid "published"
 msgstr ""
 
-#: classes/post.php:1653
+#: classes/post.php:1655
 msgid "scheduled"
 msgstr ""
 
