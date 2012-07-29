@@ -1262,5 +1262,37 @@ class Utils
 			);
 		}
 	}
+
+	/**
+	 * Replace shortcodes in content with shortcode output
+	 * @static
+	 * @param string $content The content within which to replace shortcodes
+	 * @param Object $obj_context The object context in which the content was found
+	 * @return string The content with shortcodes replaced
+	 */
+	public static function replace_shortcodes($content, $obj_context)
+	{
+		$regex = '%\[(\w+?)(?:\s+(.+?))?/\]|\[(\w+?)(?:\s+(.+?))?(?<!/)](?:(.*?)\[/(\w+?)])%si';
+		if(preg_match_all($regex, $content, $match_set, PREG_SET_ORDER)) {
+			foreach($match_set as $matches) {
+				$matches = array_pad($matches, 6, '');
+				$code = $matches[1] . $matches[3];
+				$attrs = $matches[2] . $matches[4];
+				$code_contents = $matches[5];
+				if(preg_match($regex, $code_contents)) {
+					$code_contents = self::replace_shortcodes($code_contents, $obj_context);
+				}
+				preg_match_all('#(\w+)\s*=\s*(?:(["\'])?(.*?)\2|(\S+))#i', $attrs, $attr_match, PREG_SET_ORDER);
+				$attrs = array();
+				foreach($attr_match as $attr) {
+					$attr = array_pad($attr, 5, '');
+					$attrs[$attr[1]] = $attr[3] . $attr[4];
+				}
+				$replacement = Plugins::filter('shortcode_' . $code, $matches[0], $code, $attrs, $code_contents, $obj_context);
+				$content = str_replace($matches[0], $replacement, $content);
+			}
+		}
+		return $content;
+	}
 }
 ?>

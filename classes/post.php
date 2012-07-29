@@ -1667,28 +1667,9 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 */
 	public static function filter_post_get_7( $content, $field, $post )
 	{
-		$regex = '%\[(\w+?)(?:\s+(.+?))?/\]|\[(\w+?)(?:\s+(.+?))?(?<!/)](?:(.*?)\[/(\w+?)])%si';
 		$shortcode_fields = Plugins::filter('shortcode_fields', array('title', 'content'), $post);
 		if(in_array($field, $shortcode_fields)) {
-			if(preg_match_all($regex, $content, $match_set, PREG_SET_ORDER)) {
-				foreach($match_set as $matches) {
-					$matches = array_pad($matches, 6, '');
-					$code = $matches[1] . $matches[3];
-					$attrs = $matches[2] . $matches[4];
-					$code_contents = $matches[5];
-					if(preg_match($regex, $code_contents)) {
-						$code_contents = self::filter_post_get_7($code_contents, $field, $post);
-					}
-					preg_match_all('#(\w+)\s*=\s*(?:(["\'])?(.*?)\2|(\S+))#i', $attrs, $attr_match, PREG_SET_ORDER);
-					$attrs = array();
-					foreach($attr_match as $attr) {
-						$attr = array_pad($attr, 5, '');
-						$attrs[$attr[1]] = $attr[3] . $attr[4];
-					}
-					$replacement = Plugins::filter('shortcode_' . $code, $matches[0], $code, $attrs, $code_contents, $post);
-					$content = str_replace($matches[0], $replacement, $content);
-				}
-			}
+			$content = Utils::replace_shortcodes($content, $post);
 		}
 		return $content;
 	}
