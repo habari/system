@@ -94,8 +94,8 @@ class AdminLogsHandler extends AdminHandler
 		}
 
 		// filter by severity
-		$severity = Controller::get_var( 'severity', 'any' );
-		if ( $severity != 'any' ) {
+		$severity = Controller::get_var( 'severity', 0 );
+		if ( $severity != 0) {
 			$arguments['severity'] = $severity;
 		}
 
