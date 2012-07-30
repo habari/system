@@ -111,7 +111,6 @@ class Theme extends Pluggable
 	 */
 	public function add_template_vars()
 	{
-		
 		// set the locale and character set that habari is configured to use presently
 		if ( !isset( $this->locale ) ) {
 			$this->locale = Options::get('locale', 'en');	// default to 'en' just in case we somehow don't have one?
@@ -526,8 +525,6 @@ class Theme extends Pluggable
 	 */
 	public function display( $template_name )
 	{
-		$this->add_template_vars();
-
 		$this->play_var_stack();
 
 		$this->template_engine->assign( 'theme', $this );

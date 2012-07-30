@@ -41,6 +41,9 @@ class UserThemeHandler extends ActionHandler
 		try {
 			$handled = false;
 			$handled = Plugins::filter( 'theme_act_' . $action, $handled, $this->theme );
+			if(method_exists($this->theme, 'add_template_vars')) {
+				$this->theme->add_template_vars();
+			}
 			if ( !$handled ) {
 				$this->theme->$action_method();
 			}
