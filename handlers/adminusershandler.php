@@ -448,7 +448,7 @@ class AdminUsersHandler extends AdminHandler
 			}
 			else {
 				$settings = array();
-				if ( isset( $username ) ) {
+				if ( isset( $new_username ) ) {
 					$settings['new_username'] = $new_username;
 				}
 				if ( isset( $new_email ) ) {
