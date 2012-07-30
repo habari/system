@@ -78,6 +78,9 @@ class Charcoal extends Theme
 		// Truncate content excerpt at "more" or 56 characters...
 		Format::apply( 'autop', 'post_content_excerpt' );
 		Format::apply_with_hook_params( 'more', 'post_content_excerpt', '', 56, 1 );
+
+		// Add FormUI template placing the input before the label
+		$this->add_template( 'charcoal_text', dirname( __FILE__ ) . '/formcontrol_text.php' );
 	}
 	
 	/**
@@ -124,10 +127,6 @@ class Charcoal extends Theme
 				$this->tags_msg = _t( 'Displaying posts tagged: %s and not %s', array( Format::tag_and_list( $this->include_tag ), Format::tag_and_list( $this->exclude_tag ) ) );
 			}
 		}
-
-
-		// Add FormUI template placing the input before the label
-		$this->add_template( 'charcoal_text', dirname( __FILE__ ) . '/formcontrol_text.php' );
 	}
 		
 	/**
@@ -213,7 +212,7 @@ class Charcoal extends Theme
 	/**
 	 * Customize comment form layout. Needs thorough commenting.
 	 */
-	public function action_form_comment( $form ) { 
+	public function action_form_comment( $form ) {
 		$form->cf_commenter->caption = '<strong>' . _t( 'Name' ) . '</strong> <span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? _t( '(Required)' ) : '' ) . '</span>';
 		$form->cf_commenter->template = 'charcoal_text';
 		$form->cf_email->caption = '<strong>' . _t( 'Mail' ) . '</strong> ' . _t( '(will not be published' ) .' <span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? _t( '- Required)' ) : ')' ) . '</span>';
