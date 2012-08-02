@@ -6,6 +6,14 @@
 	<div class="item clear">
 		<div class="head">
 
+			<?php if ( isset( $active_theme['info']->help ) ):
+				if( Controller::get_var('help') == $active_theme['dir'] ): ?>
+				<a class="help active" href="<?php URL::out( 'admin', 'page=themes' ); ?>"><?php _e('Help'); ?></a>
+				<?php else: ?>
+				<a class="help" href="<?php URL::out( 'admin', 'page=themes&help=' . $active_theme['dir'] ); ?>"><?php _e('Help'); ?></a>
+			<?php endif;
+			endif; ?>
+
 			<a href="<?php echo $active_theme['info']->url; ?>" class="plugin"><?php echo $active_theme['info']->name; ?></a> <span class="version dim"><?php echo $active_theme['info']->version; ?></span> <span class="dim"><?php _e('by'); ?></span> 
 			<?php
 			$authors = array();
@@ -26,6 +34,7 @@
 				<li><a href="#"><?php _e('v'); ?><?php echo $active_theme['info']->update; ?> <?php _e('Update Available'); ?></a></li>
 			</ul>
 			<?php endif; ?>
+
 		</div>
 
 		<div>
@@ -37,6 +46,13 @@
 			<?php endif; ?>
 		</div>
 	</div>
+
+	<?php if ( isset( $active_theme['info']->help ) ): ?>
+	<div id="themehelp" class="item clear<?php if( Controller::get_var('help') == $active_theme['dir'] ): ?> active<?php endif; ?>">
+		<h3><?php _e( "Help" ); ?></h3>
+		<div class="help"><?php echo (string) $active_theme['info']->help->value; ?></div>
+	</div>
+	<?php endif; ?>
 
 	<?php
 	// Capture the admin config output.  If nothing is there, don't output the section
