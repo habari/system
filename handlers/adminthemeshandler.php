@@ -50,6 +50,9 @@ class AdminThemesHandler extends AdminHandler
 		$this->theme->areas = $this->get_areas(0);
 		$this->theme->previewed = Themes::get_theme_dir( false );
 
+		$this->theme->help = isset($this->theme->active_theme['info']->help) ? $this->theme->active_theme['info']->help : false;
+		$this->theme->help_active = Controller::get_var('help') == $this->theme->active_theme['dir'];
+
 		$this->prepare_block_list();
 
 		$blocks_areas_t = DB::get_results( 'SELECT b.*, ba.scope_id, ba.area, ba.display_order FROM {blocks} b INNER JOIN {blocks_areas} ba ON ba.block_id = b.id ORDER BY ba.scope_id ASC, ba.area ASC, ba.display_order ASC', array() );

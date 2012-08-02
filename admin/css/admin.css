@@ -1594,7 +1594,7 @@ body.page-options .item {
 	width: 100%;
 }
 
-.plugins #pluginconfigure form, #pluginconfigure .help, .plugins .pluginhelp .help {
+.plugins #pluginconfigure form, #pluginconfigure .help, .plugins .pluginhelp .help, #themehelp .help {
 	background-color: #f8f8f8;
 	border: #bbb 1px solid;
 	padding: 12px;
@@ -1755,10 +1755,6 @@ body.page-themes .head {
     height: 3em;
     white-space: nowrap;
     margin: 10px 0 0 0 ;
-}
-
-body.page-themes .head a.help {
-	float: right;
 }
 
 body.page-themes .availablethemes .themeinfo {
