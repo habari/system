@@ -331,11 +331,14 @@ class UserGroup extends QueryRecord
 	/**
 	 * Fetch a group from the database by ID or name.
 	 * This is a wrapper for get_by_id() and get_by_name()
-	 * @param mixed $group A group ID or name
-	 * @return mixed UserGroup object, or boolean false
+	 * @param integer|string|UserGroup $group A group ID, name, or UserGroup
+	 * @return UserGroup|boolean UserGroup object, or boolean false
 	 */
 	public static function get( $group )
 	{
+		if ( $group instanceof UserGroup ) {
+			return $group;
+		}
 		if ( is_numeric( $group ) ) {
 			return self::get_by_id( $group );
 		}
