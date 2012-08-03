@@ -268,6 +268,7 @@ class AdminThemesHandler extends AdminHandler
 
 		$msg = '';
 
+		$response = new AjaxResponse();
 		if ( isset( $_POST['area_blocks'] ) ) {
 			$area_blocks = $_POST['area_blocks'];
 			DB::query( 'DELETE FROM {blocks_areas} WHERE scope_id = :scope_id', array( 'scope_id' => $scope ) );
@@ -286,11 +287,12 @@ class AdminThemesHandler extends AdminHandler
 				}
 			}
 
-			$msg = json_encode( _t( 'Saved block areas settings.' ) );
-			$msg = '<script type="text/javascript">
-				human_msg.display_msg(' . $msg . ');
-				spinner.stop();
-			</script>';
+//			$msg = json_encode( _t( 'Saved block areas settings.' ) );
+//			$msg = '<script type="text/javascript">
+//				human_msg.display_msg(' . $msg . ');
+//				spinner.stop();
+//			</script>';
+			$response->message = _t( 'Saved block areas settings.' );
 		}
 
 		$this->setup_admin_theme( '' );
@@ -311,9 +313,10 @@ class AdminThemesHandler extends AdminHandler
 		$this->theme->scopes = $scopes;
 		$this->theme->active_theme = Themes::get_active_data( true );
 
-		$this->display( 'block_areas' );
+		$output = $this->theme->fetch( 'block_areas' );
+		$response->html('block_areas', $output);
 
-		echo $msg;
+		$response->out();
 	}
 
 

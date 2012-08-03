@@ -13,10 +13,12 @@ var habari_ajax = {
 		$.ajax({
 			url: url,
 			data: data,
-		success: function(json_data) {
+			success: function(json_data) {
 				if($.isPlainObject(ahah_target)) {
 					for(var i in ahah_target) {
-						$(ahah_target[i]).html(json_data.html[i]);
+						if(json_data.html && json_data.html[i]) {
+							$(ahah_target[i]).html(json_data.html[i]);
+						}
 					}
 				}
 				var cb = ($.isFunction(ahah_target) && local_cb == undefined) ? ahah_target : local_cb;
@@ -577,11 +579,12 @@ var themeManage = {
 				output[area].push(m[1]);
 			});
 		});
-		$('#scope_container').load(
-			habari.url.ajaxSaveAreas, 
+		habari_ajax.post(
+			habari.url.ajaxSaveAreas,
 			{area_blocks:output, scope:$('#scope_id').val()},
+			{'block_areas': '#scope_container'},
 			// Can't simply refresh the sortable because we've reloaded the element
-			function() {
+			function(data) {
 				$('.area_drop').sortable({
 					placeholder: 'block_drop',
 					forcePlaceholderSize: true,
@@ -595,6 +598,7 @@ var themeManage = {
 				themeManage.initial_data_hash = themeManage.data_hash();
 				themeManage.refresh_areas();
 			}
+
 		);
 	},
 	change_scope: function() {
