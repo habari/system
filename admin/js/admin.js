@@ -604,11 +604,12 @@ var themeManage = {
 	change_scope: function() {
 		spinner.start();
 		var output = {};
-		$('#scope_container').load(
-			habari.url.ajaxSaveAreas, 
-			{scope:$('#scope_id').val()},
+		habari_ajax.post(
+			habari.url.ajaxSaveAreas,
+			{area_blocks:output, scope:$('#scope_id').val()},
+			{'block_areas': '#scope_container'},
 			// Can't simply refresh the sortable because we've reloaded the element
-			function() {
+			function(data) {
 				$('.area_drop').sortable({
 					placeholder: 'block_drop',
 					forcePlaceholderSize: true,
@@ -618,9 +619,13 @@ var themeManage = {
 					remove: themeManage.refresh_areas,
 					axis: 'y'
 				});
+				// We've saved, reset the hash
+				themeManage.initial_data_hash = themeManage.data_hash();
 				themeManage.refresh_areas();
 			}
+
 		);
+		
 		spinner.stop();
 	},
 	changed: function() {
