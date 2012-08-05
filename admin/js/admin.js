@@ -518,11 +518,6 @@ var themeManage = {
 		});
 		themeManage.refresh_areas();
 
-		// Load areas available in different scopes
-		$('#scope_id').click(function() {
-			themeManage.change_scope();
-		});
-
 		// Save areas
 		$('#save_areas').click(function() {
 			themeManage.save_areas();
@@ -598,17 +593,17 @@ var themeManage = {
 				themeManage.initial_data_hash = themeManage.data_hash();
 				themeManage.refresh_areas();
 			}
-
 		);
 	},
 	change_scope: function() {
 		spinner.start();
 		var output = {};
-		$('#scope_container').load(
-			habari.url.ajaxSaveAreas, 
-			{area_blocks:output, scope:$('#scope_id').val()},
+		habari_ajax.post(
+			habari.url.ajaxSaveAreas,
+			{scope:$('#scope_id').val()},
+			{'block_areas': '#scope_container'},
 			// Can't simply refresh the sortable because we've reloaded the element
-			function() {
+			function(data) {
 				$('.area_drop').sortable({
 					placeholder: 'block_drop',
 					forcePlaceholderSize: true,
@@ -622,7 +617,7 @@ var themeManage = {
 				themeManage.initial_data_hash = themeManage.data_hash();
 				themeManage.refresh_areas();
 			}
-		spinner.stop();
+		);
 	},
 	changed: function() {
 		return themeManage.initial_data_hash != themeManage.data_hash();
