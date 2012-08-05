@@ -12,7 +12,7 @@
 		<div class="item clear">
 			<span class="pct25"><?php echo $key; 
 				$plaintext_output .= $key; ?></span>
-			<span class="message pct75 minor"><span><?php echo $value; 
+			<span class="pct75 minor"><span><?php echo $value;
 				$plaintext_output .= ": $value\n"; ?></span></span>
 		</div>
 	<?php endforeach; ?>
@@ -29,7 +29,7 @@
 		<div class="item clear">
 			<span class="pct25"><?php echo $key; 
 				$plaintext_output .= $key; ?></span>
-			<span class="message pct75 minor"><span><?php echo $value; 
+			<span class="pct75 minor"><span><?php echo $value;
 				$plaintext_output .= ": $value\n"; ?></span></span>
 		</div>
 	<?php endforeach; ?>
@@ -69,7 +69,7 @@
 		<div class="item clear">
 			<span class="pct25"><?php echo $name; 
 				$plaintext_output .= $name; ?></span>
-			<span class="message pct75 minor"><span><?php echo $pluginfile; 
+			<span class="pct75 minor"><span><?php echo $pluginfile;
 				$plaintext_output .= ": $pluginfile\n"; ?></span></span>
 		</div>
 
