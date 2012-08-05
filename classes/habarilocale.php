@@ -33,6 +33,16 @@ class HabariLocale
 	}
 
 	/**
+	 * Return the current locale
+	 * @static
+	 * @return string The current locale.
+	 */
+	public static function get()
+	{
+		return self::$locale;
+	}
+
+	/**
 	 * Set system locale.
 	 *
 	 * The problem is that every platform has its own way to designate a locale,

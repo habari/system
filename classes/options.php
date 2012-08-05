@@ -278,6 +278,22 @@ class Options extends Singleton
 		self::instance()->options = null;
 	}
 
+	/**
+	 * Check if an option was set via the config, making it unsettable
+	 * @static
+	 * @param string $name The name of the option to check
+	 * @return bool True if the option is set in the config
+	 */
+	public static function is_static($name)
+	{
+		if($static_options = Config::exists('static_options')) {
+			if(isset($static_options[$name])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }
 
 ?>

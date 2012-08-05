@@ -81,7 +81,7 @@ if ( file_exists( $config ) ) {
 // db_connection is an array with necessary informations to connect to the database.
 if ( Config::exists('db_connection') ) {
 	// Set the default locale.
-	HabariLocale::set( isset( $locale ) ? $locale : 'en-us' );
+	HabariLocale::set( Config::get('locale', 'en-us' ) );
 
 	if ( !defined( 'DEBUG' ) ) {
 		define( 'DEBUG', false );
@@ -130,13 +130,8 @@ else {
 
 /* Habari is installed and we established a connection with the database */
 
-// Set the locale from database or default locale
-if ( Options::get( 'locale' ) ) {
-	HabariLocale::set( Options::get( 'locale' ) );
-}
-else {
-	HabariLocale::set( 'en-us' );
-}
+// Set the locale from config, database, then default english locale
+HabariLocale::set( Config::get('locale', Options::get( 'locale', 'en-us' )) );
 if ( Options::get( 'system_locale' ) ) {
 	HabariLocale::set_system_locale( Options::get( 'system_locale' ) );
 }

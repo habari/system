@@ -2,7 +2,12 @@
 <div<?php echo ($class) ? ' class="container ' . $class . '"' : ''?><?php echo ($id) ? ' id="' . $id . '"' : ''?>>
 	<p>
 <label for="<?php echo $field; ?>" class="incontent formcontrol abovecontent"><?php echo $this->caption; ?></label>
-<select id="<?php echo $field; ?>" name="<?php echo $field . ( $multiple ? '[]' : '' ); ?>"<?php echo ( $multiple ? ' multiple="multiple" size="' . intval($size) . '"' : '' ) ?>>
+<select
+	id="<?php echo $field; ?>"
+	name="<?php echo $field . ( $multiple ? '[]' : '' ); ?>"
+	<?php echo ( $multiple ? ' multiple="multiple" size="' . intval($size) . '"' : '' ); ?>
+	<?php echo ( isset($disabled) && $disabled ? ' disabled="disabled"' : ''); ?>
+>
 <?php foreach($options as $opts_key => $opts_val) : ?>
 	<?php if (is_array($opts_val)) : ?>
 		<optgroup label="<?php echo $opts_key; ?>">

@@ -28,14 +28,12 @@ class InstallHandler extends ActionHandler
 		$this->theme->locales = HabariLocale::list_all();
 		if ( isset( $_POST['locale'] ) && $_POST['locale'] != null ) {
 			HabariLocale::set( $_POST['locale'] );
-			$this->theme->locale = $_POST['locale'];
-			$this->handler_vars['locale'] = $_POST['locale'];
 		}
 		else {
-			HabariLocale::set( 'en-us' );
-			$this->theme->locale = 'en-us';
-			$this->handler_vars['locale'] = 'en-us';
+			HabariLocale::set( Config::get('locale', Options::get( 'locale', 'en-us' )) );
 		}
+		$this->theme->locale = HabariLocale::get();
+		$this->handler_vars['locale'] = HabariLocale::get();
 
 		/**
 		 * Check .htaccess first because ajax doesn't work without it.
