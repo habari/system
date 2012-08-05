@@ -606,7 +606,7 @@ var themeManage = {
 		var output = {};
 		$('#scope_container').load(
 			habari.url.ajaxSaveAreas, 
-			{scope:$('#scope_id').val()},
+			{area_blocks:output, scope:$('#scope_id').val()},
 			// Can't simply refresh the sortable because we've reloaded the element
 			function() {
 				$('.area_drop').sortable({
@@ -618,9 +618,10 @@ var themeManage = {
 					remove: themeManage.refresh_areas,
 					axis: 'y'
 				});
+				// We've saved, reset the hash
+				themeManage.initial_data_hash = themeManage.data_hash();
 				themeManage.refresh_areas();
 			}
-		);
 		spinner.stop();
 	},
 	changed: function() {
