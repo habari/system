@@ -119,6 +119,11 @@ class RawPHPEngine extends TemplateEngine
 			$available_templates = array_map( 'basename', $alltemplates, array_fill( 1, count( $alltemplates ), '.php' ) );
 			$template_map = array_combine( $available_templates, $alltemplates );
 			$this->template_map = array_merge($this->template_map, $template_map);
+			// Workaround for the 404 template key being merged into the 0 integer index
+			unset($this->template_map[0]);
+			if(isset($template_map[404])) {
+				$this->template_map['404'] = $template_map[404];
+			}
 			array_unique( $available_templates );
 			$available_templates = Plugins::filter( 'available_templates', $available_templates, __CLASS__ );
 			$this->available_templates = array_merge($this->available_templates, $available_templates);
