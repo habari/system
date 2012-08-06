@@ -365,11 +365,11 @@ SQL;
 	/**
 	 * Find the types of objects associated with this Term.
 	 *
-	 * @return Array of objects, keyed by object id, values are type names
+	 * @return Array of objects, with each object containing an object id and an object type name
 	 */
 	public function object_types()
 	{
-		$results = DB::get_keyvalue( "SELECT terms.object_id, types.name FROM {object_terms} terms, {object_types} types WHERE terms.object_type_id = types.id and term_id = ?", array( $this->id ) );
+		$results = DB::get_results( 'SELECT terms.object_id, types.name as `type` FROM {object_terms} terms, {object_types} types WHERE terms.object_type_id = types.id and term_id = :term_id', array( 'term_id' => $this->id ) );
 		return $results;
 	}
 
