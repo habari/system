@@ -1198,7 +1198,7 @@ class Theme extends Pluggable
 
 		$active_scope = 0;
 		foreach ( $scopes as $scope_id => $scope_object ) {
-			if ( $this->check_scope_criteria( $scope_object->criteria ) || $scope == $scope_object->name ) {
+			if ( ( is_null($scope) && $this->check_scope_criteria( $scope_object->criteria ) ) || $scope == $scope_object->name ) {
 				$scope_block_count = DB::get_value( 'SELECT count( *) FROM {blocks_areas} ba WHERE ba.scope_id = ?', array( $scope_object->id ) );
 				if ( $scope_block_count > 0 ) {
 					$active_scope = $scope_object->id;
