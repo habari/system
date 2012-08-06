@@ -116,7 +116,7 @@ class Charcoal extends Theme
 		}
 		$this->assign( 'post_id', ( isset( $this->post ) && $this->post->content_type == Post::type( 'page' ) ) ? $this->post->id : 0 );
 
-		if ( $this->request->display_entries_by_tag ) {
+		if ( is_object($this->request) && $this->request->display_entries_by_tag ) {
 			if ( count( $this->include_tag ) && count( $this->exclude_tag ) == 0 ) {
 				$this->tags_msg = _t( 'Displaying posts tagged: %s', array( Format::tag_and_list( $this->include_tag ) ) );
 			}
