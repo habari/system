@@ -1,32 +1,36 @@
 /* @override style.css */
 
 /* Force vertical scrollbars so that revealing help or errors don't move the form to the left */
-html { height: 100%; margin-bottom: 1px; overflow-y: scroll}
+html {
+	height: 100%;
+	margin-bottom: 1px;
+	overflow-y: scroll
+}
 
 body {
 	font-family: 'Helvetica Neue', Helvetica, Arial, Sans-Serif;
 	padding: 0;
 	margin: 0;
-	}
+}
 
 #installer {
 	text-align: center;
 	min-width: 600px;
 	background: #f1f1f1;
-	}
+}
 
 a {
 	color: #999;
-	}
+}
 
 #wrapper {
 	width: 552px;
 	margin: 0 auto 50px;
-	}
+}
 
 #masthead {
 	margin: 30px 0;
-	}
+}
 
 #masthead h1 {
 	font-size: 35px;
@@ -34,25 +38,25 @@ a {
 	color: #333;
 	margin-bottom: 0px;
 	text-transform: lowercase;
-	}
+}
 
 #masthead p {
 	font-size: 11px;
 	text-transform: lowercase;
 	color: #666;
 	margin: 0px;
-	}
+}
 
 .installstep {
 	width: 552px;
 	background: url(images/install-step.png) scroll repeat-y 0px 47px;
 	margin-top: 20px;
 	position: relative;
-	}
+}
 
 .installstep.done {
 	background: url(images/install-step_done.png) scroll repeat-y 0px 47px;
-	}
+}
 
 .installstep h2 {
 	color: #333;
@@ -62,11 +66,11 @@ a {
 	font-weight: normal;
 	padding: 10px 22px 0px;
 	margin: 0px;
-	}
+}
 
 .installstep.done h2 {
 	background: url(images/install-step_h2_done.png) scroll no-repeat top left;
-	}
+}
 
 .help-me {
 	float: right;
@@ -79,40 +83,42 @@ a {
 	text-indent: -3000px;
 	background: url(../admin/images/help_icon.png) scroll no-repeat top left;
 	outline: none;
-	}
-.ready .help-me {
-	display:block;
 }
+
+.ready .help-me {
+	display: block;
+}
+
 .help-me:hover {
 	background: url(../admin/images/help_icon_over.png) scroll no-repeat top left;
-	}
+}
 
 .options, .advanced-options {
 	text-align: left;
 	font-size: 0.76em;
 	padding: 0px 11px 0px 22px;
-	}
+}
 
 .options {
 	background: url(images/options.png) scroll no-repeat 0px 0px;
-	}
+}
 
 .installstep.done .options {
 	background: url(images/options_done.png) scroll no-repeat 0px 0px;
-	}
+}
 
 .installstep .options, .installstep .advanced-options, .installstep h2 .help-me {
 	display: none;
-	}
+}
 
 .installstep.ready .options, .installstep.ready .advanced-options, .installstep.ready h2 .help-me {
 	display: block;
-	}
+}
 
 .options .inputfield, .advanced-options .inputfield {
 	margin-bottom: 5px;
 	padding-top: 15px;
-	}
+}
 
 div.javascript-disabled {
 	width: 440px;
@@ -122,50 +128,50 @@ div.javascript-disabled {
 	border: 1px solid #dedede;
 	background: #f1f1f1;
 	text-align: center;
-	}
+}
 
 .inputfield label, .item label {
 	color: #666;
-	}
-	
+}
+
 .inputfield label {
 	padding: 3px 20px 0 0;
 	display: block;
 	width: 122px;
 	float: left;
-	}
+}
 
 .inputfield label strong {
 	color: #FF0000;
-	}
+}
 
 .inputfield select {
 	width: 336px;
-	}
+}
 
 .inputfield input {
 	width: 329px;
 	padding-left: 2px
-	}
+}
 
 #sitename {
 	font-weight: bold;
-	}
+}
 
 .inputfield .status {
 	position: relative;
 	top: 2px;
 	width: 34px;
 	height: 15px;
-	}
+}
 
 .valid .status {
 	background: url(images/ok.png);
-	}
+}
 
 .invalid .status {
-        background: url(images/warningsmall.png) no-repeat center;
-	}
+	background: url(images/warningsmall.png) no-repeat center;
+}
 
 .inputfield .warning {
 	display: block;
@@ -173,62 +179,65 @@ div.javascript-disabled {
 	line-height: 120%;
 	text-align: left;
 	color: #cc0000;
-	}
+}
 
 .inputfield .help {
-	
 
-/* display: none; */
+	/* display: none; */
 	padding: 10px 45px 10px 145px;
 	color: #666;
 	font-size: 11px;
 	line-height: 15px;
-	}
+}
 
 .inputfield .config {
 	width: 507px;
 	height: 150px;
 	margin: 10px 0px 0px
-	}
+}
 
 .installstep .bottom {
 	height: 10px;
 	background: url(images/options_bottom.png) scroll no-repeat left bottom;
-	}
+}
 
 .installstep.done .bottom {
 	height: 15px;
 	background: url(images/options_bottom_done.png) scroll no-repeat left bottom;
-	}
+}
 
 .installstep.ready .bottom {
 	height: 15px;
-	}
+}
+
+.bottom {
+	clear: both;
+}
 
 .next-section {
 	height: 14px;
 	width: 100%;
 	margin: 20px 0px 0px 0px;
 	background: url(images/next-section.png) scroll no-repeat center bottom;
-	}
+}
 
 .inputfield.submit p {
 	display: none;
-	}
+}
 
 .submit {
 	text-align: center;
-	}
+}
 
 .submit input {
 	width: 40%;
 	margin: 0 0 10px;
-	}
+}
 
 #check_db_connection {
 	margin-left: 180px;
 	width: 50%;
-	}
+}
 
 .error {
 	padding: .8em;
@@ -236,47 +245,47 @@ div.javascript-disabled {
 	border: 2px solid #ddd;
 	background: #FBE3E4;
 	border-color: #FBC2C4;
-	}
+}
 
 .error, .error a {
 	color: #D12F19;
-	}
+}
 
 #footer a {
 	font-size: 11px !important;
 	text-transform: lowercase;
 	color: #999;
 	padding: 0 3px;
-	}
+}
 
 #footer a:hover {
 	color: #666;
-	}
+}
 
 /* item selection */
 .items div.item {
-	padding:5px 0;
+	padding: 5px 0;
 }
 
 .items span.checkbox {
-	position:absolute;
+	position: absolute;
 }
 
 .items label {
-	position:relative;
-	top:3px;
+	position: relative;
+	top: 3px;
 }
 
 .items label, .items div.help {
-	padding-left:30px;
+	padding-left: 30px;
 }
 
 .items .controls {
-	margin-top:20px;
+	margin-top: 20px;
 }
 
 .items .controls label {
-	color:#888888;
+	color: #888888;
 }
 
 optgroup {
@@ -284,4 +293,33 @@ optgroup {
 	color: #aaaaaa;
 	font-weight: normal;
 	padding-left: 3px;
+}
+
+.clearfix:after {
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	content: " ";
+	clear: both;
+	height: 0;
+}
+
+* html .clearfix {
+	zoom: 1;
+}
+
+/* IE6 */
+*:first-child+html .clearfix {
+	zoom: 1;
+}
+
+/* IE7 */
+
+#themeselection .item {
+	width: 170px;
+	float: left;
+}
+
+#themeselection .item img {
+	display: block;
 }
