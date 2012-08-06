@@ -1004,7 +1004,7 @@ class InstallHandler extends ActionHandler
 
 		$themes = Themes::get_all_data();
 		$theme = $themes[$theme_dir];
-		Themes::activate_theme($theme['info']->name, $theme_dir);
+		Themes::activate_theme((string)$theme['info']->name, $theme_dir);
 
 		// unset the user_id session variable
 		Session::clear_userid( $_SESSION['user_id'] );
