@@ -1,6 +1,5 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <div<?php echo ($class) ? ' class="container ' . $class . '"' : ''?><?php echo ($id) ? ' id="' . $id . '"' : ''?>>
-	<p>
 <label for="<?php echo $field; ?>" class="incontent formcontrol abovecontent"><?php echo $this->caption; ?></label>
 <select
 	id="<?php echo $field; ?>"
@@ -20,7 +19,6 @@
 	<?php endif; ?>
 <?php endforeach; ?>
 </select>
-	</p>
 <?php if ($message != '') : ?>
 <p class="error"><?php echo $message; ?></p>
 <?php endif; ?>
