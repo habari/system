@@ -18,7 +18,8 @@ header( 'X-Frame-Options: DENY' );
 			ajaxUpdateComment: '<?php echo URL::get( 'admin_ajax', array( 'context' => 'update_comment' ) ); ?>',
 			ajaxAddBlock: '<?php echo URL::get( 'admin_ajax', array( 'context' => 'add_block' ) ); ?>',
 			ajaxDeleteBlock: '<?php echo URL::get( 'admin_ajax', array( 'context' => 'delete_block' ) ); ?>',
-			ajaxSaveAreas: '<?php echo URL::get( 'admin_ajax', array( 'context' => 'save_areas' ) ); ?>'
+			ajaxSaveAreas: '<?php echo URL::get( 'admin_ajax', array( 'context' => 'save_areas' ) ); ?>',
+			ajaxConfigModule: '<?php echo URL::get('admin_ajax', array('context' => 'dashboard')); ?>'
 		}
 	};
 	// An almost "catch all" for those old browsers that don't support the X-Frame-Options header.  We don't bust out, we just don't show any content

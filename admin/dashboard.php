@@ -190,15 +190,12 @@
 
 <?php endif; ?>
 
-<?php if ( count( $modules ) > 0 ): ?>
-
 <div class="container dashboard transparent">
 
-	<?php $theme->area('dashboard'); ?>
-	<?php $theme->display('dashboard_modules'); ?>
+	<ul class="modules">
+		<?php echo $theme->display('dashboard_modules'); ?>
+	</ul>
 
 </div>
-
-<?php endif; ?>
 
 <?php include( 'footer.php' ); ?>

@@ -1121,7 +1121,7 @@ body.page-publish .buttons input {
 .dashboard .module {
 	position: relative;
 	float: left;
-	width: 50%;
+	width: 460px;
 	height: 260px;
 }
 
@@ -1131,7 +1131,9 @@ body.page-publish .buttons input {
 
 .dashboard .module .modulecore,
 .dashboard .module .optionswindow {
-	height: 195px;
+	width: 450px;
+	box-sizing: border-box;
+	height: 250px;
 	margin: 5px;
 	padding: 45px 0px 10px;
 	position: relative;
@@ -1157,9 +1159,12 @@ body.page-publish .buttons input {
 	cursor: move;
 }
 
+.dashboard .module .modulecore h2 {
+	background: url('../images/dashboardh2bg.png') right center no-repeat;
+}
+
 .dashboard .module h2 {
 	z-index: 50;
-	background: url('../images/dashboardh2bg.png') right center no-repeat;
 	padding-right: 10px;
 	position: absolute;
 	top: 15px;
@@ -1236,7 +1241,7 @@ body.page-publish .buttons input {
 	width: 16px;
 	background: url('../images/closebutton.png') center center no-repeat;
 	cursor: pointer;
-	z-index: 55;
+	z-index: 1500;
 }
 
 .dashboard .module .options {
@@ -1253,10 +1258,15 @@ body.page-publish .buttons input {
 
 .dashboard .module .optionswindow {
 	z-index: 50;
-	height: 195px;
-	background: #111;
+	height: 250px;
+	background: #ddd;
 	color: #555;
+	position: absolute;
 	display: none;
+}
+
+.dashboard .module .optionswindow .optionsform {
+	margin: 0px 15px;
 }
 
 .dashboard .module.viewingoptions .optionswindow {
@@ -1265,6 +1275,11 @@ body.page-publish .buttons input {
 
 .dashboard .module.viewingoptions .modulecore {
 	display: none;
+}
+
+.dashboard .module .modulecore {
+	position: absolute;
+	display: block;
 }
 
 .dashboard .optionscontent {
@@ -1292,10 +1307,6 @@ body.page-publish .buttons input {
 	opacity: .3;
 }
 
-#page .dashboard .module.viewingoptions .optionswindow h2 {
-	background: url('../images/dashboardh2bgdark.png') right center no-repeat;
-	color: #eee;
-}
 
 /* Dashmodules Tables */
 

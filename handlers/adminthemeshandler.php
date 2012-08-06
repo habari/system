@@ -131,6 +131,14 @@ class AdminThemesHandler extends AdminHandler
 
 		$block = DB::get_row( 'SELECT b.* FROM {blocks} b WHERE id = :id ORDER BY b.title ASC', array( 'id' => $_GET['blockid'] ), 'Block' );
 		$block_form = $block->get_form();
+		$block_form->set_option( 'success_message', '</div><div class="humanMsg" id="humanMsg" style="display: block;top: auto;bottom:-50px;"><div class="imsgs"><div id="msgid_2" class="msg" style="display: block; opacity: 0.8;"><p>' . _t( 'Saved block configuration.' ) . '</p></div></div></div>
+<script type="text/javascript">
+		$("#humanMsg").animate({bottom: "5px"}, 500, function(){ window.setTimeout(function(){$("#humanMsg").animate({bottom: "-50px"}, 500)},3000) })
+		parent.refresh_block_forms();
+</script>
+<div style="display:none;">
+');
+
 		$first_control = reset ( $block_form->controls );
 		if ( $first_control ) {
 			$block_form->insert( $first_control->name, 'fieldset', 'block_admin', _t( 'Block Display Settings' ) );
