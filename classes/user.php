@@ -21,7 +21,7 @@
  * </code>
  *
  */
-class User extends QueryRecord implements FormStorage
+class User extends QueryRecord implements FormStorage, IsContent
 {
 	/**
 	 * Static storage for the currently logged-in User record
@@ -558,7 +558,6 @@ class User extends QueryRecord implements FormStorage
 	}
 
 	/**
-	 * function groups
 	 * Returns an array of groups to which this user belongs
 	 * @param bool Whether to refresh the cache
 	 * @return Array an array of group IDs to which this user belongs
@@ -585,7 +584,8 @@ class User extends QueryRecord implements FormStorage
 
 	/**
 	 * function add_to_group
-	 * @param mixed $group A group ID or name
+	 * @param integer|string|UserGroup $group A group ID, name, or UserGroup instance
+	 * @return null
 	**/
 	public function add_to_group( $group )
 	{
@@ -599,7 +599,8 @@ class User extends QueryRecord implements FormStorage
 	/**
 	 * function remove_from_group
 	 * removes this user from a group
-	 * @param mixed $group A group ID or name
+	 * @param integer|string|UserGroup $group A group ID, name, or UserGroup instance
+	 * @return null
 	**/
 	public function remove_from_group( $group )
 	{
@@ -712,6 +713,20 @@ class User extends QueryRecord implements FormStorage
 	function field_load($key)
 	{
 		return $this->info->$key;
+	}
+
+	/**
+	 * Returns the content type of the object instance
+	 *
+	 * @return array An array of content types that this object represents, starting with the most specific
+	 */
+	function content_type()
+	{
+		return array(
+			$this->id . '.user',
+			$this->username . '.user',
+			'user'
+		);
 	}
 }
 

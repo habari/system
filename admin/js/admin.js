@@ -13,10 +13,12 @@ var habari_ajax = {
 		$.ajax({
 			url: url,
 			data: data,
-		success: function(json_data) {
+			success: function(json_data) {
 				if($.isPlainObject(ahah_target)) {
 					for(var i in ahah_target) {
-						$(ahah_target[i]).html(json_data.html[i]);
+						if(json_data.html && json_data.html[i]) {
+							$(ahah_target[i]).html(json_data.html[i]);
+						}
 					}
 				}
 				var cb = ($.isFunction(ahah_target) && local_cb == undefined) ? ahah_target : local_cb;
@@ -79,16 +81,31 @@ var dashboard = {
 			}
 		});
 
-		$('.options').toggle(function() {
-				$(this).parents('li').addClass('viewingoptions');
-			}, function() {
-				$(this).parents('li').removeClass('viewingoptions');
-			});
+		$('.options').click(function(){
+			var li = $(this).closest('li');
+			if(li.hasClass('viewingoptions')) {
+				li.toggleClass('viewingoptions');
+			}
+			else {
+				spinner.start();
+				$('.optionswindow .optionsform', li).load(
+					habari.url.ajaxDashboard,
+					{'action': 'configModule', 'moduleid': li.data('module-id')},
+					function(){
+						li.toggleClass('viewingoptions');
+						spinner.stop();
+					}
+				);
+			}
+		});
 
 		$('.close', '.modules').click( function() {
-			// grab the module ID from the parent DIV id attribute.
-			matches = $(this).parents('.module').attr('id').split( ':', 2 );
-			dashboard.remove( matches[0] );
+			// grab the module ID from the parent DIV data attribute.
+			dashboard.remove( $(this).parents('.module').data('module-id') );
+		});
+
+		$('.optionsform form').live('submit', function(){
+			return dashboard.post(this);
 		});
 		findChildren();
 	},
@@ -96,14 +113,14 @@ var dashboard = {
 		spinner.start();
 		// disable dragging and dropping while we update
 		$('.modules').sortable('disable');
-		var query = {};
+		var query = [];
 		$('.module', '.modules').not('.ui-sortable-helper').each( function(i) {
-			query['module' + i] = this.getAttribute('id');
+			query.push($(this).data('module-id'));
 		} );
 		query.action = 'updateModules';
 		habari_ajax.post(
 			habari.url.ajaxDashboard,
-			query,
+			{'moduleOrder': query, 'action': 'updateModules'},
 			function() {
 				$('.modules').sortable('enable');
 			}
@@ -142,6 +159,22 @@ var dashboard = {
 			{modules: '.modules'},
 			dashboard.init
 		);
+	},
+	post: function(blockform) {
+		var form = $(blockform);
+		$.ajax({
+			success: function(data){
+				form.parents('.optionsform').html(data);
+			},
+			error: function(data, err) {
+				console.log(data, err);
+			},
+			type: 'POST',
+			url: habari.url.ajaxConfigModule,
+			data: form.serialize(),
+			dataType: 'html'
+		});
+		return false;
 	}
 };
 
@@ -422,21 +455,12 @@ var itemManage = {
 	}
 };
 
-// Plugin Management
-var pluginManage = {
+// Help Toggler
+var helpToggler = {
 	init: function() {
-		// Return if we're not on the plugins page
-		if (!$('.page-plugins').length) {return;}
-
-		$('.plugins .item').hover( function() {
-			$(this).find('#pluginconfigure:visible').parent().css('background', '#FAFAFA');
-		}, function() {
-			$(this).find('#pluginconfigure:visible').parent().css('background', '');
-	  	});
-		
-		$('.plugins .item a.help').click(function() {
-			var help = $('.pluginhelp', $(this).parents('.item'));
-						
+		$('.plugins .item a.help, .currenttheme a.help').click(function() {
+			var help = $('.pluginhelp', $(this).parents('.item')).add( $('.currenttheme #themehelp') );
+									
 			if( help.hasClass('active') ) {
 				help.slideUp();
 				help.add(this).removeClass('active');
@@ -450,6 +474,22 @@ var pluginManage = {
 			
 		});
 	}
+}
+
+// Plugin Management
+var pluginManage = {
+	init: function() {
+		// Return if we're not on the plugins page
+		if (!$('.page-plugins').length) {return;}
+
+		$('.plugins .item').hover( function() {
+			$(this).find('#pluginconfigure:visible').parent().css('background', '#FAFAFA');
+		}, function() {
+			$(this).find('#pluginconfigure:visible').parent().css('background', '');
+	  	});
+	
+		helpToggler.init();
+	}
 };
 
 // Theme Management
@@ -462,8 +502,10 @@ var themeManage = {
 		axis: 'y'
 	},
 	init: function() {
-		// Return if we're not on the plugins page
+		// Return if we're not on the themes page
 		if (!$('.page-themes').length) {return;}
+		
+		helpToggler.init();
 
 		// Adding available blocks
 		$('#block_instance_add').live('click', function() {
@@ -506,11 +548,6 @@ var themeManage = {
 			axis: 'y'
 		});
 		themeManage.refresh_areas();
-
-		// Load areas available in different scopes
-		$('#scope_id').click(function() {
-			themeManage.change_scope();
-		});
 
 		// Save areas
 		$('#save_areas').click(function() {
@@ -568,11 +605,12 @@ var themeManage = {
 				output[area].push(m[1]);
 			});
 		});
-		$('#scope_container').load(
-			habari.url.ajaxSaveAreas, 
+		habari_ajax.post(
+			habari.url.ajaxSaveAreas,
 			{area_blocks:output, scope:$('#scope_id').val()},
+			{'block_areas': '#scope_container'},
 			// Can't simply refresh the sortable because we've reloaded the element
-			function() {
+			function(data) {
 				$('.area_drop').sortable({
 					placeholder: 'block_drop',
 					forcePlaceholderSize: true,
@@ -591,11 +629,12 @@ var themeManage = {
 	change_scope: function() {
 		spinner.start();
 		var output = {};
-		$('#scope_container').load(
-			habari.url.ajaxSaveAreas, 
+		habari_ajax.post(
+			habari.url.ajaxSaveAreas,
 			{scope:$('#scope_id').val()},
+			{'block_areas': '#scope_container'},
 			// Can't simply refresh the sortable because we've reloaded the element
-			function() {
+			function(data) {
 				$('.area_drop').sortable({
 					placeholder: 'block_drop',
 					forcePlaceholderSize: true,
@@ -605,10 +644,11 @@ var themeManage = {
 					remove: themeManage.refresh_areas,
 					axis: 'y'
 				});
+				// We've saved, reset the hash
+				themeManage.initial_data_hash = themeManage.data_hash();
 				themeManage.refresh_areas();
 			}
 		);
-		spinner.stop();
 	},
 	changed: function() {
 		return themeManage.initial_data_hash != themeManage.data_hash();

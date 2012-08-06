@@ -8,9 +8,18 @@
  * Habari Block class
  * Block class for theme display of pluggable content
  *
+ * @property string $type The type of block this is
+ * @property string $title The title of this block
+ * @property mixed $data The data associated to this block
+ * @property integer $id The id of this block in the database
+ *
  */
 class Block extends QueryRecord implements IsContent, FormStorage
 {
+	public $_first = false;
+	public $_last = false;
+	public $_area_index = 0;
+	public $_area = '';
 	private $data_values = array( '_show_title' => true );
 
 	/**
@@ -34,7 +43,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	/**
 	 * Overrides QueryRecord __get to implement custom object properties
 	 *
-	 * @param string Name of property to return
+	 * @param string $name Name of property to return
 	 * @return mixed The requested field value
 	 */
 	public function __get( $name )
@@ -75,8 +84,9 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	/**
 	 * Overrides QueryRecord __set to implement custom object properties
 	 *
-	 * @param string Name of property to return
-	 * @return mixed The requested field value
+	 * @param string $name Name of property to return
+	 * @param mixed $value The value to set the property to
+	 * @return mixed The value of the property
 	 */
 	public function __set( $name, $value )
 	{
@@ -201,7 +211,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	/**
 	 * Insert this block into the database
 	 *
-	 * @return boolean True on success
+	 * @return boolean|null True on success, null if the action wasn't allowed
 	 */
 	public function insert()
 	{
@@ -209,7 +219,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 		$allow = true;
 		$allow = Plugins::filter( 'block_insert_allow', $allow, $this );
 		if ( ! $allow ) {
-			return;
+			return null;
 		}
 		Plugins::act( 'block_insert_before', $this );
 
@@ -235,14 +245,14 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	/**
 	 * Update this block in the database
 	 *
-	 * @return boolean True on success
+	 * @return boolean|null True on success, null if the update isn't allowed
 	 */
 	public function update()
 	{
 		$allow = true;
 		$allow = Plugins::filter( 'block_update_allow', $allow, $this );
 		if ( ! $allow ) {
-			return;
+			return null;
 		}
 		Plugins::act( 'block_update_before', $this );
 
@@ -290,13 +300,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	{
 		$form = new FormUI( 'block-' . $this->id, 'block' );
 		$form->on_success( array( $this, 'save_block' ) );
-		$form->set_option( 'success_message', '</div><div class="humanMsg" id="humanMsg" style="display: block;top: auto;bottom:-50px;"><div class="imsgs"><div id="msgid_2" class="msg" style="display: block; opacity: 0.8;"><p>' . _t( 'Saved block configuration.' ) . '</p></div></div></div>
-<script type="text/javascript">
-		$("#humanMsg").animate({bottom: "5px"}, 500, function(){ window.setTimeout(function(){$("#humanMsg").animate({bottom: "-50px"}, 500)},3000) })
-		parent.refresh_block_forms();
-</script>
-<div style="display:none;">
-');
+
 		Plugins::act( 'block_form_' . $this->type, $form, $this );
 		Plugins::act( 'block_form', $form, $this );
 		return $form;
@@ -305,9 +309,10 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	/**
 	 * Display a standard success message upon saving the form
 	 *
-	 * @return
+	 * @param FormUI $form The form that will be saved
+	 * @return bool Returning false tells the form that the save was handled
 	 */
-	public function save_block( $form )
+	public function save_block( FormUI $form )
 	{
 		$form->save();
 		return false;
@@ -341,6 +346,15 @@ class Block extends QueryRecord implements IsContent, FormStorage
 		}
 			
 		$result = DB::query( 'INSERT INTO {blocks_areas} (block_id, area, scope_id, display_order) VALUES (:block_id, :area, :scope_id, :display_order)', array( 'block_id' => $this->id, 'area' => $area, 'scope_id' => $scope, 'display_order' => $order ) );
+	}
+
+	/**
+	 * Convert this block into a string, just in case there isn't a template associated to this block type
+	 * @return string The string representation of this content, as a bad fallback
+	 */
+	public function __toString()
+	{
+		return $this->title;
 	}
 }
 

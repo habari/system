@@ -682,7 +682,7 @@ class Posts extends ArrayObject implements IsContent
 		 */
 		if ( isset( $count ) ) {
 			$query->set_select( "COUNT({$count})" );
-			$fetch_fn = 'get_value';
+			$fetch_fn = isset($paramarray['fetch_fn']) ? $fetch_fn : 'get_value';
 			$orderby = null;
 			$groupby = null;
 			$having = null;

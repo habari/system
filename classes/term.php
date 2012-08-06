@@ -17,6 +17,11 @@
 class Term extends QueryRecord
 {
 	protected $inforecords = null;
+
+	public $unsetfields = array(
+		'object_id' => 'object_id',
+		'type' => 'type',
+	);
 	
 	/**
 	 * Return the defined database columns for a Term.

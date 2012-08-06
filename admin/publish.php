@@ -60,7 +60,7 @@ $(document).ready(function(){
 			spinner.start(); spinner.stop();
 			return '<?php
 				// Note to translators: the 'new-line character' is an actual "\n" not a new-line character
-				_e('You did not save the changes you made. \nLeaving this page will result in the lose of data.');
+				_e('You did not save the changes you made. \nLeaving this page will result in the loss of data.');
 				?>';
 		}
 	};

@@ -1,7 +1,7 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); } ?>
 	<ul class="items">
 
-		<?php foreach((array)$recent_posts as $post): ?>
+		<?php foreach((array)$content->recent_posts as $post): ?>
 		<li class="item clear">
 			<?php /* @locale Time formats according to http://php.net/manual/en/function.date.php */ $ptime = $post->pubdate->get( _t( 'g:i' ) ); ?>
 			<?php /* @locale Date formats according to http://php.net/manual/en/function.date.php */ $pdate = $post->pubdate->get( _t( 'F jS, Y' ) ); ?>

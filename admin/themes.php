@@ -6,13 +6,24 @@
 	<div class="item clear">
 		<div class="head">
 
-			<a href="<?php echo $active_theme['info']->url; ?>" class="plugin"><?php echo $active_theme['info']->name; ?></a> <span class="version dim"><?php echo $active_theme['info']->version; ?></span> <span class="dim"><?php _e('by'); ?></span> 
+			<a href="<?php echo $active_theme['info']->url; ?>" class="plugin"><?php echo $active_theme['info']->name; ?></a> <span class="version dim"><?php echo $active_theme['info']->version; ?></span> <span class="dim"><?php _e('by'); ?></span>
 			<?php
 			$authors = array();
 			foreach ( $active_theme['info']->author as $author ) {
 				$authors[] = isset( $author['url'] ) ? '<a href="' . $author['url'] . '">' . $author . '</a>' : $author;
 			}
 			echo Format::and_list( $authors, '<span class="dim">, </span>', '<span class="dim">' . _t( ' and ' ) . '</span>');
+			?>
+			<?php
+				if ( isset( $active_theme['info']->help ) ):
+					if( Controller::get_var('help') == $active_theme['dir'] ):
+			?>
+				<a class="help active" href="<?php URL::out( 'admin', 'page=themes' ); ?>"><?php _e('Help'); ?></a>
+				<?php else: ?>
+				<a class="help" href="<?php URL::out( 'admin', 'page=themes&help=' . $active_theme['dir'] ); ?>"><?php _e('Help'); ?></a>
+				<?php
+					endif;
+				endif;
 			?>
 
 			<?php if ( $configurable ): ?>
@@ -26,6 +37,7 @@
 				<li><a href="#"><?php _e('v'); ?><?php echo $active_theme['info']->update; ?> <?php _e('Update Available'); ?></a></li>
 			</ul>
 			<?php endif; ?>
+
 		</div>
 
 		<div>
@@ -35,6 +47,15 @@
 			<?php if ( $active_theme['info']->license != '' ): ?>
 			<p class="description pct70"><?php printf( _t('%1$s is licensed under the %2$s'), $active_theme['info']->name, '<a href="' . $active_theme['info']->license['url'] . '">' . $active_theme['info']->license . '</a>' ); ?></p>
 			<?php endif; ?>
+
+			<?php if ( isset( $active_theme['info']->help ) ): ?>
+			<div id="themehelp" class="pct70 <?php if( Controller::get_var('help') == $active_theme['dir'] ): ?>active<?php endif; ?>">
+				<div class="help">
+					<?php echo (string) $active_theme['info']->help->value; ?>
+				</div>
+			</div>
+			<?php endif; ?>
+
 		</div>
 	</div>
 
@@ -54,7 +75,7 @@
 	<?php endif; ?>
 
 	<?php if ( isset($active_theme['info']->areas) ): ?>
-	<div id="blocksconfigure"class="item clear">
+	<div id="blocksconfigure" class="item clear">
 		<h3><?php _e( "Areas" ); ?></h3>
 				<div>
 					<div id="block_add">

@@ -6,5 +6,5 @@ Config::set( 'db_connection', array(
 	'prefix'=>'{$table_prefix}'
 ));
 
-//$locale = '{$locale}';
+// Config::set('locale', '{$locale}');
 ?>

@@ -72,7 +72,7 @@ class AdminUsersHandler extends AdminHandler
 			'dashboard' => _t( 'Dashboard' ),
 		);
 
-		$form = new FormUI( 'User Options' );
+			$form = new FormUI( 'User Options' );
 
 		// Create a tracker for who we are dealing with
 		$form->append( 'hidden', 'edit_user', 'edit_user' );
@@ -161,6 +161,14 @@ class AdminUsersHandler extends AdminHandler
 		$spam_count->helptext = _t( 'Hide the number of SPAM comments on your dashboard.' );
 		$spam_count->value = $edit_user->info->dashboard_hide_spam_count;
 
+		// Groups
+		if(User::identify()->can('manage_groups')) {
+			$fieldset = $form->append( 'wrapper', 'groups', _t('Groups'));
+			$fieldset->class = 'container settings';
+			$fieldset->append( 'static', 'groups', '<h2>' . htmlentities( _t('Groups'), ENT_COMPAT, 'UTF-8' ) . '</h2>' );
+			$form->groups->append( 'checkboxes', 'user_group_membership', 'null:null', _t('Groups'), Utils::array_map_field(UserGroups::get_all(), 'name', 'id') );
+			$form->user_group_membership->value = $edit_user->groups;
+		}
 
 		// Controls
 		$controls = $form->append( 'wrapper', 'page_controls' );
@@ -245,6 +253,20 @@ class AdminUsersHandler extends AdminHandler
 			Session::notice( _t( 'Password changed.' ) );
 			$edit_user->password = Utils::crypt( $form->password1->value );
 			$edit_user->update();
+		}
+
+		// Change group membership
+		if(User::identify()->can('manage_groups')) {
+			$allgroups = UserGroups::get_all();
+			$new_groups = $form->user_group_membership->value;
+			foreach($allgroups as $group) {
+				if(!$edit_user->in_group($group) && in_array($group->id, $new_groups)) {
+					$edit_user->add_to_group($group);
+				}
+				else {
+					$edit_user->remove_from_group($group);
+				}
+			}
 		}
 
 		// Set various info fields
@@ -448,7 +470,7 @@ class AdminUsersHandler extends AdminHandler
 			}
 			else {
 				$settings = array();
-				if ( isset( $username ) ) {
+				if ( isset( $new_username ) ) {
 					$settings['new_username'] = $new_username;
 				}
 				if ( isset( $new_email ) ) {

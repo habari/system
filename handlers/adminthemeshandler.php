@@ -50,6 +50,9 @@ class AdminThemesHandler extends AdminHandler
 		$this->theme->areas = $this->get_areas(0);
 		$this->theme->previewed = Themes::get_theme_dir( false );
 
+		$this->theme->help = isset($this->theme->active_theme['info']->help) ? $this->theme->active_theme['info']->help : false;
+		$this->theme->help_active = Controller::get_var('help') == $this->theme->active_theme['dir'];
+
 		$this->prepare_block_list();
 
 		$blocks_areas_t = DB::get_results( 'SELECT b.*, ba.scope_id, ba.area, ba.display_order FROM {blocks} b INNER JOIN {blocks_areas} ba ON ba.block_id = b.id ORDER BY ba.scope_id ASC, ba.area ASC, ba.display_order ASC', array() );
@@ -128,6 +131,14 @@ class AdminThemesHandler extends AdminHandler
 
 		$block = DB::get_row( 'SELECT b.* FROM {blocks} b WHERE id = :id ORDER BY b.title ASC', array( 'id' => $_GET['blockid'] ), 'Block' );
 		$block_form = $block->get_form();
+		$block_form->set_option( 'success_message', '</div><div class="humanMsg" id="humanMsg" style="display: block;top: auto;bottom:-50px;"><div class="imsgs"><div id="msgid_2" class="msg" style="display: block; opacity: 0.8;"><p>' . _t( 'Saved block configuration.' ) . '</p></div></div></div>
+<script type="text/javascript">
+		$("#humanMsg").animate({bottom: "5px"}, 500, function(){ window.setTimeout(function(){$("#humanMsg").animate({bottom: "-50px"}, 500)},3000) })
+		parent.refresh_block_forms();
+</script>
+<div style="display:none;">
+');
+
 		$first_control = reset ( $block_form->controls );
 		if ( $first_control ) {
 			$block_form->insert( $first_control->name, 'fieldset', 'block_admin', _t( 'Block Display Settings' ) );
@@ -265,6 +276,7 @@ class AdminThemesHandler extends AdminHandler
 
 		$msg = '';
 
+		$response = new AjaxResponse();
 		if ( isset( $_POST['area_blocks'] ) ) {
 			$area_blocks = $_POST['area_blocks'];
 			DB::query( 'DELETE FROM {blocks_areas} WHERE scope_id = :scope_id', array( 'scope_id' => $scope ) );
@@ -283,11 +295,12 @@ class AdminThemesHandler extends AdminHandler
 				}
 			}
 
-			$msg = json_encode( _t( 'Saved block areas settings.' ) );
-			$msg = '<script type="text/javascript">
-				human_msg.display_msg(' . $msg . ');
-				spinner.stop();
-			</script>';
+//			$msg = json_encode( _t( 'Saved block areas settings.' ) );
+//			$msg = '<script type="text/javascript">
+//				human_msg.display_msg(' . $msg . ');
+//				spinner.stop();
+//			</script>';
+			$response->message = _t( 'Saved block areas settings.' );
 		}
 
 		$this->setup_admin_theme( '' );
@@ -308,9 +321,10 @@ class AdminThemesHandler extends AdminHandler
 		$this->theme->scopes = $scopes;
 		$this->theme->active_theme = Themes::get_active_data( true );
 
-		$this->display( 'block_areas' );
+		$output = $this->theme->fetch( 'block_areas' );
+		$response->html('block_areas', $output);
 
-		echo $msg;
+		$response->out();
 	}
 
 

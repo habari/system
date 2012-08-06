@@ -21,6 +21,7 @@ class Theme extends Pluggable
 	private $var_stack = array( array() );
 	private $current_var_stack = 0;
 	public $context = array();
+	private $added_template_vars = false;
 
 	/**
 	 * We build the Post filters by analyzing the handler_var
@@ -111,7 +112,6 @@ class Theme extends Pluggable
 	 */
 	public function add_template_vars()
 	{
-		
 		// set the locale and character set that habari is configured to use presently
 		if ( !isset( $this->locale ) ) {
 			$this->locale = Options::get('locale', 'en');	// default to 'en' just in case we somehow don't have one?
@@ -137,6 +137,7 @@ class Theme extends Pluggable
 		if ( isset( $handler ) ) {
 			Plugins::act( 'add_template_vars', $this, $handler->handler_vars );
 		}
+		$this->added_template_vars = true;
 	}
 
 	/**
@@ -213,7 +214,6 @@ class Theme extends Pluggable
 
 		if ( !isset( $posts ) ) {
 			$user_filters = Plugins::filter( 'template_user_filters', $user_filters );
-			$user_filters = array_intersect_key( $user_filters, array_flip( $this->valid_filters ) );
 
 			// Work around the tags parameters to Posts::get() being subsumed by the vocabulary parameter
 			if( isset( $user_filters['not:tag'] ) ) {
@@ -527,8 +527,6 @@ class Theme extends Pluggable
 	 */
 	public function display( $template_name )
 	{
-		$this->add_template_vars();
-
 		$this->play_var_stack();
 
 		$this->template_engine->assign( 'theme', $this );
@@ -560,6 +558,9 @@ class Theme extends Pluggable
 	 */
 	protected function play_var_stack()
 	{
+		if(!$this->added_template_vars) {
+			$this->add_template_vars();
+		}
 		$this->template_engine->clear();
 		for ( $z = 0; $z <= $this->current_var_stack; $z++ ) {
 			foreach ( $this->var_stack[$z] as $key => $value ) {
@@ -1445,12 +1446,13 @@ class Theme extends Pluggable
 		$themedirs = $this->theme_dir;
 
 		if(!$overrideok) {
-			$themedirs = end($this->theme_dir);
+			$themedirs = reset($this->theme_dir);
 		}
 
 		foreach($themedirs as $dir) {
 			if(file_exists(Utils::end_in_slash($dir) . trim($resource, '/'))) {
 				$url = $this->dir_to_url(Utils::end_in_slash($dir) . trim($resource, '/'));
+				break;
 			}
 		}
 

@@ -14,8 +14,7 @@ class UserGroup extends QueryRecord
 	// $member_ids is not NOT matched key and value pairs ( like array('foo'=>'foo') )
 	private $member_ids = null;
 	private $permissions;
-	private $tokens = null;
-	
+
 	/**
 	 * get default fields for this record
 	 * @return array an array of the fields used in the UserGroup table
@@ -296,17 +295,14 @@ class UserGroup extends QueryRecord
 	}
 
 	/**
-	 * Returns an array of token ids that are associated with this group
-	 * Also initializes the internal token array for use by other token operations
+	 * Returns an array of token ids and bitmask permissions that are associated with this group
 	 *
 	 * @return array An array of token ids
 	 */
 	public function get_tokens()
 	{
-		if ( empty( $this->tokens ) ) {
-			$this->tokens = DB::get_column( 'SELECT token_id FROM {group_token_permissions} WHERE group_id = ?', array( $this->id ) );
-		}
-		return $this->tokens;
+		$this->load_permissions_cache();
+		return $this->permissions;
 	}
 
 	/**
@@ -335,11 +331,14 @@ class UserGroup extends QueryRecord
 	/**
 	 * Fetch a group from the database by ID or name.
 	 * This is a wrapper for get_by_id() and get_by_name()
-	 * @param mixed $group A group ID or name
-	 * @return mixed UserGroup object, or boolean false
+	 * @param integer|string|UserGroup $group A group ID, name, or UserGroup
+	 * @return UserGroup|boolean UserGroup object, or boolean false
 	 */
 	public static function get( $group )
 	{
+		if ( $group instanceof UserGroup ) {
+			return $group;
+		}
 		if ( is_numeric( $group ) ) {
 			return self::get_by_id( $group );
 		}

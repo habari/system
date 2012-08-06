@@ -198,7 +198,7 @@ class AdminHandler extends ActionHandler
 		$siteinfo[ _t( 'Habari API Version' ) ] = Version::get_apiversion();
 		$siteinfo[ _t( 'Habari DB Version' ) ] = Version::get_dbversion();
 		$siteinfo[ _t( 'Active Theme' ) ] = Options::get( 'theme_name' );
-		$siteinfo[ _t( 'System Locale' ) ] =  Options::get( 'system_locale', 'en-us' );
+		$siteinfo[ _t( 'System Locale' ) ] =  HabariLocale::get();
 		$this->theme->siteinfo = $siteinfo;
 
 		// Assemble System Info

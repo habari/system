@@ -8,135 +8,167 @@ class CoreDashModules extends Plugin
 {
 	private $theme;
 
-		/**
-	 * action_plugin_activation
-	 * Registers the core modules with the Modules class. Add these modules to the
-	 * dashboard if the dashboard is currently empty.
-	 * @param string $file plugin file
+	/**
+	 * Add some templates to the theme for the blocks
 	 */
-	function action_plugin_activation( $file )
+	public function action_init()
 	{
-		if ( Plugins::id_from_file($file) == Plugins::id_from_file(__FILE__) ) {
-			Modules::add( 'Latest Entries' );
-			Modules::add( 'Latest Comments' );
-			Modules::add( 'Latest Log Activity' );
-			Modules::add( 'Post Types and Statuses' );
-		}
+		$this->add_template( 'dashboard.block.latest_entries', __DIR__ . '/dashboard.block.latest_entries.php' );
+		$this->add_template( 'dashboard.block.latest_log_activity', __DIR__ . '/dashboard.block.latest_log_activity.php' );
+		$this->add_template( 'dashboard.block.latest_comments', __DIR__ . '/dashboard.block.latest_comments.php' );
+		$this->add_template( 'dashboard.block.post_types_statuses', __DIR__ . '/dashboard.block.post_types_statuses.php' );
 	}
 
 	/**
-	 * action_plugin_deactivation
-	 * Unregisters the core modules.
-	 * @param string $file plugin file
+	 * Add the blocks this plugin provides to the list of available blocks
+	 * @param array $block_list An array of block names, indexed by unique string identifiers
+	 * @return array The altered array
 	 */
-	function action_plugin_deactivation( $file )
+	public function filter_block_list($block_list)
 	{
-		if ( Plugins::id_from_file($file) == Plugins::id_from_file(__FILE__) ) {
-			Modules::remove_by_name( 'Latest Entries' );
-			Modules::remove_by_name( 'Latest Comments' );
-			Modules::remove_by_name( 'Latest Log Activity' );
-			Modules::remove_by_name( 'Post Types and Statuses' );
-		}
-	}
-
-	/**
-	 * filter_dash_modules
-	 * Registers the core modules with the Modules class. 
-	 */
-	function filter_dash_modules( $modules )
-	{
-		$modules[] = _t( 'Latest Entries' );
+		$block_list['latest_entries'] = _t( 'Latest Entries');
 		if (User::identify()->can('manage_all_comments')) {
-			$modules[] = _t( 'Latest Comments' );
+			$block_list['latest_comments'] = _t( 'Latest Comments');
 		}
 		if (User::identify()->can('manage_logs')) {
-			$modules[] = _t( 'Latest Log Activity' );
+			$block_list['latest_log_activity'] = _t( 'Latest Log Activity');
 		}
-		$modules[] = _t( 'Post Types and Statuses' );
-		$this->add_template( 'dash_logs', dirname( __FILE__ ) . '/dash_logs.php' );
-		$this->add_template( 'dash_latestentries', dirname( __FILE__ ) . '/dash_latestentries.php' );
-		$this->add_template( 'dash_latestcomments', dirname( __FILE__ ) . '/dash_latestcomments.php' );
-		$this->add_template( 'dash_posttypes', dirname( __FILE__ ) . '/dash_posttypes.php' );
-
-		return $modules;
+		$block_list['post_types_statuses'] = _t( 'Post Types and Statuses');
+		return $block_list;
 	}
 
 	/**
-	 * filter_dash_module_latest_log_activity
-	 * Sets theme variables and handles logic for the
-	 * dashboard's log history module.
-	 * @param string $module_id
-	 * @return string The contents of the module
+	 * Return a list of blocks that can be used for the dashboard
+	 * @param array $block_list An array of block names, indexed by unique string identifiers
+	 * @return array The altered array
 	 */
-	public function filter_dash_module_latest_log_activity( $module, $module_id, $theme )
+	public function filter_dashboard_block_list($block_list)
 	{
-		if ( false === ( $num_logs = Modules::get_option( $module_id, 'logs_number_display' ) ) ) {
-			$num_logs = 8;
-		}
+		return $this->filter_block_list($block_list);
+	}
 
+	/**
+	 * Produce the content for the latest entries block
+	 * @param Block $block The block object
+	 * @param Theme $theme The theme that the block will be output with
+	 */
+	public function action_block_content_latest_entries($block, $theme)
+	{
+		$block->recent_posts = Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
+		$block->link = URL::get('admin', array('page'=>'posts', 'type'=>Post::type('entry')));
+	}
+
+	/**
+	 * Produce the content for the latest log activity block
+	 * @param Block $block The block object
+	 * @param Theme $theme The theme that the block will be output with
+	 */
+	public function action_block_content_latest_log_activity($block, $theme)
+	{
 		$params = array(
 			'where' => array(
 				'user_id' => User::identify()->id
 			),
 			'orderby' => 'id DESC', /* Otherwise, exactly same timestamp values muck it up... Plus, this is more efficient to sort on the primary key... */
-			'limit' => $num_logs,
+			'limit' => isset($block->logs_number_display) ? $block->logs_number_display : 8,
 		);
-		$theme->logs = EventLog::get( $params );
-		
-		// Create options form
-		/* Commented out until fully implemented or it's decided to drop completely. See https://trac.habariproject.org/habari/ticket/1233
-		$form = new FormUI( 'dash_logs' );
-		$form->append( 'text', 'logs_number_display', 'option:' . Modules::storage_name( $module_id, 'logs_number_display' ), _t('Number of items') );
-		$form->append( 'submit', 'submit', _t('Submit') );
-		$form->properties['onsubmit'] = "dashboard.updateModule({$module_id}); return false;";
-		 */
-		
-		$module['title'] = ( User::identify()->can( 'manage_logs' ) ? '<a href="' . Site::get_url('admin') . '/logs">' . _t('Latest Log Activity') . '</a>' : _t('Latest Log Activity') );
-		//$module['options'] = $form->get();
-		$module['content'] = $theme->fetch( 'dash_logs' );
-		return $module;
-	}
-	
-	/**
-	 * filter_dash_module_latest_entries
-	 * Gets the latest entries module
-	 * @param string $module_id
-	 * @return string The contents of the module
-	 */
-	public function filter_dash_module_latest_entries( $module, $module_id, $theme )
-	{
-		$theme->recent_posts = Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
-		
-		$module['title'] = ( User::identify()->can( 'manage_entries' ) ? '<a href="' . Site::get_url('admin') . '/posts?type=1">' . _t('Latest Entries') . '</a>' : _t('Latest Entries') );
-		$module['content'] = $theme->fetch( 'dash_latestentries' );
-		return $module;
+		$block->logs = EventLog::get( $params );
+		$block->link = URL::get('admin', array('page' => 'logs'));
+		$block->has_options = true;
 	}
 
 	/**
-	 * filter_dash_module_latest_comments
-	 * Function used to set theme variables to the latest comments dashboard widget
-	 * @param string $module_id
-	 * @return string The contents of the module
+	 * Produce a form for the editing of the log activity block
+	 * @param FormUI $form The form to allow editing of this block
+	 * @param Block $block The block object to edit
 	 */
-	public function filter_dash_module_latest_comments( $module, $module_id, $theme )
+	public function action_block_form_latest_log_activity($form, $block)
 	{
-		$post_ids = DB::get_results( 'SELECT DISTINCT post_id FROM ( SELECT date, post_id FROM {comments} WHERE status = ? AND type = ? ORDER BY date DESC, post_id ) AS post_ids LIMIT 5', array( Comment::STATUS_APPROVED, Comment::COMMENT ), 'Post' );
-		$posts = array();
+		$form->append( 'text', 'logs_number_display', $block, _t('Number of items') );
+		$form->append( 'submit', 'submit', _t('Submit') );
+	}
+
+	/**
+	 * Produce the content for the Latest Comments block
+	 * @param Block $block The block object
+	 * @param Theme $theme The theme that the block will be output with
+	 */
+	public function action_block_content_latest_comments($block, $theme)
+	{
+		$posts = DB::get_results( 'SELECT * FROM {posts} p WHERE p.id in ( SELECT post_id FROM {comments} WHERE status = ? AND type = ? ORDER BY date DESC, post_id ) LIMIT 5', array( Comment::STATUS_APPROVED, Comment::COMMENT ), 'Post' );
 		$latestcomments = array();
 
-		foreach( $post_ids as $comment_post ) {
-			$post = DB::get_row( 'select * from {posts} where id = ?', array( $comment_post->post_id ) , 'Post' );
-			$comments = DB::get_results( 'SELECT * FROM {comments} WHERE post_id = ? AND status = ? AND type = ? ORDER BY date DESC LIMIT 5;', array( $comment_post->post_id, Comment::STATUS_APPROVED, Comment::COMMENT ), 'Comment' );
-			$posts[] = $post;
+		foreach( $posts as $post ) {
+			$comments = DB::get_results( 'SELECT * FROM {comments} WHERE post_id = ? AND status = ? AND type = ? ORDER BY date DESC LIMIT 5;', array( $post->id, Comment::STATUS_APPROVED, Comment::COMMENT ), 'Comment' );
 			$latestcomments[$post->id] = $comments;
 		}
 
-		$theme->latestcomments_posts = $posts;
-		$theme->latestcomments = $latestcomments;
-		
-		$module['title'] = ( User::identify()->can( 'manage_comments' ) ? '<a href="' . Site::get_url('admin') . '/comments">' . _t('Latest Comments') . '</a>' : _t('Latest Comments') );
-		$module['content'] = $theme->fetch( 'dash_latestcomments' );
-		return $module;
+		$block->latestcomments_posts = $posts;
+		$block->latestcomments = $latestcomments;
+		$block->link = URL::get('admin', array('page' => 'comments'));
+	}
+
+	public function action_block_content_post_types_statuses($block, $theme)
+	{
+		$messages = array();
+		$user = User::identify();
+
+		$post_types = Post::list_active_post_types();
+		array_shift( $post_types );
+		$post_statuses = array_values( Post::list_post_statuses() );
+		array_shift( $post_statuses );
+
+		foreach( $post_types as $type => $type_id ) {
+			$plural = Plugins::filter( 'post_type_display', $type, 'plural' );
+			foreach( $post_statuses as $status => $status_id ) {
+				$status_display = MultiByte::ucfirst( Plugins::filter( 'post_status_display', Post::status_name( $status_id ) ) );
+				$site_count = Posts::get( array( 'content_type' => $type_id, 'count' => true, 'status' => $status_id ) );
+				$user_count = Posts::get( array( 'content_type' => $type_id, 'count' => true, 'status' => $status_id, 'user_id' => $user->id ) );
+				$message = array();
+
+				// @locale First variable is the post status, second is the post type
+				$message['label'] = _t( '%1$s %2$s', array( $status_display, $plural ) );
+
+				if( ! $site_count ) {
+					$message['site_count'] = '';
+				}
+				else if( $user->cannot( 'post_unpublished' ) && Post::status_name( $status_id ) != 'published' ) {
+					$message['site_count'] = '';
+				}
+				else {
+					$message['site_count'] = $site_count;
+				}
+				$perms = array(
+					'post_any' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+					'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+					'post_' . $type => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+				);
+				if ( $user->can_any( $perms ) && $message['site_count'] ) {
+					$message['site_count'] = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( $type ), 'status' => $status_id ) ) ) . '">' . Utils::htmlspecialchars( $message['site_count'] ) . '</a>';
+				}
+
+				if( ! $user_count ) {
+					$message['user_count'] = '';
+				}
+				else {
+					$message['user_count'] = $user_count;
+				}
+				// @locale First variable is the post status, second is the post type
+				$perms = array(
+					'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+					'post_' . $type => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+				);
+				if ( $user->can_any( $perms )  && $message['user_count'] ) {
+					$message['user_count'] = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( $type ), 'status' => $status_id, 'user_id' => $user->id ) ) ) . '">' . Utils::htmlspecialchars( $message['user_count'] ) . '</a>';
+				}
+
+				if( $message['site_count'] || $message['user_count'] ) {
+					$messages[] = $message;
+				}
+			}
+		}
+
+		$block->messages = $messages;
 	}
 
 	/**
