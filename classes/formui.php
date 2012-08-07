@@ -17,19 +17,19 @@
 
 class FormComponents
 {
+	/**
+	 * Produces a list of HTML parameters from specific values in this object
+	 * @param array $map A list of attributes and the fields on this object of which to map the values to them
+	 * @param array $additional A list of attributes and values to add explicitly to this output
+	 * @return string A list of HTML-style parameters as produced from the input arrays
+	 */
 	function parameter_map($map = array(), $additional = array()) {
 		$output = '';
 		foreach($map as $tag_param => $tag_fields) {
-			$value_out = false;
 			if(is_numeric($tag_param)) {
 				$tag_param = $tag_fields;
 			}
-			foreach(Utils::single_array($tag_fields) as $tag_field) {
-				if(isset($this->$tag_field)) {
-					$value_out = $this->$tag_field;
-					break;
-				}
-			}
+			$value_out = $this->get_value_out($tag_fields);
 			if($value_out) {
 				if(is_array($value_out)) {
 					$output .= ' ' . $tag_param . '="' . implode(' ', $value_out) . '"';
@@ -43,6 +43,22 @@ class FormComponents
 			$output .= ' ' . $tag_param . '="' . $value_out . '"';
 		}
 		return $output;
+	}
+
+	/**
+	 * Return the property value that is associated with the first present property from an array list
+	 * @param array $tag_fields A list of potential fields to try
+	 * @return bool|string False if no value found, string of the property value found
+	 */
+	public function get_value_out($tag_fields) {
+		$value_out = false;
+		foreach(Utils::single_array($tag_fields) as $tag_field) {
+			if(isset($this->$tag_field)) {
+				$value_out = $this->$tag_field;
+				break;
+			}
+		}
+		return $value_out;
 	}
 }
 
@@ -497,6 +513,23 @@ class FormContainer extends FormComponents
 			$out = sprintf( $wrap, $out );
 		}
 		return $out;
+	}
+
+	/**
+	 * Return the property value that is associated with the first present property from an array list
+	 * This version only searches the list of the class' $properties array, because __get() on this objcet returns named FormControls instances
+	 * @param array $tag_fields A list of potential fields to try
+	 * @return bool|string False if no value found, string of the property value found
+	 */
+	public function get_value_out($tag_fields) {
+		$value_out = false;
+		foreach(Utils::single_array($tag_fields) as $tag_field) {
+			if(isset($this->properties[$tag_field])) {
+				$value_out = $this->properties[$tag_field];
+				break;
+			}
+		}
+		return $value_out;
 	}
 
 }
