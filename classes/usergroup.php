@@ -391,12 +391,20 @@ class UserGroup extends QueryRecord
 
 	/**
 	 * Given a group's name, return its ID
-	 * @param string a group's name
+	 * @param string|UserGroup a group's name or a group object
 	 * @return int the group's ID, or false if the group doesn't exist
 	 */
 	public static function id( $name )
 	{
-		$check_field = is_numeric( $name ) ? 'id' : 'name';
+		if($name instanceof UserGroup) {
+			return $name->id;
+		}
+		elseif(is_numeric($name)) {
+			$check_field = 'id';
+		}
+		else {
+			$check_field = 'name';
+		}
 		$id = DB::get_value( "SELECT id FROM {groups} WHERE {$check_field}=?", array( $name ) );
 		return $id; // get_value returns false if no record is returned
 	}

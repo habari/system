@@ -263,7 +263,7 @@ class AdminUsersHandler extends AdminHandler
 				if(!$edit_user->in_group($group) && in_array($group->id, $new_groups)) {
 					$edit_user->add_to_group($group);
 				}
-				else {
+				if($edit_user->in_group($group) && !in_array($group->id, $new_groups)) {
 					$edit_user->remove_from_group($group);
 				}
 			}
