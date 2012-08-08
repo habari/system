@@ -790,9 +790,11 @@ class Posts extends ArrayObject implements IsContent
 			$result = array_merge($result, Utils::single_array($paramarray[$param]));
 		}
 		if(isset($paramarray['where'])) {
-			foreach($paramarray['where'] as $where) {
-				if(isset($where[$param])) {
-					$result = array_merge($result, Utils::single_array($where[$param]));
+			if(is_array($paramarray['where'])) {
+				foreach($paramarray['where'] as $where) {
+					if(isset($where[$param])) {
+						$result = array_merge($result, Utils::single_array($where[$param]));
+					}
 				}
 			}
 		}
