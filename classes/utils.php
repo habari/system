@@ -606,7 +606,8 @@ class Utils
 	 */
 	public static function html_select( $name, $options, $current = null, $properties = array() )
 	{
-		$output = '<select id="' . $name . '" name="' . $name . '"';
+		$id = isset($properties['id']) ? $properties['id'] : $name;
+		$output = '<select id="' . $id . '" name="' . $name . '"';
 		foreach ( $properties as $key => $value ) {
 			$output .= " {$key}=\"{$value}\"";
 		}
