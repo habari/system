@@ -633,7 +633,7 @@ class DatabaseConnection
 			}
 			$qry .= ' WHERE 1=1 ';
 
-			foreach ( $keyfields as $keyfield => $keyvalue ) {
+			foreach ( $keyfieldvalues as $keyfield => $keyvalue ) {
 				$qry .= "AND {$keyfield} = ? ";
 				$values[] = $keyvalue;
 			}
