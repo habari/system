@@ -79,43 +79,47 @@ class ColorUtils
 	 */
 	public static function rgb_hsv( $rgb_arr )
 	{
-		$min = min( $rgb_arr );
-		$max = max( $rgb_arr );
-		
-		$d = $max - $min;
-		
-		if ( $max == 0 ) {
-			// black
-			// we use 0/0/0, even though at black, H and V are undefined
-			$h = 0;
-			$s = 0;
-			$v = 0;
-		}
-		else {
-			if ( $max == $rgb_arr['r'] ) {
-				// reddish (YM)
-				$h = ( $rgb_arr['g'] - $rgb_arr['b'] ) / $d;
+		$var_R = ($rgb_arr['r'] / 255);
+		$var_G = ($rgb_arr['g'] / 255);
+		$var_B = ($rgb_arr['b'] / 255);
+
+		$var_Min = min($var_R, $var_G, $var_B);
+		$var_Max = max($var_R, $var_G, $var_B);
+		$del_Max = $var_Max - $var_Min;
+
+		$V = $var_Max;
+
+		if( $del_Max == 0 ) {
+			$H = 0;
+			$S = 0;
+		} else {
+			$S = $del_Max / $var_Max;
+
+			$del_R = ((($var_Max - $var_R) / 6) + ($del_Max / 2)) / $del_Max;
+			$del_G = ((($var_Max - $var_G) / 6) + ($del_Max / 2)) / $del_Max;
+			$del_B = ((($var_Max - $var_B) / 6) + ($del_Max / 2)) / $del_Max;
+
+			if( $var_R == $var_Max ) {
+				$H = $del_B - $del_G;
 			}
-			elseif ( $max == $rgb_arr['g'] ) {
-				// greenish (CY)
-				$h = 2 + ( $rgb_arr['b'] - $rgb_arr['r'] ) / $d;
+			elseif( $var_G == $var_Max ) {
+				$H = (1 / 3) + $del_R - $del_B;
 			}
-			elseif ( $max == $rgb_arr['b'] ) {
-				// bluish (MC)
-				$h = 4 + ( $rgb_arr['r'] - $rgb_arr['g'] ) / $d;
+			elseif( $var_B == $var_Max ) {
+				$H = (2 / 3) + $del_G - $del_R;
 			}
 			else {
-				Error::raise( _t( 'Something went terribly wrong here.' ) );
+				$H = 0;  // This never happens, since one of the three is always the max
 			}
-			
-			$h*= 60; // convert to deg
-			$h = ( $h + 360 ) % 360; // map to 0..359
-			
-			$s = 100 * $d / $max;
-			$v = $max;
+
+			if( $H < 0 ) {
+				$H += 1;
+			}
+			if( $H > 1 ) {
+				$H -= 1;
+			}
 		}
-	
-		return self::hsv_hsvarr( $h, $s, $v );
+		return self::hsv_hsvarr($H * 360, $S * 255, $V * 255);
 	}
 	
 	/**
