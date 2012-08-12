@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-05 00:00+0000\n"
+"POT-Creation-Date: 2012-08-12 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,7 +111,7 @@ msgstr ""
 
 #: plugins/undelete/undelete.plugin.php:181
 #: plugins/flickrsilo/flickrsilo.plugin.php:876 themes/charcoal/theme.php:66
-#: admin/themes.php:89 handlers/adminthemeshandler.php:146
+#: admin/themes.php:89 handlers/adminthemeshandler.php:154
 #: classes/post.php:1017
 msgid "Save"
 msgstr ""
@@ -220,8 +220,10 @@ msgstr ""
 msgid "What would you like to call the new directory?"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:467 themes/mzingi/theme.php:114
-#: themes/charcoal/theme.php:223 classes/post.php:1282
+#: plugins/habarisilo/habarisilo.plugin.php:467
+#: plugins/coredashmodules/coredashmodules.plugin.php:88
+#: themes/mzingi/theme.php:114 themes/charcoal/theme.php:223
+#: classes/post.php:1282
 msgid "Submit"
 msgstr ""
 
@@ -438,33 +440,35 @@ msgstr ""
 msgid "Content:"
 msgstr ""
 
-#: plugins/coredashmodules/coredashmodules.plugin.php:48
-#: plugins/coredashmodules/coredashmodules.plugin.php:110
+#: plugins/coredashmodules/coredashmodules.plugin.php:29
 msgid "Latest Entries"
 msgstr ""
 
-#: plugins/coredashmodules/coredashmodules.plugin.php:50
-#: plugins/coredashmodules/coredashmodules.plugin.php:137
+#: plugins/coredashmodules/coredashmodules.plugin.php:31
 msgid "Latest Comments"
 msgstr ""
 
-#: plugins/coredashmodules/coredashmodules.plugin.php:53
-#: plugins/coredashmodules/coredashmodules.plugin.php:94
+#: plugins/coredashmodules/coredashmodules.plugin.php:34
 msgid "Latest Log Activity"
 msgstr ""
 
-#: plugins/coredashmodules/coredashmodules.plugin.php:55
-#: plugins/coredashmodules/coredashmodules.plugin.php:209
+#: plugins/coredashmodules/coredashmodules.plugin.php:36
+#: plugins/coredashmodules/coredashmodules.plugin.php:241
 msgid "Post Types and Statuses"
 msgstr ""
 
+#: plugins/coredashmodules/coredashmodules.plugin.php:87
+msgid "Number of items"
+msgstr ""
+
 #. @locale First variable is the post status, second is the post type
-#: plugins/coredashmodules/coredashmodules.plugin.php:166
+#: plugins/coredashmodules/coredashmodules.plugin.php:130
+#: plugins/coredashmodules/coredashmodules.plugin.php:198
 #, php-format
 msgid "%1$s %2$s"
 msgstr ""
 
-#: plugins/coredashmodules/dash_latestcomments.php:6
+#: plugins/coredashmodules/dashboard.block.latest_comments.php:6
 #, php-format
 msgid "%1$d comment"
 msgid_plural "%1$d comments"
@@ -472,53 +476,54 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. @locale Time formats according to http://php.net/manual/en/function.date.php
-#: plugins/coredashmodules/dash_latestcomments.php:15
+#: plugins/coredashmodules/dashboard.block.latest_comments.php:15
 msgid "g:ia"
 msgstr ""
 
 #. @locale Date formats according to http://php.net/manual/en/function.date.php
-#: plugins/coredashmodules/dash_latestcomments.php:16
-#: plugins/coredashmodules/dash_latestentries.php:7
+#: plugins/coredashmodules/dashboard.block.latest_comments.php:16
+#: plugins/coredashmodules/dashboard.block.latest_entries.php:7
 msgid "F jS, Y"
 msgstr ""
 
-#: plugins/coredashmodules/dash_latestcomments.php:17
-#: plugins/coredashmodules/dash_latestentries.php:8
+#: plugins/coredashmodules/dashboard.block.latest_comments.php:17
+#: plugins/coredashmodules/dashboard.block.latest_entries.php:8
 #, php-format
 msgid "Posted at %1$s on %2$s"
 msgstr ""
 
-#: plugins/coredashmodules/dash_posttypes.php:4
+#: plugins/coredashmodules/dashboard.block.post_types_statuses.php:4
 msgid "Category"
 msgstr ""
 
-#: plugins/coredashmodules/dash_posttypes.php:5
+#: plugins/coredashmodules/dashboard.block.post_types_statuses.php:5
 msgid "Yours"
 msgstr ""
 
-#: plugins/coredashmodules/dash_posttypes.php:6
+#: plugins/coredashmodules/dashboard.block.post_types_statuses.php:6
 msgid "Site"
 msgstr ""
 
-#. @locale Time formats according to http://php.net/manual/en/function.date.php
-#: plugins/coredashmodules/dash_latestentries.php:6
-msgid "g:i"
-msgstr ""
-
 #. @locale Date formats according to http://php.net/manual/en/function.date.php
-#: plugins/coredashmodules/dash_latestentries.php:8
-#: plugins/coredashmodules/dash_logs.php:5
+#: plugins/coredashmodules/dashboard.block.latest_log_activity.php:5
+#: plugins/coredashmodules/dashboard.block.latest_entries.php:8
 msgid "M j"
 msgstr ""
 
-#: plugins/coredashmodules/dash_latestentries.php:9 admin/posts_items.php:15
-#: admin/posts_items.php:27
+#. @locale Time formats according to http://php.net/manual/en/function.date.php
+#: plugins/coredashmodules/dashboard.block.latest_entries.php:6
+msgid "g:i"
+msgstr ""
+
+#: plugins/coredashmodules/dashboard.block.latest_entries.php:9
+#: admin/posts_items.php:15 admin/posts_items.php:27
 #, php-format
 msgid "Edit '%s'"
 msgstr ""
 
-#: plugins/coredashmodules/dash_latestentries.php:9 admin/posts_items.php:21
-#: admin/plugin.php:35 admin/themes.php:9 admin/themes.php:117
+#: plugins/coredashmodules/dashboard.block.latest_entries.php:9
+#: admin/posts_items.php:21 admin/plugin.php:35 admin/themes.php:9
+#: admin/themes.php:117
 msgid "by"
 msgstr ""
 
@@ -1432,7 +1437,7 @@ msgstr ""
 
 #: admin/tags.php:22 admin/logs.php:15 admin/logs.php:78 admin/users.php:65
 #: admin/posts.php:13 admin/posts.php:39 admin/comments.php:16
-#: admin/comments.php:40 admin/js/admin.js:288 installer/script.js:388
+#: admin/comments.php:40 admin/js/admin.js:319 installer/script.js:393
 msgid "None selected"
 msgstr ""
 
@@ -1492,7 +1497,7 @@ msgstr ""
 msgid "Login to %s"
 msgstr ""
 
-#: admin/login.php:33 admin/header.php:71
+#: admin/login.php:33 admin/header.php:72
 msgid "Go to Site"
 msgstr ""
 
@@ -1691,7 +1696,7 @@ msgstr ""
 msgid "Show Error"
 msgstr ""
 
-#: admin/plugin.php:18 installer/db_setup.php:227
+#: admin/plugin.php:18 installer/db_setup.php:258
 #, php-format
 msgid "The plugin file %s is a legacy plugin, and does not include an XML info file."
 msgstr ""
@@ -1786,11 +1791,11 @@ msgid "deny"
 msgstr ""
 
 #: admin/group.php:130 handlers/adminusershandler.php:177
-#: handlers/adminoptionshandler.php:169
+#: handlers/adminoptionshandler.php:177
 msgid "Apply"
 msgstr ""
 
-#: admin/formcontrols/formcontrol_textmulti.php:16 classes/formui.php:1803
+#: admin/formcontrols/formcontrol_textmulti.php:16 classes/formui.php:1836
 msgid "remove"
 msgstr ""
 
@@ -1805,6 +1810,7 @@ msgstr ""
 #: admin/themes.php:21 admin/themes.php:23
 #: handlers/adminpluginshandler.php:127 installer/db_setup.php:11
 #: installer/db_setup.php:166 installer/db_setup.php:220
+#: installer/db_setup.php:251
 msgid "Help"
 msgstr ""
 
@@ -1856,12 +1862,8 @@ msgid "Preview"
 msgstr ""
 
 #: admin/themes.php:149 handlers/adminpluginshandler.php:92
-#: handlers/adminpluginshandler.php:96 handlers/installhandler.php:227
+#: handlers/adminpluginshandler.php:96 handlers/installhandler.php:226
 msgid "Activate"
-msgstr ""
-
-#: admin/dashboard_modules.php:5 handlers/admindashboardhandler.php:167
-msgid "Add Item"
 msgstr ""
 
 #: admin/comment.overview.php:6
@@ -2114,42 +2116,46 @@ msgstr ""
 msgid "Previewing theme '%s'"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:136 handlers/adminthemeshandler.php:139
+#: handlers/adminthemeshandler.php:134
+msgid "Saved block configuration."
+msgstr ""
+
+#: handlers/adminthemeshandler.php:144 handlers/adminthemeshandler.php:147
 msgid "Block Display Settings"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:142
+#: handlers/adminthemeshandler.php:150
 msgid "Block Title:"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:145
+#: handlers/adminthemeshandler.php:153
 msgid "Display Block Title:"
 msgstr ""
 
-#: handlers/adminthemeshandler.php:200
+#: handlers/adminthemeshandler.php:208
 msgid "A new block must first have a name."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:215
+#: handlers/adminthemeshandler.php:223
 #, php-format
 msgid "Added new block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:238
+#: handlers/adminthemeshandler.php:246
 #, php-format
 msgid "Deleted block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:241
+#: handlers/adminthemeshandler.php:249
 #, php-format
 msgid "Failed to delete block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:295
+#: handlers/adminthemeshandler.php:303
 msgid "Saved block areas settings."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:348
+#: handlers/adminthemeshandler.php:356
 #, php-format
 msgid "This data is for a block of type \"%s\", which is no longer provided by a theme or plugin."
 msgstr ""
@@ -2215,21 +2221,25 @@ msgstr ""
 msgid "Logs purged."
 msgstr ""
 
-#: handlers/admindashboardhandler.php:128
+#: handlers/admindashboardhandler.php:74
+msgid "+"
+msgstr ""
+
+#: handlers/admindashboardhandler.php:99
 msgid "Modules updated."
 msgstr ""
 
-#: handlers/admindashboardhandler.php:133
+#: handlers/admindashboardhandler.php:110
 #, php-format
 msgid "Added module %s."
 msgstr ""
 
-#: handlers/admindashboardhandler.php:139
+#: handlers/admindashboardhandler.php:117
 msgid "Removed module."
 msgstr ""
 
-#: handlers/admindashboardhandler.php:161
-msgid "+"
+#: handlers/admindashboardhandler.php:128
+msgid "Module Configuration Saved."
 msgstr ""
 
 #: handlers/adminhandler.php:25
@@ -2269,7 +2279,7 @@ msgstr ""
 msgid "Active Theme"
 msgstr ""
 
-#: handlers/adminhandler.php:201 handlers/adminoptionshandler.php:107
+#: handlers/adminhandler.php:201 handlers/adminoptionshandler.php:109
 msgid "System Locale"
 msgstr ""
 
@@ -2412,186 +2422,186 @@ msgstr ""
 msgid "Log out of the administration interface"
 msgstr ""
 
-#: handlers/installhandler.php:147 handlers/adminusershandler.php:448
+#: handlers/installhandler.php:145 handlers/adminusershandler.php:448
 msgid "Password mis-match."
 msgstr ""
 
-#: handlers/installhandler.php:153
+#: handlers/installhandler.php:151
 msgid "Only printable characters are allowed."
 msgstr ""
 
-#: handlers/installhandler.php:159 handlers/installhandler.php:1765
-#: handlers/installhandler.php:1836
+#: handlers/installhandler.php:157 handlers/installhandler.php:1797
+#: handlers/installhandler.php:1868
 msgid "Allowed characters are A-Z, a-z and \"_\"."
 msgstr ""
 
-#: handlers/installhandler.php:170
+#: handlers/installhandler.php:168
 msgid "Could not write config.php file&hellip;"
 msgstr ""
 
-#: handlers/installhandler.php:196
+#: handlers/installhandler.php:195
 msgid "Habari successfully installed."
 msgstr ""
 
-#: handlers/installhandler.php:410
+#: handlers/installhandler.php:421
 msgid "User is required."
 msgstr ""
 
-#: handlers/installhandler.php:414
+#: handlers/installhandler.php:425
 msgid "Name for database is required."
 msgstr ""
 
-#: handlers/installhandler.php:418
+#: handlers/installhandler.php:429
 msgid "Host is required."
 msgstr ""
 
-#: handlers/installhandler.php:437 handlers/installhandler.php:648
+#: handlers/installhandler.php:448 handlers/installhandler.php:659
 msgid "Problem connecting to supplied database credentials"
 msgstr ""
 
-#: handlers/installhandler.php:453
+#: handlers/installhandler.php:464
 #, php-format
 msgid "Could not create schema tables&hellip; %s"
 msgstr ""
 
-#: handlers/installhandler.php:462
+#: handlers/installhandler.php:473
 msgid "Problem creating default options"
 msgstr ""
 
-#: handlers/installhandler.php:470
+#: handlers/installhandler.php:481
 msgid "Problem creating tags vocabulary"
 msgstr ""
 
-#: handlers/installhandler.php:477
+#: handlers/installhandler.php:488
 msgid "Problem creating base post types"
 msgstr ""
 
-#: handlers/installhandler.php:488
+#: handlers/installhandler.php:499
 msgid "Problem creating admin user."
 msgstr ""
 
-#: handlers/installhandler.php:494
+#: handlers/installhandler.php:505
 msgid "Problem creating admin group."
 msgstr ""
 
-#: handlers/installhandler.php:505
+#: handlers/installhandler.php:516
 msgid "Problem creating first post."
 msgstr ""
 
-#: handlers/installhandler.php:542 handlers/installhandler.php:575
-#: handlers/installhandler.php:1780 handlers/installhandler.php:1851
+#: handlers/installhandler.php:553 handlers/installhandler.php:586
+#: handlers/installhandler.php:1812 handlers/installhandler.php:1883
 msgid "Access denied. Make sure these credentials are valid."
 msgstr ""
 
-#: handlers/installhandler.php:545 handlers/installhandler.php:578
-#: handlers/installhandler.php:1784 handlers/installhandler.php:1855
+#: handlers/installhandler.php:556 handlers/installhandler.php:589
+#: handlers/installhandler.php:1816 handlers/installhandler.php:1887
 msgid "That database does not exist."
 msgstr ""
 
-#: handlers/installhandler.php:548 handlers/installhandler.php:581
-#: handlers/installhandler.php:1788 handlers/installhandler.php:1859
+#: handlers/installhandler.php:559 handlers/installhandler.php:592
+#: handlers/installhandler.php:1820 handlers/installhandler.php:1891
 msgid "Could not connect to host."
 msgstr ""
 
-#: handlers/installhandler.php:609 handlers/installhandler.php:1907
+#: handlers/installhandler.php:620 handlers/installhandler.php:1939
 #, php-format
 msgid "Cannot write to %s. The SQLite data file is not writable by the web server."
 msgstr ""
 
-#: handlers/installhandler.php:613 handlers/installhandler.php:1900
+#: handlers/installhandler.php:624 handlers/installhandler.php:1932
 #, php-format
 msgid "Cannot write to %s directory. SQLite requires that the directory that holds the DB file be writable by the web server."
 msgstr ""
 
-#: handlers/installhandler.php:622
+#: handlers/installhandler.php:633
 #, php-format
 msgid "Cannot write to %s directory. The SQLite data file does not exist, and it cannot be created in the specified directory. SQLite requires that the directory containing the database file be writable by the web server."
 msgstr ""
 
-#: handlers/installhandler.php:703 classes/acl.php:805 classes/acl.php:807
+#: handlers/installhandler.php:714 classes/acl.php:805 classes/acl.php:807
 msgid "admin"
 msgstr ""
 
-#: handlers/installhandler.php:714 classes/acl.php:810 classes/acl.php:812
+#: handlers/installhandler.php:725 classes/acl.php:810 classes/acl.php:812
 msgid "anonymous"
 msgstr ""
 
-#: handlers/installhandler.php:772 handlers/installhandler.php:1676
+#: handlers/installhandler.php:783 handlers/installhandler.php:1708
 msgid "Trim the log table"
 msgstr ""
 
-#: handlers/installhandler.php:775 handlers/installhandler.php:1684
+#: handlers/installhandler.php:786 handlers/installhandler.php:1716
 msgid "Perform a check for plugin updates."
 msgstr ""
 
-#: handlers/installhandler.php:819
+#: handlers/installhandler.php:830
 msgid "This site is running <a href=\"http://habariproject.org/\">Habari</a>, a state-of-the-art publishing platform!  Habari is a community-driven project created and supported by people from all over the world.  Please visit <a href=\"http://habariproject.org/\">http://habariproject.org/</a> to find out more!"
 msgstr ""
 
-#: handlers/installhandler.php:882
+#: handlers/installhandler.php:893
 msgid "currently unsupported."
 msgstr ""
 
-#: handlers/installhandler.php:998
+#: handlers/installhandler.php:1001 handlers/installhandler.php:1030
 msgid "No admin user found"
 msgstr ""
 
-#: handlers/installhandler.php:1406
+#: handlers/installhandler.php:1438
 msgid "Site Maintenance"
 msgstr ""
 
-#: handlers/installhandler.php:1407
+#: handlers/installhandler.php:1439
 msgid "Habari is currently being upgraded."
 msgstr ""
 
-#: handlers/installhandler.php:1408
+#: handlers/installhandler.php:1440
 msgid "Try again in a little while."
 msgstr ""
 
-#: handlers/installhandler.php:1421
+#: handlers/installhandler.php:1453
 msgid "Truncate the log table"
 msgstr ""
 
-#: handlers/installhandler.php:1545 classes/acl.php:780
+#: handlers/installhandler.php:1577 classes/acl.php:780
 msgid "Permissions on one's own posts"
 msgstr ""
 
-#: handlers/installhandler.php:1556 handlers/installhandler.php:1558
+#: handlers/installhandler.php:1588 handlers/installhandler.php:1590
 #: classes/acl.php:841 classes/acl.php:843
 msgid "authenticated"
 msgstr ""
 
-#: handlers/installhandler.php:1594 classes/acl.php:774
+#: handlers/installhandler.php:1626 classes/acl.php:774
 msgid "Edit own profile"
 msgstr ""
 
-#: handlers/installhandler.php:1599 classes/acl.php:777
+#: handlers/installhandler.php:1631 classes/acl.php:777
 msgid "Manage dashboard modules"
 msgstr ""
 
-#: handlers/installhandler.php:1699 classes/acl.php:782
+#: handlers/installhandler.php:1731 classes/acl.php:782
 msgid "Permissions to other users' unpublished posts"
 msgstr ""
 
-#: handlers/installhandler.php:1699 classes/acl.php:780 classes/acl.php:781
+#: handlers/installhandler.php:1731 classes/acl.php:780 classes/acl.php:781
 #: classes/acl.php:782 classes/acl.php:784 classes/post.php:273
 #: classes/post.php:949
 msgid "Content"
 msgstr ""
 
-#: handlers/installhandler.php:1747 handlers/installhandler.php:1818
+#: handlers/installhandler.php:1779 handlers/installhandler.php:1850
 msgid "The database host field was left empty."
 msgstr ""
 
-#: handlers/installhandler.php:1753 handlers/installhandler.php:1824
+#: handlers/installhandler.php:1785 handlers/installhandler.php:1856
 msgid "The database name field was left empty."
 msgstr ""
 
-#: handlers/installhandler.php:1759 handlers/installhandler.php:1830
+#: handlers/installhandler.php:1791 handlers/installhandler.php:1862
 msgid "The database user field was left empty."
 msgstr ""
 
-#: handlers/installhandler.php:1890
+#: handlers/installhandler.php:1922
 msgid "The database file was left empty."
 msgstr ""
 
@@ -3047,34 +3057,38 @@ msgid "Locale"
 msgstr ""
 
 #: handlers/adminoptionshandler.php:104
+msgid "International language code : This value is set in your config.php file, and cannot be changed here."
+msgstr ""
+
+#: handlers/adminoptionshandler.php:104
 msgid "International language code"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:109
+#: handlers/adminoptionshandler.php:111
 msgid "The appropriate locale code for your server"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:113
+#: handlers/adminoptionshandler.php:115
 msgid "Troubleshooting"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:115
+#: handlers/adminoptionshandler.php:117
 msgid "Minimum Severity"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:118
+#: handlers/adminoptionshandler.php:120
 msgid "Only log entries with a this or higher severity."
 msgstr ""
 
-#: handlers/adminoptionshandler.php:121
+#: handlers/adminoptionshandler.php:123
 msgid "Log Backtraces"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:123
+#: handlers/adminoptionshandler.php:125
 msgid "Logs error backtraces to the log table's data column. Can drastically increase log size!"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:185
+#: handlers/adminoptionshandler.php:193
 msgid "Successfully updated options"
 msgstr ""
 
@@ -3252,11 +3266,11 @@ msgstr ""
 msgid "Invalid hash"
 msgstr ""
 
-#: classes/utils.php:718
+#: classes/utils.php:719
 msgid "Unbalanced braces."
 msgstr ""
 
-#: classes/utils.php:1187
+#: classes/utils.php:1188
 msgid "Not set"
 msgstr ""
 
@@ -3366,51 +3380,51 @@ msgstr ""
 msgid "The cache directory '%s' is not writable - the cache is disabled."
 msgstr ""
 
-#: classes/formui.php:871
+#: classes/formui.php:904
 msgid "Relative urls are not allowed"
 msgstr ""
 
-#: classes/formui.php:877
+#: classes/formui.php:910
 #, php-format
 msgid "Only %s urls are allowed"
 msgstr ""
 
-#: classes/formui.php:898
+#: classes/formui.php:931
 msgid "Value must be a valid Email Address."
 msgstr ""
 
-#: classes/formui.php:917
+#: classes/formui.php:950
 msgid "A value for this field is required."
 msgstr ""
 
-#: classes/formui.php:939
+#: classes/formui.php:972
 msgid "That username is already in use!"
 msgstr ""
 
-#: classes/formui.php:959
+#: classes/formui.php:992
 #, php-format
 msgid "The value of this field must match the value of %s."
 msgstr ""
 
-#: classes/formui.php:982
+#: classes/formui.php:1015
 msgid "The value does not meet submission requirements"
 msgstr ""
 
-#: classes/formui.php:1003
+#: classes/formui.php:1036
 #, php-format
 msgid "The value entered is lesser than the minimum of %d."
 msgstr ""
 
-#: classes/formui.php:1009
+#: classes/formui.php:1042
 #, php-format
 msgid "The value entered is greater than the maximum of %d."
 msgstr ""
 
-#: classes/formui.php:1803
+#: classes/formui.php:1836
 msgid "Remove item"
 msgstr ""
 
-#: classes/formui.php:1807
+#: classes/formui.php:1840
 msgid "Remove this item?"
 msgstr ""
 
@@ -3442,10 +3456,6 @@ msgstr ""
 #: classes/usergroup.php:221
 #, php-format
 msgid "User Group %1$s: Users were removed from the group."
-msgstr ""
-
-#: classes/modules.php:220 classes/modules.php:221 classes/modules.php:222
-msgid "System Status"
 msgstr ""
 
 #: classes/socketrequestprocessor.php:74
@@ -3531,27 +3541,27 @@ msgstr ""
 msgid "Unknown attribute type \"%s\" in %s"
 msgstr ""
 
-#: classes/habarilocale.php:138
+#: classes/habarilocale.php:148
 #, php-format
 msgid "No translations found for locale %s, domain %s!"
 msgstr ""
 
-#: classes/habarilocale.php:142
+#: classes/habarilocale.php:152
 #, php-format
 msgid "Invalid .MO file for locale %s, domain %s!"
 msgstr ""
 
-#: classes/habarilocale.php:162
+#: classes/habarilocale.php:172
 #, php-format
 msgid "Invalid magic number 0x%08x in %s!"
 msgstr ""
 
-#: classes/habarilocale.php:168
+#: classes/habarilocale.php:178
 #, php-format
 msgid "Unknown revision number %d in %s!"
 msgstr ""
 
-#: classes/habarilocale.php:179
+#: classes/habarilocale.php:189
 #, php-format
 msgid "Message count (%d) out of bounds in %s!"
 msgstr ""
@@ -3723,10 +3733,6 @@ msgstr ""
 #: classes/block.php:287
 #, php-format
 msgid "Block %1$s (%2$s) deleted."
-msgstr ""
-
-#: classes/block.php:303
-msgid "Saved block configuration."
 msgstr ""
 
 #: classes/site.php:64
@@ -4560,19 +4566,28 @@ msgid "<strong>Admin Email</strong> is the email address of the first user accou
 msgstr ""
 
 #: installer/db_setup.php:219
+msgid "Theme Selection"
+msgstr ""
+
+#: installer/db_setup.php:227
+#, php-format
+msgid "The theme file %s is a legacy theme, and does not include an XML info file."
+msgstr ""
+
+#: installer/db_setup.php:250
 msgid "Plugin Activation"
 msgstr ""
 
-#: installer/db_setup.php:252 installer/config.php:31 installer/sqlite.php:25
+#: installer/db_setup.php:283 installer/config.php:31 installer/sqlite.php:25
 #: installer/htaccess.php:25
 msgid "Install"
 msgstr ""
 
-#: installer/db_setup.php:255
+#: installer/db_setup.php:286
 msgid "Habari now has all of the information needed to install itself on your server."
 msgstr ""
 
-#: installer/db_setup.php:256 installer/header.php:20
+#: installer/db_setup.php:287 installer/header.php:20
 msgid "Install Habari"
 msgstr ""
 
@@ -4722,30 +4737,30 @@ msgstr ""
 msgid "Uh Oh. An error has occurred. Please try again later."
 msgstr ""
 
-#: admin/js/admin.js:293
+#: admin/js/admin.js:324
 #, perl-format
 msgid "All %1$s visible selected (<a href=\"#all\" class=\"everything\">Select all %2$s</a>)"
 msgstr ""
 
-#: admin/js/admin.js:305
+#: admin/js/admin.js:336
 #, perl-format
 msgid "All %s selected"
 msgstr ""
 
-#: admin/js/admin.js:311 installer/script.js:398
+#: admin/js/admin.js:342 installer/script.js:403
 #, perl-format
 msgid "%s selected"
 msgstr ""
 
-#: admin/js/admin.js:314
+#: admin/js/admin.js:345
 #, perl-format
 msgid "%1$s selected (%2$s visible)"
 msgstr ""
 
-#: admin/js/admin.js:535
+#: admin/js/admin.js:561
 msgid "You did not save the changes you made. \\nLeaving this page will result in the lose of data."
 msgstr ""
 
-#: installer/script.js:393
+#: installer/script.js:398
 msgid "All selected"
 msgstr ""
