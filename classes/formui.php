@@ -522,10 +522,11 @@ class FormContainer extends FormComponents
 	 * @return bool|string False if no value found, string of the property value found
 	 */
 	public function get_value_out($tag_fields) {
+		$properties = array_merge($this->properties, get_object_vars($this));
 		$value_out = false;
 		foreach(Utils::single_array($tag_fields) as $tag_field) {
-			if(isset($this->properties[$tag_field])) {
-				$value_out = $this->properties[$tag_field];
+			if(isset($properties[$tag_field])) {
+				$value_out = $properties[$tag_field];
 				break;
 			}
 		}
@@ -558,7 +559,6 @@ class FormUI extends FormContainer implements IsContent
 		'success_message' => '',
 	);
 	public $class = array( 'formui' );
-	public $id = null;
 	public $formtype = '';
 
 	public $properties = array(
@@ -661,10 +661,9 @@ class FormUI extends FormContainer implements IsContent
 			$theme->$prop = $value;
 		}
 
-		$theme->id = Utils::slugify( $this->name );
-		$theme->class = implode( " ", (array) $this->class );
-		$theme->action = $this->options['form_action'];
-		$theme->onsubmit = ($this->properties['onsubmit'] == '') ? '' : "onsubmit=\"{$this->properties['onsubmit']}\"";
+		$this->properties['id'] = isset($this->properties['id']) ? $this->properties['id'] : Utils::slugify( $this->name );
+		$theme->class = Utils::single_array( $this->class );
+		$this->action = $this->options['form_action'];
 		$theme->salted_name = $this->salted_name();
 		$theme->pre_out = $this->pre_out_controls();
 
