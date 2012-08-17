@@ -19,4 +19,13 @@ $i++;
 endforeach;
 ?>
 <a href="#" onclick="return controls.textmulti.add(this, '<?php echo $field; ?>');" class="textmulti_add opa50" title="<?php _e( 'add' ); ?>">[<?php _e( 'add' ); ?>]</a>
+<?php 
+
+	if ( isset( $helptext ) && !empty( $helptext ) ) {
+		?>
+			<span class="helptext"><?php echo $helptext; ?></span>
+		<?php
+	}
+
+?>
 </div>
