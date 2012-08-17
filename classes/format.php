@@ -611,7 +611,7 @@ class Format
 			'listcallback' => null,
 		);
 		$config = array_merge($defaults, $config);
-		
+
 		$out = sprintf($config['treestart'], Utils::html_attr($config['treeattr']));
 		$stack = array();
 		$tree_name = Utils::slugify($tree_name);
@@ -629,7 +629,7 @@ class Format
 					$out .= sprintf($config['liststart'], Utils::html_attr($config['listattr']));
 				}
 				while(count($stack) && $term->mptt_left > end($stack)->mptt_right) {
-					$out .= $config['itemend'] . $config['listend'] . "\n";
+					$out .= $config['listend'] . $config['itemend'] . "\n";
 					array_pop($stack);
 				}
 			}
@@ -654,7 +654,7 @@ class Format
 			}
 		}
 		while(count($stack)) {
-			$out .= $config['itemend'] . $config['listend'] . "\n";
+			$out .= $config['listend'] . $config['itemend'] . "\n";
 			array_pop($stack);
 		}
 
