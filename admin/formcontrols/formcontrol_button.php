@@ -6,6 +6,15 @@
 }</script>
 <?php endif; ?>
 >
+<?php 
+
+	if ( isset( $helptext ) && !empty( $helptext ) ) {
+		?>
+			<span class="helptext"><?php echo $helptext; ?></span>
+		<?php
+	}
+
+?>
 <?php if ($message != '') : ?>
 <p class="error"><?php echo $message; ?></p>
 <?php endif; ?>

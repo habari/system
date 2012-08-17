@@ -12,6 +12,15 @@
 	</li>
 <?php endforeach; ?>
 </ul>
+<?php 
+
+	if ( isset( $helptext ) && !empty( $helptext ) ) {
+		?>
+			<span class="helptext"><?php echo $helptext; ?></span>
+		<?php
+	}
+
+?>
 <input type="hidden" name="<?php echo $field; ?>_submitted" value="1">
 <?php $control->errors_out('<li>%s</li>', '<ul class="error">%s</ul>'); ?>
 </div>
