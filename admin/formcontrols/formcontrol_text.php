@@ -25,5 +25,14 @@
 			)
 		);
 		?>>
+		<?php 
+		
+			if ( isset( $helptext ) && !empty( $helptext ) ) {
+				?>
+					<span class="helptext"><?php echo $helptext; ?></span>
+				<?php
+			}
+		
+		?>
 	<?php $control->errors_out( '<li>%s</li>', '<ul class="error">%s</ul>' ); ?>
 </div>
