@@ -1198,12 +1198,16 @@ class FormControl extends FormComponents
 			$type = 'actionarray';
 			$location = array_shift( $storage );
 		}
+		else {
+			$type = 'null';
+			EventLog::log(_('Unknown storage type "%1$s" specified for saved form %2$s.', array(gettype($storage), $this->name)), 'err');
+		}
 
 		switch ( $type ) {
 			case 'user':
 				$user = User::identify();
-                $user->info->{$location} = $this->value;
-                $user->info->commit();
+				$user->info->{$location} = $this->value;
+				$user->info->commit();
 				break;
 			case 'option':
 				Options::set( $location, $this->value );
