@@ -130,7 +130,7 @@ class Posts extends ArrayObject implements IsContent
 				if(isset($presets[$fallbackpreset])) {
 					$preset = Plugins::filter('posts_get_update_preset', $presets[$fallbackpreset], $presetname, $paramarray);
 					if(is_array( $preset ) || $preset instanceof ArrayObject || $preset instanceof ArrayIterator) {
-						$paramarray = array_merge($paramarray, $preset);
+						$paramarray = array_merge($preset, $paramarray);
 						break;
 					}
 				}
