@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-12 00:00+0000\n"
+"POT-Creation-Date: 2012-08-19 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1795,7 +1795,7 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
-#: admin/formcontrols/formcontrol_textmulti.php:16 classes/formui.php:1836
+#: admin/formcontrols/formcontrol_textmulti.php:16 classes/formui.php:1835
 msgid "remove"
 msgstr ""
 
@@ -3236,10 +3236,6 @@ msgstr ""
 msgid "Not a valid color format."
 msgstr ""
 
-#: classes/colorutils.php:108
-msgid "Something went terribly wrong here."
-msgstr ""
-
 #: classes/htmltokenizer.php:80
 #, php-format
 msgid "Invalid state %d in %s->parse()"
@@ -3380,51 +3376,51 @@ msgstr ""
 msgid "The cache directory '%s' is not writable - the cache is disabled."
 msgstr ""
 
-#: classes/formui.php:904
+#: classes/formui.php:903
 msgid "Relative urls are not allowed"
 msgstr ""
 
-#: classes/formui.php:910
+#: classes/formui.php:909
 #, php-format
 msgid "Only %s urls are allowed"
 msgstr ""
 
-#: classes/formui.php:931
+#: classes/formui.php:930
 msgid "Value must be a valid Email Address."
 msgstr ""
 
-#: classes/formui.php:950
+#: classes/formui.php:949
 msgid "A value for this field is required."
 msgstr ""
 
-#: classes/formui.php:972
+#: classes/formui.php:971
 msgid "That username is already in use!"
 msgstr ""
 
-#: classes/formui.php:992
+#: classes/formui.php:991
 #, php-format
 msgid "The value of this field must match the value of %s."
 msgstr ""
 
-#: classes/formui.php:1015
+#: classes/formui.php:1014
 msgid "The value does not meet submission requirements"
 msgstr ""
 
-#: classes/formui.php:1036
+#: classes/formui.php:1035
 #, php-format
 msgid "The value entered is lesser than the minimum of %d."
 msgstr ""
 
-#: classes/formui.php:1042
+#: classes/formui.php:1041
 #, php-format
 msgid "The value entered is greater than the maximum of %d."
 msgstr ""
 
-#: classes/formui.php:1836
+#: classes/formui.php:1835
 msgid "Remove item"
 msgstr ""
 
-#: classes/formui.php:1840
+#: classes/formui.php:1839
 msgid "Remove this item?"
 msgstr ""
 
