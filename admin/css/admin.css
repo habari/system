@@ -1133,6 +1133,7 @@ body.page-publish .buttons input {
 .dashboard .module .optionswindow {
 	width: 450px;
 	box-sizing: border-box;
+	-moz-box-sizing: border-box;
 	height: 250px;
 	margin: 5px;
 	padding: 45px 0px 10px;
