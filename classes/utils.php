@@ -1273,7 +1273,7 @@ class Utils
 	 */
 	public static function replace_shortcodes($content, $obj_context)
 	{
-		$regex = '%\[(\w+?)(?:\s+(.+?))?/\]|\[(\w+?)(?:\s+(.+?))?(?<!/)](?:(.*?)\[/(\w+?)])%si';
+		$regex = '%\[(\w+?)(?:\s+([^\]]+?))?/\]|\[(\w+?)(?:\s+(.+?))?(?<!/)](?:(.*?)\[/\3])%si';
 		if(preg_match_all($regex, $content, $match_set, PREG_SET_ORDER)) {
 			foreach($match_set as $matches) {
 				$matches = array_pad($matches, 6, '');
