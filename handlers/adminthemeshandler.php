@@ -345,6 +345,8 @@ class AdminThemesHandler extends AdminHandler
 	 */
 	function prepare_block_list() {
 		$block_types = Plugins::filter( 'block_list', array() );
+		$dash_blocks = Plugins::filter( 'dashboard_block_list', array() );
+		$block_types = array_diff_key($block_types, $dash_blocks);
 		$all_block_instances = DB::get_results( 'SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block' );
 		$block_instances = array();
 		$invalid_block_instances = array();
