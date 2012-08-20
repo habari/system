@@ -1200,7 +1200,7 @@ class FormControl extends FormComponents
 		}
 		else {
 			$type = 'null';
-			EventLog::log(_('Unknown storage type "%1$s" specified for saved form %2$s.', array(gettype($storage), $this->name)), 'err');
+			EventLog::log(_t('Unknown storage type "%1$s" specified for saved form %2$s.', array(gettype($storage), $this->name)), 'err');
 		}
 
 		switch ( $type ) {
