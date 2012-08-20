@@ -531,8 +531,6 @@ class Posts extends ArrayObject implements IsContent
 			// This set of wheres will be used to generate a list of post_ids that this user can read
 			$perm_where = new QueryWhere('OR');
 			$perm_where_denied = new QueryWhere('AND');
-			$params_where = array();
-			$where = array();
 
 			// Get the tokens that this user is granted or denied access to read
 			$read_tokens = isset( $paramset['read_tokens'] ) ? $paramset['read_tokens'] : ACL::user_tokens( User::identify(), 'read', true );
@@ -572,7 +570,6 @@ class Posts extends ArrayObject implements IsContent
 
 			}
 
-			$params_where_denied = array();
 			// If a user is denied access to all posts, do so
 			if ( User::identify()->cannot( 'post_any' ) ) {
 				$perm_where_denied->add('(1=0)');
@@ -597,7 +594,7 @@ class Posts extends ArrayObject implements IsContent
 
 				// If a user is denied access to read other users' unpublished posts, deny it
 				if ( User::identify()->cannot( 'post_unpublished' ) ) {
-					$perm_where_denied->add('({posts}.status <> :status_published OR {posts}.user_id <> :current_user_id)', array('current_user_id' => User::identify()->id, 'status_published' => Post::status('published')));
+					$perm_where_denied->add('({posts}.status = :status_published OR {posts}.user_id = :current_user_id)', array('current_user_id' => User::identify()->id, 'status_published' => Post::status('published')));
 				}
 
 			}

@@ -1051,7 +1051,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		// Do some permission checks
 		// @todo REFACTOR: These probably don't work and should be refactored to use validators on the form fields instead
 		// sorry, we just don't allow changing posts you don't have rights to
-		if ( ! ACL::access_check( $post->get_access(), 'edit' ) ) {
+		if ( $post->id != 0 && ! ACL::access_check( $post->get_access(), 'edit' ) ) {
 			Session::error( _t( 'You don\'t have permission to edit that post' ) );
 			$this->get_blank();
 		}
@@ -1066,7 +1066,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		}
 
 		// If we're creating a new post...
-		if( $post->id == 0) {
+		if( $post->id == 0 ) {
 			// check the user can create new posts of the set type.
 			$type = 'post_'  . Post::type_name( $form->content_type->value );
 			if ( ACL::user_cannot( $user, $type ) || ( ! ACL::user_can( $user, 'post_any', 'create' ) && ! ACL::user_can( $user, $type, 'create' ) ) ) {
