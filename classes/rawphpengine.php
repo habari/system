@@ -196,7 +196,7 @@ class RawPHPEngine extends TemplateEngine
 
 	public function add_template($name, $file, $replace = false)
 	{
-		if($replace || empty($this->available_templates[$name])) {
+		if($replace || !in_array($name, $this->available_templates)) {
 			$this->available_templates[] = $name;
 			$this->template_map[$name] = $file;
 		}
