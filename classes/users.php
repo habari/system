@@ -47,6 +47,11 @@ class Users extends ArrayObject
 
 		$wheres = array();
 		$join = '';
+		
+		if( isset($paramarray['orderby']) ) {
+			$orderby = $paramarray['orderby'];
+		}
+		
 		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
 			$wheres[] = $paramarray['where'];
 		}
