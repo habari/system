@@ -110,6 +110,16 @@ class Charcoal extends Theme
 		else {
 			$this->assign( 'localized_css', false );
 		}
+		if ( $opts['show_title_image'] ) {
+			if ( $this->get_url( 'images.' . $locale . '/title-image.png' ) ) {
+				$this->assign( 'title_image', 'images.' . $locale . '/title-image.png' );
+			}
+			else if ( $this->get_url( 'images/title-image.png' ) ) {
+				$this->assign( 'title_image', 'images/title-image.png' );
+			} else {
+				$this->assign( 'title_image', 'images/sample-title.png' );
+			}
+		}
 		
 		if ( !$this->template_engine->assigned( 'pages' ) ) {
 			$this->assign( 'pages', Posts::get( 'page_list' ) );
