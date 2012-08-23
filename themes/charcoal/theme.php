@@ -104,11 +104,21 @@ class Charcoal extends Theme
 		$this->assign( 'loggedin', User::identify()->loggedin );
 		
 		$locale = Options::get( 'locale' );
-		if ( file_exists( Site::get_dir( 'theme', true ). $locale . '.css' ) ) {
+		if ( $this->get_url($locale . '.css') ) {
 			$this->assign( 'localized_css', $locale . '.css' );
 		}
 		else {
 			$this->assign( 'localized_css', false );
+		}
+		if ( $opts['show_title_image'] ) {
+			if ( $this->get_url( 'images.' . $locale . '/title-image.png' ) ) {
+				$this->assign( 'title_image', 'images.' . $locale . '/title-image.png' );
+			}
+			else if ( $this->get_url( 'images/title-image.png' ) ) {
+				$this->assign( 'title_image', 'images/title-image.png' );
+			} else {
+				$this->assign( 'title_image', 'images/sample-title.png' );
+			}
 		}
 		
 		if ( !$this->template_engine->assigned( 'pages' ) ) {

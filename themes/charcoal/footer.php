@@ -5,8 +5,10 @@
 	</div>
 	<div id="footer">
 		<p>
-			<?php printf( _t('%1$s is powered by %2$s'), Options::get('title'),' <a
-			href="http://www.habariproject.org/" title="Habari">Habari ' . Version::HABARI_VERSION  . '</a>' ); ?> - 
+			<?php _e( '%1$s is powered by %2$s', array(
+					Options::get('title'),
+					'<a href="http://www.habariproject.org/" title="Habari">Habari ' . Version::HABARI_VERSION  . '</a>'
+				)); ?> - 
 			<a href="<?php URL::out( 'atom_feed', array( 'index' => '1' ) ); ?>"><?php _e( 'Atom Entries' ); ?></a><?php _e( ' and ' ); ?>
 			<a href="<?php URL::out( 'atom_feed_comments' ); ?>"><?php _e( 'Atom Comments' ); ?></a>
 		</p>
