@@ -6,9 +6,6 @@
 	<title><?php Options::out( 'title' ) ?><?php if ($request->display_entry && isset($post)) { echo " :: {$post->title}"; } ?></title>
 	<meta name="generator" content="Habari">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo $theme->get_url( 'style.css' ); ?>">
-	<?php if ($localized_css): ?>
-	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo $theme->get_url( $localized_css ); ?>">
-	<?php endif; ?>
 	<!--[if lt IE 7]>
 	<link rel="stylesheet" href="<?php echo $theme->get_url( 'ie.css' ); ?>" type="text/css" media="screen" />
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript" charset="utf-8"></script>
@@ -16,6 +13,9 @@
 	<script src="<?php echo $theme->get_url( 'scripts/fixpngs.js' ); ?>" type="text/javascript" charset="utf-8"></script>
 	<![endif]-->
 	<?php echo $theme->header(); ?>
+	<?php if ($localized_css): ?>
+	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo $theme->get_url( $localized_css ); ?>">
+	<?php endif; ?>
 </head>
 <body class="<?php echo $theme->body_class(); ?>">
 	<div id="page-top">
