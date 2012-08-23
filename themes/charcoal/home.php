@@ -61,7 +61,7 @@
 					<div class="prev-post-excerpt">
 						<p>
 							<?php echo $post->content_excerpt; ?>
-							<a href="<?php echo $post->permalink; ?>" title="<?php _e( "Continue reading %s", array($post->title) ); ?>"><img src="<?php Site::out_url( 'theme' ); ?>/images/arrow.png" alt="<?php _e( "more" ); ?>"></a>
+							<a href="<?php echo $post->permalink; ?>" title="<?php _e( "Continue reading %s", array($post->title) ); ?>"><img src="<?php echo $theme->get_url( 'images/arrow.png' ); ?>" alt="<?php _e( "more" ); ?>"></a>
 						</p>
 					</div>
 				</div>

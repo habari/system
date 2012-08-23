@@ -104,7 +104,7 @@ class Charcoal extends Theme
 		$this->assign( 'loggedin', User::identify()->loggedin );
 		
 		$locale = Options::get( 'locale' );
-		if ( file_exists( Site::get_dir( 'theme', true ). $locale . '.css' ) ) {
+		if ( $this->get_url($locale . '.css') ) {
 			$this->assign( 'localized_css', $locale . '.css' );
 		}
 		else {

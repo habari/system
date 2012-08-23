@@ -5,15 +5,15 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>">
 	<title><?php Options::out( 'title' ) ?><?php if ($request->display_entry && isset($post)) { echo " :: {$post->title}"; } ?></title>
 	<meta name="generator" content="Habari">
-	<link rel="stylesheet" type="text/css" media="screen" href="<?php Site::out_url( 'theme' ); ?>/style.css">
+	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo $theme->get_url( 'style.css' ); ?>">
 	<?php if ($localized_css): ?>
-	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo Site::get_url( 'theme', true ) . $localized_css; ?>">
+	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo $theme->get_url( $localized_css ); ?>">
 	<?php endif; ?>
 	<!--[if lt IE 7]>
-	<link rel="stylesheet" href="<?php Site::out_url( 'theme' ); ?>/ie.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="<?php echo $theme->get_url( 'ie.css' ); ?>" type="text/css" media="screen" />
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript" charset="utf-8"></script>
-	<script src="<?php Site::out_url( 'theme' ); ?>/scripts/jquery.pngfix.js" type="text/javascript" charset="utf-8"></script>
-	<script src="<?php Site::out_url( 'theme' ); ?>/scripts/fixpngs.js" type="text/javascript" charset="utf-8"></script>
+	<script src="<?php echo $theme->get_url( 'scripts/jquery.pngfix.js' ); ?>" type="text/javascript" charset="utf-8"></script>
+	<script src="<?php echo $theme->get_url( 'scripts/fixpngs.js' ); ?>" type="text/javascript" charset="utf-8"></script>
 	<![endif]-->
 	<?php echo $theme->header(); ?>
 </head>
@@ -24,7 +24,7 @@
 				<div id="header">
 					<div id="title">
 					<?php if ( $show_title_image ) : ?>
-						<h1><a href="<?php Site::out_url( 'habari' ); ?>"><img src="<?php Site::out_url( 'theme' ); ?>/images/sample-title.png" alt="<?php Options::out( 'title' ); ?>" ></a><span class="hidden"><?php Options::out( 'title' ); ?></span></h1>
+						<h1><a href="<?php Site::out_url( 'habari' ); ?>"><img src="<?php echo $theme->get_url( 'images/sample-title.png' ); ?>" alt="<?php Options::out( 'title' ); ?>" ></a><span class="hidden"><?php Options::out( 'title' ); ?></span></h1>
 					<?php else : ?>
 						<h1><a href="<?php Site::out_url( 'habari' ); ?>"><?php Options::out( 'title' ); ?></a></h1>
 					<?php endif; ?>
