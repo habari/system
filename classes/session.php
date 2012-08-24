@@ -58,14 +58,18 @@ class Session
 		self::$lifetime = Plugins::filter( 'session_lifetime', $lifetime );
 		
 
-		session_set_save_handler(
+		$handlers = array(
 			array( 'Session', 'open' ),
 			array( 'Session', 'close' ),
 			array( 'Session', 'read' ),
 			array( 'Session', 'write' ),
 			array( 'Session', 'destroy' ),
-			array( 'Session', 'gc' )
+			array( 'Session', 'gc' ),
 		);
+
+		$handlers = Plugins::filter('session_handlers', $handlers);
+
+		call_user_func_array('session_set_save_handler', $handlers);
 		// session::write gets called after object destruction, so our class isn't available
 		// fix that by registering it as a shutdown function, before objects are destroyed
 		register_shutdown_function( 'session_write_close' );
@@ -245,7 +249,9 @@ class Session
 	 */
 	public static function set_userid( $user_id )
 	{
-		DB::query( 'UPDATE {sessions} SET user_id = ? WHERE token = ?', array( $user_id, session_id() ) );
+		if(!Plugins::filter('session_handlers', false)) {
+			DB::query( 'UPDATE {sessions} SET user_id = ? WHERE token = ?', array( $user_id, session_id() ) );
+		}
 	}
 
 
@@ -255,8 +261,10 @@ class Session
 	 */
 	public static function clear_userid( $user_id )
 	{
-		DB::query( 'DELETE FROM {sessions} WHERE user_id = ? AND token <> ?', array( $user_id, session_id() ) );
-		DB::query( 'UPDATE {sessions} SET user_id = NULL WHERE token = ?', array( session_id() ) );
+		if(!Plugins::filter('session_handlers', false)) {
+			DB::query( 'DELETE FROM {sessions} WHERE user_id = ? AND token <> ?', array( $user_id, session_id() ) );
+			DB::query( 'UPDATE {sessions} SET user_id = NULL WHERE token = ?', array( session_id() ) );
+		}
 	}
 
 	/**
