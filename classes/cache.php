@@ -13,17 +13,15 @@ abstract class Cache
 {
 	protected static $default_group = 'default';
 	protected static $instance;
+	protected static $cache_class;
 
 	/**
 	 * Set up the static cache instance in __autoload()
 	 */
 	public static function __static()
 	{
-		if ( !defined( 'CACHE_CLASS' ) ) {
-			define( 'CACHE_CLASS', 'FileCache' );
-		}
-		$cache_class = CACHE_CLASS;
-		self::$instance = new $cache_class();
+		self::$cache_class = Config::get('cache_class', defined('CACHE_CLASS') ? CACHE_CLASS : 'FileCache');
+		self::$instance = new self::$cache_class();
 	}
 
 
@@ -232,6 +230,15 @@ abstract class Cache
 	public static function purge()
 	{
 		return self::$instance->_purge();
+	}
+
+	/**
+	 * Retrieve the class used for caching
+	 * @return string The class used for caching
+	 */
+	public static function get_class()
+	{
+		return self::$cache_class;
 	}
 }
 
