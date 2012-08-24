@@ -55,7 +55,9 @@ class FileCache extends Cache
 		$hash = $this->get_name_hash( $name );
 		$ghash = $this->get_group_hash( $group );
 
-		return isset( $this->cache_files[$ghash][$hash] ) && ( $this->cache_files[$ghash][$hash]['keep'] || $this->cache_files[$ghash][$hash]['expires'] > time() ) && file_exists( $this->cache_files[$ghash][$hash]['file'] );
+		return isset( $this->cache_files[$ghash][$hash] )
+			&& ( $this->cache_files[$ghash][$hash]['keep'] || $this->cache_files[$ghash][$hash]['expires'] > time() )
+			&& file_exists( $this->cache_files[$ghash][$hash]['file'] );
 	}
 
 	/**
@@ -204,6 +206,7 @@ class FileCache extends Cache
 			if ( isset( $this->cache_files[$ghash][$hash] ) && file_exists( $this->cache_files[$ghash][$hash]['file'] ) ) {
 				unlink( $this->cache_files[$ghash][$hash]['file'] );
 				unset( $this->cache_files[$ghash][$hash] );
+				unset( $this->cache_data[$group][$name] );
 			}
 
 			Plugins::act( 'cache_expire_after', $name, $group );
