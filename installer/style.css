@@ -72,7 +72,7 @@ a {
 	background: url(images/install-step_h2_done.png) scroll no-repeat top left;
 }
 
-.help-me {
+.help-me, .help-items {
 	float: right;
 	position: absolute;
 	top: 20px;
@@ -85,11 +85,11 @@ a {
 	outline: none;
 }
 
-.ready .help-me {
+.ready .help-me, .ready .help-items {
 	display: block;
 }
 
-.help-me:hover {
+.help-me:hover, .help-items:hover {
 	background: url(../admin/images/help_icon_over.png) scroll no-repeat top left;
 }
 
@@ -318,8 +318,72 @@ optgroup {
 #themeselection .item {
 	width: 170px;
 	float: left;
+	height: 170px;
 }
 
 #themeselection .item img {
+	display: block;
+}
+
+#themeselection .item label {
+	cursor: pointer;
+}
+
+#themeselection .item label.name {
+	overflow-x: hidden;
+	display: inline-block;
+	white-space: nowrap;
+	width: 120px;
+}
+
+#themeselection .item:hover label.name {
+	width: auto;
+	position: relative;
+	z-index: 50;
+/*	background-color: #EEE; */
+	padding-left: 0;
+	margin-left: 30px;
+	padding-right: 30px;
+	background: -moz-linear-gradient(left,  rgba(238,238,238,1) 0%, rgba(238,238,238,1) 90%, rgba(238,238,238,0) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(238,238,238,1)), color-stop(90%,rgba(238,238,238,1)), color-stop(100%,rgba(238,238,238,0))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(left,  rgba(238,238,238,1) 0%,rgba(238,238,238,1) 90%,rgba(238,238,238,0) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(left,  rgba(238,238,238,1) 0%,rgba(238,238,238,1) 90%,rgba(238,238,238,0) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(left,  rgba(238,238,238,1) 0%,rgba(238,238,238,1) 90%,rgba(238,238,238,0) 100%); /* IE10+ */
+	background: linear-gradient(to right,  rgba(238,238,238,1) 0%,rgba(238,238,238,1) 90%,rgba(238,238,238,0) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#00eeeeee',GradientType=1 ); /* IE6-9 */
+}
+
+#themeselection .item label.image {
+	display: block;
+}
+
+#themeselection .items label.image {
+	padding-left: 5px;
+}
+
+#themeselection .show-help .item label.name {
+	font-size: 1.4em;
+	font-weight: bold;
+	width: auto;
+}
+
+#themeselection .show-help .item {
+	width: 100%;
+}
+
+#themeselection .show-help .head {
+	width: 170px;
+	float: left;
+}
+
+#themeselection .show-help .item .item-help {
+	margin-top: 1.8em;
+}
+
+.item-help {
+	display: none;
+}
+
+.show-help .item-help {
 	display: block;
 }

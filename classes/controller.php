@@ -70,7 +70,7 @@ class Controller extends Singleton
 	/**
 	 * Returns the action handler
 	 *
-	 * @return  object  handler object
+	 * @return  ActionHandler  handler object
 	 */
 	public static function get_handler()
 	{
