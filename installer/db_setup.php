@@ -217,7 +217,7 @@
 
 <div class="installstep ready" id="themeselection">
 	<h2><?php _e('Theme Selection'); ?></h2>
-	<a href="#" class="help-me"><?php _e('Help'); ?></a>
+	<a href="#" class="help-items"><?php _e('Help'); ?></a>
 	<div class="options items">
 		<?php foreach($themes as $key => $theme) { ?>
 		<?php if ( !isset($theme['info']) ) { ?>
@@ -231,12 +231,14 @@
 			<?php } else { ?>
 			<div class="item clear clearfix">
 				<div class="head">
-						<span class="checkbox"><input type="radio" name="theme" value="<?php echo $key; ?>"
-																					id="theme_<?php echo $theme['dir']; ?>" tabindex="<?php echo $tab++ ?>" /></span><label for="theme_<?php echo $theme['dir']; ?>" class="name"><?php echo $theme['info']->name; ?> <span class="version"><?php echo $theme['info']->version; ?></span>
-				<img src="<?php echo $theme['screenshot']; ?>" width="150px">
-				</label>
+						<span class="checkbox">
+							<input type="radio" name="theme" value="<?php echo $key; ?>"
+								id="theme_<?php echo $theme['dir']; ?>" tabindex="<?php echo $tab++ ?>" />
+						</span>
+						<label for="theme_<?php echo $theme['dir']; ?>" class="name"><?php echo $theme['info']->name; ?> <span class="version"><?php echo $theme['info']->version; ?></span></label>
+						<label for="theme_<?php echo $theme['dir']; ?>" class="image"><img src="<?php echo $theme['screenshot']; ?>" width="150px"></label>
 				</div>
-				<div class="help"><?php echo $theme['info']->description; ?></div>
+				<div class="item-help"><?php echo $theme['info']->description; ?></div>
 			</div>
 			<?php } ?>
 		<?php } ?>
