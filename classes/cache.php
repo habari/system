@@ -40,6 +40,7 @@ abstract class Cache
 		else {
 			$group = self::$default_group;
 		}
+		$group = self::site_unique() . $group;
 		return self::$instance->_has( $name, $group );
 	}
 
@@ -59,6 +60,7 @@ abstract class Cache
 	 */
 	public static function has_group( $group )
 	{
+		$group = self::site_unique() . $group;
 		return self::$instance->_has_group( $group );
 	}
 
@@ -85,6 +87,7 @@ abstract class Cache
 		else {
 			$group = self::$default_group;
 		}
+		$group = self::site_unique() . $group;
 		return self::$instance->_get( $name, $group );
 	}
 
@@ -104,6 +107,7 @@ abstract class Cache
 	 */
 	public static function get_group( $group )
 	{
+		$group = self::site_unique() . $group;
 		return self::$instance->_get_group( $group );
 	}
 
@@ -133,6 +137,7 @@ abstract class Cache
 		else {
 			$group = self::$default_group;
 		}
+		$group = self::site_unique() . $group;
 		return self::$instance->_set( $name, $value, $expiry, $group, $keep );
 	}
 
@@ -161,6 +166,7 @@ abstract class Cache
 		else {
 			$group = self::$default_group;
 		}
+		$group = self::site_unique() . $group;
 		self::$instance->_expire( $name, $group, $match_mode );
 	}
 
@@ -185,6 +191,7 @@ abstract class Cache
 		else {
 			$group = self::$default_group;
 		}
+		$group = self::site_unique() . $group;
 		return self::$instance->_expired( $name, $group );
 	}
 
@@ -210,6 +217,7 @@ abstract class Cache
 		else {
 			$group = self::$default_group;
 		}
+		$group = self::site_unique() . $group;
 		self::$instance->_extend( $name, $expiry, $group );
 	}
 
@@ -239,6 +247,27 @@ abstract class Cache
 	public static function get_class()
 	{
 		return self::$cache_class;
+	}
+
+	/**
+	 * Return a string unique to this cache so that site caches don't collide
+	 * @return string
+	 */
+	private static function site_unique()
+	{
+		static $unique = false;
+
+		if(!$unique) {
+			$unique = '';
+			if(isset(Config::get( 'db_connection' )->connection_string)) {
+				$unique .= Config::get( 'db_connection' )->connection_string;
+			}
+			if(isset(Config::get( 'db_connection' )->prefix)) {
+				$unique .= Config::get( 'db_connection' )->prefix;
+			}
+			$unique = md5($unique);
+		}
+		return $unique;
 	}
 }
 
