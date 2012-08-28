@@ -744,13 +744,13 @@ class Plugins
 
 		return ( count( $failed_plugins ) > 0 ) ? false : true;
 	}
-	
+
 	/**
 	 * Produce the UI for a plugin based on the user's selected config option
-	 * 
+	 *
 	 * @param string $configure The id of the configured plugin
 	 * @param string $configuration The selected configuration option
-	 **/	 	 	 	 	
+	 **/
 	public static function plugin_ui( $configure, $configaction )
 	{
 		Plugins::act_id( 'plugin_ui_' . $configaction, $configure, $configure, $configaction );
@@ -774,8 +774,7 @@ class Plugins
 				}
 			}
 		}
-
-		return $provided;
+		return Plugins::filter( 'provided', $provided );
 	}
 }
 

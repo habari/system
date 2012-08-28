@@ -81,7 +81,7 @@ class AdminPluginsHandler extends AdminHandler
 
 					if ( isset( $plugin['info']->provides ) ) {
 						foreach ( $plugin['info']->provides->feature as $feature ) {
-							$providing[(string) $feature] = $feature;
+							$providing[(string) $feature] = (string)$feature;
 						}
 					}
 				}

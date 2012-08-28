@@ -1495,5 +1495,19 @@ class Theme extends Pluggable
 		$this->template_engine->add_template($name, $file, $replace);
 	}
 
+	/**
+	 * Provide default Habari features for curious plugins
+	 * @param array $provided Features already collected from interrogated plugins
+	 * @return array Plugin Features plus Habari Features
+	 */
+	public static function filter_provided( $provided = array() ) {
+		foreach( array( Version::HABARI_MAJOR_MINOR, DB::get_driver_name(),
+			) as $feature ) {
+			$provided[ $feature ] = array( "Habari" );
+		}
+		return $provided;
+	}
+
+
 }
 ?>
