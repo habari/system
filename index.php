@@ -20,7 +20,7 @@ if ( !defined( 'HABARI_PATH' ) ) {
 }
 
 // Compares PHP version against our requirement.
-if ( !version_compare( PHP_VERSION, '5.3.2', '>=' ) ) {
+if ( !version_compare( PHP_VERSION, '5.3.3', '>=' ) ) {
 	die( 'Habari needs PHP 5.3.3 or higher to run. You are currently running PHP ' . PHP_VERSION . '.' );
 }
 
