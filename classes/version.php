@@ -16,7 +16,8 @@ class Version
 	const DB_VERSION = 5101;
 	const API_VERSION = 4957;
 
-	const HABARI_VERSION = '0.9-alpha';
+	const HABARI_MAJOR_MINOR = '0.9';
+	const HABARI_RELEASE = '-alpha';
 
 	/**
 	 * Get the database version
@@ -46,17 +47,17 @@ class Version
 	 */
 	public static function get_habariversion()
 	{
-		return Version::HABARI_VERSION;
+		return Version::HABARI_MAJOR_MINOR . Version::HABARI_RELEASE;
 	}
 
 	/**
-	 * Determine whether this might possibly have a .git directory, based solely on the existence of a hyphen in the version string.
+	 * Determine whether this might possibly have a .git directory, based solely on the existence of a hyphen in the release version string.
 	 *
 	 * @return boolean True if this is a development version, false if not
 	 */
 	public static function is_devel()
 	{
-		return strpos( Version::HABARI_VERSION, '-' ) !== false;
+		return strpos( Version::HABARI_RELEASE, '-' ) !== false;
 	}
 
 	/**

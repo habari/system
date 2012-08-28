@@ -131,7 +131,7 @@ class RemoteRequest
 			$this->config['proxy']['exceptions'][] = $_SERVER['SERVER_ADDR'];
 		}
 
-		$this->user_agent .= '/' . Version::HABARI_VERSION;
+		$this->user_agent .= '/' . Version::get_habariversion();
 		$this->add_header( array( 'User-Agent' => $this->user_agent ) );
 
 		// if they've manually specified that we should not use curl, use sockets instead
