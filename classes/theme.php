@@ -647,7 +647,6 @@ class Theme extends Pluggable
 		$content_types = array_flip( $content_types );
 		if ( isset( $context ) ) {
 			foreach ( $content_types as $type => $type_id ) {
-				$content_type = $context . $object->content_type();
 				$fallback[] = strtolower( $context . '.' . $type );
 			}
 		}
