@@ -215,9 +215,13 @@ class User extends QueryRecord implements FormStorage, IsContent
 	 */
 	public function remember()
 	{
-		$_SESSION['user_id'] = $this->id;
-		ACL::clear_caches();
-		Session::set_userid( $this->id );
+		if(!isset($_SESSION['sudo'])) {
+			$_SESSION['user_id'] = $this->id;
+		}
+			ACL::clear_caches();
+		if(!isset($_SESSION['sudo'])) {
+			Session::set_userid( $this->id );
+		}
 	}
 
 	/**
