@@ -16,7 +16,7 @@
 		echo $control->parameter_map(
 			array(
 				'title' => array('control_title', 'title'),
-				'tabindex', 'size', 'maxlength', 'type', 'placeholder',
+				'tabindex', 'size', 'maxlength', 'type', 'placeholder', 'autocomplete', 'disabled', 'readonly',
 				'id' => 'field',
 				'name' => 'field',
 			),
