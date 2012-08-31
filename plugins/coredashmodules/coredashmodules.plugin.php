@@ -95,8 +95,10 @@ class CoreDashModules extends Plugin
 	 */
 	public function action_block_content_latest_comments($block, $theme)
 	{
-		$posts = DB::get_results( 'SELECT * FROM {posts} p WHERE p.id in ( SELECT post_id FROM {comments} WHERE status = ? AND type = ? ORDER BY date DESC, post_id ) LIMIT 5', array( Comment::STATUS_APPROVED, Comment::COMMENT ), 'Post' );
-		$latestcomments = array();
+		$comment_types = array( Comment::COMMENT );
+		$query = 'SELECT {posts}.* FROM {comments}, {posts} WHERE {posts}.status = ? AND {comments}.status = ? AND ({comments}.type = ?' . str_repeat(' OR {comments}.type = ?', count($comment_types) - 1) . ') AND {posts}.id = post_id ORDER BY {comments}.date DESC LIMIT 25';
+		$query_args = array_merge( array( Post::status( 'published' ), Comment::STATUS_APPROVED ), $comment_types );
+		$posts = DB::get_results( $query, $query_args, 'Post' );
 
 		foreach( $posts as $post ) {
 			$comments = DB::get_results( 'SELECT * FROM {comments} WHERE post_id = ? AND status = ? AND type = ? ORDER BY date DESC LIMIT 5;', array( $post->id, Comment::STATUS_APPROVED, Comment::COMMENT ), 'Comment' );

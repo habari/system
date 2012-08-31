@@ -7,21 +7,21 @@
 
 /*-- DASHBOARD - LATEST COMMENTS MODULE */
 
-.dashboard .latest-comments-module .item {
+.dashboard .block-type-latest_comments .item {
 
 }
 
-.dashboard .latest-comments-module .item > span {
+.dashboard .block-type-latest_comments .item > span {
 	float: left;
 }
 
-.dashboard .latest-comments-module .titleanddate {
+.dashboard .block-type-latest_comments .titleanddate {
 	margin-top: 5px;
 	line-height: 16px;
 	color: #999;
 }
 
-.dashboard .latest-comments-module ul {
+.dashboard .block-type-latest_comments ul {
 	margin-bottom: 5px;
 	line-height: 13px;
 	white-space: nowrap;
@@ -29,27 +29,27 @@
 	overflow: hidden;
 }
 
-.dashboard .latest-comments-module ul.commentauthors li {
+.dashboard .block-type-latest_comments ul.commentauthors li {
 	display: inline;
 }
 
-.dashboard .latest-comments-module ul li:after {
+.dashboard .block-type-latest_comments ul li:after {
 	content: ', ';
 }
 
-.dashboard .latest-comments-module ul li.last-child:after {
+.dashboard .block-type-latest_comments ul li.last-child:after {
 	content: '';
 }
 
-.dashboard .latest-comments-module .commentauthors a:hover {
+.dashboard .block-type-latest_comments .commentauthors a:hover {
 	opacity: 1;
 }
 
-.dashboard .latest-comments-module .item span.comments {
+.dashboard .block-type-latest_comments .item span.comments {
 	float: right;
 }
 
-.dashboard .latest-comments-module .comments {
+.dashboard .block-type-latest_comments .comments {
 	line-height: 34px;
 	font-size: 24px;
 }
