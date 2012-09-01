@@ -11,7 +11,7 @@
 				'title' => array( 'label_title', 'title' ),
 				'for' => 'field',
 			)
-		); ?>><?php echo $this->caption; ?></label>	
+		); ?>><?php echo $this->caption; ?></label>
 	<input type="checkbox" <?php
 		echo $control->parameter_map(
 			array(

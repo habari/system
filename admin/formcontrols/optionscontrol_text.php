@@ -1,12 +1,4 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-<?php
-	if ( isset( $autocomplete ) ) {
-		$autocomplete = 'autocomplete="' . $autocomplete . '"';
-	}
-	else {
-		$autocomplete = '';
-	}
-?>
 <div<?php
 		echo $control->parameter_map(
 			array(
