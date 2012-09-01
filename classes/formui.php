@@ -1791,6 +1791,13 @@ class FormControlPassword extends FormControlText
 	public function get( $forvalidation = true )
 	{
 		$theme = $this->get_theme( $forvalidation );
+		foreach ( $this->properties as $prop => $value ) {
+			$theme->$prop = $value;
+		}
+
+		$theme->caption = $this->caption;
+		$theme->id = $this->name;
+		$theme->control = $this;
 		$theme->outvalue = $this->value == '' ? '' : substr( md5( $this->value ), 0, 8 );
 
 		return $theme->fetch( $this->get_template(), true );
