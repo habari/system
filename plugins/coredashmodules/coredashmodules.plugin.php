@@ -100,6 +100,7 @@ class CoreDashModules extends Plugin
 		$query_args = array_merge( array( Post::status( 'published' ), Comment::STATUS_APPROVED ), $comment_types );
 		$posts = DB::get_results( $query, $query_args, 'Post' );
 
+		$latestcomments = array();
 		foreach( $posts as $post ) {
 			$comments = DB::get_results( 'SELECT * FROM {comments} WHERE post_id = ? AND status = ? AND type = ? ORDER BY date DESC LIMIT 5;', array( $post->id, Comment::STATUS_APPROVED, Comment::COMMENT ), 'Comment' );
 			$latestcomments[$post->id] = $comments;
