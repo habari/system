@@ -16,7 +16,7 @@
 		echo $control->parameter_map(
 			array(
 				'title' => array( 'control_title', 'title' ),
-				'tabindex', 'cols', 'rows', 'maxlength', 'placeholder',
+				'tabindex', 'cols', 'rows', 'maxlength', 'placeholder', 'disabled', 'readonly',
 				'id' => 'field',
 				'name' => 'field',
 			),
@@ -36,7 +36,4 @@
 		
 		?>
 	<?php $control->errors_out( '<li>%s</li>', '<ul class="error">%s</ul>' ); ?>
-	<?php if ( $message != '' ) : ?>
-		<p class="error"><?php echo $message; ?></p>
-	<?php endif; ?>
 </div>
