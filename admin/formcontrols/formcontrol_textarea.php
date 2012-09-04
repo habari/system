@@ -36,7 +36,4 @@
 		
 		?>
 	<?php $control->errors_out( '<li>%s</li>', '<ul class="error">%s</ul>' ); ?>
-	<?php if ( $message != '' ) : ?>
-		<p class="error"><?php echo $message; ?></p>
-	<?php endif; ?>
 </div>
