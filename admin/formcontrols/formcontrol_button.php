@@ -14,19 +14,19 @@
 				'name' => 'field',
 			),
 			array(
-				'value' => Utils::htmlspecialchars( $caption ),
-				'onclick' => 'onclick_'.Utils::slugify( $id, '_' ).'()',
+				'value' => Utils::htmlspecialchars( $control->caption ),
+				'onclick' => 'onclick_'.Utils::slugify( $control->name, '_' ).'()',
 			)
 		);
 		?>>
-		<?php if ( isset( $onclick ) && $onclick != '' ): ?>
-		<script type="text/javascript">function onclick_<?php echo Utils::slugify( $id, '_' ) ?>() {
-		<?php echo $onclick; ?>
+		<?php if ( isset( $control->onclick ) && $control->onclick != '' ): ?>
+		<script type="text/javascript">function onclick_<?php echo Utils::slugify( $control->name, '_' ) ?>() {
+		<?php echo $control->onclick; ?>
 		}</script>
 		<?php endif; ?>
 		<?php 
-			if ( isset( $helptext ) && !empty( $helptext ) ) { ?>
-				<span class="helptext"><?php echo $helptext; ?></span>
+			if ( isset( $control->helptext ) && !empty( $control->helptext ) ) { ?>
+				<span class="helptext"><?php echo $control->helptext; ?></span>
 				<?php
 			}
 		?>

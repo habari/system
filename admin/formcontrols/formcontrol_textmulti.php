@@ -4,11 +4,11 @@
 			array(
 				'class', 'id' => 'name'
 			)
-		); ?>
-<p><?php echo $this->caption; ?></p>
+		); ?>>
+<p><?php echo $control->caption; ?></p>
 <?php
-if ( !is_array( $value ) ) {
-	$value = array( $value );
+if ( !is_array( $control->value ) ) {
+	$value = array( $control->value );
 }
 $i = 0;
 foreach( $value as $value_1 ) :
@@ -35,9 +35,9 @@ endforeach;
 <a href="#" onclick="return controls.textmulti.add(this, '<?php echo $field; ?>');" class="textmulti_add opa50" title="<?php _e( 'add' ); ?>">[<?php _e( 'add' ); ?>]</a>
 <?php
 
-	if ( isset( $helptext ) && !empty( $helptext ) ) {
+	if ( isset( $control->helptext ) && !empty( $control->helptext ) ) {
 		?>
-			<span class="helptext"><?php echo $helptext; ?></span>
+			<span class="helptext"><?php echo $control->helptext; ?></span>
 		<?php
 	}
 

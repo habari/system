@@ -11,7 +11,7 @@
 				'title' => array( 'label_title', 'title' ),
 				'for' => 'field',
 			)
-		); ?>><?php echo $this->caption; ?></label>
+		); ?>><?php echo $control->caption; ?></label>
 	<textarea <?php
 		echo $control->parameter_map(
 			array(
@@ -25,12 +25,12 @@
 				'cols' => 100,
 			)
 		);
-		?>><?php echo Utils::htmlspecialchars( $value ); ?></textarea>
+		?>><?php echo Utils::htmlspecialchars( $control->value ); ?></textarea>
 		<?php 
 		
-			if ( isset( $helptext ) && !empty( $helptext ) ) {
+			if ( isset( $control->helptext ) && !empty( $control->helptext ) ) {
 				?>
-					<span class="helptext"><?php echo $helptext; ?></span>
+					<span class="helptext"><?php echo $control->helptext; ?></span>
 				<?php
 			}
 		
