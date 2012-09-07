@@ -11,7 +11,7 @@
 				'title' => array( 'label_title', 'title' ),
 				'for' => 'field',
 			)
-		); ?>><?php echo $this->caption; ?></label>
+		); ?>><?php echo $control->caption; ?></label>
 	<input type="checkbox" <?php
 		echo $control->parameter_map(
 			array(
@@ -24,12 +24,12 @@
 				'value' => '1',
 			)
 		);
-		?> <?php echo $value ? 'checked' : ''; ?>>
-	<input type="hidden" name="<?php echo $field; ?>_submitted" value="1" >
+		?> <?php echo $control->value ? 'checked' : ''; ?>>
+	<input type="hidden" name="<?php echo $control->field; ?>_submitted" value="1" >
 	<?php 
-		if ( isset( $helptext ) && !empty( $helptext ) ) {
+		if ( isset( $control->helptext ) && !empty( $control->helptext ) ) {
 			?>
-				<span class="helptext"><?php echo $helptext; ?></span>
+				<span class="helptext"><?php echo $control->helptext; ?></span>
 			<?php
 		}
 	

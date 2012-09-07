@@ -11,7 +11,7 @@
 				'title' => array( 'label_title', 'title' ),
 				'for' => 'field',
 			)
-		); ?>><?php echo $this->caption; ?></label>
+		); ?>><?php echo $control->caption; ?></label>
 	<input type="password" <?php
 		echo $control->parameter_map(
 			array(
@@ -21,15 +21,15 @@
 				'name' => 'field',
 			),
 			array(
-				'value' => Utils::htmlspecialchars( $outvalue ),
+				'value' => Utils::htmlspecialchars( $control->outvalue ),
 			)
 		);
 		?>>
 		<?php
 		
-			if ( isset( $helptext ) && !empty( $helptext ) ) {
+			if ( isset( $control->helptext ) && !empty( $control->helptext ) ) {
 				?>
-					<span class="helptext"><?php echo $helptext; ?></span>
+					<span class="helptext"><?php echo $control->helptext; ?></span>
 				<?php
 			}
 		
