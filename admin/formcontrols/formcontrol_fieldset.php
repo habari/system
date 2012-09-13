@@ -5,6 +5,6 @@
 				'class', 'id' => 'name'
 			)
 		); ?>>
-	<legend><?php echo $caption; ?></legend>
+	<legend><?php echo $control->caption; ?></legend>
 	<?php echo $contents; ?>
 </fieldset>

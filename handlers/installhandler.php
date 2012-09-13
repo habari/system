@@ -30,7 +30,7 @@ class InstallHandler extends ActionHandler
 			HabariLocale::set( $_POST['locale'] );
 		}
 		else {
-			HabariLocale::set( Config::get('locale', Options::get( 'locale', 'en-us' )) );
+			HabariLocale::set( Config::get('locale', 'en-us' ) );
 		}
 		$this->theme->locale = HabariLocale::get();
 		$this->handler_vars['locale'] = HabariLocale::get();

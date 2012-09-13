@@ -419,6 +419,7 @@ var itemManage = {
 
 $(document).ready(function() {
 	$('.help-me').click(function(){$(this).parents('.installstep').find('.help').slideToggle();return false;});
+	$('.help-items').click(function(){$(this).parents('.installstep').find('.items').fadeOut(function(){$(this).toggleClass('show-help').fadeIn()});$('html, body').animate({scrollTop: $("#themeselection").offset().top - 20}, 500);return false;});
 	$('.help').hide();
 	$('.installstep').removeClass('ready');
 	$('.installstep:eq(0), .installstep:eq(1)').addClass('ready');

@@ -202,7 +202,7 @@ class Session
 			$record = array(
 				'ip' => self::get_subnet( $remote_address ),
 				'expires' => HabariDateTime::date_create()->int + self::$lifetime,
-				'ua' => $user_agent,
+				'ua' => MultiByte::substr( $user_agent, 0, 255 ),
 				'data' => $data,
 			);
 			DB::update(

@@ -91,26 +91,28 @@ class User extends QueryRecord implements FormStorage, IsContent
 		if ( $out = Plugins::filter('user_identify', $out) ) {
 			self::$identity = $out;
 		}
-		// Is the logged-in user not cached already?
-		if ( isset( self::$identity ) ) {
-			// is this user acting as another user?
-			if ( isset( $_SESSION['sudo'] ) ) {
-				// if so, let's return that user data
-				$out = self::get_by_id( intval( $_SESSION['sudo'] ) );
-			}
-			else {
-				// otherwise return the logged-in user
+		// If we have a user_id for this user in their session, use it to get the user object
+		if ( isset( $_SESSION['user_id'] ) ) {
+			// If the user is already cached in this static class, use it
+			if ( isset(self::$identity) ) {
 				$out = self::$identity;
 			}
-		}
-		if ( isset( $_SESSION['user_id'] ) ) {
-			if ( $user = self::get_by_id( intval( $_SESSION['user_id'] ) ) ) {
+			// If the user_id in the session is a valid one, cache it in this static class and use it
+			else if ( $user = self::get_by_id( intval( $_SESSION['user_id'] ) ) ) {
 				// Cache the user in the static variable
 				self::$identity = $user;
 				$out = $user;
 			}
 		}
-		if(!$out) {
+		// Is the visitor a non-anonymous user
+		if ( $out instanceof User ) {
+			// Is this user acting as another user?
+			if ( isset( $_SESSION['sudo'] ) ) {
+				// Return the User for the sudo user id instead
+				$out = self::get_by_id( intval( $_SESSION['sudo'] ) );
+			}
+		}
+		else {
 			$out = self::anonymous();
 		}
 		return $out;
@@ -213,9 +215,13 @@ class User extends QueryRecord implements FormStorage, IsContent
 	 */
 	public function remember()
 	{
-		$_SESSION['user_id'] = $this->id;
-		ACL::clear_caches();
-		Session::set_userid( $this->id );
+		if(!isset($_SESSION['sudo'])) {
+			$_SESSION['user_id'] = $this->id;
+		}
+			ACL::clear_caches();
+		if(!isset($_SESSION['sudo'])) {
+			Session::set_userid( $this->id );
+		}
 	}
 
 	/**

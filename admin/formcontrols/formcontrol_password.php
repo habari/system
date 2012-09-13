@@ -1,16 +1,38 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-<div<?php echo ($class) ? ' class="' . $class . '"' : ''?><?php echo ($id) ? ' id="' . $id . '"' : ''?>>
-	<label for="<?php echo $field; ?>"><?php echo $this->caption; ?></label><input type="password" name="<?php echo $field; ?>" id="<?php echo $field; ?>" <?php if ( isset( $size ) ) { ?> size="<?php echo $size; ?>"<?php } ?><?php if ( isset( $tabindex ) ) { ?> tabindex="<?php echo $tabindex; ?>"<?php } ?> value="<?php echo Utils::htmlspecialchars($outvalue); ?>">
-	<?php 
-	
-		if ( isset( $helptext ) && !empty( $helptext ) ) {
-			?>
-				<span class="helptext"><?php echo $helptext; ?></span>
-			<?php
-		}
-	
-	?>
-	<?php if ($message != '') : ?>
-		<p class="error"><?php echo $message; ?></p>
-	<?php endif; ?>
+<div<?php
+		echo $control->parameter_map(
+			array(
+				'class', 'id' => 'name'
+			)
+		); ?>>
+	<label <?php
+		echo $control->parameter_map(
+			array(
+				'title' => array( 'label_title', 'title' ),
+				'for' => 'field',
+			)
+		); ?>><?php echo $control->caption; ?></label>
+	<input type="password" <?php
+		echo $control->parameter_map(
+			array(
+				'title' => array( 'control_title', 'title' ),
+				'tabindex', 'size', 'maxlength', 'placeholder', 'autocomplete', 'disabled', 'readonly',
+				'id' => 'field',
+				'name' => 'field',
+			),
+			array(
+				'value' => Utils::htmlspecialchars( $control->outvalue ),
+			)
+		);
+		?>>
+		<?php
+		
+			if ( isset( $control->helptext ) && !empty( $control->helptext ) ) {
+				?>
+					<span class="helptext"><?php echo $control->helptext; ?></span>
+				<?php
+			}
+		
+		?>
+	<?php $control->errors_out( '<li>%s</li>', '<ul class="error">%s</ul>' ); ?>
 </div>
