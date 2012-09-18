@@ -81,7 +81,7 @@ class AdminPluginsHandler extends AdminHandler
 
 					if ( isset( $plugin['info']->provides ) ) {
 						foreach ( $plugin['info']->provides->feature as $feature ) {
-							$providing[(string) $feature] = $feature;
+							$providing[(string) $feature] = (string)$feature;
 						}
 					}
 				}
@@ -152,6 +152,7 @@ class AdminPluginsHandler extends AdminHandler
 				$providing[(string) $feature] = $feature;
 			}
 		}
+		$providing = Plugins::filter( 'provided', $providing );
 
 		foreach ( $sort_inactive_plugins as $plugin_id => $plugin ) {
 			if ( isset( $plugin['info']->requires ) ) {

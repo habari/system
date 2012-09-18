@@ -1109,7 +1109,18 @@ class FormControl extends FormComponents
 	 */
 	public function checksum()
 	{
-		$storage = is_object( $this->storage ) ? gettype( $this->storage ) : $this->storage;
+		if ( is_array( $this->storage ) ) {
+			$storage = reset($this->storage);
+		}
+		else if ( is_object( $this->storage ) ) {
+			$storage = get_class($this->storage);
+		}
+		else if ( is_scalar( $this->storage ) ) {
+			$storage = $this->storage;
+		}
+		else {
+			$storage = 'unknown';
+		}
 		return md5( $this->name . $storage . $this->caption );
 	}
 
@@ -1780,6 +1791,13 @@ class FormControlPassword extends FormControlText
 	public function get( $forvalidation = true )
 	{
 		$theme = $this->get_theme( $forvalidation );
+		foreach ( $this->properties as $prop => $value ) {
+			$theme->$prop = $value;
+		}
+
+		$theme->caption = $this->caption;
+		$theme->id = $this->name;
+		$theme->control = $this;
 		$theme->outvalue = $this->value == '' ? '' : substr( md5( $this->value ), 0, 8 );
 
 		return $theme->fetch( $this->get_template(), true );
