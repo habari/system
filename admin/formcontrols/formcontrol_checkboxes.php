@@ -14,10 +14,9 @@
 				array(
 					'title' => array( 'control_title', 'title' ),
 					'tabindex', 'disabled', 'readonly',
-					'id' => 'field',
-					'name' => 'field',
 				),
 				array(
+					'name' => $field . '[]',
 					'id' => Utils::slugify( $key ),
 					'value' => $key,
 				)
