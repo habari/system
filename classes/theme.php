@@ -814,7 +814,7 @@ class Theme extends Pluggable
 	 *
 	 * @param string $text text to display for link
 	 */
-	public function theme_prev_page_link( $theme, $text = null )
+	public function theme_prev_page_link( $theme, $text = null, $classes = array( 'prev-page' ) )
 	{
 		$settings = array();
 
@@ -829,7 +829,7 @@ class Theme extends Pluggable
 			$text = '&larr; ' . _t( 'Previous' );
 		}
 
-		return '<a class="prev-page" href="' . URL::get( null, $settings, false ) . '" title="' . $text . '">' . $text . '</a>';
+		return '<a class="' . implode( ' ', $classes ) . '" href="' . URL::get( null, $settings, false ) . '" title="' . $text . '">' . $text . '</a>';
 	}
 
 	/**
@@ -837,7 +837,7 @@ class Theme extends Pluggable
 	 *
 	 * @param string $text text to display for link
 	 */
-	public function theme_next_page_link( $theme, $text = null )
+	public function theme_next_page_link( $theme, $text = null, $classes = array( 'next-page' ) )
 	{
 		$settings = array();
 
@@ -856,7 +856,7 @@ class Theme extends Pluggable
 			$text = _t( 'Next' ) . ' &rarr;';
 		}
 
-		return '<a class="next-page" href="' . URL::get( null, $settings, false ) . '" title="' . $text . '">' . $text . '</a>';
+		return '<a class="' . implode( ' ', $classes ) . '" href="' . URL::get( null, $settings, false ) . '" title="' . $text . '">' . $text . '</a>';
 	}
 
 	/**

@@ -275,7 +275,7 @@ class Format
 	 * @param boolean $sort_alphabetical Should the tags be sorted alphabetically by `term` first?
 	 * @return string HTML links with specified separators.
 	 */
-	public static function tag_and_list( $terms, $between = ', ', $between_last = null, $sort_alphabetical = false )
+	public static function tag_and_list( $terms, $between = ', ', $between_last = null, $sort_alphabetical = false, $between_last_two = null )
 	{
 		$array = array();
 		if ( !$terms instanceof Terms ) {
@@ -298,6 +298,12 @@ class Format
 			return "<a href=\"" . URL::get("display_entries_by_tag", array( "tag" => $b) ) . "\" rel=\"tag\">" . $a . "</a>";
 		};
 		$array = array_map( $fn, $array, array_keys( $array ) );
+
+		// are there only two elements in the list, and a special value to use between only two values?
+		if ( count( $array ) == 2 && $between_last_two !== null ) {
+			$between_last = $between_last_two;
+		}
+
 		$last = array_pop( $array );
 		$out = implode( $between, $array );
 		$out .= ( $out == '' ) ? $last : $between_last . $last;
