@@ -1242,7 +1242,7 @@ body.page-publish .buttons input {
 	width: 16px;
 	background: url('../images/closebutton.png') center center no-repeat;
 	cursor: pointer;
-	z-index: 1500;
+	z-index: 56;
 }
 
 .dashboard .module .options {
