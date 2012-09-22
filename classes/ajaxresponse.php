@@ -36,7 +36,19 @@ class AjaxResponse
 				break;
 		}
 	}
-	
+
+	public function __get( $var )
+	{
+		switch ( $var ) {
+			case 'response_code':
+			case 'message':
+			case 'data':
+			case 'callback':
+				return $this->$var;
+				break;
+		}
+	}
+
 	public function html( $name, $value )
 	{
 		if ( empty( $this->html ) ) {
