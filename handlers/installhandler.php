@@ -779,7 +779,6 @@ class InstallHandler extends ActionHandler
 		foreach($defaults as $key => $value) {
 			Options::set($key, $value);
 		}
-		Themes::activate_theme( $defaults['theme_name'], $defaults['theme_dir'] );
 
 		// Add the cronjob to trim the log so that it doesn't get too big
 		CronTab::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t( 'Trim the log table' ) );

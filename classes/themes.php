@@ -221,7 +221,7 @@ class Themes
 			Plugins::act( 'theme_deactivated_any', $old_active_theme->name, $old_active_theme ); // For any plugin to react to its deactivation
 			Options::set( 'theme_name', $theme_name );
 			Options::set( 'theme_dir', $theme_dir );
-			$new_active_theme = Themes::create();
+			$new_active_theme = Themes::create($theme_name);
 			
 			// Set version of theme if it wasn't installed before
 			$versions = Options::get( 'pluggable_versions' );
