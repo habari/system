@@ -445,6 +445,7 @@ class Format
 	 * @param string $more_text The text to use in the "read more" link.
 	 * @param integer $max_words null or the maximum number of words to use before showing the more link
 	 * @param integer $max_paragraphs null or the maximum number of paragraphs to use before showing the more link
+	 * @param boolean $inside_last Should the link be placed inside the last element, or not? Default: true
 	 * @return string The post content, suitable for display
 	 */
 	public static function more( $content, $post, $properties = array() )
@@ -458,6 +459,7 @@ class Format
 			$more_text = $properties;
 			$max_words = ( isset( $args[3] ) ? $args[3] : null );
 			$max_paragraphs = ( isset( $args[4] ) ? $args[4] : null );
+			$inside_last = ( isset( $args[5] ) ? $args[5] : true );
 			$paramstring = "";
 		}
 		else {
@@ -467,6 +469,7 @@ class Format
 			$more_text = ( isset( $paramarray['more_text'] ) ? $paramarray['more_text'] : 'Read More' );
 			$max_words = ( isset( $paramarray['max_words'] ) ? $paramarray['max_words'] : null );
 			$max_paragraphs = ( isset( $paramarray['max_paragraphs'] ) ? $paramarray['max_paragraphs'] : null );
+			$inside_last = ( isset( $paramarray['inside_last'] ) ? $paramarray['inside_last'] : true );
 
 			if ( isset( $paramarray['title:before'] ) || isset( $paramarray['title'] ) || isset( $paramarray['title:after'] ) ) {
 				$paramstring .= 'title="';
@@ -487,39 +490,68 @@ class Format
 			}
 
 		}
+
+		$link_text = '<a ' . $paramstring . ' href="' . $post->permalink . '">' . $more_text . '</a>';
+
+		// if we want it inside the last element, make sure there's a space before the link
+		if ( $inside_last ) {
+			$link_text = ' ' . $link_text;
+		}
+
+		// check for a <!--more--> link, which sets exactly where we should split
 		$matches = preg_split( '/<!--\s*more\s*-->/isu', $content, 2, PREG_SPLIT_NO_EMPTY );
 		if ( count( $matches ) > 1 ) {
-			return ( $more_text != '' ) ? reset( $matches ) . ' <a ' . $paramstring . 'href="' . $post->permalink . '">' . $more_text . '</a>' : reset( $matches );
+			$summary = reset( $matches );
 		}
 		elseif ( isset( $max_words ) || isset( $max_paragraphs ) ) {
+			// otherwise, we need to summarize it automagically
 			$max_words = empty( $max_words ) ? 9999999 : intval( $max_words );
 			$max_paragraphs = empty( $max_paragraphs ) ? 9999999 : intval( $max_paragraphs );
 			$summary = Format::summarize( $content, $max_words, $max_paragraphs );
-			if ( MultiByte::strlen( $summary ) >= MultiByte::strlen( $content ) ) {
-				return $content;
-			}
-			else {
-				if ( strlen( $more_text  ) ) {
-					// Tokenize the summary and link
-					$ht = new HTMLTokenizer( $summary );
-					$summary_set = $ht->parse();
-					$ht = new HTMLTokenizer( '<a ' . $paramstring . ' href="' . $post->permalink . '">' . $more_text . '</a>' );
-					$link_set= $ht->parse();
-					// Find out where to put the link
-					$end = $summary_set->end();
-					$key = $summary_set->key();
-					// Inject the link
-					$summary_set->insert( $link_set, $key );
-
-					return (string)$summary_set;
-				}
-				else {
-					return $summary;
-				}
-			}
 		}
 
-	return $content;
+		// if the summary is equal to the length of the content (or somehow greater??), there's no need to add a link, just return the content
+		if ( MultiByte::strlen( $summary ) >= MultiByte::strlen( $content ) ) {
+			return $content;
+		}
+		else {
+			// make sure there's actually text to append before we waste our time
+			if ( strlen( $more_text ) ) {
+				// parse out the summary and stick in our linky goodness
+
+				// tokenize the summary
+				$ht = new HTMLTokenizer( $summary );
+				$summary_set = $ht->parse();
+
+				// tokenize the link we're adding
+				$ht = new HTMLTokenizer( $link_text );
+				$link_set = $ht->parse();
+
+				// find out where to put the link by bumping the iterator to the last element
+				$end = $summary_set->end();
+				// and what index is that?
+				$key = $summary_set->key();
+
+				// if we want it inside the last element, we're good to go - if we want it outside, we need to add it as the *next* element
+				if ( $inside_last == false ) {
+					$key++;
+				}
+
+				// inject it, whereever we decided it should go
+				$summary_set->insert( $link_set, $key );
+
+				// and return a stringified version
+				return (string)$summary_set;
+			}
+			else {
+				// no text to append? just return the summary
+				return $summary;
+			}
+
+		}
+
+		return $content;
+
 	}
 
 	/**
