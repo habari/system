@@ -619,6 +619,8 @@ class FormUI extends FormContainer implements IsContent
 		$this->success = false;
 		$this->submitted = false;
 
+		$this->properties['id'] = isset($this->properties['id']) ? $this->properties['id'] : Utils::slugify( $this->name );
+
 		// Should we be validating?
 		if ( isset( $_POST['FormUI'] ) && $_POST['FormUI'] == $this->salted_name() ) {
 			$this->submitted = true;
@@ -637,12 +639,12 @@ class FormUI extends FormContainer implements IsContent
 			else {
 				$forvalidation = true;
 				if ( !isset( $_SESSION['forms'][$this->salted_name()]['url'] ) ) {
-					$_SESSION['forms'][$this->salted_name()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub();
+					$_SESSION['forms'][$this->salted_name()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . '#' . $this->properties['id'];
 				}
 			}
 		}
 		else {
-			$_SESSION['forms'][$this->salted_name()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub();
+			$_SESSION['forms'][$this->salted_name()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . '#' . $this->properties['id'];
 		}
 		if ( isset( $_SESSION['forms'][$this->salted_name()]['error_data'] ) ) {
 			foreach ( $_SESSION['forms'][$this->salted_name()]['error_data'] as $key => $value ) {
@@ -661,7 +663,6 @@ class FormUI extends FormContainer implements IsContent
 			$theme->$prop = $value;
 		}
 
-		$this->properties['id'] = isset($this->properties['id']) ? $this->properties['id'] : Utils::slugify( $this->name );
 		$theme->class = Utils::single_array( $this->class );
 		$this->action = $this->options['form_action'];
 		$theme->salted_name = $this->salted_name();

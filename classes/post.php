@@ -23,6 +23,7 @@
  * @property string $guid The globally-unique identifier for this post
  * @property string $content The content of this post
  * @property string $cached_content Nobody really knows what this is for
+ * @property string $input_formats A comma-separated list of descriptors of the stored format of this post content
  * @property integer $user_id The User id of the author of this post
  * @property integer $status The integer status of this post
  * @property HabariDateTime $pubdate The published date of this post
@@ -366,6 +367,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			'guid' => '',
 			'content' => '',
 			'cached_content' => '',
+			'input_formats' => '',
 			'user_id' => 0,
 			'status' => Post::status( 'draft' ),
 			'pubdate' => HabariDateTime::date_create(),
