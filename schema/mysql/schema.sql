@@ -6,6 +6,7 @@ CREATE TABLE {$prefix}posts (
   guid VARCHAR(255) NOT NULL,
   content LONGTEXT NOT NULL,
   cached_content LONGTEXT NOT NULL,
+  input_formats VARCHAR(255) NOT NULL,
   user_id SMALLINT UNSIGNED NOT NULL,
   status SMALLINT UNSIGNED NOT NULL,
   pubdate INT UNSIGNED NOT NULL,

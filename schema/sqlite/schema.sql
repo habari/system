@@ -8,6 +8,7 @@ CREATE TABLE {$prefix}posts (
   guid VARCHAR(255) NOT NULL,
   content TEXT NOT NULL,
   cached_content LONGTEXT NOT NULL,
+  input_formats VARCHAR(255) NOT NULL,
   user_id SMALLINTEGER NOT NULL,
   status SMALLINTEGER NOT NULL,
   pubdate INTEGER NOT NULL,
