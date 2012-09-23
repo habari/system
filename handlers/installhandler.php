@@ -227,7 +227,9 @@ class InstallHandler extends ActionHandler
 				$plugin['actions'] = array();
 				$plugin['info'] = Plugins::load_info( $file );
 				$plugin['recommended'] = in_array( basename( $file ), $recommended_list );
-
+				$plugin['requires'] = isset($plugin['info']->requires) ? self::get_feature_list($plugin['info']->requires->children()) : '';
+				$plugin['provides'] = isset($plugin['info']->provides) ? self::get_feature_list($plugin['info']->provides->children()) : '';
+				$plugin['conflicts'] = isset($plugin['info']->conflicts) ? self::get_feature_list($plugin['info']->conflicts->children()) : '';
 			}
 			else {
 				// We can't get the plugin info due to an error
@@ -1996,6 +1998,19 @@ class InstallHandler extends ActionHandler
 		$this->handler_vars['db_user'] = Config::get( 'db_connection' )->username;
 		$this->handler_vars['db_pass'] = Config::get( 'db_connection' )->password;
 		$this->handler_vars['table_prefix'] = Config::get( 'db_connection' )->prefix;
+	}
+
+	/**
+	 * Return a comma-separated list of features, given a SimpleXMLElement
+	 * @param SimpleXMLElement $features An element containing children of <feature>
+	 * @return string A comma-separated list of those features
+	 */
+	public static function get_feature_list($features) {
+		$output = array();
+		foreach($features as $feature) {
+			$output[(string)$feature] = (string)$feature;
+		}
+		return implode(',', $output);
 	}
 
 }

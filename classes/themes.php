@@ -57,7 +57,12 @@ class Themes
 				}
 				else {
 					foreach ( $themedata['info'] as $name=>$value ) {
-						$themedata[$name] = (string) $value;
+						if($value->count() == 0) {
+							$themedata[$name] = (string) $value;
+						}
+						else {
+							$themedata[$name] = $value->children();
+						}
 					}
 
 					if ( $screenshot = Utils::glob( $theme_path . '/screenshot.{png,jpg,gif}', GLOB_BRACE ) ) {
