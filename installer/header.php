@@ -13,7 +13,7 @@
 		url:{
 			check_mysql_credentials: '<?php Site::out_url('habari', '/'); ?>ajax/check_mysql_credentials',
 			check_pgsql_credentials: '<?php Site::out_url('habari', '/'); ?>ajax/check_pgsql_credentials',
-			check_sqlite_credentials: '<?php Site::out_url('habari', '/'); ?>ajax/check_sqlite_credentials',
+			check_sqlite_credentials: '<?php Site::out_url('habari', '/'); ?>ajax/check_sqlite_credentials'
 		}
 	};
 	</script>

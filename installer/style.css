@@ -387,3 +387,20 @@ optgroup {
 .show-help .item-help {
 	display: block;
 }
+
+.provider {
+	font-weight: bold;
+}
+.conflict .checkbox {
+	background: url(images/warningsmall.png) no-repeat center;
+}
+.conflict .checkbox input {
+	visibility: hidden;
+}
+.feature_note {
+	font-size: xx-small;
+	margin-left: 10px;
+}
+#feature_error {
+	display: none;
+}
