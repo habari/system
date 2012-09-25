@@ -10,7 +10,7 @@
 <div class="area_container">
 <?php foreach ( $areas as $area => $area_name ): ?>
 	<div class="area_drop_outer">
-		<h2><?php echo $area; ?></h2>
+		<h2 data-areaname="<?php echo $area; ?>" title="<?php echo $area_name['description']; ?>"><?php echo $area_name['title']; ?></h2>
 			<div class="area_drop" id="area_<?php echo $area; ?>">
 			<?php if (isset($blocks_areas[$scopeid]) && is_array($blocks_areas[$scopeid]) && isset($blocks_areas[$scopeid][$area]) && is_array($blocks_areas[$scopeid][$area])): ?>
 				<?php foreach($blocks_areas[$scopeid][$area] as $block): ?>

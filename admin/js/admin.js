@@ -598,7 +598,7 @@ var themeManage = {
 		spinner.start();
 		var output = {};
 		$('.area_drop_outer').each(function() {
-			var area = $('h2', this).text();
+			var area = $('h2', this).data('areaname');
 			output[area] = [];
 			$('.block_drag', this).each(function(){
 				m = $(this).attr('class').match(/block_instance_(\d+)/)
