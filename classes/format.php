@@ -159,13 +159,13 @@ class Format
 		// should never autop ANY content in these items
 		$no_auto_p = array(
 			'pre','code','ul','h1','h2','h3','h4','h5','h6',
-			'table','ul','ol','li','i','b','em','strong','script'
+			'table','ul','ol','li','i','b','em','strong','script', 'dl', 'dt', 'dd'
 		);
 
 		$block_elements = array(
 			'address','blockquote','center','dir','div','dl','fieldset','form',
 			'h1','h2','h3','h4','h5','h6','hr','isindex','menu','noframes',
-			'noscript','ol','p','pre','table','ul','figure','figcaption'
+			'noscript','ol','p','pre','table','ul','figure','figcaption', 'dl'
 		);
 
 		$token = $set->current();
@@ -260,7 +260,7 @@ class Format
 		}
 
 		$last = array_pop( $array );
-		$out = implode( ', ', $array );
+		$out = implode( $between, $array );
 		$out .= ($out == '') ? $last : $between_last . $last;
 		return $out;
 	}
@@ -285,7 +285,7 @@ class Format
 		foreach ( $terms as $term ) {
 			$array[$term->term] = $term->term_display;
 		}
-		
+
 		if ( $sort_alphabetical ) {
 			ksort( $array );
 		}
