@@ -1,0 +1,62 @@
+body {
+	margin: 0;
+}
+
+/* Page layout */
+// 960 -> 768 -> 480 -> 320
+
+@media only screen and (min-width: 961px) {
+	#wrapper {
+		width: 960px;
+	}
+	#posts {
+		.column(9);
+	}
+	#sidebar {
+		.column(3);
+	}
+}
+
+@media only screen and (min-width: 768px) and (max-width: 960px) {
+	#wrapper {
+		width: 730px;
+	}
+	#posts {
+		.column(6);
+	}
+	#sidebar {
+		.column(3);
+	}
+}
+
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+	#wrapper {
+		width: 480px;
+	}
+	#posts {
+		.column(6);
+	}
+	#sidebar {
+		.column(6);
+	}
+}
+
+@media only screen and (max-width: 480px) {
+	#wrapper {
+		width: 320px;
+	}
+	#posts {
+		.column(4);
+	}
+	#sidebar {
+		.column(4);
+	}
+}
+
+#wrapper {
+	margin: 0 auto;
+}
+#content {
+	//.row;
+	width: 100%;
+}
