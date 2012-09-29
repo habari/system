@@ -311,8 +311,7 @@ class Stack
 	/**
 	 * Check if the passed string looks like a URL or an absolute path to a file.
 	 * 
-	 * @todo There's a good chance this can be done in a better or more generic  
-	 * way.
+	 * @todo There's a good chance this can be done in a better or more generic way.
 	 * 
 	 * @param string $url The string to check.
 	 * @return boolean TRUE if the passed string looks like a URL.
