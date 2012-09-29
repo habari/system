@@ -22,4 +22,10 @@
 		</ul>
 		<p>Each one has a template file you can copy to your theme and customize.</p>]]></value>
 	</help>
+	<provides>
+		<feature url="http://wiki.habariproject.org/en/feature/block">block</feature>
+	</provides>
+	<recommends>
+		<feature url="http://wiki.habariproject.org/en/feature/area">area</feature>
+	</recommends>
 </pluggable>

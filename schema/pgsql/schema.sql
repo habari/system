@@ -7,12 +7,12 @@ CREATE TABLE {$prefix}posts (
   guid VARCHAR(255) NOT NULL,
   content TEXT NOT NULL,
   cached_content TEXT NOT NULL,
-  input_formats VARCHAR(255) NOT NULL,
   user_id INTEGER NOT NULL,
   status INTEGER NOT NULL,
   pubdate INTEGER NOT NULL,
   updated INTEGER NOT NULL,
   modified INTEGER NOT NULL,
+  input_formats VARCHAR(255) NOT NULL,
   PRIMARY KEY (id),
   UNIQUE (slug)
 );

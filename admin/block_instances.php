@@ -16,7 +16,7 @@
 				<li><a href="#" onclick="var i = $('<iframe src=\'<?php echo URL::get('admin', array('page' => 'configure_block', 'blockid' => $instance->id)); ?>\' style=\'width:768px;height:400px;\'></iframe>'); i.dialog({bgiframe:true,width:778,height:400,modal:true,dialogClass:'jqueryui',title:'<?php _e('Configure Block: %1s (%2s)', array(Utils::addslashes(Utils::htmlspecialchars($instance->title)), Utils::htmlspecialchars($instance->type))); ?>',close:function(event,ui){$(this).dialog('destroy')}});i.css('width','768px').parent('div').css({left:$(window).width()/2-384});return false;"><?php _e( 'Configure'); ?></a></li>
 				<?php if ( count($active_theme['info']->areas) > 0 ): ?>
 					<?php foreach ( $active_theme['info']->areas->area as $area ): ?>
-						<li class="area_available target_area_<?php echo $area['name']; ?>"><a href="#"><?php _e( "Add to %s", array( $area['name'] ) ); ?></a></li>
+						<li class="area_available target_area_<?php echo $area['name']; ?>"><a href="#"><?php _e( "Add to %s", array( isset($area['title']) ? $area['title'] : $area['name'] ) ); ?></a></li>
 					<?php endforeach; ?>
 				<?php endif; ?>
 
