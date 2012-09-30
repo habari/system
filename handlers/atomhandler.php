@@ -178,8 +178,7 @@ class AtomHandler extends ActionHandler
 		foreach ( $posts as $post ) {
 			$user = User::get_by_id( $post->user_id );
 			$title = ( $this->is_auth() ) ? Utils::htmlspecialchars( $post->title ) : Utils::htmlspecialchars( $post->title_atom );
-			$content = ( $this->is_auth() ) ? Utils::htmlspecialchars( $post->content ) : Utils::htmlspecialchars( $post->content_atom );
-
+			$content = ( $this->is_auth() ) ? Utils::htmlspecialchars( $post->content, ENT_COMPAT, 'UTF-8', false ) : Utils::htmlspecialchars( $post->content_atom, ENT_COMPAT, 'UTF-8', false );
 			$content = Plugins::filter( 'atom_add_post', $content, $post );
 
 			$feed_entry = $xml->addChild( 'entry' );
@@ -553,7 +552,7 @@ class AtomHandler extends ActionHandler
 
 			$user = User::get_by_id( $post->user_id );
 			$title = ( $this->is_auth() ) ? $post->title : $post->title_atom;
-			$content = ( $this->is_auth() ) ? Utils::htmlspecialchars( $post->content ) : Utils::htmlspecialchars( $post->content_atom );
+			$content = ( $this->is_auth() ) ? Utils::htmlspecialchars( $post->content, ENT_COMPAT, 'UTF-8', false ) : Utils::htmlspecialchars( $post->content_atom, ENT_COMPAT, 'UTF-8', false );
 
 			// Build the namespaces, plugins can alter it to override or insert their own.
 			$namespaces = array( 'default' => 'http://www.w3.org/2005/Atom' );
