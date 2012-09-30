@@ -1092,12 +1092,17 @@ class Utils
 	* @param $string. string. The string to escape
 	* @param $quote_flag. integer. Sets what quotes and doublequotes are escaped
 	* @param $encoding. string. The encoding of the passed string
+	* @param $decode. bool. Whether or not to unescape any html entities first
+	* @param $double_encode. bool. Whether or not to double escape any html entities
 	*
 	* @return The escaped string
 	*/
-	public static function htmlspecialchars( $string, $quote_flag = ENT_COMPAT, $encoding = 'UTF-8' )
+	public static function htmlspecialchars( $string, $quote_flag = ENT_COMPAT, $encoding = 'UTF-8', $decode = true, $double_encode = true )
 	{
-		return htmlspecialchars( html_entity_decode( $string, ENT_QUOTES, $encoding ), $quote_flag, $encoding );
+		if( $decode ) {
+			$string = html_entity_decode($string, ENT_QUOTES, $encoding );
+		}
+		return htmlspecialchars( $string, $quote_flag, $encoding, $double_encode );
 	}
 
 	/**
