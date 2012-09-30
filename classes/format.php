@@ -165,7 +165,7 @@ class Format
 		$block_elements = array(
 			'address','blockquote','center','dir','div','dl','fieldset','form',
 			'h1','h2','h3','h4','h5','h6','hr','isindex','menu','noframes',
-			'noscript','ol','p','pre','table','ul','figure','figcaption', 'dl'
+			'noscript','ol','p','pre','table','ul','figure','figcaption'
 		);
 
 		$token = $set->current();
