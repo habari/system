@@ -6,12 +6,12 @@ CREATE TABLE {$prefix}posts (
   guid VARCHAR(255) NOT NULL,
   content LONGTEXT NOT NULL,
   cached_content LONGTEXT NOT NULL,
-  input_formats VARCHAR(255) NOT NULL,
   user_id SMALLINT UNSIGNED NOT NULL,
   status SMALLINT UNSIGNED NOT NULL,
   pubdate INT UNSIGNED NOT NULL,
   updated INT UNSIGNED NOT NULL,
   modified INT UNSIGNED NOT NULL,
+  input_formats VARCHAR(255) NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY slug (slug(80))
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;

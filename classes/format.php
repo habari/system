@@ -165,7 +165,7 @@ class Format
 		$block_elements = array(
 			'address','blockquote','center','dir','div','dl','fieldset','form',
 			'h1','h2','h3','h4','h5','h6','hr','isindex','menu','noframes',
-			'noscript','ol','p','pre','table','ul','figure','figcaption', 'dl'
+			'noscript','ol','p','pre','table','ul','figure','figcaption'
 		);
 
 		$token = $set->current();
@@ -497,7 +497,7 @@ class Format
 		if ( count( $matches ) > 1 ) {
 			$summary = reset( $matches );
 		}
-		elseif ( isset( $max_words ) || isset( $max_paragraphs ) ) {
+		else {
 			// otherwise, we need to summarize it automagically
 			$max_words = empty( $max_words ) ? 9999999 : intval( $max_words );
 			$max_paragraphs = empty( $max_paragraphs ) ? 9999999 : intval( $max_paragraphs );
