@@ -184,6 +184,11 @@ class Stack
 		$sorted = array();
 
 		$sort = function(&$stackitem, $sort) use (&$sorted) {
+			static $sortindex = array();
+			if(isset($sortindex[$stackitem->name])) {
+				return;
+			}
+			$sortindex[$stackitem->name] = true;
 			/** @var StackItem $stackitem */
 			$dependencies = $stackitem->get_dependencies();
 			/** @var StackItem $dependency */
