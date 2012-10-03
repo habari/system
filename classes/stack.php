@@ -134,16 +134,14 @@ class Stack
 	public static function add( $stack_name, $value, $value_name = null, $after = null )
 	{
 		$stack = self::get_named_stack( $stack_name );
-		$value_name = $value_name ? $value_name : md5( serialize( $value ) );
-		if ( !is_null( $after ) ) {
-			if ( !is_array( $after ) ) {
-				$after = array( $after );
-			}
-			foreach ( $after as $a ) {
-				self::depend($stack_name, $value_name, $a);
+		if(!$value instanceof StackItem) {
+			$value_name = $value_name ? $value_name : md5( serialize( $value ) );
+			$value = StackItem::register($value_name, $value);
+			foreach((array)$after as $a) {
+				$value->add_dependency($a);
 			}
 		}
-		$stack[$value_name] = $value;
+		$stack[$value->name] = $value;
 		self::$stacks[$stack_name] = $stack;
 		return $stack;
 	}
@@ -188,35 +186,32 @@ class Stack
 		return $stack;
 	}
 
+	/**
+	 * Get the full list of StackItems in the correct order and with dependencies for a named stack
+	 * @param $stack_name
+	 * @return array A complete array of StackItems
+	 */
 	public static function get_sorted_stack( $stack_name )
 	{
-		self::$sorting = $stack_name;
-		$stack = self::get_named_stack( $stack_name );
-
+		$raw_stack = self::get_named_stack( $stack_name );
 		$sorted = array();
-		$depdata = self::$stack_sort[ $stack_name ];
-		$lastcount = 0;
-		$failed = false;
-		while(count($sorted) < count($stack)) {
-			foreach($stack as $itemkey => $value) {
-				if(isset($sorted[$itemkey])) {
-					continue;
-				}
-				if(!$failed && isset($depdata[$itemkey])) {
-					$requires = $depdata[$itemkey];
-					$requires = array_combine($depdata[$itemkey], $depdata[$itemkey]);
-					if(count(array_intersect_key($requires, $sorted)) == count($requires)) {
-						$sorted[$itemkey] = $value;
-					}
-				}
-				else {
-					$sorted[$itemkey] = $value;
+
+		$sort = function(&$stackitem, $sort) use (&$sorted) {
+			/** @var StackItem $stackitem */
+			$dependencies = $stackitem->get_dependencies();
+			/** @var StackItem $dependency */
+			foreach($dependencies as &$dependency) {
+				$sort($dependency, $sort);
+				if(!$dependency->in_stack_index($sorted)) {
+					$sorted[$dependency->name] = $dependency;
+					$have_everything = false;
 				}
 			}
-			if($lastcount == count($sorted)) {
-				$failed = true;
-			}
-			$lastcount = count($sorted);
+			$sorted[$stackitem->name] = $stackitem;
+		};
+
+		foreach($raw_stack as &$stackitem) {
+			$sort($stackitem, $sort);
 		}
 
 		return $sorted;
