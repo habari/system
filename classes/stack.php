@@ -215,11 +215,12 @@ class Stack
 		$stack = self::get_sorted_stack( $stack_name );
 		$stack = Plugins::filter( 'stack_out', $stack, $stack_name, $format );
 		foreach ( $stack as $element ) {
+			/** @var StackItem $element */
 			if ( is_callable( $format ) ) {
-				$out.= call_user_func_array( $format, (array) $element );
+				$out.= call_user_func_array( $format, (array) $element->resource );
 			}
 			elseif ( is_string( $format ) ) {
-				$out .= vsprintf( $format, (array) $element );
+				$out .= vsprintf( $format, (array) $element->resource );
 			}
 			else {
 				$out.= $element;

@@ -5,16 +5,24 @@
 	*/
 
 	/**
-	* Habari StackItem Class
-	*
-	* This class represents a single item that can be used as a component in Habari's stack output
-	*/
+	 * Habari StackItem Class
+	 *
+	 * This class represents a single item that can be used as a component in Habari's stack output
+	 * @property mixed $resource The value of the StackItem used for output
+	 */
 
 class StackItem
 {
 	static $items = array();
-	private $dependencies = array();
+	protected $dependencies = array();
+	protected $resource = '';
 
+	/**
+	 * Constructor for StackItem
+	 * @param string $name Name of the item
+	 * @param string $version PHP version string-compatible version number
+	 * @param mixed $resource Value of the item
+	 */
 	public function __construct($name, $version, $resource)
 	{
 		$this->name = $name;
@@ -22,6 +30,10 @@ class StackItem
 		$this->resource = $resource;
 	}
 
+	/**
+	 * Define behavior for when this StackItem is cast to a string
+	 * @return string
+	 */
 	public function __toString()
 	{
 		if(is_callable($this->resource)) {
@@ -30,27 +42,46 @@ class StackItem
 		return $this->resource;
 	}
 
+	public function __get($name)
+	{
+		switch($name) {
+			case 'resource':
+				return Plugins::filter('get_stackitem_resource', $this->resource, $this);
+		}
+	}
+
 	/**
 	 * Add a dependency to this StackItem
-	 * @param StackItem $item A Stack Item upon which this item depends
+	 * @param string|StackItem $itemname The name of the stack item upon which this item depends
+	 * @param null|string $version Optional PHP-compatible version number string
+	 * @return \StackItem Fluid interface returns $this
 	 */
 	public function add_dependency($itemname, $version = null)
 	{
-		$this->dependencies[] = array('name' => $itemname, 'version' => $version);
+		if($itemname instanceof StackItem) {
+			$this->dependencies[] = $itemname;
+		}
+		else {
+			$this->dependencies[] = array('name' => $itemname, 'version' => $version);
+		}
 		return $this;
 	}
 
 	public function get_dependencies()
 	{
-		$dependencies = array();
+		$results = array();
 		foreach($this->dependencies as $dependency) {
-			$stackitem = self::get($dependency['name'], $dependency['version']);
-			if(is_null($stackitem)) {
-				$stackitem = self::register($dependency['name']);
+			if(is_array($dependency)) {
+				$stackitem = self::get($dependency['name'], $dependency['version']);
+				if($stackitem instanceof StackItem) {
+					$results[$dependency['name']] = $stackitem;
+				}
 			}
-			$dependencies[$dependency['name']] = &$stackitem;
+			else {
+				$results[$dependency->name] = $dependency;
+			}
 		}
-		return $dependencies;
+		return array_filter($results);
 	}
 
 	/**
