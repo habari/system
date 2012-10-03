@@ -255,11 +255,7 @@ class Stack
 	public static function scripts( $element, $attrib = null, $wrapper = '%s' )
 	{
 		if(is_array($attrib)) {
-			$attrib = $attrib + array('type' => 'text/javascript');
 			$attrib = Utils::html_attr($attrib);
-		}
-		else {
-			$attrib .= ' type="text/javascript"';
 		}
 		if ( self::is_url( $element ) ) {
 			$output = sprintf( "<script %s src=\"%s\"></script>\r\n", $attrib, $element );
