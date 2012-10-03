@@ -134,6 +134,11 @@ class Stack
 	public static function add( $stack_name, $value, $value_name = null, $after = null )
 	{
 		$stack = self::get_named_stack( $stack_name );
+		if($value_name == null && is_string($value)) {
+			if($test = StackItem::get($value)) {
+				$value = $test;
+			}
+		}
 		if(!$value instanceof StackItem) {
 			$value_name = $value_name ? $value_name : md5( serialize( $value ) );
 			$value = StackItem::register($value_name, $value);
@@ -144,24 +149,6 @@ class Stack
 		$stack[$value->name] = $value;
 		self::$stacks[$stack_name] = $stack;
 		return $stack;
-	}
-
-	/**
-	 * Add a named stack item to the list of things it depends on
-	 * @static
-	 * @param string $stack_name The name of the stack
-	 * @param string $value_name The item name in the stack
-	 * @param string $value_name_on The item name on which this item depends
-	 */
-	public static function depend( $stack_name, $value_name, $value_name_on )
-	{
-		if ( !isset( self::$stack_sort[$stack_name] ) ) {
-			self::$stack_sort[$stack_name] = array();
-		}
-		if ( !isset( self::$stack_sort[$stack_name][$value_name] ) ) {
-			self::$stack_sort[$stack_name][$value_name] = array();
-		}
-		self::$stack_sort[$stack_name][$value_name][$value_name_on] = $value_name_on;
 	}
 
 	/**
