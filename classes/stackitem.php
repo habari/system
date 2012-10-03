@@ -37,7 +37,9 @@ class StackItem
 	public function __toString()
 	{
 		if(is_callable($this->resource)) {
-			return $this->resource($this);
+			/** @var Callable $fn */
+			$fn = $this->resource;
+			return $fn($this);
 		}
 		return $this->resource;
 	}
@@ -67,6 +69,10 @@ class StackItem
 		return $this;
 	}
 
+	/**
+	 * Get the dependencies for this item
+	 * @return array An array of StackItems that this item depends on
+	 */
 	public function get_dependencies()
 	{
 		$results = array();
@@ -121,11 +127,23 @@ class StackItem
 	public static function get($name, $version = null) {
 		if(isset(self::$items[$name])) {
 			$result = array_reduce(self::$items[$name], function(&$result, $item) use ($version) {
+				// If there was no result yet
 				if(is_null($result)) {
+					// If the version requested was omitted
+					// or the version of this item is greater than or equal to the version requested
 					if(is_null($version) || version_compare($version, $item->version) >= 0) {
+						// return this item
 						return $item;
 					}
 				}
+				else {
+					// If this item has a higher version than the one we already have
+					if(version_compare($result->version, $item->version) < 0) {
+						// return this item, which is more current
+						return $item;
+					}
+				}
+				// Otherwise, return the result we already have
 				return $result;
 			}, null);
 			return $result;
