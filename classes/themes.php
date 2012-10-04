@@ -370,8 +370,6 @@ class Themes
 		Plugins::act_id( 'init_theme', $created_theme->plugin_id(), $created_theme );
 		Plugins::act( 'init_theme_any', $created_theme );
 
-		Plugins::act( 'register_stackitems' );
-
 		$bound[$hash] = $created_theme;
 		return $created_theme;
 	}
