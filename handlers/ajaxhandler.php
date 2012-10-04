@@ -41,6 +41,7 @@ class AjaxHandler extends ActionHandler
 	{
 		$user = User::identify();
 		if ( $user->loggedin ) {
+			Plugins::act( 'auth_ajax_verify',  $this );
 			/**
 			 * Triggers the ajax plugin action for the context if user is authenticated.
 			 *

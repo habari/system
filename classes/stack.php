@@ -304,6 +304,39 @@ class Stack
 	{
 		return ( ( strpos( $url, 'http://' ) === 0 || strpos( $url, 'https://' ) === 0 || strpos( $url, '//' ) === 0 || strpos( $url, '/' ) === 0 ) && strpos( $url, "\n" ) === false );
 	}
+
+	/**
+	 * Allow plugins to register StackItems that can be added to Stacks later
+	 * Initialize this class for plugin behavior
+	 */
+	public static function load_stackitems()
+	{
+		Pluggable::load_hooks(__CLASS__);
+		Plugins::act( 'register_stackitems' );
+	}
+
+	/**
+	 * Register stacks and scripts to be added to the stacks.
+	 */
+	public static function action_register_stackitems()
+	{
+		// Register default StackItems
+		StackItem::register( 'jquery', Site::get_url( 'vendor', '/jquery.js' ) );
+		StackItem::register( 'jquery.ui', Site::get_url( 'vendor', '/jquery-ui.min.js' ) )->add_dependency( 'jquery' );
+		StackItem::register( 'jquery.color', Site::get_url( 'vendor', '/jquery.color.js' ) )->add_dependency('jquery.ui' );
+		StackItem::register( 'jquery-nested-sortable', Site::get_url( 'vendor', '/jquery.ui.nestedSortable.js') ) ->add_dependency('jquery.ui' );
+		StackItem::register( 'humanmsg', Site::get_url( 'vendor', '/humanmsg/humanmsg.js' ) )->add_dependency( 'jquery' );
+		StackItem::register( 'jquery.hotkeys', Site::get_url( 'vendor', '/jquery.hotkeys.js' ) )->add_dependency( 'jquery' );
+		StackItem::register( 'locale-js', URL::get( 'admin', 'page=locale' ) );
+		StackItem::register( 'media', Site::get_url( 'admin_theme', '/js/media.js' ) )->add_dependency( 'jquery' )->add_dependency( 'locale' );
+		StackItem::register( 'admin-js', Site::get_url( 'admin_theme', '/js/admin.js' ) )->add_dependency( 'jquery' )->add_dependency( 'locale' );
+		StackItem::register( 'crc32', Site::get_url( 'vendor', '/crc32.js' ) );
+
+		StackItem::register( 'admin-css', array( Site::get_url( 'admin_theme', '/css/admin.css'), 'screen' ) );
+		StackItem::register( 'jquery.ui-css', array( Site::get_url( 'admin_theme', '/css/jqueryui.css'), 'screen' ) );
+		StackItem::register( 'humanmsg-css', array( Site::get_url( 'vendor', '/humanmsg/humanmsg.css'), 'screen' ) );
+	}
+
 }
 
 

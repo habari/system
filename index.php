@@ -174,6 +174,9 @@ SuperGlobal::process_c();
 // Initiating request handling, tell the plugins.
 Plugins::act( 'init' );
 
+// Load Stack Items
+Stack::load_stackitems();
+
 if ( defined( 'SUPPRESS_REQUEST' ) ) {
 	return;
 }
