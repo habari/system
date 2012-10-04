@@ -247,10 +247,7 @@ class CoreDashModules extends Plugin
 	}
 
 	/**
-	* Adds the podcast stylesheet to the admin header,
-	* Adds menu items to the Habari silo for mp3 files
-	* for each feed so the mp3 can be added to multiple 
-	* feeds.
+	* Adds the stylesheet to the admin header only on the dashboard.
 	*
 	* @param Theme $theme The current theme being used.
 	*/
@@ -258,7 +255,7 @@ class CoreDashModules extends Plugin
 	{
 		$vars = Controller::get_handler_vars();
 		if( 'dashboard' == $theme->page ) {
-			Stack::add( 'admin_stylesheet', array( $this->get_url() . '/coredashmodules.css', 'screen' ), 'coredashmodules', array( 'admin' ) );
+			Stack::add( 'admin_stylesheet', array( $this->get_url() . '/coredashmodules.css', 'screen' ), 'coredashmodules', array( 'admin-css' ) );
 		}
 	}
 

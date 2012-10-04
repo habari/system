@@ -72,16 +72,16 @@ class Themes
 						$themedata['screenshot'] = Site::get_url( 'admin_theme' ) . "/images/screenshot_default.png";
 					}
 				}
-				
+
 				self::$all_data[$theme_dir] = $themedata;
 			}
 		}
 		return self::$all_data;
 	}
-	
+
 	/**
 	 * Returns the name of the active or previewed theme
-	 * 
+	 *
 	 * @params boolean $nopreview If true, return the real active theme, not the preview
 	 * @return string the current theme or previewed theme's directory name
 	 */
@@ -126,7 +126,7 @@ class Themes
 			if ( !$theme_exists ) {
 				die( _t( 'There is no valid theme currently installed.' ) );
 			}
-		} 		
+		}
 		return $themes[$theme_dir];
 	}
 
@@ -222,14 +222,14 @@ class Themes
 			Options::set( 'theme_name', $theme_name );
 			Options::set( 'theme_dir', $theme_dir );
 			$new_active_theme = Themes::create($theme_name);
-			
+
 			// Set version of theme if it wasn't installed before
 			$versions = Options::get( 'pluggable_versions' );
 			if(!isset($versions[get_class($new_active_theme)])) {
 				$versions[get_class($new_active_theme)] = $new_active_theme->get_version();
 				Options::set( 'pluggable_versions', $versions );
 			}
-			
+
 			// Run activation hooks for theme activation
 			Plugins::act_id( 'theme_activated', $new_active_theme->plugin_id(), $theme_name, $new_active_theme ); // For the theme itself to react to its activation
 			Plugins::act( 'theme_activated_any', $theme_name, $new_active_theme ); // For any plugin to react to its activation
@@ -237,10 +237,10 @@ class Themes
 		}
 		return $ok;
 	}
-	
+
 	/**
 	 * Sets a theme to be the current user's preview theme
-	 * 
+	 *
 	 * @param string $theme_name The name of the theme to preview
 	 * @param string $theme_dir The directory of the theme to preview
 	 */
@@ -259,7 +259,7 @@ class Themes
 
 		return $ok;
 	}
-	
+
 	/**
 	 * Cancel the viewing of any preview theme
 	 */
@@ -369,9 +369,11 @@ class Themes
 		$created_theme->upgrade();
 		Plugins::act_id( 'init_theme', $created_theme->plugin_id(), $created_theme );
 		Plugins::act( 'init_theme_any', $created_theme );
+
+		Plugins::act( 'register_stackitems' );
+
 		$bound[$hash] = $created_theme;
 		return $created_theme;
-
 	}
 
 	public static function class_from_filename( $file, $check_realpath = false )

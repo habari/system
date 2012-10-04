@@ -134,36 +134,21 @@ class Stack
 	public static function add( $stack_name, $value, $value_name = null, $after = null )
 	{
 		$stack = self::get_named_stack( $stack_name );
-		$value_name = $value_name ? $value_name : md5( serialize( $value ) );
-		if ( !is_null( $after ) ) {
-			if ( !is_array( $after ) ) {
-				$after = array( $after );
-			}
-			foreach ( $after as $a ) {
-				self::depend($stack_name, $value_name, $a);
+		if($value_name == null && is_string($value)) {
+			if($test = StackItem::get($value)) {
+				$value = $test;
 			}
 		}
-		$stack[$value_name] = $value;
+		if(!$value instanceof StackItem) {
+			$value_name = $value_name ? $value_name : md5( serialize( $value ) );
+			$value = StackItem::register($value_name, $value);
+			foreach((array)$after as $a) {
+				$value->add_dependency($a);
+			}
+		}
+		$stack[$value->name] = $value;
 		self::$stacks[$stack_name] = $stack;
 		return $stack;
-	}
-
-	/**
-	 * Add a named stack item to the list of things it depends on
-	 * @static
-	 * @param string $stack_name The name of the stack
-	 * @param string $value_name The item name in the stack
-	 * @param string $value_name_on The item name on which this item depends
-	 */
-	public static function depend( $stack_name, $value_name, $value_name_on )
-	{
-		if ( !isset( self::$stack_sort[$stack_name] ) ) {
-			self::$stack_sort[$stack_name] = array();
-		}
-		if ( !isset( self::$stack_sort[$stack_name][$value_name] ) ) {
-			self::$stack_sort[$stack_name][$value_name] = array();
-		}
-		self::$stack_sort[$stack_name][$value_name][$value_name_on] = $value_name_on;
 	}
 
 	/**
@@ -188,35 +173,37 @@ class Stack
 		return $stack;
 	}
 
+	/**
+	 * Get the full list of StackItems in the correct order and with dependencies for a named stack
+	 * @param $stack_name
+	 * @return array A complete array of StackItems
+	 */
 	public static function get_sorted_stack( $stack_name )
 	{
-		self::$sorting = $stack_name;
-		$stack = self::get_named_stack( $stack_name );
-
+		$raw_stack = self::get_named_stack( $stack_name );
 		$sorted = array();
-		$depdata = self::$stack_sort[ $stack_name ];
-		$lastcount = 0;
-		$failed = false;
-		while(count($sorted) < count($stack)) {
-			foreach($stack as $itemkey => $value) {
-				if(isset($sorted[$itemkey])) {
-					continue;
-				}
-				if(!$failed && isset($depdata[$itemkey])) {
-					$requires = $depdata[$itemkey];
-					$requires = array_combine($depdata[$itemkey], $depdata[$itemkey]);
-					if(count(array_intersect_key($requires, $sorted)) == count($requires)) {
-						$sorted[$itemkey] = $value;
-					}
-				}
-				else {
-					$sorted[$itemkey] = $value;
+
+		$sort = function(&$stackitem, $sort) use (&$sorted) {
+			static $sortindex = array();
+			if(isset($sortindex[$stackitem->name])) {
+				return;
+			}
+			$sortindex[$stackitem->name] = true;
+			/** @var StackItem $stackitem */
+			$dependencies = $stackitem->get_dependencies();
+			/** @var StackItem $dependency */
+			foreach($dependencies as &$dependency) {
+				$sort($dependency, $sort);
+				if(!$dependency->in_stack_index($sorted)) {
+					$sorted[$dependency->name] = $dependency;
+					$have_everything = false;
 				}
 			}
-			if($lastcount == count($sorted)) {
-				$failed = true;
-			}
-			$lastcount = count($sorted);
+			$sorted[$stackitem->name] = $stackitem;
+		};
+
+		foreach($raw_stack as &$stackitem) {
+			$sort($stackitem, $sort);
 		}
 
 		return $sorted;
@@ -233,11 +220,12 @@ class Stack
 		$stack = self::get_sorted_stack( $stack_name );
 		$stack = Plugins::filter( 'stack_out', $stack, $stack_name, $format );
 		foreach ( $stack as $element ) {
+			/** @var StackItem $element */
 			if ( is_callable( $format ) ) {
-				$out.= call_user_func_array( $format, (array) $element );
+				$out.= call_user_func_array( $format, (array) $element->resource );
 			}
 			elseif ( is_string( $format ) ) {
-				$out .= vsprintf( $format, (array) $element );
+				$out .= vsprintf( $format, (array) $element->resource );
 			}
 			else {
 				$out.= $element;
@@ -267,11 +255,7 @@ class Stack
 	public static function scripts( $element, $attrib = null, $wrapper = '%s' )
 	{
 		if(is_array($attrib)) {
-			$attrib = $attrib + array('type' => 'text/javascript');
 			$attrib = Utils::html_attr($attrib);
-		}
-		else {
-			$attrib .= ' type="text/javascript"';
 		}
 		if ( self::is_url( $element ) ) {
 			$output = sprintf( "<script %s src=\"%s\"></script>\r\n", $attrib, $element );
@@ -311,8 +295,7 @@ class Stack
 	/**
 	 * Check if the passed string looks like a URL or an absolute path to a file.
 	 * 
-	 * @todo There's a good chance this can be done in a better or more generic  
-	 * way.
+	 * @todo There's a good chance this can be done in a better or more generic way.
 	 * 
 	 * @param string $url The string to check.
 	 * @return boolean TRUE if the passed string looks like a URL.
