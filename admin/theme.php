@@ -21,6 +21,7 @@ class Monolith extends Theme
 
 		Stack::add( 'admin_stylesheet', 'admin-css' );
 		Stack::add( 'admin_stylesheet', 'jquery.ui-css' );
+		Stack::add( 'admin_stylesheet', 'humanmsg-css' );
 
 	}
 
@@ -43,6 +44,7 @@ class Monolith extends Theme
 
 		StackItem::register( 'admin-css', array( Site::get_url( 'admin_theme' ) . '/css/admin.css', 'screen' ) );
 		StackItem::register( 'jquery.ui-css', array( Site::get_url( 'admin_theme' ) . '/css/jqueryui.css', 'screen' ) );
+		StackItem::register( 'humanmsg-css', array( Site::get_url( 'vendor' ) . '/humanmsg/humanmsg.css', 'screen' ) );
 	}
 }
 ?>
