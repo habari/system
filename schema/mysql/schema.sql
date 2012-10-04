@@ -125,6 +125,8 @@ CREATE TABLE {$prefix}crontab (
   end_time INT UNSIGNED,
   result VARCHAR(255) NOT NULL,
   notify VARCHAR(255) NOT NULL,
+  failures INT UNSIGNED NOT NULL DEFAULT 0,
+  active TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
   cron_class TINYINT unsigned NOT NULL DEFAULT 0,
   description TEXT NULL,
   PRIMARY KEY (cron_id)
