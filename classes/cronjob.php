@@ -108,7 +108,7 @@ class CronJob extends QueryRecord
 		$paramarray = array_merge( array( 'now' => $this->now ), $this->to_array() );
 
 		if ( is_callable( $this->callback ) ) {
-			$result = @call_user_func( $this->callback, $paramarray );
+			$result = call_user_func( $this->callback, $paramarray );
 		}
 		else {
 			$result = true;
