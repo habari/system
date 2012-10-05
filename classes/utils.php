@@ -1336,25 +1336,26 @@ class Utils
 	 * @return bool True if the WSSE values passed are valid
 	 */
 	public static function verify_wsse($data) {
+		$pass = true;
+		if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 			$extract = $data->handler_vars->filter_keys( 'nonce', 'timestamp', 'digest' );
-			$pass = true;
 		
 			foreach ( $extract as $key => $value ) {
 				$$key = $value;
 			}
-
+	
 			if ( empty( $nonce ) || empty( $timestamp ) || empty( $digest ) ) {
 				$pass = false;
 			}
-
+	
 			if( $pass == true ) {
 				$check = self::WSSE( $nonce, $timestamp );
 				if ( $digest != $check['digest'] ) {
 					$pass = false;
 				}
 			}
-		
-			return $pass;
 		}
+		return $pass;
+	}
 }
 ?>
