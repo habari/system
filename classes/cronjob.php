@@ -131,7 +131,7 @@ class CronJob extends QueryRecord
 			// this is a callable we can actually call, so do it
 			$result = call_user_func( $this->callback, $paramarray );
 		}
-		else if ( is_callable( $this->callback, true, $callable_name ) ) {
+		else if ( !is_string($this->callback) && is_callable( $this->callback, true, $callable_name ) ) {
 			// this looks like a callable to PHP, but it cannot be called at present and should not be assumed to be a plugin filter name
 			// there is nothing for us to do, but it was a specifically-named function for us to call, so assume this is a failure
 			$result = false;
