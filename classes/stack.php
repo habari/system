@@ -325,11 +325,11 @@ class Stack
 		StackItem::register( 'jquery.ui', Site::get_url( 'vendor', '/jquery-ui.min.js' ) )->add_dependency( 'jquery' );
 		StackItem::register( 'jquery.color', Site::get_url( 'vendor', '/jquery.color.js' ) )->add_dependency('jquery.ui' );
 		StackItem::register( 'jquery-nested-sortable', Site::get_url( 'vendor', '/jquery.ui.nestedSortable.js') ) ->add_dependency('jquery.ui' );
-		StackItem::register( 'humanmsg', Site::get_url( 'vendor', '/humanmsg/humanmsg.js' ) )->add_dependency( 'jquery' );
+		StackItem::register( 'humanmsg', Site::get_url( 'vendor', '/humanmsg/humanmsg.js' ) )->add_dependency( 'jquery' )->add_dependency( 'locale-js' );
 		StackItem::register( 'jquery.hotkeys', Site::get_url( 'vendor', '/jquery.hotkeys.js' ) )->add_dependency( 'jquery' );
 		StackItem::register( 'locale-js', URL::get( 'admin', 'page=locale' ) );
-		StackItem::register( 'media', Site::get_url( 'admin_theme', '/js/media.js' ) )->add_dependency( 'jquery' )->add_dependency( 'locale' );
-		StackItem::register( 'admin-js', Site::get_url( 'admin_theme', '/js/admin.js' ) )->add_dependency( 'jquery' )->add_dependency( 'locale' );
+		StackItem::register( 'media', Site::get_url( 'admin_theme', '/js/media.js' ) )->add_dependency( 'jquery' )->add_dependency( 'locale-js' );
+		StackItem::register( 'admin-js', Site::get_url( 'admin_theme', '/js/admin.js' ) )->add_dependency( 'jquery' )->add_dependency( 'locale-js' );
 		StackItem::register( 'crc32', Site::get_url( 'vendor', '/crc32.js' ) );
 
 		StackItem::register( 'admin-css', array( Site::get_url( 'admin_theme', '/css/admin.css'), 'screen' ) );
