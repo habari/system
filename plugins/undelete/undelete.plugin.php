@@ -269,7 +269,7 @@ var unDelete = {
 	}
 }
 JS;
-			Stack::add( 'admin_header_javascript', $script, 'undelete', 'admin' );
+			Stack::add( 'admin_header_javascript', $script, 'undelete', 'admin-js' );
 		}
 	}
 }
