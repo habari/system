@@ -307,7 +307,7 @@ class Stack
 
 	/**
 	 * Allow plugins to register StackItems that can be added to Stacks later
-	 * Initialize this class for plugin behavior
+	 * Initialize this class for plugin behavior so it can add system default StackItems
 	 */
 	public static function load_stackitems()
 	{
@@ -316,7 +316,7 @@ class Stack
 	}
 
 	/**
-	 * Register stacks and scripts to be added to the stacks.
+	 * Register CSS and script that can be added to the Stacks.
 	 */
 	public static function action_register_stackitems()
 	{
