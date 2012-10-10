@@ -10,6 +10,11 @@
  * Represents a log entry
  *
  * @todo Apply system error handling
+ *
+ * @property-read string $module The name of the module creating this entry
+ * @property-read string type The name of the type of this entry
+ * @property-read string $severity The name of the severity of this entry
+ * @property-write mixed $timestamp The time of this entry. Can be a HabariDateTime object or a valid parameter for HabariDateTime::date_create()
  */
 class LogEntry extends QueryRecord
 {
@@ -34,7 +39,7 @@ class LogEntry extends QueryRecord
 			9 => $translate ? _t( 'emerg' ) : 'emerg',
 		);
 	}
-	
+
 	/**
 	 * Cache for log_types
 	 */
@@ -205,12 +210,12 @@ class LogEntry extends QueryRecord
 			unset( $this->fields['module'] );
 			unset( $this->fields['type'] );
 		}
-		
+
 		// if we're set to only log entries greater than a sertain level, make sure we're that level or higher
 		if ( $this->fields['severity_id'] < Options::get( 'log_min_severity' ) ) {
 			return;
 		}
-		
+
 		// make sure data is a string and can be stored. lots of times it's convenient to hand in an array of data values
 		if ( is_array( $this->fields['data'] ) || is_object( $this->fields['data'] ) ) {
 			$this->fields['data'] = serialize( $this->fields['data'] );
@@ -218,9 +223,9 @@ class LogEntry extends QueryRecord
 
 		Plugins::filter( 'insert_logentry', $this );
 		parent::insertRecord( DB::table( 'log' ) );
-		
+
 		$this->id = DB::last_insert_id();
-		
+
 	}
 
 	/**

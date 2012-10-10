@@ -2,6 +2,10 @@
 /**
  * @package Habari
  *
+ * @property-read UserInfo $info The UserInfo object for this user
+ * @property-read array $groups An array of the group ids to which this user belongs
+ * @property-read string $displayname This user's display name, or their user name if the display name is empty
+ * @property-read boolean $loggedin Whether or not this user is currently identified
  */
 
 /**
@@ -230,18 +234,18 @@ class User extends QueryRecord implements FormStorage, IsContent
 	 */
 	public function forget( $redirect = true )
 	{
-		
+
 		// if the user is not actually logged in, just return so we don't throw any errors later
 		if ( $this->loggedin != true ) {
 			return;
 		}
-		
+
 		// is this user acting as another user?
 		if ( isset( $_SESSION['sudo'] ) ) {
 			// if so, remove the sudo token, but don't log out
 			// the user
 			unset( $_SESSION['sudo'] );
-			
+
 			if ( $redirect ) {
 				Utils::redirect( Site::get_url( 'admin' ) );
 			}
@@ -254,7 +258,7 @@ class User extends QueryRecord implements FormStorage, IsContent
 		Plugins::act( 'user_forget', $this );
 		Session::clear_userid( $_SESSION['user_id'] );
 		unset( $_SESSION['user_id'] );
-		
+
 		if ( $redirect ) {
 			Utils::redirect( Site::get_url( 'habari' ) );
 		}
