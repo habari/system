@@ -1,0 +1,158 @@
+div#tree > ol li div {
+	position: relative;
+}
+div#tree > ol li ul.dropbutton {
+	top: 2px;
+	right: 10px;
+}
+a.menu_button_dark,
+a.menu_button_dark:active
+ {
+	margin: 0 0.5em;
+	color: #fff !important;
+	background: #333;
+	padding: 2px 5px;
+	font-size: 10px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-moz-box-shadow: 1px 1px 3px #999;
+	-webkit-box-shadow: 1px 1px 3px #999;
+	box-shadow: 1px 1px 3px #999;
+	text-decoration: none;
+	font-family: 'Helvetica Neue', Helvetica, 'Lucida Grande', Arial, Verdana, Sans-Serif;
+}
+
+a.menu_button_dark:hover {
+	background: #555;
+	text-decoration: none;
+}
+
+div#menu_form #menuname,
+div#menu_form #description {
+	/* to line up with the tree */
+	margin-left: 15px;
+}
+
+div#menu_item_button_container  {
+	padding: 6px 3px 8px 3px;
+	background: #999;
+	margin: 0 0 15px 15px;
+}
+
+div#title.formcontrol label,
+div#link_name.formcontrol label,
+div#link_url.formcontrol label {
+	width: 70px;
+	display: inline-block;
+	font-weight: bold;
+}
+
+div#title.formcontrol input,
+div#link_name.formcontrol input,
+div#link_url.formcontrol input {
+	width: 350px;
+}
+
+div#save.formcontrol {
+	margin-top: 15px;
+}
+
+div#menu_form.container div#menu_vocab em { /* menu description on edit page */
+	font-style: italic;
+	color: #BBB;
+	margin-left: 1em;
+}
+
+div#menu_form.container div#menu_vocab { /* box around menu title and description on edit page */
+	background-color: #666;
+	border: 1px solid #888;
+	border-radius: 5px 5px 5px 5px;
+	color: white;
+	padding: 10px 15px;
+	margin: 10px 0px;
+	font-size: 1.6em;
+}
+
+div#menu_form.container div#menu_vocab a.menu_vocab_edit,
+div#menu_form.container div#menu_vocab a.menu_vocab_edit:active { /*edit link in box around menu title */
+	float: right;
+	margin-right: 0.5em;
+	color: #000 !important;
+	background: #DDD;
+	padding: 3px 8px;
+	font-size: 13px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-moz-box-shadow: 1px 1px 3px #666;
+	-webkit-box-shadow: 1px 1px 3px #666;
+	box-shadow: 1px 1px 3px #666;
+	text-decoration: none;
+	font-family: 'Helvetica Neue', Helvetica, 'Lucida Grande', Arial, Verdana, Sans-Serif;
+}
+
+div#menu_form.container div#menu_vocab a.menu_vocab_edit:hover {
+	background: #BBB;
+	color: #333;
+}
+
+div#menu_form.container ul a {
+	text-decoration: none;
+}
+
+div.token-input-dropdown {
+	z-index: 1009 !important;
+}
+
+div#menu_form.container form#edit_menu h3 {
+	margin: 0 0 10px 0;
+}
+
+body.page-menus div#menu_form.container {
+	min-height: 125px;
+}
+
+body.page-menus #menu_form.container label {
+	display: inline-block;
+	width: 7em;
+	float: left;
+}
+
+ol.tree {
+	border: 1px solid #999;
+}
+
+input[type="submit"] {
+	display: block;
+	clear: both;
+}
+
+form#menu_item_edit .helptext {
+	font-style: italic;
+	color: #999;
+	clear: both;
+	margin-left: 25%;
+}
+
+.a_button { /* needs a better name. */
+	padding: 2px 4px 2px 4px;
+	cursor: pointer;
+	border-radius: 9px;
+	-webkit-border-radius: 9px;
+	-moz-border-radius: 9px;
+	font-size: 10px;
+	background: transparent url('../../../system/admin/images/button_background.png') repeat-x; /* @TODO fix this url when this goes into core */
+	border: 1px solid #B3B3B3;
+	text-align: center;
+}
+
+.a_button:hover {
+	border: 1px solid #555;
+	background-position: 0 -30px;
+}
+
+a.a_button {
+	text-decoration: none;
+	display: inline-block;
+	min-width: 110px;
+}
+
