@@ -18,6 +18,14 @@
  * unset ( $this->info->browser_ua ); // delete "browser_ua" info record
  * </code>
  *
+ * @property-write mixed $status The status of the comment. Can be a string or an integer
+ * @property-write mixed $date The date of the comment. Can be a HabariDateTime object or any of the formats accepted by HabariDateTime::date_create()
+ * @property mixed $post The post with which the comment is associated. Can be an integer, a string, or a Post object on write. Always a Post object on read
+ * @property-read string $name The comment author's name, Anonymous if empty
+ * @property-read CommentInfo $info The CommentInfo associated with the comment
+ * @property-read string $statusname The friendly name of the comment's status
+ * @property-read string $typename The friendly name of the comment's type
+ * @property-read string $editlink Edit URL for the comment
  */
 class Comment extends QueryRecord implements IsContent
 {
@@ -549,26 +557,26 @@ class Comment extends QueryRecord implements IsContent
 	{
 		return URL::get( 'admin', "page=comment&id={$this->id}" );
 	}
-	
+
 	/**
 	 * Returns a list of CSS classes for the comment
-	 * 
+	 *
 	 * @param string|array $append Additional classes that should be added to the ones generated
  	 * @return string The resultant classes
 	 */
 	public function css_class ( $append = array() ) {
-		
+
 		$classes = $append;
-		
+
 		$classes[] = 'comment';
 		$classes[] = 'comment-' . $this->id;
 		$classes[] = 'type-' . $this->typename;
 		$classes[] = 'status-' . $this->statusname;
-		
+
 		$classes[] = 'comment-post-' . $this->post->id;
 
 		return implode( ' ', $classes );
-		
+
 	}
 
 	/**

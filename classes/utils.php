@@ -596,6 +596,25 @@ class Utils
 	}
 
 	/**
+	 * Creates one or more HTML inputs
+	 * @param string The name of the input element.
+	 * @param array An array of input options.  Each element should be
+	 *	an array containing "name", "value" and "type".
+	 * @return string The HTML of the inputs
+	 */
+	public static function html_inputs( $options )
+	{
+		$output = '';
+		foreach ( $options as $option ) {
+			$output .= '<input type="' . $option['type'] . '" id="' . $option[ 'name' ] . '" name="' . $option[ 'name' ];
+			$output .= '" value="' . $option[ 'value' ] . '"';
+			$output .= '>';
+		}
+		
+		return $output;
+	}
+
+	/**
 	 * Create an HTML select tag with options and a current value
 	 *
 	 * @param string $name The name and id of the select control
@@ -1299,6 +1318,44 @@ class Utils
 			}
 		}
 		return $content;
+	}
+
+	public static function setup_wsse() {
+		$wsse = self::WSSE();
+		$inputs = array();
+		$inputs[] = array('type' => 'hidden', 'value' => $wsse['nonce'], 'name' => 'nonce', 'id' => 'nonce');
+		$inputs[] = array('type' => 'hidden', 'value' => $wsse['digest'], 'name' => 'digest', 'id' => 'digest');
+		$inputs[] = array('type' => 'hidden', 'value' => $wsse['timestamp'], 'name' => 'timestamp', 'id' => 'timestamp');
+		return self::html_inputs( $inputs );
+	}
+	
+	/**
+	 * Verify WSSE values passed in.
+	 * @static
+	 * @param array $data payload from a given request
+	 * @return bool True if the WSSE values passed are valid
+	 */
+	public static function verify_wsse($data) {
+		$pass = true;
+		if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
+			$extract = $data->handler_vars->filter_keys( 'nonce', 'timestamp', 'digest' );
+		
+			foreach ( $extract as $key => $value ) {
+				$$key = $value;
+			}
+	
+			if ( empty( $nonce ) || empty( $timestamp ) || empty( $digest ) ) {
+				$pass = false;
+			}
+	
+			if( $pass == true ) {
+				$check = self::WSSE( $nonce, $timestamp );
+				if ( $digest != $check['digest'] ) {
+					$pass = false;
+				}
+			}
+		}
+		return $pass;
 	}
 }
 ?>

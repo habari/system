@@ -7,6 +7,11 @@
 /**
  * MediaAsset represents a file or directory in the media system
  *
+ * @property mixed $content The contents of this asset
+ * @property boolean $is_dir Whether or not this asset is a directory
+ * @property string $path The path of the asset
+ * @property-read string $basename The basename of this asset's path
+ *
  */
 class MediaAsset
 {
@@ -110,11 +115,11 @@ class MediaAsset
 				$output = $this->props[$name];
 				break;
 		}
-		
+
 		$output = Plugins::filter( 'mediaasset', $output, $name );
-		
+
 		return $output;
-		
+
 	}
 
 	/**

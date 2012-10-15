@@ -8,11 +8,13 @@
  * XMLRPC Date type
  * Used to hold dates for transmission in XMLRPC calls.
  *
+ * @property mixed $date On write, a string or numeric date/time value. On read, a numeric date/time value
+ *
  */
 class XMLRPCDate
 {
 	private $rpcdate;
-	
+
 	public function __set( $name, $value )
 	{
 		switch ( $name ) {
@@ -25,7 +27,7 @@ class XMLRPCDate
 				}
 		}
 	}
-	
+
 	public function __get( $name )
 	{
 		switch ( $name ) {
@@ -33,7 +35,7 @@ class XMLRPCDate
 				return $this->rpcdate;
 		}
 	}
-	
+
 	public function __construct( $date = null )
 	{
 		if ( isset( $date ) ) {

@@ -35,6 +35,17 @@ class Error extends Exception
 	{
 		set_error_handler( array( 'Error', 'error_handler' ) );
 		set_exception_handler( array( 'Error', 'exception_handler' ) );
+		register_shutdown_function( array( 'Error', 'shutdown_handler' ) );
+	}
+
+	public static function shutdown_handler ( ) {
+
+		$last_error = error_get_last();
+
+		if ( $last_error ) {
+			self::error_handler( $last_error['type'], $last_error['message'], $last_error['file'], $last_error['line'], null );
+		}
+
 	}
 
 	/**

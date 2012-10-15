@@ -23,6 +23,15 @@ class Comments extends ArrayObject
 	 * $comments = comments::get( array ( "slug" => "first-post", "status" => "1", "orderby" => "date ASC" ) );
 	 * </code>
 	 *
+	 * @property-read integer $count The number of comments in this object
+	 * @property-read Comments $approved A Comments object containing only approved comments from this object
+	 * @property-read Comments $unapproved A Comments object containing only unapproved comments from this object
+	 * @property-read Comments $moderated A Comments object containing only moderated comments from this object
+	 * @property-read Comments $comments A Comments object containing only comment type comments from this object
+	 * @property-read Comments $pingbacks A Comments object containing only pingback type comments from this object
+	 * @property-read Comments $trackbacks A Comments object containing only trackback type comments from this object
+	 * @property-read Comments $spam A Comments object containing only spam comments from this object
+	 *
 	 **/
 	public static function get( $paramarray = array() )
 	{

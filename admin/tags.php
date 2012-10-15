@@ -107,6 +107,10 @@ itemManage.rename = function() {
 		human_msg.display_msg( "<?php _e('Error: New name not specified.'); ?>" );
 		return;
 	}
+	else if ( $.trim( master ) == '' ) {
+		human_msg.display_msg( "<?php _e("Error: New name can't be just whitespace."); ?>" );
+		return;
+	}
 	var query = {}
 
 	spinner.start();

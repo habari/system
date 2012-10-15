@@ -5,6 +5,8 @@
  *
  * Vocabulary is part of the taxonomy system. A vocabulary holds terms and has features.
  *
+ * @property-read array $features An array of the features this Vocabulary implements
+ *
  */
 
 class Vocabulary extends QueryRecord
@@ -379,7 +381,7 @@ class Vocabulary extends QueryRecord
 	 * @param mixed $term A Term object, null (for the first node in the tree), a string (for a term slug or display), or an integer (for a Term ID).
 	 * @param string $term_class The class of the returned term object.
 	 * @return Term The Term object requested
-	 * @todo improve selective fetching by term slug vs term_display	 
+	 * @todo improve selective fetching by term slug vs term_display
 	 **/
 	public function get_term( $term = null, $term_class = 'Term' )
 	{
@@ -637,7 +639,7 @@ SQL;
 
 	/**
 	 * Moves a term within the vocabulary. Returns a Term object. null parameters append the term to the end of any hierarchies.
-	 * 
+	 *
 	 * The MPTT operations can seem complex, but they're actually pretty simple:
 	 * 		1: Find our insertion point:
 	 * 			Either at the very end of the vocabulary, or before / after the given term
@@ -647,7 +649,7 @@ SQL;
 	 * 			We know the offset between the old point and the new point, so move the range up that number of spaces.
 	 * 		4: Close the original gap:
 	 * 			Now we've got all our terms moved, but we need to bump everything back down to close the gap it left, similar to #2.
-	 * 
+	 *
 	 * @param Term $term The term to move.
 	 * @param Term|null $target_term The term to move $term before or after, or null to move it to the very end of the vocabulary.
 	 * @param bool $before True to move $term BEFORE $target_term, false (the default) to move $term AFTER $target_term.
@@ -674,7 +676,7 @@ SQL;
 				$mptt_target = $mptt_target + 1;	// the left is one greater than the highest right
 			}
 			else {
-				
+
 				// if we're putting it before
 				if ( $before ) {
 					$mptt_target = $target_term->mptt_left;		// we're actually taking the place of the target term's left
@@ -682,7 +684,7 @@ SQL;
 				else {
 					$mptt_target = $target_term->mptt_right + 1;	// we just need to start at the next number
 				}
-				
+
 			}
 
 			// Create space in the tree for the insertion
@@ -704,10 +706,10 @@ SQL;
 				$source_left = $source_left + $range;
 				$source_right = $source_right + $range;
 			}
-			
+
 			// figure out how far our nodes are moving
 			$offset = $mptt_target - $source_left;
-			
+
 			// move our lucky nodes into the space we just created
 			$params = array( ':offset' => $offset, ':vocab_id' => $this->id, ':source_left' => $source_left, ':source_right' => $source_right );
 			$res = DB::query( '
@@ -731,14 +733,14 @@ SQL;
 				DB::rollback();
 				return false;
 			}
-			
+
 			$params = array( 'range' => $range, 'vocab_id' => $this->id, 'source_right' => $source_right );
 			$res = DB::query( 'UPDATE {terms} SET mptt_right = mptt_right - :range WHERE vocabulary_id = :vocab_id AND mptt_right > :source_right', $params );
 			if ( ! $res ) {
 				DB::rollback();
 				return false;
 			}
-			
+
 
 			// Success!
 			DB::commit();
@@ -839,7 +841,7 @@ SQL;
 		);
 
 	}
-	
+
 
 	/**
 	 * Get the tags associated with this object
@@ -858,7 +860,7 @@ SQL;
 
 		return $terms;
 	}
-	
+
 
 	/**
 	 * Returns the count of times a tag is used.

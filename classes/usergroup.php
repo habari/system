@@ -2,6 +2,10 @@
 /**
  * @package Habari
  *
+ * @property-read array $members An array of the ids of the members of this group
+ * @property-read array $users An array of the User objects who are members of this group, including the anonymous group if necessary
+ * @property-read array $permissions An array of this group's permissions
+ *
  */
 
 /**

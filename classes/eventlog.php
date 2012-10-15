@@ -2,6 +2,7 @@
 /**
  * @package Habari
  *
+ * @property-read bool $onelogentry True if this object only has one entry
  */
 
 /**
@@ -200,29 +201,29 @@ class EventLog extends ArrayObject
 						$params[] = $paramset['type_id'];
 					}
 				}
-				
+
 				if ( isset( $paramset['module'] ) ) {
-					
+
 					if ( !is_array( $paramset['module'] ) ) {
 						$paramset['module'] = array( $paramset['module'] );
 					}
-					
+
 					$where[] = 'type_id IN ( SELECT DISTINCT id FROM {log_types} WHERE module IN ( ' . implode( ', ', array_fill( 0, count( $paramset['module'] ), '?' ) ) . ' ) )';
 					$params = array_merge( $params, $paramset['module'] );
-					
+
 				}
-				
+
 				if ( isset( $paramset['type'] ) ) {
-					
+
 					if ( !is_array( $paramset['type'] ) ) {
 						$paramset['type'] = array( $paramset['type'] );
 					}
-					
+
 					$where[] = 'type_id IN ( SELECT DISTINCT id FROM {log_types} WHERE type IN ( ' . implode( ', ', array_fill( 0, count( $paramset['type'] ), '?' ) ) . ' ) )';
 					$params = array_merge( $params, $paramset['type'] );
-					
+
 				}
-				
+
 				if ( isset( $paramset['ip'] ) ) {
 					$where[] = 'ip = ?';
 					$params[] = $paramset['ip'];
@@ -345,7 +346,7 @@ class EventLog extends ArrayObject
 			return $return_value;
 		}
 	}
-	
+
 	/*
 	 * Trim the EventLog down to the defined number of days to prevent it getting massively large.
 	 */
@@ -353,27 +354,27 @@ class EventLog extends ArrayObject
 	{
 		// allow an option to be set to override the log retention - in days
 		$retention = Options::get( 'log_retention', 14 );		// default to 14 days
-		
+
 		// make it into the string we'll use
 		$retention = '-' . intval( $retention ) . ' days';
-		
+
 		// Trim the log table down
 		$date = HabariDateTime::date_create()->modify( $retention );
-		
+
 		return DB::query( 'DELETE FROM {log} WHERE timestamp < ?', array( $date->sql ) );
-		
+
 	}
-	
+
 	public static function purge ()
 	{
 		$result = DB::query( 'DELETE FROM {log}' );
-		
+
 		if ( $result ) {
 			EventLog::log( _t( 'Logs purged.' ), 'info' );
 		}
-		
+
 		return $result;
-		
+
 	}
 
 }

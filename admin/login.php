@@ -5,19 +5,11 @@
 	<title><?php printf( _t('Login to %s'), Options::get( 'title' ) ); ?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-<?php	Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin'); ?>
-
-	<script src="<?php Site::out_url('vendor'); ?>/jquery.js" type="text/javascript"></script>
-	<script src="<?php Site::out_url('vendor'); ?>/jquery-ui.min.js" type="text/javascript"></script>
-	<script src="<?php Site::out_url('vendor'); ?>/humanmsg/humanmsg.js" type="text/javascript"></script>
-	<script src="<?php Site::out_url('vendor'); ?>/jquery.hotkeys.js" type="text/javascript"></script>
-
 	<script type="text/javascript">
 	var habari = {
 		url: { habari: '<?php Site::out_url('habari'); ?>' }
 	};
 	</script>
-	<script src="<?php Site::out_url('admin_theme'); ?>/js/admin.js" type="text/javascript"></script>
 
 	<?php
 		Plugins::act( 'admin_header', $this );

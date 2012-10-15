@@ -2,6 +2,7 @@
 /**
  * @package Habari
  *
+ * @property-read integer $totaltime The time it took for the query to run in microseconds
  */
 
 /**

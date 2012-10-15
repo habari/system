@@ -84,7 +84,7 @@ class AdminGroupsHandler extends AdminHandler
 
 			$js = '$(function(){groupManage.init(' . json_encode( $jsusers ) . ');});';
 
-			Stack::add( 'admin_header_javascript', $js, 'groupmanage', 'admin' );
+			Stack::add( 'admin_header_javascript', $js, 'groupmanage', 'admin-js' );
 
 			$this->theme->access_names = $access_names;
 			$this->theme->grouped_tokens = $grouped_tokens;

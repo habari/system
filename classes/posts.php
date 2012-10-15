@@ -17,6 +17,11 @@
  * result of Posts::get() to be iterated (for example, in a foreach construct)
  * and to have properties that can be accessed that describe the results
  * (for example, $posts->onepost).
+ *
+ * @property-read boolean $onepost Whether or not this object contains only one post
+ * @property-read Post $first The first Post in this object
+ * @property-read array $preset The presets for this object
+ *
  */
 class Posts extends ArrayObject implements IsContent
 {

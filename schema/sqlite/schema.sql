@@ -107,6 +107,8 @@ CREATE TABLE {$prefix}crontab (
   end_time INTEGER,
   result VARCHAR(255) NOT NULL,
   notify VARCHAR(255) NOT NULL,
+  failures INTEGER NOT NULL DEFAULT 0,
+  active TINYINTEGER NOT NULL DEFAULT 1,
   cron_class TINYINTEGER NOT NULL DEFAULT 0,
   description TEXT NULL
 );
