@@ -365,7 +365,7 @@ class Vocabulary extends QueryRecord
 
 		// Insert the new node
 		$result = $new_term->insert();
-		if ( $result ) {
+		if( $result ) {
 			DB::commit();
 			return $new_term;
 		}
@@ -457,7 +457,7 @@ class Vocabulary extends QueryRecord
 			if ( ! $new_term instanceof Term ) {
 				$new_term = $this->add_term( $term );
 			}
-			if ( ! array_key_exists( $new_term->id, $new_terms ) ) {
+			if ( ( $new_term != false ) && ( ! array_key_exists( $new_term->id, $new_terms ) ) ) {
 				$new_terms[$new_term->id] = $new_term;
 			}
 		}
@@ -725,7 +725,6 @@ SQL;
 				$params
 			);
 
-
 			// Close the gap in the tree created by moving those nodes out
 			$params = array( 'range' => $range, 'vocab_id' => $this->id, 'source_left' => $source_left );
 			$res = DB::query( 'UPDATE {terms} SET mptt_left = mptt_left - :range WHERE vocabulary_id = :vocab_id AND mptt_left > :source_left', $params );
@@ -786,6 +785,24 @@ SQL;
 		$post_ids = array();
 		$tag_names = array();
 
+		// get the master term
+		$master_term = $this->get_term( $master );
+
+		if ( !isset( $master_term->term ) ) {
+			// it didn't exist, so we assume it's tag text and create it
+			$ok = $this->add_term( $master );
+			if( !$ok ) {
+				return;
+			}
+
+			$master_ids = array();
+		}
+		else {
+			// get the posts the tag is already on so we don't duplicate them
+			$master_ids = $master_term->objects( $object_type );
+
+		}
+
 		// get array of existing tags first to make sure we don't conflict with a new master tag
 		foreach ( $tags as $tag ) {
 
@@ -806,20 +823,6 @@ SQL;
 			}
 		}
 
-		// get the master term
-		$master_term = $this->get_term( $master );
-
-		if ( !isset( $master_term->term ) ) {
-			// it didn't exist, so we assume it's tag text and create it
-			$master_term = $this->add_term( $master );
-
-			$master_ids = array();
-		}
-		else {
-			// get the posts the tag is already on so we don't duplicate them
-			$master_ids = $master_term->objects( $object_type );
-
-		}
 
 		if ( count( $post_ids ) > 0 ) {
 			// only try and add the master tag to posts it's not already on
