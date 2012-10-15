@@ -349,8 +349,9 @@ class DatabaseConnection
 	public function begin_transaction()
 	{
 		if ( ! $this->pdo_transaction ) {
-			$this->pdo->beginTransaction();
-			$this->pdo_transaction = true;
+			if( $this->pdo->beginTransaction() ) {
+				$this->pdo_transaction = true;
+			}
 		}
 	}
 
@@ -362,8 +363,9 @@ class DatabaseConnection
 	public function rollback()
 	{
 		if ( $this->pdo_transaction ) {
-			$this->pdo->rollBack();
-			$this->pdo_transaction = false;
+			if( $this->pdo->rollBack() ) {
+				$this->pdo_transaction = false;
+			}
 		}
 	}
 
@@ -373,8 +375,9 @@ class DatabaseConnection
 	public function commit()
 	{
 		if ( $this->pdo_transaction ) {
-			$this->pdo->commit();
-			$this->pdo_transaction = false;
+			if( $this->pdo->commit() ) {
+				$this->pdo_transaction = false;
+			}
 		}
 	}
 
