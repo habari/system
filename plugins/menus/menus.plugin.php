@@ -27,7 +27,7 @@ class Menus extends Plugin
 	public function action_plugin_activation($file)
 	{
 		// create default access token
-		ACL::create_token( 'manage_menus', _t( 'Manage menus', 'menus' ), 'Administration', false );
+		ACL::create_token( 'manage_menus', _t( 'Manage menus' ), 'Administration', false );
 		$group = UserGroup::get_by_name( 'admin' );
 		$group->grant( 'manage_menus' );
 
@@ -80,7 +80,7 @@ class Menus extends Plugin
 	 */
 	public function filter_block_list($block_list)
 	{
-		$block_list['menu'] = _t( 'Menu', 'menus' );
+		$block_list['menu'] = _t( 'Menu' );
 		return $block_list;
 	}
 
@@ -89,9 +89,9 @@ class Menus extends Plugin
 	 */
 	public function action_block_form_menu( $form, $block )
 	{
-		$form->append('select', 'menu_taxonomy', $block, _t( 'Menu Taxonomy', 'menus' ), $this->get_menus( true ) );
-		$form->append('checkbox', 'div_wrap', $block, _t( 'Wrap each menu link in a div', 'menus' ) );
-		$form->append('text', 'list_class', $block, _t( 'Custom class for the tree ordered list element', 'menus' ) );
+		$form->append('select', 'menu_taxonomy', $block, _t( 'Menu Taxonomy' ), $this->get_menus( true ) );
+		$form->append('checkbox', 'div_wrap', $block, _t( 'Wrap each menu link in a div' ) );
+		$form->append('text', 'list_class', $block, _t( 'Custom class for the tree ordered list element' ) );
 	}
 
 	/**
@@ -137,8 +137,8 @@ class Menus extends Plugin
 			$menulist[$menu->id] = $menu->name;
 		}
 
-		$settings = $form->publish_controls->append( 'fieldset', 'menu_set', _t( 'Menus', 'menus' ) );
-		$settings->append( 'checkboxes', 'menus', 'null:null', _t( 'Menus', 'menus' ), $menulist );
+		$settings = $form->publish_controls->append( 'fieldset', 'menu_set', _t( 'Menus' ) );
+		$settings->append( 'checkboxes', 'menus', 'null:null', _t( 'Menus' ), $menulist );
 
 		// If this is an existing post, see if it has categories already
 		if ( 0 != $post->id ) {
@@ -204,7 +204,7 @@ class Menus extends Plugin
 				'title' => "{$item->name}: {$item->description}",
 				'text' => $item->name,
 				'hotkey' => $items,
-				'url' => URL::get( 'admin', array( 'page' => 'menus', 'action' => 'edit', 'menu' => $item->id )),
+				'url' => URL::get( 'admin', array( 'page' => 'menus', 'action' => 'edit', 'menu' => $item->id ) ),
 				'access' => array( 'manage_menus' => true ),
 			);
 		}
@@ -216,8 +216,8 @@ class Menus extends Plugin
 		$item_menu = array( 'menus' =>
 			array(
 				'url' => URL::get( 'admin', 'page=menus' ),
-				'title' => _t( 'Menus', 'menus' ),
-				'text' => _t( 'Menus', 'menus' ),
+				'title' => _t( 'Menus' ),
+				'text' => _t( 'Menus' ),
 				'hotkey' => 'E',
 				'selected' => false,
 				'submenu' => $menus_array,
@@ -292,13 +292,13 @@ class Menus extends Plugin
 	public function filter_menu_type_data($menu_type_data)
 	{
 		$menu_type_data['menu_link'] = array(
-			'label' => _t('Link', 'menus'),
+			'label' => _t( 'Link' ),
 			'form' => function($form, $term) {
-				$link_name = new FormControlText( 'link_name', 'null:null', _t( 'Link Title', 'menus' ) );
-				$link_name->add_validator( 'validate_required', _t( 'A name is required.', 'menus' ) );
-				$link_url = new FormControlText( 'link_url', 'null:null', _t( 'Link URL', 'menus' ) );
+				$link_name = new FormControlText( 'link_name', 'null:null', _t( 'Link Title' ) );
+				$link_name->add_validator( 'validate_required', _t( 'A name is required.' ) );
+				$link_url = new FormControlText( 'link_url', 'null:null', _t( 'Link URL' ) );
 				$link_url->add_validator( 'validate_required' )
-					->add_validator( 'validate_url', _t( 'You must supply a valid URL.', 'menus' ) );
+					->add_validator( 'validate_url', _t( 'You must supply a valid URL.' ) );
 				if ( $term ) {
 					$link_name->value = $term->term_display;
 					$link_url->value = $term->info->url;
@@ -319,7 +319,7 @@ class Menus extends Plugin
 					$menu->add_term($term);
 					$term->associate('menu_link', 0);
 
-					Session::notice(_t('Link added.', 'menus'));
+					Session::notice( _t( 'Link added.' ) );
 				} else 	{
 					$term = Term::get( intval( $form->term->value ) );
 					$updated = false;
@@ -337,7 +337,7 @@ class Menus extends Plugin
 
 					if ( $updated ) {
 						$term->update();
-						Session::notice( _t( 'Link updated.', 'menus' ) );
+						Session::notice( _t( 'Link updated.' ) );
 					}
 				}
 			},
@@ -349,10 +349,10 @@ class Menus extends Plugin
 			}
 		);
 		$menu_type_data['menu_spacer'] = array(
-			'label' => _t('Spacer', 'menus'),
+			'label' => _t( 'Spacer' ),
 			'form' => function($form, $term) {
-				$spacer = new FormControlText( 'spacer_text', 'null:null', _t( 'Item text', 'menus' ), 'optionscontrol_text' );
-				$spacer->helptext = _t( 'Leave blank for blank space', 'menus' );
+				$spacer = new FormControlText( 'spacer_text', 'null:null', _t( 'Item text' ), 'optionscontrol_text' );
+				$spacer->helptext = _t( 'Leave blank for blank space' );
 				if ( $term ) {
 					$spacer->value = $term->term_display;
 					$form->append( 'hidden', 'term' )->value = $term->id;
@@ -371,33 +371,33 @@ class Menus extends Plugin
 					$menu->add_term($term);
 					$term->associate('menu_spacer', 0);
 
-					Session::notice(_t('Spacer added.', 'menus'));
+					Session::notice( _t( 'Spacer added.' ) );
 				} else {
 					$term = Term::get( intval( $form->term->value ) );
 					if ($form->spacer_text->value !== $term->term_display ) {
 						$term->term_display = $form->spacer_text->value;
 						$term->update();
-						Session::notice( _t( 'Spacer updated.', 'menus' ) );
+						Session::notice( _t( 'Spacer updated.' ) );
 					}
 				}
 			}
 		);
 		$menu_type_data['post'] = array(
-			'label' => _t('Links to Posts', 'menus'),
-			'form' => function($form, $term) {
+			'label' => _t( 'Links to Posts' ),
+			'form' => function( $form, $term ) {
 				if ( $term ) {
 					$object_types = $term->object_types();
 					$term_object = reset( $object_types );
 
-					$post_display = $form->append( 'text', 'term_display', 'null:null', _t( 'Title to display', 'menus' ) );
+					$post_display = $form->append( 'text', 'term_display', 'null:null', _t( 'Title to display' ) );
 					$post_display->value = $term->term_display;
 					$post_display->disabled = 'disabled';
 					$post = Post::get( $term_object->object_id );
-					$post_term = $form->append( 'static', 'post_link', _t( "Links to <a target='_blank' href='{$post->permalink}'>{$post->title}</a>", 'menus' ) );
+					$post_term = $form->append( 'static', 'post_link', _t( "Links to <a target='_blank' href='{$post->permalink}'>{$post->title}</a>" ) );
 					$form->append( 'hidden', 'term' )->value = $term->id;
 				}
 				else {
-					$post_ids = $form->append( 'text', 'post_ids', 'null:null', _t( 'Posts', 'menus' ) );
+					$post_ids = $form->append( 'text', 'post_ids', 'null:null', _t( 'Posts' ) );
 					$post_ids->template = 'text_tokens';
 					$post_ids->ready_function = "$('#{$post_ids->field}').tokenInput( habari.url.ajaxPostTokens )";
 				}
@@ -417,14 +417,14 @@ class Menus extends Plugin
 							$menu->set_object_terms( 'post', $post->id, array( $term->term ) );
 						}
 					}
-					Session::notice(_t( 'Link(s) added.', 'menus' ));
+					Session::notice(_t( 'Link(s) added.' ));
 				}
 				else {
 					$term = Term::get( intval( $form->term->value ) );
 					if ($form->term_display->value !== $term->term_display ) {
 						$term->term_display = $form->term_display->value;
 						$term->update();
-						Session::notice( _t( 'Link updated.', 'menus' ) );
+						Session::notice( _t( 'Link updated.' ) );
 					}
 				}
 			},
@@ -480,7 +480,7 @@ class Menus extends Plugin
 		if ( isset($menu_types[$action]) ) {
 			$menu_types[$action]['form']($form, $term);
 			$form->append( 'hidden', 'menu_type' )->value = $action;
-			$form->append( 'submit', 'submit', _t( '%1$s %2$s', array( $term ? _t( 'Update', 'menus' ) : _t( 'Add', 'menus' ), $menu_types[$action]['label'] ), 'menus' ) );
+			$form->append( 'submit', 'submit', _t( '%1$s %2$s', array( $term ? _t( 'Update' ) : _t( 'Add' ), $menu_types[$action]['label'] ) ) );
 		}
 
 		$form->properties['onsubmit'] = "return habari.menu_admin.submit_menu_item_edit(this)";
@@ -491,7 +491,7 @@ class Menus extends Plugin
 			switch ( $_GET['result'] ) {
 				case 'added':
 					$treeurl = URL::get( 'admin', array('page' => 'menus', 'menu' => $handler->handler_vars[ 'menu' ], 'action' => 'edit') ) . ' #edit_menu>*';
-					$msg = _t( 'Menu item added.', 'menus' ); // @todo: update this to reflect if more than one item has been added, or reword entirely.
+					$msg = _t( 'Menu item added.' ); // @todo: update this to reflect if more than one item has been added, or reword entirely.
 					$theme->page_content .= <<< JAVSCRIPT_RESPONSE
 <script type="text/javascript">
 human_msg.display_msg('{$msg}');
@@ -517,20 +517,20 @@ JAVSCRIPT_RESPONSE;
 			case 'edit':
 				$vocabulary = Vocabulary::get_by_id( intval( $handler->handler_vars[ 'menu' ] ) );
 				if ( $vocabulary == false ) {
-					$theme->page_content = _t( '<h2>Invalid Menu.</h2>', 'menus' );
+					$theme->page_content = _t( '<h2>Invalid Menu.</h2>' );
 					// that's it, we're done. Maybe we show the list of menus instead?
 					break;
 				}
 
 				$form = new FormUI( 'edit_menu' );
 
-				$form->append( new FormControlText( 'menuname', 'null:null', _t( 'Name', 'menus' ), 'transparent_text' ) )
-					->add_validator( 'validate_required', _t( 'You must supply a valid menu name', 'menus' ) )
+				$form->append( new FormControlText( 'menuname', 'null:null', _t( 'Name' ), 'transparent_text' ) )
+					->add_validator( 'validate_required', _t( 'You must supply a valid menu name' ) )
 					->add_validator( array( $this, 'validate_newvocab' ) )
 					->value = $vocabulary->name;
 				$form->append( new FormControlHidden( 'oldname', 'null:null' ) )->value = $vocabulary->name;
 
-				$form->append( new FormControlText( 'description', 'null:null', _t( 'Description', 'menus' ), 'transparent_text' ) )
+				$form->append( new FormControlText( 'description', 'null:null', _t( 'Description' ), 'transparent_text' ) )
 					->value = $vocabulary->description;
 
 				$edit_items_array = $this->get_menu_type_data();
@@ -541,23 +541,23 @@ JAVSCRIPT_RESPONSE;
 						'page' => 'menu_iframe',
 						'action' => $action,
 						'menu' => $vocabulary->id,
-					) ) . "\">" . _t('Add %s', array($menu_type['label']), 'menus') .  "</a>";
+					) ) . "\">" . _t( 'Add %s', array($menu_type['label'] ) ) .  "</a>";
 				}
 
 				if ( !$vocabulary->is_empty() ) {
-					$form->append( 'tree', 'tree', $vocabulary->get_tree(), _t( 'Menu', 'menus') );
+					$form->append( 'tree', 'tree', $vocabulary->get_tree(), _t( 'Menu' ) );
 					$form->tree->config = array( 'itemcallback' => array( $this, 'tree_item_callback' ) );
 //						$form->tree->value = $vocabulary->get_root_terms();
 					// append other needed controls, if there are any.
 
-					$form->append( 'static', 'buttons', _t( "<div id='menu_item_button_container'>$edit_items</div>", 'menus' ) );
-					$form->append( 'submit', 'save', _t( 'Apply Changes', 'menus' ) );
+					$form->append( 'static', 'buttons', _t( "<div id='menu_item_button_container'>$edit_items</div>" ) );
+					$form->append( 'submit', 'save', _t( 'Apply Changes' ) );
 				}
 				else {
-					$form->append( 'static', 'buttons', _t( "<div id='menu_item_button_container'>$edit_items</div>", 'menus' ) );
+					$form->append( 'static', 'buttons', _t( "<div id='menu_item_button_container'>$edit_items</div>" ) );
 				}
 				$delete_link = URL::get( 'admin', array( 'page' => 'menus', 'action' => 'delete_menu', 'menu' => $handler->handler_vars[ 'menu' ] ) );
-				$form->append( 'static', 'deletebutton', _t( "<a class='a_button' href='$delete_link'>Delete Menu</a>", 'menus' ) );
+				$form->append( 'static', 'deletebutton', _t( "<a class='a_button' href='$delete_link'>Delete Menu</a>" ) );
 				$form->append( new FormControlHidden( 'menu', 'null:null' ) )->value = $handler->handler_vars[ 'menu' ];
 				$form->on_success( array( $this, 'rename_menu_form_save' ) );
 				$form->properties['onsubmit'] = "return habari.menu_admin.submit_menu_update();";
@@ -566,11 +566,11 @@ JAVSCRIPT_RESPONSE;
 
 			case 'create':
 				$form = new FormUI('create_menu');
-				$form->append( 'text', 'menuname', 'null:null', _t( 'Menu Name', 'menus' ), 'transparent_text' )
-					->add_validator( 'validate_required', _t( 'You must supply a valid menu name', 'menus' ) )
+				$form->append( 'text', 'menuname', 'null:null', _t( 'Menu Name' ), 'transparent_text' )
+					->add_validator( 'validate_required', _t( 'You must supply a valid menu name' ) )
 					->add_validator( array($this, 'validate_newvocab' ) );
-				$form->append( 'text', 'description', 'null:null', _t( 'Description', 'menus' ), 'transparent_text' );
-				$form->append( 'submit', 'submit', _t( 'Create Menu', 'menus' ) );
+				$form->append( 'text', 'description', 'null:null', _t( 'Description' ), 'transparent_text' );
+				$form->append( 'submit', 'submit', _t( 'Create Menu' ) );
 				$form->on_success( array( $this, 'add_menu_form_save' ) );
 				$theme->page_content = $form->get();
 
@@ -580,7 +580,7 @@ JAVSCRIPT_RESPONSE;
 				$menu_vocab = Vocabulary::get_by_id( intval( $handler->handler_vars[ 'menu' ] ) );
 				$menu_vocab->delete();
 				// log that it has been deleted?
-				Session::notice( _t( 'Menu deleted.', 'menus' ) );
+				Session::notice( _t( 'Menu deleted.' ) );
 				// redirect to a blank menu creation form
 				Utils::redirect( URL::get( 'admin', array( 'page' => 'menus', 'action' => 'create' ) ) );
 				break;
@@ -590,7 +590,7 @@ JAVSCRIPT_RESPONSE;
 				$menu_vocab = $term->vocabulary_id;
 				$term->delete();
 				// log that it has been deleted?
-				Session::notice( _t( 'Item deleted.', 'menus' ) );
+				Session::notice( _t( 'Item deleted.' ) );
 				Utils::redirect( URL::get( 'admin', array( 'page' => 'menus', 'action' => 'edit', 'menu' => $menu_vocab ) ) );
 				break;
 			default:
@@ -634,7 +634,7 @@ JAVSCRIPT_RESPONSE;
 
 		$form->save();
 
-		Session::notice( _t( 'Updated menu "%s".', array( $form->menuname->value ), 'menus' ) );
+		Session::notice( _t( 'Updated menu "%s".', array( $form->menuname->value ) ) );
 		Utils::redirect( URL::get( 'admin', array(
 			'page' => 'menus',
 			'action' => 'edit',
@@ -683,7 +683,7 @@ JAVSCRIPT_RESPONSE;
 			return array();
 		}
 		if ( Vocabulary::get( $value ) instanceof Vocabulary ) {
-			return array( _t( 'Please choose a vocabulary name that does not already exist.', 'menus' ) );
+			return array( _t( 'Please choose a vocabulary name that does not already exist.' ) );
 		}
 		return array();
 	}
