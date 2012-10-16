@@ -167,8 +167,8 @@ class Menus extends Plugin
 		$term_title = $post->title;
 		$selected_menus = $form->menus->value;
 		foreach( $this->get_menus() as $menu ) {
+			$terms = $menu->get_object_terms( 'post', $post->id );
 			if ( in_array( $menu->id, $selected_menus ) ) {
-				$terms = $menu->get_object_terms( 'post', $post->id );
 				if ( count( $terms ) == 0 ) {
 					$term = new Term(array(
 						'term_display' => $post->title,
@@ -179,6 +179,11 @@ class Menus extends Plugin
 					$menu->set_object_terms( 'post',
 						$post->id,
 						array( $term->term ) );
+				}
+			}
+			else {
+				foreach( $terms as $term ) {
+					$term->delete();
 				}
 			}
 		}
