@@ -5,8 +5,7 @@
 	<url>http://habariproject.org/</url>
 	<author url="http://habariproject.org/">The Habari Community</author>
 	<version>1.0</version>
-	<description><![CDATA[Build menus using taxonomy.  (In development.)]]></description>
-	<copyright>2011</copyright>
-	<guid>FE473F55-2704-4CF0-B192-38F41268C58E</guid>
+	<description><![CDATA[Build menus using taxonomy. (Experimental.)]]></description>
+	<copyright>2012</copyright>
 </pluggable>
 
