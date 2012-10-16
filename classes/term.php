@@ -128,8 +128,9 @@ class Term extends QueryRecord
 		// Let plugins disallow and act before we write to the database
 		$allow = true;
 		$allow = Plugins::filter( 'term_insert_allow', $allow, $this );
+		$allow = $this->is_valid();
 		if ( !$allow ) {
-			return false;
+			return $allow;
 		}
 		Plugins::act( 'term_insert_before', $this );
 
@@ -164,6 +165,7 @@ class Term extends QueryRecord
 		// Let plugins disallow and act before we write to the database
 		$allow = true;
 		$allow = Plugins::filter( 'term_update_allow', $allow, $this );
+		$allow = $this->is_valid();
 		if ( !$allow ) {
 			return;
 		}
@@ -540,6 +542,19 @@ SQL;
 		return DB::get_row( $query, $params, $term_class );
 	}
 
+	/**
+	 * Make sure we have a valid term before inserting it in the database or updating it
+	 * @return bool True if a valid term, false if not
+	 */
+	protected function is_valid()
+	{
+		if( strlen( trim( $this->term_display ) )  && strlen( trim( $this->term ) ) && $this->vocabulary_id != 0 ) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 }
 
 ?>
