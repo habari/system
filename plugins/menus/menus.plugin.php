@@ -546,9 +546,8 @@ JAVSCRIPT_RESPONSE;
 
 				if ( !$vocabulary->is_empty() ) {
 					$form->append( 'tree', 'tree', $vocabulary->get_tree(), _t( 'Menu' ) );
-					$form->append( 'tree', 'tree', 'null:null', _t( 'Menu' ) );
-					$form->tree->config = array( 'itemcallback' => array( $this, 'tree_item_callback' ) );
 					$form->tree->options = $vocabulary->get_tree();
+					$form->tree->config = array( 'itemcallback' => array( $this, 'tree_item_callback' ) );
 //						$form->tree->value = $vocabulary->get_root_terms();
 					// append other needed controls, if there are any.
 
