@@ -802,18 +802,18 @@ JAVSCRIPT_RESPONSE;
 	{
 		if ( $theme->page == 'menus' ) {
 			// Ideally the plugin would reuse reusable portions of the existing admin CSS. Until then, let's only add the CSS needed on the menus page.
-			Stack::add( 'admin_stylesheet', 'admin-css' );
+			Stack::add( 'admin_stylesheet', array( $this->get_url( '/admin.css' ), 'screen' ), 'menus-admin-css', 'admin-css' );
 
 			// Load the plugin and its css
 			Stack::add( 'admin_header_javascript', Site::get_url( 'vendor' ) . "/jquery.tokeninput.js", 'jquery-tokeninput', 'jquery.ui' );
-			Stack::add( 'admin_stylesheet', array( Site::get_url( 'admin_theme' ) . '/css/token-input.css', 'screen' ), 'admin_tokeninput' );
+			Stack::add( 'admin_stylesheet', array( Site::get_url( 'admin_theme' ) . '/css/token-input.css', 'screen' ), 'admin_tokeninput', 'jquery.us-css' );
 
 			// Add the callback URL.
 			$url = "habari.url.ajaxPostTokens = '" . URL::get( 'ajax', array( 'context' => 'post_tokens' ) ) . "';";
 			Stack::add( 'admin_header_javascript', $url, 'post_tokens_url', 'post_tokens' );
 
 			// Add the menu administration javascript
-			Stack::add( 'admin_header_javascript', $this->get_url('/menus_admin.js'), 'menus_admin', 'admin');
+			Stack::add( 'admin_header_javascript', $this->get_url('/menus_admin.js'), 'menus_admin', 'admin-js');
 		}
 	}
 
