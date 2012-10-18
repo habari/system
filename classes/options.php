@@ -220,13 +220,15 @@ class Options extends Singleton
 		if(Config::exists('default_options')) {
 			$this->options = array_merge($this->options, Config::get('default_options'));
 		}
-		$results = DB::get_results( 'SELECT name, value, type FROM {options}', array(), 'QueryRecord' );
-		foreach ( $results as $result ) {
-			if ( $result->type == 1 ) {
-				$this->options[$result->name] = unserialize( $result->value );
-			}
-			else {
-				$this->options[$result->name] = $result->value;
+		if(DB::is_connected()) {
+			$results = DB::get_results( 'SELECT name, value, type FROM {options}', array(), 'QueryRecord' );
+			foreach ( $results as $result ) {
+				if ( $result->type == 1 ) {
+					$this->options[$result->name] = unserialize( $result->value );
+				}
+				else {
+					$this->options[$result->name] = $result->value;
+				}
 			}
 		}
 		if(Config::exists('static_options')) {
