@@ -101,28 +101,15 @@ class Menus extends Plugin
 		$vocab = Vocabulary::get_by_id($block->menu_taxonomy);
 		$block->vocabulary = $vocab;
 		if ($block->div_wrap) {
-			$wrapper = '<div>%s</div>';
+			$block->wrapper = '<div>%s</div>';
 		}
 		else {
-			$wrapper = '%s';
+			$block->wrapper = '%s';
 		}
 
 		// preprocess some things
-		$tree = $vocab->get_tree();
-
-		$block->content = Format::term_tree(
-			$tree, //$vocab->get_tree(),
-			$vocab->name,
-			array(
-				//'linkcallback' => array($this, 'render_menu_link'),
-				'itemcallback' => array($this, 'render_menu_item'),
-				'linkwrapper' => $wrapper,
-				'treeattr' => array(
-					'class' => $block->list_class,
-				),
-				'theme' => $theme,
-			)
-		);
+		$block->tree = $vocab->get_tree();
+		$block->render_menu_item = array($this, 'render_menu_item');
 	}
 
 	/**
