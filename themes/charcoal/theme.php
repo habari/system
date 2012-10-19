@@ -78,6 +78,9 @@ class Charcoal extends Theme
 		// Truncate content excerpt at "more" or 56 characters...
 		Format::apply( 'autop', 'post_content_excerpt' );
 		Format::apply_with_hook_params( 'more', 'post_content_excerpt', '', 56, 1 );
+
+		// Add FormUI template placing the input before the label
+		$this->add_template( 'charcoal_text', dirname( __FILE__ ) . '/formcontrol_text.php' );
 	}
 	
 	/**
@@ -101,11 +104,21 @@ class Charcoal extends Theme
 		$this->assign( 'loggedin', User::identify()->loggedin );
 		
 		$locale = Options::get( 'locale' );
-		if ( file_exists( Site::get_dir( 'theme', true ). $locale . '.css' ) ) {
+		if ( $this->get_url($locale . '.css') ) {
 			$this->assign( 'localized_css', $locale . '.css' );
 		}
 		else {
 			$this->assign( 'localized_css', false );
+		}
+		if ( $opts['show_title_image'] ) {
+			if ( $this->get_url( 'images.' . $locale . '/title-image.png' ) ) {
+				$this->assign( 'title_image', 'images.' . $locale . '/title-image.png' );
+			}
+			else if ( $this->get_url( 'images/title-image.png' ) ) {
+				$this->assign( 'title_image', 'images/title-image.png' );
+			} else {
+				$this->assign( 'title_image', 'images/sample-title.png' );
+			}
 		}
 		
 		if ( !$this->template_engine->assigned( 'pages' ) ) {
@@ -113,7 +126,7 @@ class Charcoal extends Theme
 		}
 		$this->assign( 'post_id', ( isset( $this->post ) && $this->post->content_type == Post::type( 'page' ) ) ? $this->post->id : 0 );
 
-		if ( $this->request->display_entries_by_tag ) {
+		if ( is_object($this->request) && $this->request->display_entries_by_tag ) {
 			if ( count( $this->include_tag ) && count( $this->exclude_tag ) == 0 ) {
 				$this->tags_msg = _t( 'Displaying posts tagged: %s', array( Format::tag_and_list( $this->include_tag ) ) );
 			}
@@ -124,10 +137,6 @@ class Charcoal extends Theme
 				$this->tags_msg = _t( 'Displaying posts tagged: %s and not %s', array( Format::tag_and_list( $this->include_tag ), Format::tag_and_list( $this->exclude_tag ) ) );
 			}
 		}
-
-
-		// Add FormUI template placing the input before the label
-		$this->add_template( 'charcoal_text', dirname( __FILE__ ) . '/formcontrol_text.php' );
 	}
 		
 	/**
@@ -138,7 +147,7 @@ class Charcoal extends Theme
 	 */
 	public function filter_post_tags_out( $array )
 	{
-		$fn = create_function( '$a', 'return "<a href=\\"" . URL::get("display_entries_by_tag", array( "tag" => $a->tag_slug) ) . "\\" rel=\\"tag\\">" . $a->tag . "</a>";' );
+		$fn = function($a) {return "<a href=\"" . URL::get("display_entries_by_tag", array( "tag" => $a->term) ) . "\" rel=\"tag\">" . $a->term_display . "</a>";};
 		$array = array_map( $fn, (array)$array );
 		$out = implode( ' ', $array );
 		return $out;
@@ -165,16 +174,16 @@ class Charcoal extends Theme
 		
 		if ( sizeof( $keywords ) > 1 ) {
 			if ( $has_results ) {
-				return sprintf( _t( 'Search results for \'%s\'' ), implode( ' ', $out ) );
+				return _t( 'Search results for \'%s\'', array( implode( ' ', $out ) ) );
 				exit;
 			}
-			return sprintf( _t( 'No results found for your search \'%1$s\'' ) . '<br>'. _t( 'You can try searching for \'%2$s\'' ), $criteria, implode( '\' or \'', $out ) );
+			return _t( 'No results found for your search \'%s\'', array( $criteria ) ) . '<br>'. _t( 'You can try searching for \'%s\'', array( implode( '\' or \'', $out ) ) );
 		}
 		else {
-			return sprintf( _t( 'Search results for \'%s\'' ), $criteria );
+			return _t( 'Search results for \'%s\'', array( $criteria ) );
 			exit;
 		}
-		return sprintf( _t( 'No results found for your search \'%s\'' ), $criteria );
+		return _t( 'No results found for your search \'%s\'', array( $criteria ) );
 
 	}
 	
@@ -213,10 +222,10 @@ class Charcoal extends Theme
 	/**
 	 * Customize comment form layout. Needs thorough commenting.
 	 */
-	public function action_form_comment( $form ) { 
-		$form->cf_commenter->caption = '<strong>' . _t( 'Name' ) . '</strong> <span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? _t( '(Required)' ) : '' ) . '</span></label>';
+	public function action_form_comment( $form ) {
+		$form->cf_commenter->caption = '<strong>' . _t( 'Name' ) . '</strong> <span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? _t( '(Required)' ) : '' ) . '</span>';
 		$form->cf_commenter->template = 'charcoal_text';
-		$form->cf_email->caption = '<strong>' . _t( 'Mail' ) . '</strong> ' . _t( '(will not be published' ) .' <span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? _t( '- Required)' ) : ')' ) . '</span></label>';
+		$form->cf_email->caption = '<strong>' . _t( 'Mail' ) . '</strong> ' . _t( '(will not be published' ) .' <span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? _t( '- Required)' ) : ')' ) . '</span>';
 		$form->cf_email->template = 'charcoal_text';
 		$form->cf_url->caption = '<strong>' . _t( 'Website' ) . '</strong>';
 		$form->cf_url->template = 'charcoal_text';
@@ -241,7 +250,7 @@ class Charcoal extends Theme
 		$menus = array('home' => array(
 			'link' => Site::get_url( 'habari' ), 
 			'title' => Options::get( 'title' ), 
-			'caption' => _t('Blog'), 
+			'caption' => Options::get( 'Charcoal__home_label', _t( 'Blog' ) ), 
 			'cssclass' => $theme->request->display_home ? 'current_page_item' : '',
 		));
 		$pages = Posts::get( 'page_list' );

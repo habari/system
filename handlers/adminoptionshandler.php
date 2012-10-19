@@ -101,7 +101,9 @@ class AdminOptionsHandler extends AdminHandler
 				'label' => _t( 'Locale' ),
 				'type' => 'select',
 				'selectarray' => array_merge( array( '' => 'default' ), array_combine( HabariLocale::list_all(), HabariLocale::list_all() ) ),
-				'helptext' => _t( 'International language code' ),
+				'helptext' => Config::exists('locale') ? _t('International language code : This value is set in your config.php file, and cannot be changed here.') : _t( 'International language code' ),
+				'disabled' => Config::exists('locale'),
+				'value' => Config::get('locale', Options::get( 'locale', 'en-us' )),
 			),
 			'system_locale' => array(
 				'label' => _t( 'System Locale' ),
@@ -147,6 +149,12 @@ class AdminOptionsHandler extends AdminHandler
 				$field = $fieldset->append( $option['type'], $option_name, $option_name, $option['label'] );
 				$field->template = 'optionscontrol_' . $option['type'];
 				$field->class = 'item clear';
+				if(isset($option['value'])) {
+					$field->value = $option['value'];
+				}
+				if(isset($option['disabled'])) {
+					$field->disabled = $option['disabled'];
+				}
 				if ( $option['type'] == 'select' && isset( $option['selectarray'] ) ) {
 					$field->options = $option['selectarray'];
 				}

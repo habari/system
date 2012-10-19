@@ -17,6 +17,7 @@ class AdminThemesHandler extends AdminHandler
 	public function get_themes()
 	{
 		$all_themes = Themes::get_all_data();
+		$theme_names = Utils::array_map_field($all_themes, 'name');
 
 		$available_updates = Options::get( 'updates_available', array() );
 
@@ -30,6 +31,10 @@ class AdminThemesHandler extends AdminHandler
 				}
 			}
 
+			// If this theme requires a parent to be present and it's not, send an error
+			if(isset($theme['info']->parent) && !in_array((string)$theme['info']->parent, $theme_names)) {
+				$all_themes[$name]['req_parent'] = $theme['info']->parent;
+			}
 		}
 
 		$this->theme->all_themes = $all_themes;
@@ -42,18 +47,14 @@ class AdminThemesHandler extends AdminHandler
 		$this->theme->configurable = Plugins::filter( 'theme_config', false, $this->active_theme );
 		$this->theme->assign( 'configure', Controller::get_var( 'configure' ) );
 
-		$activedata = Themes::get_active_data( true );
-		$areas = array();
-		if ( isset( $activedata['info']->areas->area ) ) {
-			foreach ( $activedata['info']->areas->area as $area ) {
-				$areas[] = (string)$area;
-			}
-		}
-		$this->theme->areas = $areas;
+		$this->theme->areas = $this->get_areas(0);
 		$this->theme->previewed = Themes::get_theme_dir( false );
 
-		$this->theme->blocks = Plugins::filter( 'block_list', array() );
-		$this->theme->block_instances = DB::get_results( 'SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block' );
+		$this->theme->help = isset($this->theme->active_theme['info']->help) ? $this->theme->active_theme['info']->help : false;
+		$this->theme->help_active = Controller::get_var('help') == $this->theme->active_theme['dir'];
+
+		$this->prepare_block_list();
+
 		$blocks_areas_t = DB::get_results( 'SELECT b.*, ba.scope_id, ba.area, ba.display_order FROM {blocks} b INNER JOIN {blocks_areas} ba ON ba.block_id = b.id ORDER BY ba.scope_id ASC, ba.area ASC, ba.display_order ASC', array() );
 		$blocks_areas = array();
 		foreach ( $blocks_areas_t as $block ) {
@@ -89,10 +90,13 @@ class AdminThemesHandler extends AdminHandler
 	{
 		$theme_name = $this->handler_vars['theme_name'];
 		$theme_dir = $this->handler_vars['theme_dir'];
-		if ( isset( $theme_name )  && isset( $theme_dir ) ) {
-			Themes::activate_theme( $theme_name, $theme_dir );
+		$activated = false;
+		if ( isset( $theme_name ) && isset( $theme_dir ) ) {
+			$activated = Themes::activate_theme( $theme_name, $theme_dir );
 		}
-		Session::notice( sprintf( _t( "Activated theme '%s'" ), $theme_name ) );
+		if($activated) {
+			Session::notice( _t( "Activated theme '%s'", array( $theme_name ) ) );
+		}
 		Utils::redirect( URL::get( 'admin', 'page=themes' ) );
 	}
 
@@ -106,11 +110,12 @@ class AdminThemesHandler extends AdminHandler
 		if ( isset( $theme_name )  && isset( $theme_dir ) ) {
 			if ( Themes::get_theme_dir() == $theme_dir ) {
 				Themes::cancel_preview();
-				Session::notice( sprintf( _t( "Ended the preview of the theme '%s'" ), $theme_name ) );
+				Session::notice( _t( "Ended the preview of the theme '%s'", array( $theme_name ) ) );
 			}
 			else {
-				Themes::preview_theme( $theme_name, $theme_dir );
-				Session::notice( sprintf( _t( "Previewing theme '%s'" ), $theme_name ) );
+				if(Themes::preview_theme( $theme_name, $theme_dir )) {
+					Session::notice( _t( "Previewing theme '%s'", array( $theme_name ) ) );
+				}
 			}
 		}
 		Utils::redirect( URL::get( 'admin', 'page=themes' ) );
@@ -126,6 +131,14 @@ class AdminThemesHandler extends AdminHandler
 
 		$block = DB::get_row( 'SELECT b.* FROM {blocks} b WHERE id = :id ORDER BY b.title ASC', array( 'id' => $_GET['blockid'] ), 'Block' );
 		$block_form = $block->get_form();
+		$block_form->set_option( 'success_message', '</div><div class="humanMsg" id="humanMsg" style="display: block;top: auto;bottom:-50px;"><div class="imsgs"><div id="msgid_2" class="msg" style="display: block; opacity: 0.8;"><p>' . _t( 'Saved block configuration.' ) . '</p></div></div></div>
+<script type="text/javascript">
+		$("#humanMsg").animate({bottom: "5px"}, 500, function(){ window.setTimeout(function(){$("#humanMsg").animate({bottom: "-50px"}, 500)},3000) })
+		parent.refresh_block_forms();
+</script>
+<div style="display:none;">
+');
+
 		$first_control = reset ( $block_form->controls );
 		if ( $first_control ) {
 			$block_form->insert( $first_control->name, 'fieldset', 'block_admin', _t( 'Block Display Settings' ) );
@@ -202,8 +215,7 @@ class AdminThemesHandler extends AdminHandler
 			$block = new Block( array( 'title' => $title, 'type' => $type ) );
 			$block->insert();
 
-			$this->theme->blocks = Plugins::filter( 'block_list', array() );
-			$this->theme->block_instances = DB::get_results( 'SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block' );
+			$this->prepare_block_list();
 			$this->theme->active_theme = Themes::get_active_data( true );
 
 			$this->display( 'block_instances' );
@@ -237,8 +249,8 @@ class AdminThemesHandler extends AdminHandler
 			$msg = json_encode( _t( 'Failed to delete block "%1s" of type "%2s".', array( $block->title, $block->type ) ) );
 		}
 
-		$this->theme->blocks = Plugins::filter( 'block_list', array() );
-		$this->theme->block_instances = DB::get_results( 'SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block' );
+		$this->prepare_block_list();
+
 		$this->theme->active_theme = Themes::get_active_data( true );
 
 		$this->display( 'block_instances' );
@@ -246,6 +258,7 @@ class AdminThemesHandler extends AdminHandler
 		echo '<script type="text/javascript">
 			human_msg.display_msg(' . $msg . ');
 			spinner.stop();
+			themeManage.change_scope();
 		</script>';
 	}
 
@@ -263,6 +276,7 @@ class AdminThemesHandler extends AdminHandler
 
 		$msg = '';
 
+		$response = new AjaxResponse();
 		if ( isset( $_POST['area_blocks'] ) ) {
 			$area_blocks = $_POST['area_blocks'];
 			DB::query( 'DELETE FROM {blocks_areas} WHERE scope_id = :scope_id', array( 'scope_id' => $scope ) );
@@ -281,11 +295,12 @@ class AdminThemesHandler extends AdminHandler
 				}
 			}
 
-			$msg = json_encode( _t( 'Saved block areas settings.' ) );
-			$msg = '<script type="text/javascript">
-				human_msg.display_msg(' . $msg . ');
-				spinner.stop();
-			</script>';
+//			$msg = json_encode( _t( 'Saved block areas settings.' ) );
+//			$msg = '<script type="text/javascript">
+//				human_msg.display_msg(' . $msg . ');
+//				spinner.stop();
+//			</script>';
+			$response->message = _t( 'Saved block areas settings.' );
 		}
 
 		$this->setup_admin_theme( '' );
@@ -300,15 +315,61 @@ class AdminThemesHandler extends AdminHandler
 		}
 		$this->theme->blocks_areas = $blocks_areas;
 		$this->theme->scopeid = $scope;
+		$this->theme->areas = $this->get_areas($scope);
 		$scopes = DB::get_results( 'SELECT * FROM {scopes} ORDER BY name ASC;' );
 		$scopes = Plugins::filter( 'get_scopes', $scopes );
 		$this->theme->scopes = $scopes;
 		$this->theme->active_theme = Themes::get_active_data( true );
 
-		$this->display( 'block_areas' );
+		$output = $this->theme->fetch( 'block_areas' );
+		$response->html('block_areas', $output);
 
-		echo $msg;
+		$response->out();
 	}
 
+
+	function get_areas($scope) {
+		$activedata = Themes::get_active_data( true );
+		$areas = array();
+		if ( isset( $activedata['info']->areas->area ) ) {
+			foreach ( $activedata['info']->areas->area as $area ) {
+				$detail = array();
+				if(isset($area['title'])) {
+					$detail['title'] = (string)$area['title'];
+				}
+				else {
+					$detail['title'] = (string)$area['name'];
+				}
+				$detail['description'] = (string)$area->description;
+				$areas[(string)$area['name']] = $detail;
+			}
+		}
+		$areas = Plugins::filter('areas', $areas, $scope);
+		return $areas;
+	}
+
+	/**
+	 * Load the block types and block instances into the appropriate structures for the theme to output
+	 */
+	function prepare_block_list() {
+		$block_types = Plugins::filter( 'block_list', array() );
+		$dash_blocks = Plugins::filter( 'dashboard_block_list', array() );
+		$block_types = array_diff_key($block_types, $dash_blocks);
+		$all_block_instances = DB::get_results( 'SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block' );
+		$block_instances = array();
+		$invalid_block_instances = array();
+		foreach($all_block_instances as $instance) {
+			if(isset($block_types[$instance->type])) {
+				$block_instances[] = $instance;
+			}
+			else {
+				$instance->invalid_message = _t('This data is for a block of type "%s", which is no longer provided by a theme or plugin.', array($instance->type));
+				$invalid_block_instances[] = $instance;
+			}
+		}
+		$this->theme->blocks = $block_types;
+		$this->theme->block_instances = $block_instances;
+		$this->theme->invalid_block_instances = $invalid_block_instances;
+	}
 }
 ?>

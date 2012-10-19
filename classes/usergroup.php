@@ -2,6 +2,10 @@
 /**
  * @package Habari
  *
+ * @property-read array $members An array of the ids of the members of this group
+ * @property-read array $users An array of the User objects who are members of this group, including the anonymous group if necessary
+ * @property-read array $permissions An array of this group's permissions
+ *
  */
 
 /**
@@ -10,7 +14,7 @@
  */
 class UserGroup extends QueryRecord
 {
-	// These arrays hold the current membership and permission settings for this group
+	// These arrays hold the current membership, permission and token settings for this group
 	// $member_ids is not NOT matched key and value pairs ( like array('foo'=>'foo') )
 	private $member_ids = null;
 	private $permissions;
@@ -90,7 +94,7 @@ class UserGroup extends QueryRecord
 
 		$this->set_member_list();
 
-		EventLog::log( sprintf( _t( 'New group created: %s' ), $this->name ), 'info', 'default', 'habari' );
+		EventLog::log( _t( 'New group created: %s', array( $this->name ) ), 'info', 'default', 'habari' );
 		Plugins::act( 'usergroup_insert_after', $this );
 		return $result;
 	}
@@ -110,7 +114,7 @@ class UserGroup extends QueryRecord
 
 		$this->set_member_list();
 
-		EventLog::log( sprintf( _t( 'User Group updated: %s' ), $this->name ), 'info', 'default', 'habari' );
+		EventLog::log( _t( 'User Group updated: %s', array( $this->name ) ), 'info', 'default', 'habari' );
 		Plugins::act( 'usergroup_update_after', $this );
 	}
 
@@ -295,6 +299,17 @@ class UserGroup extends QueryRecord
 	}
 
 	/**
+	 * Returns an array of token ids and bitmask permissions that are associated with this group
+	 *
+	 * @return array An array of token ids
+	 */
+	public function get_tokens()
+	{
+		$this->load_permissions_cache();
+		return $this->permissions;
+	}
+
+	/**
 	 * Clear permissions cache.
 	 */
 	public function clear_permissions_cache()
@@ -320,11 +335,14 @@ class UserGroup extends QueryRecord
 	/**
 	 * Fetch a group from the database by ID or name.
 	 * This is a wrapper for get_by_id() and get_by_name()
-	 * @param mixed $group A group ID or name
-	 * @return mixed UserGroup object, or boolean false
+	 * @param integer|string|UserGroup $group A group ID, name, or UserGroup
+	 * @return UserGroup|boolean UserGroup object, or boolean false
 	 */
 	public static function get( $group )
 	{
+		if ( $group instanceof UserGroup ) {
+			return $group;
+		}
 		if ( is_numeric( $group ) ) {
 			return self::get_by_id( $group );
 		}
@@ -377,12 +395,20 @@ class UserGroup extends QueryRecord
 
 	/**
 	 * Given a group's name, return its ID
-	 * @param string a group's name
+	 * @param string|UserGroup a group's name or a group object
 	 * @return int the group's ID, or false if the group doesn't exist
 	 */
 	public static function id( $name )
 	{
-		$check_field = is_numeric( $name ) ? 'id' : 'name';
+		if($name instanceof UserGroup) {
+			return $name->id;
+		}
+		elseif(is_numeric($name)) {
+			$check_field = 'id';
+		}
+		else {
+			$check_field = 'name';
+		}
 		$id = DB::get_value( "SELECT id FROM {groups} WHERE {$check_field}=?", array( $name ) );
 		return $id; // get_value returns false if no record is returned
 	}

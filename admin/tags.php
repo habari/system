@@ -2,7 +2,7 @@
 <?php include('header.php');?>
 
 <div class="container navigator">
-	<span class="search pct100"><input type="search" id="search" placeholder="<?php _e('Type and wait to search tags'); ?>" ></span>
+	<span class="search pct100"><input type="search" id="search" placeholder="<?php _e('Type and wait to search tags'); ?>" autofocus="autofocus"></span>
 </div>
 
 <!--<div class="instructions"><span>Click to select</span> &middot; <span>Double-click to open</span></div>-->
@@ -105,6 +105,10 @@ itemManage.rename = function() {
 	}
 	else if ( master == '' ) {
 		human_msg.display_msg( "<?php _e('Error: New name not specified.'); ?>" );
+		return;
+	}
+	else if ( $.trim( master ) == '' ) {
+		human_msg.display_msg( "<?php _e("Error: New name can't be just whitespace."); ?>" );
 		return;
 	}
 	var query = {}

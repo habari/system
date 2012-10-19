@@ -172,8 +172,7 @@
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="" />
 			<div class="warning"><?php echo elem_if_set( $form_errors, 'blog_title'); ?></div>
 			<div class="help">
-				<?php _e('<strong>Site Name</strong> is the name of your site as it will appear
-				to your visitors.'); ?>  <a href="#"><?php _e('Learn More&hellip;'); ?></a>
+				<?php _e('<strong>Site Name</strong> is the name of your site as it will appear to your visitors.'); ?>  <a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 
@@ -216,12 +215,40 @@
 
 <div class="next-section"></div>
 
+<div class="installstep ready" id="themeselection">
+	<h2><?php _e('Theme Selection'); ?></h2>
+	<a href="#" class="help-items"><?php _e('Help'); ?></a>
+	<div class="options items">
+		<?php foreach($themes as $key => $theme) { ?>
+			<div class="item clear clearfix">
+				<div class="head">
+					<span class="checkbox">
+						<input type="radio" name="theme" value="<?php echo $key; ?>"
+							id="theme_<?php echo $theme['dir']; ?>" tabindex="<?php echo $tab++ ?>"
+							class="theme_selection"
+							data-requires="<?php echo isset($theme['requires']) ? (string)InstallHandler::get_feature_list($theme['requires']) : ''; ?>"
+							data-provides="<?php echo isset($theme['provides']) ? (string)InstallHandler::get_feature_list($theme['provides']) : ''; ?>"
+							data-conflicts="<?php echo isset($theme['conflicts']) ? (string)InstallHandler::get_feature_list($theme['conflicts']) : ''; ?>"
+							/>
+					</span>
+					<label for="theme_<?php echo $theme['dir']; ?>" class="name"><?php echo $theme['info']->name; ?> <span class="version"><?php echo $theme['info']->version; ?></span></label>
+					<label for="theme_<?php echo $theme['dir']; ?>" class="image"><img src="<?php echo $theme['screenshot']; ?>" width="150px"></label>
+				</div>
+				<div class="item-help"><?php echo $theme['info']->description; ?></div>
+			</div>
+		<?php } ?>
+	</div>
+	<div class="bottom"></div>
+</div>
+
+<div class="next-section"></div>
+
 <div class="installstep ready" id="pluginactivation">
 	<h2><?php _e('Plugin Activation'); ?></h2>
 	<a href="#" class="help-me"><?php _e('Help'); ?></a>
 	<div class="options items">
 		<?php foreach($plugins as $plugin) { ?>
-			<?php if ( !isset($plugin['info']) ) { ?>
+		<?php if ( !isset($plugin['info']) ) { ?>
 
 			<div class="item clear">
 				<div class="head">
@@ -230,13 +257,22 @@
 			</div>
 
 			<?php } else { ?>
-				<div class="item clear">
-					<div class="head">
-						<span class="checkbox"><input type="checkbox" name="plugin_<?php echo $plugin['plugin_id']; ?>"
-						id="plugin_<?php echo $plugin['plugin_id']; ?>"<?php if ($plugin['recommended']) echo ' checked="checked"'; ?> tabindex="<?php echo $tab++ ?>" /></span><label for="plugin_<?php echo $plugin['plugin_id']; ?>" class="name"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></label>
-					</div>
-					<div class="help"><?php echo $plugin['info']->description; ?></div>
+			<div class="item clear">
+				<div class="head">
+					<span class="checkbox"><input
+						type="checkbox"
+						name="plugin_<?php echo $plugin['plugin_id']; ?>"
+						id="plugin_<?php echo $plugin['plugin_id']; ?>"
+						<?php if ($plugin['recommended']) echo ' checked="checked"'; ?>
+						tabindex="<?php echo $tab++ ?>"
+						class="plugin_selection"
+						data-requires="<?php echo $plugin['requires']; ?>"
+						data-provides="<?php echo $plugin['provides']; ?>"
+						data-conflicts="<?php echo $plugin['conflicts']; ?>"
+						/></span><label for="plugin_<?php echo $plugin['plugin_id']; ?>"><span class="name"><?php echo $plugin['info']->name; ?></span> <span class="version"><?php echo $plugin['info']->version; ?></span><span class="feature_note"></span></label>
 				</div>
+				<div class="help"><?php echo $plugin['info']->description; ?></div>
+			</div>
 			<?php } ?>
 		<?php } ?>
 		<div class="controls item">
@@ -254,6 +290,7 @@
 	<div class="options">
 		<div class="inputfield submit">
 			<p><?php _e('Habari now has all of the information needed to install itself on your server.'); ?></p>
+			<p id="feature_error"><?php _e('The selected theme and plugins require additional features:'); ?> <span id="unfulfilled_feature_list"></span></p>
 			<input type="submit" name="submit" value="<?php _e('Install Habari'); ?>" id="submitinstall" tabindex="<?php echo $tab++ ?>" />
 		</div>
 	</div>

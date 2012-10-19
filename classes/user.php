@@ -2,6 +2,10 @@
 /**
  * @package Habari
  *
+ * @property-read UserInfo $info The UserInfo object for this user
+ * @property-read array $groups An array of the group ids to which this user belongs
+ * @property-read string $displayname This user's display name, or their user name if the display name is empty
+ * @property-read boolean $loggedin Whether or not this user is currently identified
  */
 
 /**
@@ -21,7 +25,7 @@
  * </code>
  *
  */
-class User extends QueryRecord
+class User extends QueryRecord implements FormStorage, IsContent
 {
 	/**
 	 * Static storage for the currently logged-in User record
@@ -82,28 +86,40 @@ class User extends QueryRecord
 
 	/**
 	 * Check for the existence of a cookie, and return a user object of the user, if successful
-	 * @return object user object, or false if no valid cookie exists
+	 * @return User user object, or false if no valid cookie exists
 	 */
 	public static function identify()
 	{
-		// Is the logged-in user not cached already?
-		if ( isset( self::$identity ) ) {
-			// is this user acting as another user?
-			if ( isset( $_SESSION['sudo'] ) ) {
-				// if so, let's return that user data
-				return self::get_by_id( intval( $_SESSION['sudo'] ) );
-			}
-			// otherwise return the logged-in user
-			return self::$identity;
+		$out = false;
+		// Let plugins set the user
+		if ( $out = Plugins::filter('user_identify', $out) ) {
+			self::$identity = $out;
 		}
+		// If we have a user_id for this user in their session, use it to get the user object
 		if ( isset( $_SESSION['user_id'] ) ) {
-			if ( $user = self::get_by_id( intval( $_SESSION['user_id'] ) ) ) {
+			// If the user is already cached in this static class, use it
+			if ( isset(self::$identity) ) {
+				$out = self::$identity;
+			}
+			// If the user_id in the session is a valid one, cache it in this static class and use it
+			else if ( $user = self::get_by_id( intval( $_SESSION['user_id'] ) ) ) {
 				// Cache the user in the static variable
 				self::$identity = $user;
-				return $user;
+				$out = $user;
 			}
 		}
-		return self::anonymous();
+		// Is the visitor a non-anonymous user
+		if ( $out instanceof User ) {
+			// Is this user acting as another user?
+			if ( isset( $_SESSION['sudo'] ) ) {
+				// Return the User for the sudo user id instead
+				$out = self::get_by_id( intval( $_SESSION['sudo'] ) );
+			}
+		}
+		else {
+			$out = self::anonymous();
+		}
+		return $out;
 	}
 
 	/**
@@ -150,7 +166,7 @@ class User extends QueryRecord
 			}
 		}
 
-		EventLog::log( sprintf( _t( 'New user created: %s' ), $this->username ), 'info', 'default', 'habari' );
+		EventLog::log( _t( 'New user created: %s', array( $this->username ) ), 'info', 'default', 'habari' );
 		Plugins::act( 'user_insert_after', $this );
 
 		return $result;
@@ -192,7 +208,7 @@ class User extends QueryRecord
 		DB::query( 'DELETE FROM {user_token_permissions} WHERE user_id=?', array( $this->id ) );
 		// remove user from any groups
 		DB::query( 'DELETE FROM {users_groups} WHERE user_id=?', array( $this->id ) );
-		EventLog::log( sprintf( _t( 'User deleted: %s' ), $this->username ), 'info', 'default', 'habari' );
+		EventLog::log( _t( 'User deleted: %s', array( $this->username ) ), 'info', 'default', 'habari' );
 		$result = parent::deleteRecord( DB::table( 'users' ), array( 'id' => $this->id ) );
 		Plugins::act( 'user_delete_after', $this );
 		return $result;
@@ -203,9 +219,13 @@ class User extends QueryRecord
 	 */
 	public function remember()
 	{
-		$_SESSION['user_id'] = $this->id;
-		ACL::clear_caches();
-		Session::set_userid( $this->id );
+		if(!isset($_SESSION['sudo'])) {
+			$_SESSION['user_id'] = $this->id;
+		}
+			ACL::clear_caches();
+		if(!isset($_SESSION['sudo'])) {
+			Session::set_userid( $this->id );
+		}
 	}
 
 	/**
@@ -214,18 +234,18 @@ class User extends QueryRecord
 	 */
 	public function forget( $redirect = true )
 	{
-		
+
 		// if the user is not actually logged in, just return so we don't throw any errors later
 		if ( $this->loggedin != true ) {
 			return;
 		}
-		
+
 		// is this user acting as another user?
 		if ( isset( $_SESSION['sudo'] ) ) {
 			// if so, remove the sudo token, but don't log out
 			// the user
 			unset( $_SESSION['sudo'] );
-			
+
 			if ( $redirect ) {
 				Utils::redirect( Site::get_url( 'admin' ) );
 			}
@@ -238,7 +258,7 @@ class User extends QueryRecord
 		Plugins::act( 'user_forget', $this );
 		Session::clear_userid( $_SESSION['user_id'] );
 		unset( $_SESSION['user_id'] );
-		
+
 		if ( $redirect ) {
 			Utils::redirect( Site::get_url( 'habari' ) );
 		}
@@ -248,11 +268,9 @@ class User extends QueryRecord
 	* Check a user's credentials to see if they are legit
 	* -- calls all auth plugins BEFORE checking local database.
 	*
-	* @todo Actually call plugins
-	*
-	* @param string $who A username or email address
+	* @param string $who A username
 	* @param string $pw A password
-	* @return object a User object, or false
+	* @return User|boolean a User object, or false
 	*/
 	public static function authenticate( $who, $pw )
 	{
@@ -266,14 +284,14 @@ class User extends QueryRecord
 		if ( $user instanceof User ) {
 			self::$identity = $user;
 			Plugins::act( 'user_authenticate_successful', self::$identity );
-			EventLog::log( sprintf( _t( 'Successful login for %s' ), $user->username ), 'info', 'authentication', 'habari' );
+			EventLog::log( _t( 'Successful login for %s', array( $user->username ) ), 'info', 'authentication', 'habari' );
 			// set the cookie
 			$user->remember();
 			return self::$identity;
 		}
 		elseif ( !is_object( $user ) ) {
 			Plugins::act( 'user_authenticate_failure', 'plugin' );
-			EventLog::log( sprintf( _t( 'Login attempt (via authentication plugin) for non-existent user %s' ), $who ), 'warning', 'authentication', 'habari' );
+			EventLog::log( _t( 'Login attempt (via authentication plugin) for non-existent user %s', array( $who ) ), 'warning', 'authentication', 'habari' );
 			Session::error( _t( 'Invalid username/password' ) );
 			self::$identity = null;
 			return false;
@@ -550,7 +568,6 @@ class User extends QueryRecord
 	}
 
 	/**
-	 * function groups
 	 * Returns an array of groups to which this user belongs
 	 * @param bool Whether to refresh the cache
 	 * @return Array an array of group IDs to which this user belongs
@@ -577,7 +594,8 @@ class User extends QueryRecord
 
 	/**
 	 * function add_to_group
-	 * @param mixed $group A group ID or name
+	 * @param integer|string|UserGroup $group A group ID, name, or UserGroup instance
+	 * @return null
 	**/
 	public function add_to_group( $group )
 	{
@@ -591,7 +609,8 @@ class User extends QueryRecord
 	/**
 	 * function remove_from_group
 	 * removes this user from a group
-	 * @param mixed $group A group ID or name
+	 * @param integer|string|UserGroup $group A group ID, name, or UserGroup instance
+	 * @return null
 	**/
 	public function remove_from_group( $group )
 	{
@@ -683,6 +702,42 @@ class User extends QueryRecord
 		return $this->url_args;
 	}
 
+	/**
+	 * Stores a form value into the object
+	 *
+	 * @param string $key The name of a form component that will be stored
+	 * @param mixed $value The value of the form component to store
+	 */
+	function field_save($key, $value)
+	{
+		$this->info->$key = $value;
+		$this->info->commit();
+	}
+
+	/**
+	 * Loads form values from an object
+	 *
+	 * @param string $key The name of a form component that will be loaded
+	 * @return mixed The stored value returned
+	 */
+	function field_load($key)
+	{
+		return $this->info->$key;
+	}
+
+	/**
+	 * Returns the content type of the object instance
+	 *
+	 * @return array An array of content types that this object represents, starting with the most specific
+	 */
+	function content_type()
+	{
+		return array(
+			$this->id . '.user',
+			$this->username . '.user',
+			'user'
+		);
+	}
 }
 
 ?>

@@ -1,20 +1,32 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-<?php
-	if ( isset( $autocomplete ) ) {
-		$autocomplete = 'autocomplete="' . $autocomplete . '"';
-	}
-	else {
-		$autocomplete = '';
-	}
-?>
-<div<?php echo ($class) ? ' class="' . $class . '"' : ''?><?php echo ($id) ? ' id="' . $id . '"' : ''?>>
-	<span class="pct25"><label for="<?php echo $field; ?>"><?php echo $caption; ?></label></span>
-	<span class="pct25"><input type="<?php echo (isset($this->type)) ? $type : 'text'?>" name="<?php echo $field; ?>" id="<?php echo $field; ?>" value="<?php echo Utils::htmlspecialchars( $value ); ?>" <?php echo isset($tabindex) ? ' tabindex="' . $tabindex . '"' : ''?> <?php echo $autocomplete; ?>></span>
-	<?php if (!empty($helptext)) : ?>
+<div<?php
+		echo $control->parameter_map(
+			array(
+				'class', 'id' => 'name'
+			)
+		); ?>>
+	<span class="pct25"><label <?php
+		echo $control->parameter_map(
+			array(
+				'title' => array('label_title', 'title'),
+				'for' => 'field',
+			)
+		); ?>><?php echo $this->caption; ?></label></span>
+	<span class="pct25"><input <?php
+		echo $control->parameter_map(
+			array(
+				'title' => array('control_title', 'title'),
+				'tabindex', 'size', 'maxlength', 'type', 'placeholder', 'autocomplete', 'disabled', 'readonly',
+				'id' => 'field',
+				'name' => 'field',
+			),
+			array(
+				'value' => Utils::htmlspecialchars( $value ),
+			)
+		);
+		?>></span>
+	<?php if ( ! empty( $helptext ) ) : ?>
 	<span class="pct40 helptext"><?php echo $helptext; ?></span>
 	<?php endif; ?>
-	<?php if ($message != '') : ?>
-	<p class="error"><?php echo $message; ?></p>
-	<?php endif; ?>
+	<?php $control->errors_out('<p class="error">%s</p>'); ?>
 </div>
-

@@ -154,7 +154,7 @@ class DatabaseConnection
 	 * Get the full table name for the given table.
 	 *
 	 * @param string $name name of the table
-	 * @return string the full table name, or false if the table was not found
+	 * @return string the full table name, or the original value if the table was not found
 	 */
 	public function table( $name )
 	{
@@ -162,7 +162,7 @@ class DatabaseConnection
 			return $this->sql_tables[$name];
 		}
 		else {
-			return false;
+			return $name;
 		}
 	}
 
@@ -349,8 +349,9 @@ class DatabaseConnection
 	public function begin_transaction()
 	{
 		if ( ! $this->pdo_transaction ) {
-			$this->pdo->beginTransaction();
-			$this->pdo_transaction = true;
+			if( $this->pdo->beginTransaction() ) {
+				$this->pdo_transaction = true;
+			}
 		}
 	}
 
@@ -362,8 +363,9 @@ class DatabaseConnection
 	public function rollback()
 	{
 		if ( $this->pdo_transaction ) {
-			$this->pdo->rollBack();
-			$this->pdo_transaction = false;
+			if( $this->pdo->rollBack() ) {
+				$this->pdo_transaction = false;
+			}
 		}
 	}
 
@@ -373,8 +375,9 @@ class DatabaseConnection
 	public function commit()
 	{
 		if ( $this->pdo_transaction ) {
-			$this->pdo->commit();
-			$this->pdo_transaction = false;
+			if( $this->pdo->commit() ) {
+				$this->pdo_transaction = false;
+			}
 		}
 	}
 
@@ -393,7 +396,7 @@ class DatabaseConnection
 	 *
 	 * @param   error   array( 'query'=>query, 'error'=>errorInfo )
 	 */
-	private function add_error( $error )
+	public function add_error( $error )
 	{
 		$backtrace1 = debug_backtrace();
 		$backtrace = array();
@@ -633,7 +636,7 @@ class DatabaseConnection
 			}
 			$qry .= ' WHERE 1=1 ';
 
-			foreach ( $keyfields as $keyfield => $keyvalue ) {
+			foreach ( $keyfieldvalues as $keyfield => $keyvalue ) {
 				$qry .= "AND {$keyfield} = ? ";
 				$values[] = $keyvalue;
 			}

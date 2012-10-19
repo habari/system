@@ -23,6 +23,15 @@ class Comments extends ArrayObject
 	 * $comments = comments::get( array ( "slug" => "first-post", "status" => "1", "orderby" => "date ASC" ) );
 	 * </code>
 	 *
+	 * @property-read integer $count The number of comments in this object
+	 * @property-read Comments $approved A Comments object containing only approved comments from this object
+	 * @property-read Comments $unapproved A Comments object containing only unapproved comments from this object
+	 * @property-read Comments $moderated A Comments object containing only moderated comments from this object
+	 * @property-read Comments $comments A Comments object containing only comment type comments from this object
+	 * @property-read Comments $pingbacks A Comments object containing only pingback type comments from this object
+	 * @property-read Comments $trackbacks A Comments object containing only trackback type comments from this object
+	 * @property-read Comments $spam A Comments object containing only spam comments from this object
+	 *
 	 **/
 	public static function get( $paramarray = array() )
 	{
@@ -41,6 +50,11 @@ class Comments extends ArrayObject
 
 		// Put incoming parameters into the local scope
 		$paramarray = Utils::get_params( $paramarray );
+
+		// let plugins alter the param array before we use it. could be useful for modifying search results, etc.
+		$paramarray = Plugins::filter( 'comments_get_paramarray', $paramarray );
+
+		$join_params = array();
 
 		// Transact on possible multiple sets of where information that is to be OR'ed
 		if ( isset( $paramarray['where'] ) && is_array( $paramarray['where'] ) ) {
@@ -78,7 +92,7 @@ class Comments extends ArrayObject
 				if ( isset( $paramset['status'] ) && false !== $paramset['status'] ) {
 					if ( is_array( $paramset['status'] ) ) {
 						$paramset['status'] = array_diff( $paramset['status'], array( 'any' ) );
-						array_walk( $paramset['status'], create_function( '&$a,$b', '$a = Comment::status( $a );' ) );
+						array_walk( $paramset['status'], function(&$a) {$a = Comment::status( $a );} );
 						$where[] = "{comments}.status IN (" . Utils::placeholder_string( count( $paramset['status'] ) ) . ")";
 						$params = array_merge( $params, $paramset['status'] );
 					}
@@ -90,7 +104,7 @@ class Comments extends ArrayObject
 				if ( isset( $paramset['type'] ) && false !== $paramset['type'] ) {
 					if ( is_array( $paramset['type'] ) ) {
 						$paramset['type'] = array_diff( $paramset['type'], array( 'any' ) );
-						array_walk( $paramset['type'], create_function( '&$a,$b', '$a = Comment::type( $a );' ) );
+						array_walk( $paramset['type'], function( &$a ) { $a = Comment::type( $a ); } );
 						$where[] = "type IN (" . Utils::placeholder_string( count( $paramset['type'] ) ) . ")";
 						$params = array_merge( $params, $paramset['type'] );
 					}
@@ -197,6 +211,9 @@ class Comments extends ArrayObject
 		// Only show comments to which the current user has permission to read the associated post
 		if ( isset( $paramset['ignore_permissions'] ) ) {
 			$master_perm_where = '';
+			// Set up the merge params
+			$merge_params = array( $join_params, $params );
+			$params = call_user_func_array( 'array_merge', $merge_params );
 		}
 		else {
 			// This set of wheres will be used to generate a list of comment_ids that this user can read
@@ -418,13 +435,14 @@ class Comments extends ArrayObject
 
 	/**
 	 * Changes the status of comments
-	 * @param mixed Comment IDs to moderate.  May be a single ID, or an array of IDs
-	**/
+	 * @param array|Comments $comments Comments to be moderated
+	 * @param int $status The new status for the provided array of comments
+	 * @return bool True if all the comments were successfully changed
+	 * @internal param \Comment $mixed IDs to moderate.  May be a single ID, or an array of IDs
+	 */
 	public static function moderate_these( $comments, $status = Comment::STATUS_UNAPPROVED )
 	{
-		if ( ! is_array( $comments )  && ! $comments instanceOf Comments ) {
-			$comments = array( $comments );
-		}
+		$comments = Utils::single_array($comments);
 		if ( count( $comments ) == 0 ) {
 			return;
 		}
@@ -434,14 +452,14 @@ class Comments extends ArrayObject
 			foreach ( $comments as $comment ) {
 				$comment->status = $status;
 				$result &= $comment->update();
-				EventLog::log( sprintf( _t( 'Comment %1$s moderated from %2$s' ), $comment->id, $comment->post->title ), 'info', 'comment', 'habari' );
+				EventLog::log( _t( 'Comment %1$s moderated from %2$s', array( $comment->id, $comment->post->title ) ), 'info', 'comment', 'habari' );
 			}
 		}
 		else if ( is_numeric( $comments[0] ) ) {
 			$result = true;
 			foreach ( $comments as $commentid ) {
 				$result &= DB::update( DB::table( 'comments' ), array( 'status' => $status), array( 'id' => $commentid ) );
-				EventLog::log( sprintf( _t( 'Comment Moderated on %s' ), $comment->post->title ), 'info', 'comment', 'habari' );
+				EventLog::log( _t( 'Comment %1$d moderated', array( $commentid ) ), 'info', 'comment', 'habari' );
 			}
 		}
 		else {
@@ -638,7 +656,7 @@ class Comments extends ArrayObject
 		$result = true;
 		foreach ( $this as $c ) {
 			$result &= $c->delete();
-			EventLog::log( sprintf( _t( 'Comment %1$s deleted from %2$s' ), $c->id, $c->post->title ), 'info', 'comment', 'habari' );
+			EventLog::log( _t( 'Comment %1$s deleted from %2$s', array( $c->id, $c->post->title ) ), 'info', 'comment', 'habari' );
 		}
 		// Clear ourselves.
 		$this->exchangeArray( array() );

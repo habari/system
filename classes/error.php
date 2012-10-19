@@ -35,6 +35,17 @@ class Error extends Exception
 	{
 		set_error_handler( array( 'Error', 'error_handler' ) );
 		set_exception_handler( array( 'Error', 'exception_handler' ) );
+		register_shutdown_function( array( 'Error', 'shutdown_handler' ) );
+	}
+
+	public static function shutdown_handler ( ) {
+
+		$last_error = error_get_last();
+
+		if ( $last_error ) {
+			self::error_handler( $last_error['type'], $last_error['message'], $last_error['file'], $last_error['line'], null );
+		}
+
 	}
 
 	/**
@@ -80,7 +91,7 @@ class Error extends Exception
 		$file = isset( $trace1['file'] ) ? $trace1['file'] : $this->getFile();
 		$line = isset( $trace1['line'] ) ? $trace1['line'] : $this->getLine();
 
-		return sprintf( _t( '%1$s in %2$s line %3$s on request of "%4$s"' ), $this->getMessage(), $file, $line, $_SERVER['REQUEST_URI'] );
+		return _t( '%1$s in %2$s line %3$s on request of "%4$s"', array( $this->getMessage(), $file, $line, $_SERVER['REQUEST_URI'] ) );
 	}
 
 	/**
@@ -150,7 +161,7 @@ class Error extends Exception
 				Error::print_backtrace();
 			}
 
-			if ( Options::get( 'log_backtraces' ) || DEBUG ) {
+			if ( Options::get( 'log_backtraces', false ) || DEBUG ) {
 				$backtrace = print_r( debug_backtrace(), true );
 			}
 			else {
@@ -162,7 +173,9 @@ class Error extends Exception
 			$backtrace= null;
 		}
 
-		EventLog::log( $errstr . ' in ' . $errfile . ':' . $errline, 'err', 'default', null, $backtrace );
+		if(DB::is_connected()) {
+			EventLog::log( $errstr . ' in ' . $errfile . ':' . $errline, 'err', 'default', null, $backtrace );
+		}
 
 		// throwing an Error make every error fatal!
 		//throw new Error($errstr, 0, true);

@@ -21,6 +21,7 @@ class Theme extends Pluggable
 	private $var_stack = array( array() );
 	private $current_var_stack = 0;
 	public $context = array();
+	private $added_template_vars = false;
 
 	/**
 	 * We build the Post filters by analyzing the handler_var
@@ -28,6 +29,7 @@ class Theme extends Pluggable
 	 * also, optionally, by the Theme )
 	 */
 	public $valid_filters = array(
+		'preset',
 		'content_type',
 		'not:content_type',
 		'slug',
@@ -90,7 +92,7 @@ class Theme extends Pluggable
 	public function info()
 	{
 
-		$xml_file = $this->theme_dir . '/theme.xml';
+		$xml_file = end($this->theme_dir) . '/theme.xml';
 		if(!file_exists($xml_file)) {
 			return new SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?>
 <pluggable type="theme">
@@ -110,7 +112,6 @@ class Theme extends Pluggable
 	 */
 	public function add_template_vars()
 	{
-		
 		// set the locale and character set that habari is configured to use presently
 		if ( !isset( $this->locale ) ) {
 			$this->locale = Options::get('locale', 'en');	// default to 'en' just in case we somehow don't have one?
@@ -136,6 +137,7 @@ class Theme extends Pluggable
 		if ( isset( $handler ) ) {
 			Plugins::act( 'add_template_vars', $this, $handler->handler_vars );
 		}
+		$this->added_template_vars = true;
 	}
 
 	/**
@@ -212,7 +214,6 @@ class Theme extends Pluggable
 
 		if ( !isset( $posts ) ) {
 			$user_filters = Plugins::filter( 'template_user_filters', $user_filters );
-			$user_filters = array_intersect_key( $user_filters, array_flip( $this->valid_filters ) );
 
 			// Work around the tags parameters to Posts::get() being subsumed by the vocabulary parameter
 			if( isset( $user_filters['not:tag'] ) ) {
@@ -314,7 +315,7 @@ class Theme extends Pluggable
 				}
 			}
 		}
-		
+
 		// @todo probably need to make this private if the user is logged in so proxy's don't cache it?
 		header('Pragma: public', true);
 		header('Cache-Control: public, max-age=' . HabariDateTime::DAY * 30, true);
@@ -350,7 +351,7 @@ class Theme extends Pluggable
 			
 			header('Expires: ' . $expires, true);
 		}
-		
+
 		return $this->display_fallback( $fallback );
 	}
 
@@ -367,7 +368,7 @@ class Theme extends Pluggable
 
 		// Makes sure home displays only entries
 		$default_filters = array(
-			'content_type' => Post::type( 'entry' ),
+			'preset' => 'home',
 		);
 
 		$paramarray['user_filters'] = array_merge( $default_filters, $user_filters );
@@ -563,8 +564,6 @@ class Theme extends Pluggable
 	 */
 	public function display( $template_name )
 	{
-		$this->add_template_vars();
-
 		$this->play_var_stack();
 
 		$this->template_engine->assign( 'theme', $this );
@@ -582,8 +581,6 @@ class Theme extends Pluggable
 	{
 		$this->play_var_stack();
 
-		$this->add_template_vars();
-
 		$this->template_engine->assign( 'theme', $this );
 
 		$return = $this->fetch_unassigned( $template_name );
@@ -598,6 +595,9 @@ class Theme extends Pluggable
 	 */
 	protected function play_var_stack()
 	{
+		if(!$this->added_template_vars) {
+			$this->add_template_vars();
+		}
 		$this->template_engine->clear();
 		for ( $z = 0; $z <= $this->current_var_stack; $z++ ) {
 			foreach ( $this->var_stack[$z] as $key => $value ) {
@@ -634,11 +634,11 @@ class Theme extends Pluggable
 		
 		// create a stack of the atom tags before the first action so they can be unset if desired
 		Stack::add( 'template_atom', array( 'alternate', 'application/atom+xml', 'Atom 1.0', implode( '', $this->feed_alternate_return() ) ), 'atom' );
-		Stack::add( 'template_atom', array( 'edit', 'application/atom+xml', 'Atom Publishing Protocol', URL::get( 'atompub_servicedocument' ) ), 'app' );
+		Stack::add( 'template_atom', array( 'service', 'application/atomsvc+xml', 'Atom Publishing Protocol', URL::get( 'atompub_servicedocument' ) ), 'app' );
 		Stack::add( 'template_atom', array( 'EditURI', 'application/rsd+xml', 'RSD', URL::get( 'rsd' ) ), 'rsd' );
-		
+
 		Plugins::act( 'template_header', $theme );
-		
+
 		$atom = Stack::get( 'template_atom', '<link rel="%1$s" type="%2$s" title="%3$s" href="%4$s">' );
 		$styles = Stack::get( 'template_stylesheet', array( 'Stack', 'styles' ) );
 		$scripts = Stack::get( 'template_header_javascript', array( 'Stack', 'scripts' ) );
@@ -684,7 +684,6 @@ class Theme extends Pluggable
 		$content_types = array_flip( $content_types );
 		if ( isset( $context ) ) {
 			foreach ( $content_types as $type => $type_id ) {
-				$content_type = $context . $object->content_type();
 				$fallback[] = strtolower( $context . '.' . $type );
 			}
 		}
@@ -852,7 +851,7 @@ class Theme extends Pluggable
 	 *
 	 * @param string $text text to display for link
 	 */
-	public function theme_prev_page_link( $theme, $text = null )
+	public function theme_prev_page_link( $theme, $text = null, $classes = array( 'prev-page' ) )
 	{
 		$settings = array();
 
@@ -867,7 +866,7 @@ class Theme extends Pluggable
 			$text = '&larr; ' . _t( 'Previous' );
 		}
 
-		return '<a class="prev-page" href="' . URL::get( null, $settings, false ) . '" title="' . $text . '">' . $text . '</a>';
+		return '<a class="' . implode( ' ', $classes ) . '" href="' . URL::get( null, $settings, false ) . '" title="' . $text . '">' . $text . '</a>';
 	}
 
 	/**
@@ -875,7 +874,7 @@ class Theme extends Pluggable
 	 *
 	 * @param string $text text to display for link
 	 */
-	public function theme_next_page_link( $theme, $text = null )
+	public function theme_next_page_link( $theme, $text = null, $classes = array( 'next-page' ) )
 	{
 		$settings = array();
 
@@ -894,7 +893,7 @@ class Theme extends Pluggable
 			$text = _t( 'Next' ) . ' &rarr;';
 		}
 
-		return '<a class="next-page" href="' . URL::get( null, $settings, false ) . '" title="' . $text . '">' . $text . '</a>';
+		return '<a class="' . implode( ' ', $classes ) . '" href="' . URL::get( null, $settings, false ) . '" title="' . $text . '">' . $text . '</a>';
 	}
 
 	/**
@@ -975,7 +974,7 @@ class Theme extends Pluggable
 	 */
 	public function theme_query_time()
 	{
-		return array_sum( array_map( create_function( '$a', 'return $a->total_time;' ), DB::get_profiles() ) );
+		return array_sum( Utils::array_map_field(DB::get_profiles(), 'total_time') );
 	}
 
 	/**
@@ -1235,7 +1234,7 @@ class Theme extends Pluggable
 
 		$active_scope = 0;
 		foreach ( $scopes as $scope_id => $scope_object ) {
-			if ( $this->check_scope_criteria( $scope_object->criteria ) ) {
+			if ( ( is_null($scope) && $this->check_scope_criteria( $scope_object->criteria ) ) || $scope == $scope_object->name ) {
 				$scope_block_count = DB::get_value( 'SELECT count( *) FROM {blocks_areas} ba WHERE ba.scope_id = ?', array( $scope_object->id ) );
 				if ( $scope_block_count > 0 ) {
 					$active_scope = $scope_object->id;
@@ -1243,7 +1242,7 @@ class Theme extends Pluggable
 				break;
 			}
 		}
-
+		
 		$area_blocks = $this->get_blocks( $area, $active_scope, $theme );
 
 		$this->area = $area;
@@ -1253,12 +1252,14 @@ class Theme extends Pluggable
 
 		// This is the block wrapper fallback template list
 		$fallback = array(
-			$context . '.' . $area . '.blockwrapper',
-			$context . '.blockwrapper',
 			$area . '.blockwrapper',
 			'blockwrapper',
 			'content',
 		);
+		if(!is_null($context)) {
+			array_unshift($fallback, $context . '.blockwrapper');
+			array_unshift($fallback, $context . '.' . $area . '.blockwrapper');
+		}
 
 		$output = '';
 		$i = 0;
@@ -1267,6 +1268,7 @@ class Theme extends Pluggable
 			$block->_area = $area;
 			$block->_instance_id = $block_instance_id;
 			$block->_area_index = $i++;
+			$block->_fallback = $fallback;
 
 			$hook = 'block_content_' . $block->type;
 			Plugins::act( $hook, $block, $this );
@@ -1415,48 +1417,133 @@ class Theme extends Pluggable
 	}
 
 	/**
-	 * Get the URL for a resource in this theme's directory
-	 * @param string $resource The resource name
+	 * Load and return a list of all assets in the current theme chain's /assets/ directory
+	 * @param bool $refresh If True, clear and reload all assets
+	 * @return array An array of URLs of assets in the assets directories of the active theme chain
+	 */
+	public function load_assets($refresh = false)
+	{
+		static $assets = null;
+
+		if(is_null($assets) || $refresh) {
+			$themedirs = $this->theme_dir;
+			$assets = array(
+				'css' => array(),
+				'js' => array(),
+			);
+
+			foreach($themedirs as $dir) {
+				if( file_exists(Utils::end_in_slash($dir) . 'assets')) {
+					$theme_assets = Utils::glob(Utils::end_in_slash($dir) . 'assets/*.*');
+					foreach($theme_assets as $asset) {
+						$extension = strtolower(substr($asset, strrpos($asset, '.') + 1));
+						$assets[$extension][basename($asset)] = $this->dir_to_url($asset);
+					}
+				}
+			}
+		}
+		return $assets;
+	}
+
+	/**
+	 * Load assets and add the CSS ones to the header on the template_stylesheet action hook.
+	 */
+	public function action_template_header_9()
+	{
+		$assets = $this->load_assets();
+		foreach($assets['css'] as $css) {
+			Stack::add('template_stylesheet', array($css , 'screen,projection'));
+		}
+	}
+
+	/**
+	 * Load assets and add the javascript ones to the footer on the template_footer_javascript action hook.
+	 */
+	public function action_template_footer_9()
+	{
+		$assets = $this->load_assets();
+		foreach($assets['js'] as $js) {
+			Stack::add('template_footer_javascript', $js);
+		}
+	}
+
+	/**
+	 * Get the URL for a resource in one of the directories used by the active theme, child theme directory first
+	 * @param bool|string $resource The resource name
+	 * @param bool $overrideok If false, find only the parent theme resources
 	 * @return string The URL of the requested resource
 	 * @todo This method needs to be aware of the class that called it so that it can find the right directory to use
 	 */
-	public function get_url($resource = false)
+	public function get_url($resource = false, $overrideok = true)
 	{
-		$backtraces = debug_backtrace(false);
-		$stop = false;
-		foreach($backtraces as $b) {
-			if($stop) {
-				$backtrace = $b;
+		$url = false;
+		$theme = '';
+
+		$themedirs = $this->theme_dir;
+
+		if(!$overrideok) {
+			$themedirs = reset($this->theme_dir);
+		}
+
+		foreach($themedirs as $dir) {
+			if(file_exists(Utils::end_in_slash($dir) . trim($resource, '/'))) {
+				$url = $this->dir_to_url(Utils::end_in_slash($dir) . trim($resource, '/'));
 				break;
 			}
-			if($b['function'] = 'get_url') {
-				$stop = true;
-			}
 		}
 
-		$r_class = new ReflectionClass($backtrace['class']);
-		$classfile = $r_class->getFileName();
-
-		$themedir = basename(dirname($classfile));
-
-		$theme = $themedir; //basename(end($this->theme_dir));
-		if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
-			$url = Site::get_url( 'user' ) .  '/themes/' . $theme;
-		}
-		elseif ( file_exists( HABARI_PATH . '/user/themes/' . $theme ) ) {
-			$url = Site::get_url( 'habari' ) . '/user/themes/' . $theme;
-		}
-		elseif ( file_exists( HABARI_PATH . '/3rdparty/themes/' . $theme ) ) {
-			$url = Site::get_url( 'habari' ) . '/3rdparty/themes/' . $theme;
-		}
-		else {
-			$url = Site::get_url( 'habari' ) . '/system/themes/' . $theme;
-		}
-
-		$url .= Utils::trail( $resource );
-		$url = Plugins::filter( 'site_url_theme', $url );
+		$url = Plugins::filter( 'site_url_theme', $url, $theme );
 		return $url;
 	}
+
+	/**
+	 * Convert a theme directory or resource into a URL
+	 * @param string $dir The pathname to convert
+	 * @return bool|string The URL to use, or false if none was found
+	 */
+	public function dir_to_url($dir)
+	{
+		static $tomatch = false;
+
+		if(!$tomatch) {
+			$tomatch = array(
+				Site::get_dir( 'config' ) . '/themes/' => Site::get_url( 'user' ) .  '/themes/',
+				HABARI_PATH . '/user/themes/' => Site::get_url( 'habari' ) . '/user/themes/',
+				HABARI_PATH . '/3rdparty/themes/' => Site::get_url( 'habari' ) . '/3rdparty/themes/',
+				HABARI_PATH . '/system/themes/' => Site::get_url( 'habari' ) . '/system/themes/',
+			);
+		}
+
+		if(preg_match('#^(' . implode('|', array_map('preg_quote', array_keys($tomatch))) . ')(.*)$#', $dir, $matches)) {
+			return $tomatch[$matches[1]] . $matches[2];
+		}
+		return false;
+	}
+
+	/**
+	 * Add a template to the list of available templates
+	 * @param string $name Name of the new template
+	 * @param string $file File of the template to add
+	 * @param boolean $replace If true, replace any existing template with this name
+	 */
+	public function add_template($name, $file, $replace = false)
+	{
+		$this->template_engine->add_template($name, $file, $replace);
+	}
+
+	/**
+	 * Provide default Habari features for curious plugins
+	 * @param array $provided Features already collected from interrogated plugins
+	 * @return array Plugin Features plus Habari Features
+	 */
+	public static function filter_provided( $provided = array() ) {
+		foreach( array( Version::HABARI_MAJOR_MINOR, DB::get_driver_name(),
+			) as $feature ) {
+			$provided[ $feature ] = array( "Habari" );
+		}
+		return $provided;
+	}
+
 
 }
 ?>

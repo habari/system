@@ -5,6 +5,8 @@
  *
  * Vocabulary is part of the taxonomy system. A vocabulary holds terms and has features.
  *
+ * @property-read array $features An array of the features this Vocabulary implements
+ *
  */
 
 class Vocabulary extends QueryRecord
@@ -13,12 +15,13 @@ class Vocabulary extends QueryRecord
 	 *
 	 * @var Array of strings $features. An array of the features that limit the behaviour of the vocabulary.
 	 * Default values can include:
-	 *		hierarchical:	The vocabulary's terms exist in a parent child hierarchy
-	 *		required:
-	 *		multiple:		More than one term in the vocabulary can be associated with an object
-	 *		free:			Terms within the vocabulary can have any value
+	 *  hierarchical: The vocabulary's terms exist in a parent child hierarchy
+	 *  required:
+	 *  multiple: More than one term in the vocabulary can be associated with an object
+	 *  free: Terms within the vocabulary can have any value
+	 *  unique: A term may be associated with exactly 0 or 1 object
 	 */
-	public static $features = array( 'hierarchical', 'required', 'multiple', 'free' );
+	public static $features = array( 'hierarchical', 'required', 'multiple', 'free', 'unique' );
 
 	/**
 	 * Return the defined database columns for a Vocabulary.
@@ -97,7 +100,9 @@ class Vocabulary extends QueryRecord
 	 **/
 	public static function get( $name )
 	{
-		return DB::get_row( 'SELECT * FROM {vocabularies} WHERE name=?', array( $name ), 'Vocabulary' );
+		$query = Query::create('{vocabularies}')->select('*');
+		$query->where()->add('name = :name', array('name' => $name));
+		return $query->row('Vocabulary');
 	}
 
 	/**
@@ -108,7 +113,9 @@ class Vocabulary extends QueryRecord
 	 */
 	public static function get_by_id( $id )
 	{
-		return DB::get_row( 'SELECT * FROM {vocabularies} WHERE id=?', array( $id ), 'Vocabulary' );
+		$query = Query::create('{vocabularies}')->select('*');
+		$query->where()->add('id = :id', array('id' => $id));
+		return $query->row('Vocabulary');
 	}
 
 	/**
@@ -118,7 +125,8 @@ class Vocabulary extends QueryRecord
 	 */
 	public static function get_all()
 	{
-		return DB::get_results( 'SELECT * FROM {vocabularies}', array(), 'Vocabulary' );
+		$query = Query::create('{vocabularies}')->select('*');
+		return $query->results('Vocabulary');
 	}
 
 	/**
@@ -139,12 +147,8 @@ class Vocabulary extends QueryRecord
 	 **/
 	public static function names()
 	{
-		$names = array();
-		$vocabs = DB::get_results( 'SELECT name FROM {vocabularies}' );
-		foreach ( $vocabs as $vocab ) {
-			$names[] = $vocab->name;
-		}
-		return $names;
+		$query = Query::create('{vocabularies}')->select('name');
+		return $query->column();
 	}
 
 	/**
@@ -155,16 +159,11 @@ class Vocabulary extends QueryRecord
 	 **/
 	public static function get_all_object_terms( $object_type, $id )
 	{
-		$results = DB::get_results(
-			'SELECT id, term, term_display, vocabulary_id, mptt_left, mptt_right FROM {terms}
-			JOIN {object_terms} ON {terms}.id = {object_terms}.term_id
-			WHERE {object_terms}.object_type_id = ?
-				AND {object_terms}.object_id = ?',
-			array( self::object_type_id( $object_type ), $id ),
-			'Term'
-		);
-
-		return new Terms( $results );
+		$query = Query::create('{terms}')->select('id', 'term', 'term_display', 'vocabulary_id', 'mptt_left', 'mptt_right');
+		$query->join('JOIN {object_terms} ON {terms}.id = {object_terms}.term_id', array(), 'object_terms');
+		$query->where()->in('{object_terms}.object_type_id', self::object_type_id( $object_type ));
+		$query->where()->in('{object_terms}.object_id', $id);
+		return new Terms($query->results('Term'));
 	}
 
 	/**
@@ -174,7 +173,9 @@ class Vocabulary extends QueryRecord
 	**/
 	public static function exists( $name )
 	{
-		return ( (int) DB::get_value( "SELECT COUNT(id) FROM {vocabularies} WHERE name=?", array( $name ) ) > 0 );
+		$query = Query::create('{vocabularies}')->select('count(id)');
+		$query->where()->add('name = :name', array('name' => $name));
+		return ((int) $query->value()) > 0;
 	}
 
 	/**
@@ -293,7 +294,7 @@ class Vocabulary extends QueryRecord
 
 		// Finally, delete the vocabulary
 		$result = parent::deleteRecord( '{vocabularies}', array( 'id'=>$this->id ) );
-		EventLog::log( sprintf( _t( 'Vocabulary %1$s (%2$s) deleted.' ), $this->id, $this->name ), 'info', 'content', 'habari' );
+		EventLog::log( _t( 'Vocabulary %1$s (%2$s) deleted.', array( $this->id, $this->name ) ), 'info', 'content', 'habari' );
 
 		// Let plugins act after we write to the database
 		Plugins::act( 'vocabulary_delete_after', $this );
@@ -364,7 +365,7 @@ class Vocabulary extends QueryRecord
 
 		// Insert the new node
 		$result = $new_term->insert();
-		if ( $result ) {
+		if( $result ) {
 			DB::commit();
 			return $new_term;
 		}
@@ -380,7 +381,7 @@ class Vocabulary extends QueryRecord
 	 * @param mixed $term A Term object, null (for the first node in the tree), a string (for a term slug or display), or an integer (for a Term ID).
 	 * @param string $term_class The class of the returned term object.
 	 * @return Term The Term object requested
-	 * @todo improve selective fetching by term slug vs term_display	 
+	 * @todo improve selective fetching by term slug vs term_display
 	 **/
 	public function get_term( $term = null, $term_class = 'Term' )
 	{
@@ -416,25 +417,20 @@ class Vocabulary extends QueryRecord
 	 **/
 	public function get_object_terms( $object_type, $id )
 	{
-		$results = DB::get_results(
-			'SELECT id, term, term_display, vocabulary_id, mptt_left, mptt_right FROM {terms}
-			JOIN {object_terms} ON {terms}.id = {object_terms}.term_id
-			WHERE {terms}.vocabulary_id = ?
-				AND {object_terms}.object_type_id = ?
-				AND {object_terms}.object_id = ?',
-			array( $this->id, self::object_type_id( $object_type ), $id ),
-			'Term'
-		);
-
-		return $results;
+		$query = Query::create('{terms}')->select('id', 'term', 'term_display', 'vocabulary_id', 'mptt_left', 'mptt_right');
+		$query->join('JOIN {object_terms} ON {terms}.id = {object_terms}.term_id', array(), 'object_terms');
+		$query->where()->in('{terms}.vocabulary_id', $this->id);
+		$query->where()->in('{object_terms}.object_type_id', self::object_type_id( $object_type ));
+		$query->where()->in('{object_terms}.object_id', $id);
+		return new Terms($query->results('Term'));
 	}
 
 	/**
 	 * Sets the Term objects associated to that type of object with that id in this vocabulary
 	 *
-	 * @param String the name of the object type
-	 * @param Integer The id of the object for which you want the terms
-	 * @param Array. The names of the terms to associate
+	 * @param String $object_type the name of the object type
+	 * @param Integer $id The id of the object for which you want the terms
+	 * @param Array $terms The names of the terms to associate
 	 *
 	 * @return boolean. Whether the associations were successful or not
 	 **/
@@ -461,7 +457,7 @@ class Vocabulary extends QueryRecord
 			if ( ! $new_term instanceof Term ) {
 				$new_term = $this->add_term( $term );
 			}
-			if ( ! array_key_exists( $new_term->id, $new_terms ) ) {
+			if ( ( $new_term != false ) && ( ! array_key_exists( $new_term->id, $new_terms ) ) ) {
 				$new_terms[$new_term->id] = $new_term;
 			}
 		}
@@ -523,7 +519,9 @@ class Vocabulary extends QueryRecord
 	 **/
 	public function is_empty()
 	{
-		return ( (int) DB::get_value( "SELECT COUNT(id) FROM {terms} WHERE vocabulary_id=?", array( $this->id ) ) == 0 );
+		$query = Query::create('{terms}')->select('count(id)');
+		$query->where()->in('vocabulary_id', $this->id);
+		return ((int) $query->value()) == 0;
 	}
 
 
@@ -533,7 +531,17 @@ class Vocabulary extends QueryRecord
 	 **/
 	public function get_tree( $orderby = 'mptt_left ASC' )
 	{
-		return new Terms(DB::get_results( "SELECT * FROM {terms} WHERE vocabulary_id=:vid ORDER BY {$orderby}", array( 'vid' => $this->id ), 'Term' ));
+		$query = Query::create('{terms}')->select('{terms}.*');
+		$query->where()->in('vocabulary_id', $this->id);
+		// If the vocabulary is unique, save the extra mess of queries and fetch the object data, too
+		if(in_array('unique', $this->features)) {
+			$query->join('LEFT JOIN {object_terms} on {object_terms}.term_id = {terms}.id', array(), 'object_terms');
+			$query->join('LEFT JOIN {object_types} on {object_types}.id = {object_terms}.object_type_id', array(), 'object_types');
+			$query->select('{object_terms}.object_id');
+			$query->select('{object_types}.name AS type');
+		}
+		$query->orderby($orderby);
+		return new Terms($query->results('Term'));
 	}
 
 	/**
@@ -597,9 +605,9 @@ INNER JOIN {terms} as child
 WHERE parent.vocabulary_id = ?
 GROUP BY child.term
 HAVING COUNT(child.term)=1
-ORDER BY NULL
+ORDER BY mptt_left ASC
 SQL;
-		return DB::get_results( $query, array( $this->id ), 'Term' );
+		return new Terms(DB::get_results( $query, array( $this->id ), 'Term' ));
 	}
 
 	/**
@@ -631,7 +639,7 @@ SQL;
 
 	/**
 	 * Moves a term within the vocabulary. Returns a Term object. null parameters append the term to the end of any hierarchies.
-	 * 
+	 *
 	 * The MPTT operations can seem complex, but they're actually pretty simple:
 	 * 		1: Find our insertion point:
 	 * 			Either at the very end of the vocabulary, or before / after the given term
@@ -641,7 +649,7 @@ SQL;
 	 * 			We know the offset between the old point and the new point, so move the range up that number of spaces.
 	 * 		4: Close the original gap:
 	 * 			Now we've got all our terms moved, but we need to bump everything back down to close the gap it left, similar to #2.
-	 * 
+	 *
 	 * @param Term $term The term to move.
 	 * @param Term|null $target_term The term to move $term before or after, or null to move it to the very end of the vocabulary.
 	 * @param bool $before True to move $term BEFORE $target_term, false (the default) to move $term AFTER $target_term.
@@ -668,7 +676,7 @@ SQL;
 				$mptt_target = $mptt_target + 1;	// the left is one greater than the highest right
 			}
 			else {
-				
+
 				// if we're putting it before
 				if ( $before ) {
 					$mptt_target = $target_term->mptt_left;		// we're actually taking the place of the target term's left
@@ -676,7 +684,7 @@ SQL;
 				else {
 					$mptt_target = $target_term->mptt_right + 1;	// we just need to start at the next number
 				}
-				
+
 			}
 
 			// Create space in the tree for the insertion
@@ -698,10 +706,10 @@ SQL;
 				$source_left = $source_left + $range;
 				$source_right = $source_right + $range;
 			}
-			
+
 			// figure out how far our nodes are moving
 			$offset = $mptt_target - $source_left;
-			
+
 			// move our lucky nodes into the space we just created
 			$params = array( ':offset' => $offset, ':vocab_id' => $this->id, ':source_left' => $source_left, ':source_right' => $source_right );
 			$res = DB::query( '
@@ -717,7 +725,6 @@ SQL;
 				$params
 			);
 
-
 			// Close the gap in the tree created by moving those nodes out
 			$params = array( 'range' => $range, 'vocab_id' => $this->id, 'source_left' => $source_left );
 			$res = DB::query( 'UPDATE {terms} SET mptt_left = mptt_left - :range WHERE vocabulary_id = :vocab_id AND mptt_left > :source_left', $params );
@@ -725,14 +732,14 @@ SQL;
 				DB::rollback();
 				return false;
 			}
-			
+
 			$params = array( 'range' => $range, 'vocab_id' => $this->id, 'source_right' => $source_right );
 			$res = DB::query( 'UPDATE {terms} SET mptt_right = mptt_right - :range WHERE vocabulary_id = :vocab_id AND mptt_right > :source_right', $params );
 			if ( ! $res ) {
 				DB::rollback();
 				return false;
 			}
-			
+
 
 			// Success!
 			DB::commit();
@@ -778,6 +785,24 @@ SQL;
 		$post_ids = array();
 		$tag_names = array();
 
+		// get the master term
+		$master_term = $this->get_term( $master );
+
+		if ( !isset( $master_term->term ) ) {
+			// it didn't exist, so we assume it's tag text and create it
+			$ok = $this->add_term( $master );
+			if( !$ok ) {
+				return;
+			}
+
+			$master_ids = array();
+		}
+		else {
+			// get the posts the tag is already on so we don't duplicate them
+			$master_ids = $master_term->objects( $object_type );
+
+		}
+
 		// get array of existing tags first to make sure we don't conflict with a new master tag
 		foreach ( $tags as $tag ) {
 
@@ -798,20 +823,6 @@ SQL;
 			}
 		}
 
-		// get the master term
-		$master_term = $this->get_term( $master );
-
-		if ( !isset( $master_term->term ) ) {
-			// it didn't exist, so we assume it's tag text and create it
-			$master_term = $this->add_term( $master );
-
-			$master_ids = array();
-		}
-		else {
-			// get the posts the tag is already on so we don't duplicate them
-			$master_ids = $master_term->objects( $object_type );
-
-		}
 
 		if ( count( $post_ids ) > 0 ) {
 			// only try and add the master tag to posts it's not already on
@@ -833,7 +844,7 @@ SQL;
 		);
 
 	}
-	
+
 
 	/**
 	 * Get the tags associated with this object
@@ -852,7 +863,7 @@ SQL;
 
 		return $terms;
 	}
-	
+
 
 	/**
 	 * Returns the count of times a tag is used.

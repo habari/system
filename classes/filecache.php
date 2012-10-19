@@ -36,8 +36,8 @@ class FileCache extends Cache
 			}
 		}
 		else {
-			Session::error( sprintf( _t( "The cache directory '%s' is not writable - the cache is disabled. The user, or group, which your web server is running as, needs to have read, write, and execute permissions on this directory." ), $this->cache_location ), 'filecache' );
-			EventLog::log( sprintf( _t( "The cache directory '%s' is not writable - the cache is disabled." ), $this->cache_location ), 'notice', 'cache', 'habari' );
+			Session::error( _t( "The cache directory '%s' is not writable - the cache is disabled. The user, or group, which your web server is running as, needs to have read, write, and execute permissions on this directory.", array( $this->cache_location ) ), 'filecache' );
+			EventLog::log( _t( "The cache directory '%s' is not writable - the cache is disabled.", array( $this->cache_location ) ), 'notice', 'cache', 'habari' );
 		}
 	}
 
@@ -55,7 +55,9 @@ class FileCache extends Cache
 		$hash = $this->get_name_hash( $name );
 		$ghash = $this->get_group_hash( $group );
 
-		return isset( $this->cache_files[$ghash][$hash] ) && ( $this->cache_files[$ghash][$hash]['keep'] || $this->cache_files[$ghash][$hash]['expires'] > time() ) && file_exists( $this->cache_files[$ghash][$hash]['file'] );
+		return isset( $this->cache_files[$ghash][$hash] )
+			&& ( $this->cache_files[$ghash][$hash]['keep'] || $this->cache_files[$ghash][$hash]['expires'] > time() )
+			&& file_exists( $this->cache_files[$ghash][$hash]['file'] );
 	}
 
 	/**
@@ -204,6 +206,7 @@ class FileCache extends Cache
 			if ( isset( $this->cache_files[$ghash][$hash] ) && file_exists( $this->cache_files[$ghash][$hash]['file'] ) ) {
 				unlink( $this->cache_files[$ghash][$hash]['file'] );
 				unset( $this->cache_files[$ghash][$hash] );
+				unset( $this->cache_data[$group][$name] );
 			}
 
 			Plugins::act( 'cache_expire_after', $name, $group );

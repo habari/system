@@ -40,7 +40,10 @@ class Undelete extends Plugin
 		// and then return false.  The Post::delete() method will
 		// see the false return value, and simply return, leaving
 		// the post in the database.
-		if ( $post->status != Post::status( 'deleted' ) && ACL::access_check( $post->get_access(), 'delete' ) ) {
+		// If the user_id is invalid (as would happen when the User
+		// has just been deleted), return true.  Post::delete()
+		// will then delete the (now user_id-less) post.
+		if ( $post->status != Post::status( 'deleted' ) && ACL::access_check( $post->get_access(), 'delete' ) && User::get_by_id( $post->user_id ) ) {
 			$post->info->prior_status = $post->status;
 			$post->status = Post::status( 'deleted' );
 			$post->update();
@@ -120,7 +123,7 @@ class Undelete extends Plugin
 			$post->update();
 
 			EventLog::log(
-				sprintf(_t('Post %1$s (%2$s) restored.'), $post->id, $post->slug),
+				_t('Post %1$s (%2$s) restored.', array( $post->id, $post->slug ) ),
 				'info', 'content', 'habari'
 			);
 			//scheduled post
@@ -202,7 +205,7 @@ class Undelete extends Plugin
 	{
 		$count = self::delete_all();
 
-		Session::notice(sprintf( _t('Permanently deleted %d posts'), $count));
+		Session::notice( _t( 'Permanently deleted %d posts', array( $count ) ) );
 		return false;
 	}
 
@@ -266,7 +269,7 @@ var unDelete = {
 	}
 }
 JS;
-			Stack::add( 'admin_header_javascript', $script, 'undelete', 'admin' );
+			Stack::add( 'admin_header_javascript', $script, 'undelete', 'admin-js' );
 		}
 	}
 }

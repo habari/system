@@ -4,9 +4,6 @@
 		<span><a href="http://habariproject.org/" title="<?php _e('Go to the Habari site'); ?>">Habari
 	<?php
 	echo Version::get_habariversion();
-	if ( Version::is_devel() ) {
-		echo ' r' . Version::get_svn_revision();
-	}
 	?> </a></span>
 	 <span class="middot">&middot;</span>
 	 <span><?php _e('Logged in as'); ?></span>
@@ -21,7 +18,7 @@
 		if ( User::identify()->can('super_user') ) {
 			?>
 				<span class="middot">&middot;</span>
-				<span><a href="<?php Site::out_url( 'admin' ); ?>/sysinfo"> <?php _e( 'System Information'); ?></a></span>
+				<span><a href="<?php Site::out_url( 'admin' ); ?>/sysinfo" title="<?php _e('Display information about the server and Habari'); ?>"> <?php _e( 'System Information'); ?></a></span>
 			<?php
 		}
 	?>

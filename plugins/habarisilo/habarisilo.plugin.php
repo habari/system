@@ -178,9 +178,11 @@ class HabariSilo extends Plugin implements MediaSilo
 				$icon_url = Plugins::filter( 'habarisilo_icon_base_url', $this->get_url() . '/icons' );
 
 				if ( ( $icons = Utils::glob( $icon_path . '/*.{png,jpg,gif,svg}', GLOB_BRACE ) ) && $mimetype ) {
-					$icon_keys = array_map( create_function( '$a', 'return pathinfo($a, PATHINFO_FILENAME);' ), $icons );
+					$icon_keys = array_map( function($a) {return pathinfo($a, PATHINFO_FILENAME);}, $icons );
 					$icons = array_combine( $icon_keys, $icons );
-					$icon_filter = create_function( '$a, $b', "\$mime = '$mimetype';".'return (((strpos($mime, $a)===0) ? (strlen($a) / strlen($mime)) : 0) >= (((strpos($mime, $b)===0)) ? (strlen($b) / strlen($mime)) : 0)) ? $a : $b;' );
+					$icon_filter = function($a, $b) use ($mimetype) {
+						return (((strpos($mimetype, $a)===0) ? (strlen($a) / strlen($mimetype)) : 0) >= (((strpos($mimetype, $b)===0)) ? (strlen($b) / strlen($mimetype)) : 0)) ? $a : $b;
+					};
 					$icon_key = array_reduce( $icon_keys, $icon_filter );
 					if ($icon_key) {
 						$icon = basename( $icons[$icon_key] );
@@ -517,7 +519,9 @@ class HabariSilo extends Plugin implements MediaSilo
 							$asset->upload( $_FILES['file'] );
 
 							if ( $asset->put() ) {
-								$panel .= '<p>' . _t( 'File added successfully.' ) . '</p>';
+								$msg = _t( 'File uploaded: %s', array( $_FILES['file']['name'] ) );
+								$panel .= '<p>' . $msg . '</p>';
+								EventLog::log( $msg, 'info' );
 							}
 							else {
 								$upload_errors = array(
@@ -529,9 +533,10 @@ class HabariSilo extends Plugin implements MediaSilo
 										7 => _t( 'Failed to write file to disk.' ),
 										8 => _t( 'A PHP extension stopped the file upload. PHP does not provide a way to ascertain which extension caused the file upload to stop; examining the list of loaded extensions with phpinfo() may help.' ),
 									);
-
-								$panel .= '<p>' . _t( 'File could not be added to the silo.' ) . '</p>';
+								$msg = _t( 'File upload failed: %s', array( $_FILES['file']['name'] ) );
+								$panel .= '<p>' . $msg . '</p>';
 								$panel .= '<p><strong>' . $upload_errors[ $_FILES['file']['error'] ] . '</strong></p>';
+								EventLog::log( $msg . ' ' . $upload_errors[ $_FILES['file']['error'] ], 'err' );
 							}
 
 							$panel .= '<p><a href="#" onclick="habari.media.forceReload();habari.media.showdir(\'' . dirname( $path ) . '\');">' . _t( 'Browse the current silo path.' ) . '</a></p></div>';
@@ -618,15 +623,15 @@ UPLOAD_FORM;
 			case 'rmdir':
 				$dir = $this->root . ( $path == '' ? '' : '/' ) . $path;
 				rmdir( $dir );
-				$msg = _t( 'Directory Deleted: %s', array( $path ) );
+				$msg = _t( 'Directory deleted: /%s', array( $path ) );
 				break;
 			case 'mkdir':
 				$dir = $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
 				mkdir( $dir, 0755 );
-				$msg = _t ( 'Directory Created: %s', array( $path . '/' . $form->directory->value ) );
+				$msg = _t ( 'Directory created: %s', array( $path . '/' . $form->directory->value ) );
 				break;
 		}
-
+		EventLog::log( $msg, 'info' );
 		return '<div class="span-18"style="padding-top:30px;color: #e0e0e0;margin: 0px auto;"><p>' . $msg . '</p></div>';
 	}
 
@@ -642,13 +647,14 @@ UPLOAD_FORM;
 		$result = $this->silo_delete($path);
 		$panel = '<div class="span-18"style="padding-top:30px;color: #e0e0e0;margin: 0px auto;">';
 		if ( $result ) {
-			$panel .= '<p>' . _t( 'File deleted successfully.' ) . '</p>';
+			$msg = _t( 'File deleted: /%s', array( $path ) );
 		} else {
-			$panel .= '<p>' . _t( 'Failed to delete file.' ) . '</p>';
+			$msg = _t( 'Failed to delete file: /%s', array( $path ) );
 		}
-
+		$panel .= '<p>' . $msg . '</p>';
 		$panel .= '<p><a href="#" onclick="habari.media.forceReload();habari.media.showdir(\'' . self::SILO_NAME . '/' . dirname( $path ) . '\');">' . _t( 'Browse the current silo path.' ) . '</a></p></div>';
 
+		EventLog::log( $msg, 'info' );
 		return $panel;
 	}
 

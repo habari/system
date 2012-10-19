@@ -19,7 +19,9 @@ class AdminUsersHandler extends AdminHandler
 		$edit_user = User::identify();
 		$permission = false;
 
-		if ( ( $this->handler_vars['user'] == '' ) || ( User::get_by_name( $this->handler_vars['user'] ) == $edit_user ) ) {
+		// Check if the user is editing their own profile
+		$self = $this->handler_vars['user'] == '' || User::get_by_name($this->handler_vars['user']) == $edit_user;
+		if ($self) {
 			if ( $edit_user->can( 'manage_self' ) || $edit_user->can( 'manage_users' ) ) {
 				$permission = true;
 			}
@@ -32,7 +34,7 @@ class AdminUsersHandler extends AdminHandler
 			}
 			$edit_user = User::get_by_name( $this->handler_vars['user'] );
 			$who = $edit_user->username;
-			$possessive = sprintf( _t( "%s's User Information" ), $who );
+			$possessive = _t( "%s's User Information", array( $who ) );
 		}
 
 		if ( !$permission ) {
@@ -70,7 +72,7 @@ class AdminUsersHandler extends AdminHandler
 			'dashboard' => _t( 'Dashboard' ),
 		);
 
-		$form = new FormUI( 'User Options' );
+			$form = new FormUI( 'User Options' );
 
 		// Create a tracker for who we are dealing with
 		$form->append( 'hidden', 'edit_user', 'edit_user' );
@@ -159,6 +161,14 @@ class AdminUsersHandler extends AdminHandler
 		$spam_count->helptext = _t( 'Hide the number of SPAM comments on your dashboard.' );
 		$spam_count->value = $edit_user->info->dashboard_hide_spam_count;
 
+		// Groups
+		if(User::identify()->can('manage_groups')) {
+			$fieldset = $form->append( 'wrapper', 'groups', _t('Groups'));
+			$fieldset->class = 'container settings';
+			$fieldset->append( 'static', 'groups', '<h2>' . htmlentities( _t('Groups'), ENT_COMPAT, 'UTF-8' ) . '</h2>' );
+			$form->groups->append( 'checkboxes', 'user_group_membership', 'null:null', _t('Groups'), Utils::array_map_field(UserGroups::get_all(), 'name', 'id') );
+			$form->user_group_membership->value = $edit_user->groups;
+		}
 
 		// Controls
 		$controls = $form->append( 'wrapper', 'page_controls' );
@@ -175,7 +185,7 @@ class AdminUsersHandler extends AdminHandler
 		Plugins::act( 'form_user', $form, $edit_user );
 
 		$this->theme->form = $form->get();
-		$this->theme->admin_page = _t( 'user' );
+		$this->theme->admin_page = $self ? _t( 'My Profile') : _t( 'User' );
 
 		$this->theme->display( 'user' );
 
@@ -214,7 +224,7 @@ class AdminUsersHandler extends AdminHandler
 					}
 				}
 
-				Session::notice( sprintf( _t( '%s has been deleted' ), $username ) );
+				Session::notice( _t( '%s has been deleted', array( $username ) ) );
 
 				Utils::redirect( URL::get( 'admin', array( 'page' => 'users' ) ) );
 			}
@@ -245,6 +255,20 @@ class AdminUsersHandler extends AdminHandler
 			$edit_user->update();
 		}
 
+		// Change group membership
+		if(User::identify()->can('manage_groups')) {
+			$allgroups = UserGroups::get_all();
+			$new_groups = $form->user_group_membership->value;
+			foreach($allgroups as $group) {
+				if(!$edit_user->in_group($group) && in_array($group->id, $new_groups)) {
+					$edit_user->add_to_group($group);
+				}
+				if($edit_user->in_group($group) && !in_array($group->id, $new_groups)) {
+					$edit_user->remove_from_group($group);
+				}
+			}
+		}
+
 		// Set various info fields
 		$info_fields = array( 'displayname', 'imageurl', 'locale_tz', 'locale_date_format', 'locale_time_format', 'dashboard_hide_spam_count' );
 
@@ -260,6 +284,7 @@ class AdminUsersHandler extends AdminHandler
 
 		// Let plugins tell us to update
 		$update = Plugins::filter( 'form_user_update', $update, $form, $edit_user );
+		$form->save();
 
 		if ( $update ) {
 			$edit_user->update();
@@ -333,6 +358,8 @@ class AdminUsersHandler extends AdminHandler
 
 					$posts = Posts::get( array( 'user_id' => $user->id, 'nolimit' => 1) );
 
+					$user->delete();
+
 					if ( isset( $posts[0] ) ) {
 						if ( 0 == $assign ) {
 							foreach ( $posts as $post ) {
@@ -343,7 +370,6 @@ class AdminUsersHandler extends AdminHandler
 							Posts::reassign( $assign, $posts );
 						}
 					}
-					$user->delete();
 				}
 				else {
 					$msg_status = _t( 'You cannot delete yourself.' );
@@ -353,7 +379,7 @@ class AdminUsersHandler extends AdminHandler
 			}
 
 			if ( !isset( $msg_status ) ) {
-				$msg_status = sprintf( _t( 'Deleted %d users.' ), $count );
+				$msg_status = _t( 'Deleted %d users.', array( $count ) );
 			}
 
 			Session::notice( $msg_status );
@@ -435,7 +461,7 @@ class AdminUsersHandler extends AdminHandler
 			if ( !Session::has_errors( 'adduser' ) ) {
 				$user = new User( array( 'username' => $new_username, 'email' => $new_email, 'password' => Utils::crypt( $new_pass1 ) ) );
 				if ( $user->insert() ) {
-					Session::notice( sprintf( _t( "Added user '%s'" ), $new_username ) );
+					Session::notice( _t( "Added user '%s'", array( $new_username ) ) );
 				}
 				else {
 					$dberror = DB::get_last_error();
@@ -444,7 +470,7 @@ class AdminUsersHandler extends AdminHandler
 			}
 			else {
 				$settings = array();
-				if ( isset( $username ) ) {
+				if ( isset( $new_username ) ) {
 					$settings['new_username'] = $new_username;
 				}
 				if ( isset( $new_email ) ) {

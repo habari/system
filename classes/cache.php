@@ -13,17 +13,15 @@ abstract class Cache
 {
 	protected static $default_group = 'default';
 	protected static $instance;
+	protected static $cache_class;
 
 	/**
 	 * Set up the static cache instance in __autoload()
 	 */
 	public static function __static()
 	{
-		if ( !defined( 'CACHE_CLASS' ) ) {
-			define( 'CACHE_CLASS', 'FileCache' );
-		}
-		$cache_class = CACHE_CLASS;
-		self::$instance = new $cache_class();
+		self::$cache_class = Config::get('cache_class', defined('CACHE_CLASS') ? CACHE_CLASS : 'FileCache');
+		self::$instance = new self::$cache_class();
 	}
 
 
@@ -42,6 +40,7 @@ abstract class Cache
 		else {
 			$group = self::$default_group;
 		}
+		$group = self::site_unique() . $group;
 		return self::$instance->_has( $name, $group );
 	}
 
@@ -61,6 +60,7 @@ abstract class Cache
 	 */
 	public static function has_group( $group )
 	{
+		$group = self::site_unique() . $group;
 		return self::$instance->_has_group( $group );
 	}
 
@@ -87,6 +87,7 @@ abstract class Cache
 		else {
 			$group = self::$default_group;
 		}
+		$group = self::site_unique() . $group;
 		return self::$instance->_get( $name, $group );
 	}
 
@@ -106,6 +107,7 @@ abstract class Cache
 	 */
 	public static function get_group( $group )
 	{
+		$group = self::site_unique() . $group;
 		return self::$instance->_get_group( $group );
 	}
 
@@ -135,6 +137,7 @@ abstract class Cache
 		else {
 			$group = self::$default_group;
 		}
+		$group = self::site_unique() . $group;
 		return self::$instance->_set( $name, $value, $expiry, $group, $keep );
 	}
 
@@ -163,6 +166,7 @@ abstract class Cache
 		else {
 			$group = self::$default_group;
 		}
+		$group = self::site_unique() . $group;
 		self::$instance->_expire( $name, $group, $match_mode );
 	}
 
@@ -187,6 +191,7 @@ abstract class Cache
 		else {
 			$group = self::$default_group;
 		}
+		$group = self::site_unique() . $group;
 		return self::$instance->_expired( $name, $group );
 	}
 
@@ -212,6 +217,7 @@ abstract class Cache
 		else {
 			$group = self::$default_group;
 		}
+		$group = self::site_unique() . $group;
 		self::$instance->_extend( $name, $expiry, $group );
 	}
 
@@ -232,6 +238,36 @@ abstract class Cache
 	public static function purge()
 	{
 		return self::$instance->_purge();
+	}
+
+	/**
+	 * Retrieve the class used for caching
+	 * @return string The class used for caching
+	 */
+	public static function get_class()
+	{
+		return self::$cache_class;
+	}
+
+	/**
+	 * Return a string unique to this cache so that site caches don't collide
+	 * @return string
+	 */
+	private static function site_unique()
+	{
+		static $unique = false;
+
+		if(!$unique) {
+			$unique = '';
+			if(isset(Config::get( 'db_connection' )->connection_string)) {
+				$unique .= Config::get( 'db_connection' )->connection_string;
+			}
+			if(isset(Config::get( 'db_connection' )->prefix)) {
+				$unique .= Config::get( 'db_connection' )->prefix;
+			}
+			$unique = md5($unique);
+		}
+		return $unique;
 	}
 }
 

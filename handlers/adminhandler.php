@@ -58,9 +58,6 @@ class AdminHandler extends ActionHandler
 		// Create an instance of the active public theme so that its plugin functions are implemented
 		$this->active_theme = Themes::create();
 
-		// setup the stacks for javascript in the admin - it's a method so a plugin can call it externally
-		self::setup_stacks();
-		
 		// on every page load check the plugins currently loaded against the list we last checked for updates and trigger a cron if we need to
 		Update::check_plugins();
 	}
@@ -75,11 +72,7 @@ class AdminHandler extends ActionHandler
 	{
 		if ( !isset( $this->theme ) ) {
 			$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
-			$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
-
-			// Add some default stylesheets
-			Stack::add( 'admin_stylesheet', array( Site::get_url( 'admin_theme' ) . '/css/admin.css', 'screen' ), 'admin' );
-			Stack::add( 'admin_stylesheet', array( Site::get_url( 'admin_theme' ) . '/css/jqueryui.css', 'screen' ), 'jqueryui' );
+			$this->theme = Themes::create( '_admin', 'RawPHPEngine', $theme_dir );
 
 			// Add some default template variables
 			$this->set_admin_template_vars( $this->theme );
@@ -107,7 +100,7 @@ class AdminHandler extends ActionHandler
 		}
 		elseif ( $page == 'publish' && isset( $this->handler_vars['id'] ) ) {
 			$type = Post::type_name( Post::get( array( 'status' => Post::status( 'any' ), 'id' => intval( $this->handler_vars['id'] ) ) )->content_type );
-			$type = Plugins::filter( 'post_type_display', Post::type_name( Post::get( array( 'status' => Post::status( 'any' ), 'id' => intval( $this->handler_vars['id'] ) ) )->content_type ), 'singular' );
+			$type = Plugins::filter( 'post_type_display', $type, 'singular' );
 		}
 		else {
 			$type = '';
@@ -133,7 +126,7 @@ class AdminHandler extends ActionHandler
 				}
 				else {
 					$classname = get_class( $this );
-					echo sprintf( _t( '%1$s->%2$s() does not exist.' ), $classname, $fn );
+					_e( '%1$s->%2$s() does not exist.', array( $classname, $fn ) );
 					exit;
 				}
 				break;
@@ -192,13 +185,14 @@ class AdminHandler extends ActionHandler
 		// Assemble Site Info
 		$siteinfo[ _t( 'Habari Version' ) ] = Version::get_habariversion();
 		if ( Version::is_devel() ) {
-			$siteinfo[ _t( 'Habari Version' ) ] .= " r" . Version::get_svn_revision();
+			$siteinfo[ _t( 'Habari Version' ) ] .= " " . Version::get_git_short_hash();
 		}
 
 		$siteinfo[ _t( 'Habari API Version' ) ] = Version::get_apiversion();
 		$siteinfo[ _t( 'Habari DB Version' ) ] = Version::get_dbversion();
 		$siteinfo[ _t( 'Active Theme' ) ] = Options::get( 'theme_name' );
-		$siteinfo[ _t( 'Site Language' ) ] =  strlen( Options::get( 'system_locale' ) ) ? Options::get( 'system_locale' ) : 'en-us';
+		$siteinfo[ _t( 'System Locale' ) ] = HabariLocale::get();
+		$siteinfo[ _t( 'Cache Class' ) ] = Cache::get_class();
 		$this->theme->siteinfo = $siteinfo;
 
 		// Assemble System Info
@@ -234,15 +228,23 @@ class AdminHandler extends ActionHandler
 		$plugins = array( 'system'=>array(), 'user'=>array(), '3rdparty'=>array(), 'other'=>array() );
 		foreach ( $raw_plugins as $plugin ) {
 			$file = $plugin->get_file();
+			// Catch plugins that are symlinked from other locations as ReflectionClass->getFileName() only returns the ultimate file path, not the symlink path, and we really want the symlink path
+			$all_plugins = Plugins::list_all();
+			$filename = basename( $file );
+			if ( array_key_exists( $filename, $all_plugins ) && $all_plugins[$filename] != $file ) {
+				$file = $all_plugins[$filename];
+			}
 			if ( preg_match( '%[\\\\/](system|3rdparty|user)[\\\\/]plugins[\\\\/]%i', $file, $matches ) ) {
 				// A plugin's info is XML, cast the element to a string. See #1026.
 				$plugins[strtolower( $matches[1] )][(string)$plugin->info->name] = $file;
 			}
 			else {
-				$plugins['other'][$plugin->info->name] = $file;
+				// A plugin's info is XML, cast the element to a string.
+				$plugins['other'][(string)$plugin->info->name] = $file;
 			}
 		}
 		$this->theme->plugins = $plugins;
+		$this->theme->admin_page = _t( 'System Information' );
 
 		$this->display( 'sysinfo' );
 	}
@@ -323,8 +325,8 @@ class AdminHandler extends ActionHandler
 			'create' => array( 'url' => '', 'title' => _t( 'Create content' ), 'text' => _t( 'New' ), 'hotkey' => 'N', 'submenu' => $createmenu ),
 			'manage' => array( 'url' => '', 'title' => _t( 'Manage content' ), 'text' => _t( 'Manage' ), 'hotkey' => 'M', 'submenu' => $managemenu ),
 			'comments' => array( 'url' => URL::get( 'admin', 'page=comments' ), 'title' => _t( 'Manage comments' ), 'text' => _t( 'Comments' ), 'hotkey' => 'C', 'access' => array( 'manage_all_comments' => true, 'manage_own_post_comments' => true ) ),
-			'tags' => array( 'url' => URL::get( 'admin', 'page=tags' ), 'title' => _t( 'Manage tags' ), 'text' => _t( 'Tags' ), 'hotkey' => 'A', 'access'=>array( 'manage_tags'=>true ) ),
-			'dashboard' => array( 'url' => URL::get( 'admin', 'page=' ), 'title' => _t( 'View your user dashboard' ), 'text' => _t( 'Dashboard' ), 'hotkey' => 'D' ),
+			'tags' => array( 'url' => URL::get( 'admin', 'page=tags' ), 'title' => _t( 'Manage tags' ), 'text' => _t( 'Tags' ), 'hotkey' => 'A', 'access'=>array( 'manage_tags'=>true ), 'class' => 'over-spacer' ),
+			'dashboard' => array( 'url' => URL::get( 'admin', 'page=' ), 'title' => _t( 'View your user dashboard' ), 'text' => _t( 'Dashboard' ), 'hotkey' => 'D', 'class' => 'under-spacer' ),
 			'options' => array( 'url' => URL::get( 'admin', 'page=options' ), 'title' => _t( 'View and configure site options' ), 'text' => _t( 'Options' ), 'hotkey' => 'O', 'access'=>array( 'manage_options'=>true ) ),
 			'themes' => array( 'url' => URL::get( 'admin', 'page=themes' ), 'title' => _t( 'Preview and activate themes' ), 'text' => _t( 'Themes' ), 'hotkey' => 'T', 'access'=>array( 'manage_theme'=>true ) ),
 			'plugins' => array( 'url' => URL::get( 'admin', 'page=plugins' ), 'title' => _t( 'Activate, deactivate, and configure plugins' ), 'text' => _t( 'Plugins' ), 'hotkey' => 'P', 'access'=>array( 'manage_plugins'=>true, 'manage_plugins_config' => true ) ),
@@ -332,8 +334,8 @@ class AdminHandler extends ActionHandler
 			'users' => array( 'url' => URL::get( 'admin', 'page=users' ), 'title' => _t( 'View and manage users' ), 'text' => _t( 'Users' ), 'hotkey' => 'U', 'access'=>array( 'manage_users'=>true ) ),
 			'profile' => array( 'url' => URL::get( 'admin', 'page=user' ), 'title' => _t( 'Manage your user profile' ), 'text' => _t( 'My Profile' ), 'hotkey' => 'Y', 'access'=>array( 'manage_self'=>true, 'manage_users'=>true ) ),
 			'groups' => array( 'url' => URL::get( 'admin', 'page=groups' ), 'title' => _t( 'View and manage groups' ), 'text' => _t( 'Groups' ), 'hotkey' => 'G', 'access'=>array( 'manage_groups'=>true ) ),
-			'logs' => array( 'url' => URL::get( 'admin', 'page=logs' ), 'title' => _t( 'View system log messages' ), 'text' => _t( 'Logs' ), 'hotkey' => 'L', 'access'=>array( 'manage_logs'=>true ) ) ,
-			'logout' => array( 'url' => URL::get( 'auth', 'page=logout' ), 'title' => _t( 'Log out of the administration interface' ), 'text' => _t( 'Logout' ), 'hotkey' => 'X' ),
+			'logs' => array( 'url' => URL::get( 'admin', 'page=logs' ), 'title' => _t( 'View system log messages' ), 'text' => _t( 'Logs' ), 'hotkey' => 'L', 'access'=>array( 'manage_logs'=>true ), 'class' => 'over-spacer' ) ,
+			'logout' => array( 'url' => URL::get( 'auth', 'page=logout' ), 'title' => _t( 'Log out of the administration interface' ), 'text' => _t( 'Logout' ), 'hotkey' => 'X', 'class' => 'under-spacer' ),
 		);
 
 		$mainmenus = array_merge( $adminmenu );
@@ -348,7 +350,7 @@ class AdminHandler extends ActionHandler
 		$mainmenus = Plugins::filter( 'adminhandler_post_loadplugins_main_menu', $mainmenus );
 
 		foreach ( $mainmenus as $key => $attrs ) {
-			if ( $page == $key ) {
+			if ( $page == $key && !isset($mainmenus[$key]['submenu'])) {
 				$mainmenus[$key]['selected'] = true;
 			}
 		}
@@ -536,6 +538,9 @@ class AdminHandler extends ActionHandler
 			case 'ajax_save_areas':
 				$result = true;
 				break;
+			case 'locale':
+				$result = true;
+				break;
 			default:
 				break;
 		}
@@ -579,24 +584,6 @@ class AdminHandler extends ActionHandler
 		$this->theme->display( $template_name );
 	}
 
-	/**
-	 * Setup the default admin javascript stack here so that it can be called
-	 * from plugins, etc. This is not an ideal solution, but works for now.
-	 *
-	 */
-	public static function setup_stacks()
-	{
-		Stack::add( 'admin_header_javascript', Site::get_url( 'vendor' ) . "/jquery.js", 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url( 'vendor' ) . "/jquery-ui.min.js", 'jquery.ui', 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url( 'vendor' ) . "/jquery.color.js", 'jquery.color', 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url( 'vendor' ) . "/jquery.ui.nestedSortable.js", 'jquery-nested-sortable', 'jquery.ui' );
-		Stack::add( 'admin_header_javascript', Site::get_url( 'vendor' ) . "/humanmsg/humanmsg.js", 'humanmsg', 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url( 'vendor' ) . "/jquery.hotkeys.js", 'jquery.hotkeys', 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url( 'admin_theme' ) . "/js/media.js", 'media', 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url( 'admin_theme' ) . "/js/admin.js", 'admin', 'jquery' );
-
-		Stack::add( 'admin_header_javascript', Site::get_url( 'vendor' ) . "/crc32.js", 'crc32' );
-	}
 
 	public function create_theme()
 	{

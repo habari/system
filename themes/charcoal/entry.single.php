@@ -14,7 +14,7 @@
 				</div>
 			<?php endif; ?>
 				<div class="<?php echo $post_class?>">
-				<?php if ( is_array($post->tags) ) : ?>
+				<?php if ( count($post->tags) ) : ?>
 					<div class="post-tags">
 						<?php echo $post->tags_out;?>
 					</div>
@@ -27,7 +27,7 @@
 					<div class="post-sup">
 						<span class="post-date"><?php $post->pubdate->out(); ?></span>
 						<span class="post-comments-link">
-							<a href="<?php echo $post->permalink.'#comment-form'; ?>" title="<?php _e( "Comments on this post" ); ?>"><?php $theme->post_comments_link( $post ); ?></a>
+							<a href="<?php echo $post->permalink.'#comment-form'; ?>" title="<?php _e( "Comments on this post" ); ?>"><?php echo $theme->post_comments_link( $post ); ?></a>
 						</span>
 						<span class="clear"></span>
 					</div>

@@ -12,12 +12,16 @@
  */
 class DB extends Singleton
 {
+	/**
+	 * @var DatabaseConnection $connection
+	 */
 	private $connection = null;
 
 	/**
 	 * Enables singleton working properly
 	 *
 	 * @see singleton.php
+	 * @return DB
 	 */
 	protected static function instance()
 	{
@@ -90,7 +94,7 @@ class DB extends Singleton
 	 * by Theme and Plugin classes to inform the DB class about
 	 * custom tables used by the plugin
 	 *
-	 * @param name  the table name
+	 * @param string $name  The table name
 	**/
 	public static function register_table( $name )
 	{
@@ -100,7 +104,7 @@ class DB extends Singleton
 	/**
 	 * Sets the fetch mode for return calls from PDOStatement
 	 *
-	 * @param mode  One of the PDO::FETCH_MODE integers
+	 * @param integer $mode  One of the PDO::FETCH_MODE integers
 	 */
 	public static function set_fetch_mode( $mode )
 	{
@@ -110,7 +114,7 @@ class DB extends Singleton
 	/**
 	 * Sets the class to fetch, if fetch mode is PDO::FETCH_CLASS
 	 *
-	 * @param class_name  Name of class to create during fetch
+	 * @param string $class_name  Name of class to create during fetch
 	 */
 	public static function set_fetch_class( $class_name )
 	{
@@ -124,9 +128,8 @@ class DB extends Singleton
 
 	/**
 	 * Queries the database for a given SQL command.
-	 * @param query       the SQL query text
-	 * @param args        array of values to use for placeholder replacement
-	 * @param class_name  (optional) name of class name to wrangle returned data to
+	 * @param string $query the SQL query text
+	 * @param array $args array of values to use for placeholder replacement
 	 * @return bool
 	 */
 	public static function query( $query, $args = array() )
@@ -232,9 +235,9 @@ class DB extends Singleton
 
 	/**
 	 * Execute a query and return the results as an array of objects
-	 * @param query   the query to execute
-	 * @param args    array of arguments to pass for prepared statements
-	 * @param string Optional class name for row result objects
+	 * @param string $query the query to execute
+	 * @param array $args array of arguments to pass for prepared statements
+	 * @param string $class_name Optional class name for row result objects
 	 * @return array An array of QueryRecord or the named class each containing the row data
 	 * <code>$ary = DB::get_results( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>
 	 **/
@@ -308,8 +311,8 @@ class DB extends Singleton
 
 	/**
 	 * Inserts into the specified table values associated to the key fields
-	 * @param string The table name
-	 * @param array An associative array of fields and values to insert
+	 * @param string $table The table name
+	 * @param array $fieldvalues An associative array of fields and values to insert
 	 * @return boolean True on success, false if not
 	 * <code>DB::insert( 'mytable', array( 'fieldname' => 'value' ) );</code>
 	 **/
@@ -334,9 +337,9 @@ class DB extends Singleton
 	 * function update
 	 * Updates any record that matches the specific criteria
 	 * A new row is inserted if no existing record matches the criteria
-	 * @param string Table to update
-	 * @param array Associative array of field values to set
-	 * @param array Associative array of field values to match
+	 * @param string $table Table to update
+	 * @param array $fieldvalues Associative array of field values to set
+	 * @param array $keyfields Associative array of field values to match
 	 * @return boolean True on success, false if not
 	 * <code>DB::update( 'mytable', array( 'fieldname' => 'newvalue' ), array( 'fieldname' => 'value' ) );</code>
 	 **/

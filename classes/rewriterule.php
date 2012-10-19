@@ -72,7 +72,7 @@ class RewriteRule extends QueryRecord
 			$this->entire_match = array_shift( $pattern_matches ); // The entire matched string is returned at index 0
 			$named_args = $this->named_args; // Direct call shows a PHP notice
 
-			if ( $parameters = unserialize( $this->parameters ) ) {
+			if ( (is_string($this->parameters) && $parameters = unserialize( $this->parameters )) || (is_array($this->parameters) && $parameters = $this->parameters )) {
 				$this->named_arg_values = array_merge( $this->named_arg_values, $parameters );
 			}
 
@@ -109,7 +109,6 @@ class RewriteRule extends QueryRecord
 		$named_args_combined = array_flip( array_merge( $named_args['required'], $named_args['optional'] ) );
 
 		$args_defined = array_intersect_key( $args, $named_args_combined );
-		$args_query = array_diff( $args, $args_defined );
 		$args = Plugins::filter( 'rewrite_args', $args, $this->name );
 		// Replace defined arguments with their value
 		$searches = array();

@@ -60,8 +60,8 @@ class CronTab extends ActionHandler
 
 			$time = HabariDateTime::date_create();
 			$crons = DB::get_results(
-				'SELECT * FROM {crontab} WHERE start_time <= ? AND next_run <= ?',
-				array( $time->sql, $time->sql ),
+				'SELECT * FROM {crontab} WHERE start_time <= ? AND next_run <= ? AND active != ?',
+				array( $time->sql, $time->sql, 0 ),
 				'CronJob'
 				);
 			if ( $crons ) {
@@ -100,8 +100,8 @@ class CronTab extends ActionHandler
 		}
 		$time = HabariDateTime::date_create();
 		$crons = DB::get_results(
-			'SELECT * FROM {crontab} WHERE start_time <= ? AND next_run <= ?',
-			array( $time->sql, $time->sql ),
+			'SELECT * FROM {crontab} WHERE start_time <= ? AND next_run <= ? AND active != ?',
+			array( $time->sql, $time->sql, 0 ),
 			'CronJob'
 			);
 

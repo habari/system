@@ -57,6 +57,7 @@ class RewriteRules extends ArrayObject
 			array( 'name' => 'display_tags', 'parse_regex' => '#^admin/(?P<page>tags)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminTagsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage tags' ),
 			array( 'name' => 'display_logs', 'parse_regex' => '#^admin/(?P<page>logs)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminLogsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage logs' ),
 			array( 'name' => 'display_import', 'parse_regex' => '#^admin/(?P<page>import)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminimportHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage importing content' ),
+			array( 'name' => 'get_locale', 'parse_regex' => '#^admin/(?P<page>locale)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminLocaleHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Fetch the locale data as javascript' ),
 
 			array( 'name' => 'admin', 'parse_regex' => '#^admin(?:/?$|/(?P<page>[^/]*))/?$#i', 'build_str' => 'admin/({$page})', 'handler' => 'AdminHandler', 'action' => 'admin', 'priority' => 6, 'description' => 'An admin action' ),
 
@@ -109,7 +110,7 @@ class RewriteRules extends ArrayObject
 		);
 		$default_rules = Plugins::filter( 'default_rewrite_rules', $default_rules );
 		$default_rules_properties = array( 'is_active' => 1, 'rule_class' => RewriteRule::RULE_SYSTEM );
-		$rule_names = array_flip( array_map( create_function( '$a', 'return $a->name;' ), $rules ) );
+		$rule_names = array_flip( Utils::array_map_field($rules, 'name') );
 		foreach ( $default_rules as $default_rule ) {
 			if ( !isset( $rule_names[$default_rule['name']] ) ) {
 				$rule_properties = array_merge( $default_rule, $default_rules_properties );

@@ -1,4 +1,4 @@
-// Habari ajax. All Habari Ajax calls should go through here. It allows us to use uniform humanmsg stuff, 
+// Habari ajax. All Habari Ajax calls should go through here. It allows us to use uniform humanmsg stuff,
 // as well as uniform error handling
 var habari_ajax = {
 	post: function(post_url, post_data, ahah_target, local_cb) {
@@ -13,10 +13,12 @@ var habari_ajax = {
 		$.ajax({
 			url: url,
 			data: data,
-		success: function(json_data) {
+			success: function(json_data) {
 				if($.isPlainObject(ahah_target)) {
 					for(var i in ahah_target) {
-						$(ahah_target[i]).html(json_data.html[i]);
+						if(json_data.html && json_data.html[i]) {
+							$(ahah_target[i]).html(json_data.html[i]);
+						}
 					}
 				}
 				var cb = ($.isFunction(ahah_target) && local_cb == undefined) ? ahah_target : local_cb;
@@ -56,11 +58,11 @@ var habari_ajax = {
 					msg = textStatus;
 					break;
 				default:
-					msg = 'Uh Oh. An error has occurred. Please try again later.';
+					msg = _t('Uh Oh. An error has occurred. Please try again later.');
 			}
 		}
 		else {
-			msg = 'Uh Oh. An error has occurred. Please try again later.';
+			msg = _t('Uh Oh. An error has occurred. Please try again later.');
 		}
 		spinner.stop();
 		human_msg.display_msg(msg);
@@ -79,16 +81,31 @@ var dashboard = {
 			}
 		});
 
-		$('.options').toggle(function() {
-				$(this).parents('li').addClass('viewingoptions');
-			}, function() {
-				$(this).parents('li').removeClass('viewingoptions');
-			});
+		$('.options').click(function(){
+			var li = $(this).closest('li');
+			if(li.hasClass('viewingoptions')) {
+				li.toggleClass('viewingoptions');
+			}
+			else {
+				spinner.start();
+				$('.optionswindow .optionsform', li).load(
+					habari.url.ajaxDashboard,
+					{'action': 'configModule', 'moduleid': li.data('module-id')},
+					function(){
+						li.toggleClass('viewingoptions');
+						spinner.stop();
+					}
+				);
+			}
+		});
 
 		$('.close', '.modules').click( function() {
-			// grab the module ID from the parent DIV id attribute.
-			matches = $(this).parents('.module').attr('id').split( ':', 2 );
-			dashboard.remove( matches[0] );
+			// grab the module ID from the parent DIV data attribute.
+			dashboard.remove( $(this).parents('.module').data('module-id') );
+		});
+
+		$('.optionsform form').live('submit', function(){
+			return dashboard.post(this);
 		});
 		findChildren();
 	},
@@ -96,14 +113,14 @@ var dashboard = {
 		spinner.start();
 		// disable dragging and dropping while we update
 		$('.modules').sortable('disable');
-		var query = {};
+		var query = [];
 		$('.module', '.modules').not('.ui-sortable-helper').each( function(i) {
-			query['module' + i] = this.getAttribute('id');
+			query.push($(this).data('module-id'));
 		} );
 		query.action = 'updateModules';
 		habari_ajax.post(
 			habari.url.ajaxDashboard,
-			query,
+			{'moduleOrder': query, 'action': 'updateModules'},
 			function() {
 				$('.modules').sortable('enable');
 			}
@@ -142,6 +159,22 @@ var dashboard = {
 			{modules: '.modules'},
 			dashboard.init
 		);
+	},
+	post: function(blockform) {
+		var form = $(blockform);
+		$.ajax({
+			success: function(data){
+				form.parents('.optionsform').html(data);
+			},
+			error: function(data, err) {
+				console.log(data, err);
+			},
+			type: 'POST',
+			url: habari.url.ajaxConfigModule,
+			data: form.serialize(),
+			dataType: 'html'
+		});
+		return false;
 	}
 };
 
@@ -283,12 +316,12 @@ var itemManage = {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 0;
 			});
-			$('.item.controls label.selectedtext').addClass('none').removeClass('all').text('None selected');
+			$('.item.controls label.selectedtext').addClass('none').removeClass('all').text(_t('None selected'));
 		} else if (visible == $('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').length) {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 1;
 			});
-			$('.item.controls label.selectedtext').removeClass('none').addClass('all').html('All ' + count + ' visible selected (<a href="#all" class="everything">Select all ' + total + '</a>)');
+			$('.item.controls label.selectedtext').removeClass('none').addClass('all').html(_t('All %1$s visible selected (<a href="#all" class="everything">Select all %2$s</a>)', count, total));
 
 			$('.item.controls label.selectedtext .everything').click(function() {
 				itemManage.checkEverything();
@@ -300,16 +333,16 @@ var itemManage = {
 			}
 
 			if ((total == count) || $('.currentposition .total').length === 0) {
-				$('.item.controls label.selectedtext').removeClass('none').addClass('all').addClass('total').html('All ' + total + ' selected');
+				$('.item.controls label.selectedtext').removeClass('none').addClass('all').addClass('total').html(_t('All %s selected', total));
 			}
 		} else {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 0;
 			});
-			$('.item.controls label.selectedtext').removeClass('none').removeClass('all').text(count + ' selected');
+			$('.item.controls label.selectedtext').removeClass('none').removeClass('all').text(_t('%s selected', count));
 
 			if (visible != count) {
-				$('.item.controls label.selectedtext').text(count + ' selected (' + visible + ' visible)');
+				$('.item.controls label.selectedtext').text(_t('%1$s selected (%2$s visible)', count, visible));
 			}
 		}
 	},
@@ -422,21 +455,12 @@ var itemManage = {
 	}
 };
 
-// Plugin Management
-var pluginManage = {
+// Help Toggler
+var helpToggler = {
 	init: function() {
-		// Return if we're not on the plugins page
-		if (!$('.page-plugins').length) {return;}
-
-		$('.plugins .item').hover( function() {
-			$(this).find('#pluginconfigure:visible').parent().css('background', '#FAFAFA');
-		}, function() {
-			$(this).find('#pluginconfigure:visible').parent().css('background', '');
-	  	});
-		
-		$('.plugins .item a.help').click(function() {
-			var help = $('.pluginhelp', $(this).parents('.item'));
-						
+		$('.plugins .item a.help, .currenttheme a.help').click(function() {
+			var help = $('.pluginhelp', $(this).parents('.item')).add( $('.currenttheme #themehelp') );
+									
 			if( help.hasClass('active') ) {
 				help.slideUp();
 				help.add(this).removeClass('active');
@@ -450,6 +474,22 @@ var pluginManage = {
 			
 		});
 	}
+}
+
+// Plugin Management
+var pluginManage = {
+	init: function() {
+		// Return if we're not on the plugins page
+		if (!$('.page-plugins').length) {return;}
+
+		$('.plugins .item').hover( function() {
+			$(this).find('#pluginconfigure:visible').parent().css('background', '#FAFAFA');
+		}, function() {
+			$(this).find('#pluginconfigure:visible').parent().css('background', '');
+	  	});
+	
+		helpToggler.init();
+	}
 };
 
 // Theme Management
@@ -462,8 +502,10 @@ var themeManage = {
 		axis: 'y'
 	},
 	init: function() {
-		// Return if we're not on the plugins page
+		// Return if we're not on the themes page
 		if (!$('.page-themes').length) {return;}
+		
+		helpToggler.init();
 
 		// Adding available blocks
 		$('#block_instance_add').live('click', function() {
@@ -507,11 +549,6 @@ var themeManage = {
 		});
 		themeManage.refresh_areas();
 
-		// Load areas available in different scopes
-		$('#scope_id').click(function() {
-			themeManage.change_scope();
-		});
-
 		// Save areas
 		$('#save_areas').click(function() {
 			themeManage.save_areas();
@@ -521,7 +558,7 @@ var themeManage = {
 		window.onbeforeunload = function() {
 			if (themeManage.changed()) {
 				spinner.start(); spinner.stop();
-				return 'You did not save the changes you made. \nLeaving this page will result in the lose of data.';
+				return _t('You did not save the changes you made. \nLeaving this page will result in the lose of data.');
 			}
 		};
 	},
@@ -561,18 +598,19 @@ var themeManage = {
 		spinner.start();
 		var output = {};
 		$('.area_drop_outer').each(function() {
-			var area = $('h2', this).text();
+			var area = $('h2', this).data('areaname');
 			output[area] = [];
 			$('.block_drag', this).each(function(){
 				m = $(this).attr('class').match(/block_instance_(\d+)/)
 				output[area].push(m[1]);
 			});
 		});
-		$('#scope_container').load(
-			habari.url.ajaxSaveAreas, 
+		habari_ajax.post(
+			habari.url.ajaxSaveAreas,
 			{area_blocks:output, scope:$('#scope_id').val()},
+			{'block_areas': '#scope_container'},
 			// Can't simply refresh the sortable because we've reloaded the element
-			function() {
+			function(data) {
 				$('.area_drop').sortable({
 					placeholder: 'block_drop',
 					forcePlaceholderSize: true,
@@ -591,11 +629,12 @@ var themeManage = {
 	change_scope: function() {
 		spinner.start();
 		var output = {};
-		$('#scope_container').load(
-			habari.url.ajaxSaveAreas, 
+		habari_ajax.post(
+			habari.url.ajaxSaveAreas,
 			{scope:$('#scope_id').val()},
+			{'block_areas': '#scope_container'},
 			// Can't simply refresh the sortable because we've reloaded the element
-			function() {
+			function(data) {
 				$('.area_drop').sortable({
 					placeholder: 'block_drop',
 					forcePlaceholderSize: true,
@@ -605,10 +644,11 @@ var themeManage = {
 					remove: themeManage.refresh_areas,
 					axis: 'y'
 				});
+				// We've saved, reset the hash
+				themeManage.initial_data_hash = themeManage.data_hash();
 				themeManage.refresh_areas();
 			}
 		);
-		spinner.stop();
 	},
 	changed: function() {
 		return themeManage.initial_data_hash != themeManage.data_hash();
@@ -875,7 +915,7 @@ var timeline = {
 	},
 	updateLoupeInfo: function() {
 		var loupeInfo = timeline.getLoupeInfo();
-		$('.currentposition').html( loupeInfo.start +'-'+ loupeInfo.end +' of <span class="total inline">'+ timeline.totalCount + '</span>');
+		$('.currentposition').html( _t('%1$s-%2$s of <span class="total inline">%3$s</span>', loupeInfo.start, loupeInfo.end, timeline.totalCount));
 
 		// Hide 'newer' and 'older' links as necessary
 		if (loupeInfo.start == 1) {$('.navigator .older').animate({opacity: '0'}, 200);} 

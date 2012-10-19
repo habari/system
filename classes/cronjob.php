@@ -54,6 +54,8 @@ class CronJob extends QueryRecord
 			'cron_class' => self::CRON_CUSTOM,
 			'description' => '',
 			'notify' => '',
+			'failures' => 0,
+			'active' => 1,
 		);
 	}
 
@@ -100,29 +102,65 @@ class CronJob extends QueryRecord
 	 * as the 'now' field. The 'result' field contains the result of the last execution; either
 	 * 'executed' or 'failed'.
 	 *
-	 * @todo delete job after # failed attempts.
 	 * @todo send notification of execution/failure.
 	 */
 	public function execute()
 	{
 		$paramarray = array_merge( array( 'now' => $this->now ), $this->to_array() );
 
+		// this is an ugly hack that we could probably work around better by forking each cron into its own process
+		// we increment the failure count now so that if we don't return after calling the callback (ie: a fatal error) it still counts against it, rather than simply never running
+		// and preventing all those queued up after it from running
+		$this->failures = $this->failures + 1;
+
+		// check to see if we have failed too many times before we update, we might go ahead and skip this one
+		if ( $this->failures > Options::get( 'cron_max_failures', 10 ) ) {
+			EventLog::log( _t( 'CronJob %s has failed %d times and is being deactivated!', array( $this->name, $this->failures - 1 ) ), 'alert', 'cron' );
+			$this->active = false;
+		}
+
+		// update before we run it
+		$this->update();
+
+		// if the check has been deactivated, just return
+		if ( $this->active == false ) {
+			return;
+		}
+
 		if ( is_callable( $this->callback ) ) {
-			$result = @call_user_func( $this->callback, $paramarray );
+			// this is a callable we can actually call, so do it
+			$result = call_user_func( $this->callback, $paramarray );
+		}
+		else if ( !is_string($this->callback) && is_callable( $this->callback, true, $callable_name ) ) {
+			// this looks like a callable to PHP, but it cannot be called at present and should not be assumed to be a plugin filter name
+			// there is nothing for us to do, but it was a specifically-named function for us to call, so assume this is a failure
+			$result = false;
 		}
 		else {
+			// this is not callable and doesn't look like one - it should simply be a textual plugin filter name
 			$result = true;
 			$result = Plugins::filter( $this->callback, $result, $paramarray );
 		}
 
 		if ( $result === false ) {
 			$this->result = 'failed';
+
+			// simply increment the failure counter. if it's over the limit it'll be deactivated on the next go-around
+			$this->failures = $this->failures + 1;
+
+			EventLog::log( _t( 'CronJob %s failed.', array( $this->name ) ), 'err', 'cron' );
 		}
 		else {
 			$this->result = 'executed';
 
+			// reset failures, we were successful
+			$this->failures = 0;
+
+			EventLog::log( _t( 'CronJob %s completed successfully.', array( $this->name ) ), 'debug', 'cron' );
+
 			// it ran successfully, so check if it's time to delete it.
 			if ( ! is_null( $this->end_time ) && ( $this->now >= $this->end_time ) ) {
+				EventLog::log( _t( 'CronJob %s is not scheduled to run again and is being deleted.', array( $this->name ) ), 'debug', 'cron' );
 				$this->delete();
 				return;
 			}

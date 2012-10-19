@@ -2,17 +2,28 @@
 <?php include('header.php');?>
 
 <div class="container currenttheme">
-	<h2><?php _e('Current Theme'); ?></h2>
+	<h2><?php _e( 'Current Theme' ); ?></h2>
 	<div class="item clear">
 		<div class="head">
 
-			<a href="<?php echo $active_theme['info']->url; ?>" class="plugin"><?php echo $active_theme['info']->name; ?></a> <span class="version dim"><?php echo $active_theme['info']->version; ?></span> <span class="dim"><?php _e('by'); ?></span> 
+			<a href="<?php echo $active_theme['info']->url; ?>" class="plugin"><?php echo $active_theme['info']->name; ?></a> <span class="version dim"><?php echo $active_theme['info']->version; ?></span> <span class="dim"><?php _e('by'); ?></span>
 			<?php
 			$authors = array();
 			foreach ( $active_theme['info']->author as $author ) {
 				$authors[] = isset( $author['url'] ) ? '<a href="' . $author['url'] . '">' . $author . '</a>' : $author;
 			}
 			echo Format::and_list( $authors, '<span class="dim">, </span>', '<span class="dim">' . _t( ' and ' ) . '</span>');
+			?>
+			<?php
+				if ( isset( $active_theme['info']->help ) ):
+					if( Controller::get_var('help') == $active_theme['dir'] ):
+			?>
+				<a class="help active" href="<?php URL::out( 'admin', 'page=themes' ); ?>"><?php _e('Help'); ?></a>
+				<?php else: ?>
+				<a class="help" href="<?php URL::out( 'admin', 'page=themes&help=' . $active_theme['dir'] ); ?>"><?php _e('Help'); ?></a>
+				<?php
+					endif;
+				endif;
 			?>
 
 			<?php if ( $configurable ): ?>
@@ -26,6 +37,7 @@
 				<li><a href="#"><?php _e('v'); ?><?php echo $active_theme['info']->update; ?> <?php _e('Update Available'); ?></a></li>
 			</ul>
 			<?php endif; ?>
+
 		</div>
 
 		<div>
@@ -35,9 +47,18 @@
 			<?php if ( $active_theme['info']->license != '' ): ?>
 			<p class="description pct70"><?php printf( _t('%1$s is licensed under the %2$s'), $active_theme['info']->name, '<a href="' . $active_theme['info']->license['url'] . '">' . $active_theme['info']->license . '</a>' ); ?></p>
 			<?php endif; ?>
+
+			<?php if ( isset( $active_theme['info']->help ) ): ?>
+			<div id="themehelp" class="pct70 <?php if( Controller::get_var('help') == $active_theme['dir'] ): ?>active<?php endif; ?>">
+				<div class="help">
+					<?php echo (string) $active_theme['info']->help->value; ?>
+				</div>
+			</div>
+			<?php endif; ?>
+
 		</div>
 	</div>
-	
+
 	<?php
 	// Capture the admin config output.  If nothing is there, don't output the section
 	ob_start();
@@ -45,17 +66,17 @@
 	$output = ob_get_clean();
 	if (trim($output) != '') :
 	?>
-	
+
 	<div class="item clear">
-		<h3>General</h3>
+		<h3><?php _e( "General" ); ?></h3>
 		<?php echo $output; ?>
 		<div></div>
 	</div>
 	<?php endif; ?>
 
 	<?php if ( isset($active_theme['info']->areas) ): ?>
-	<div id="blocksconfigure"class="item clear">
-		<h3>Areas</h3>
+	<div id="blocksconfigure" class="item clear">
+		<h3><?php _e( "Areas" ); ?></h3>
 				<div>
 					<div id="block_add">
 						<?php $this->display('block_instances'); ?>
@@ -116,6 +137,8 @@ foreach ( $all_themes as $inactive_theme ):
 	    <?php
 	    if ( $inactive_theme['info']->getName() != 'pluggable' || (string) $inactive_theme['info']->attributes()->type != 'theme' ) : ?>
 		<p class="legacy"><?php _e( 'Legacy theme.' ); ?></p>
+      <?php elseif(isset($inactive_theme['req_parent'])): ?>
+		<p class="legacy"><?php _e( 'This theme requires the parent theme named "%s".', array($inactive_theme['req_parent']) ); ?></p>
 	    <?php else: ?>
 		<ul class="dropbutton"> 
 			<?php if ($previewed == $inactive_theme['dir']): ?>

@@ -13,15 +13,11 @@
 class Version
 {
 	// DB and API versions are incremented by one as the DB structure or API change
-	const DB_VERSION = 5101;
-	const API_VERSION = 4956;
+	const DB_VERSION = 5104;
+	const API_VERSION = 4958;
 
-	const HABARI_VERSION = '0.8';
-
-	// This string contains the URL to the Habari SVN repository used for this working copy or export
-	const HABARI_SVN_HEAD_URL = '$HeadURL$';
-	// This string contains the SVN revision this file was last updated in
-	const HABARI_SVN_REV = '$Revision$';
+	const HABARI_MAJOR_MINOR = '0.9';
+	const HABARI_RELEASE = '-alpha';
 
 	/**
 	 * Get the database version
@@ -51,17 +47,17 @@ class Version
 	 */
 	public static function get_habariversion()
 	{
-		return Version::HABARI_VERSION;
+		return Version::HABARI_MAJOR_MINOR . Version::HABARI_RELEASE;
 	}
 
 	/**
-	 * Determine whether this working copy or export was created from a subversion development branch
+	 * Determine whether this might possibly have a .git directory, based solely on the existence of a hyphen in the release version string.
 	 *
 	 * @return boolean True if this is a development version, false if not
 	 */
 	public static function is_devel()
 	{
-		return strpos( Version::HABARI_SVN_HEAD_URL, '/trunk/' ) !== false || strpos( Version::HABARI_SVN_HEAD_URL, '/branches/' ) !== false;
+		return strpos( Version::HABARI_RELEASE, '-' ) !== false;
 	}
 
 	/**
@@ -86,24 +82,27 @@ class Version
 	}
 
 	/**
-	 * Attempt to return the checkout revision number of the source tree
+	 * Attempt to return the shortened git hash of any path Habari can access
+	 * @static
 	 *
-	 * @return int The revision number
+	 * @param String $path Where to check for a .git directory
+	 * @return String The first 7 chars of the revision hash
 	 */
-	public static function get_svn_revision()
+	public static function get_git_short_hash( $path = null )
 	{
-		$rev = 0;
-		// Cheating!
-		$stash_file = HABARI_PATH . '/.svn/entries';
-		if ( file_exists( $stash_file ) ) {
-			$info = file_get_contents( $stash_file );
-			$info = explode( "\n", $info );
-			if ( strpos( $info[4], 'svn.habariproject.org/habari/' ) !== false ) {
-				$rev = intval( trim( $info[3] ) );
+		$rev = '';
+		$path = is_null( $path ) ? HABARI_PATH . '/system' : $path;
+		$ref_file = $path . '/.git/HEAD';
+		if ( file_exists( $ref_file ) ) {
+			$info = file_get_contents( $ref_file );
+			// If the contents of this file start with "ref: ", it means we need to look where it tells us for the hash.
+			// CAVEAT: This is only really useful if the master branch is checked out
+			if ( strpos( $info, 'ref: ' ) === false ) {
+				$rev = substr( $info, 0, 7 );
+			} else {
+				preg_match( '/ref: (.*)/', $info, $match );
+				$rev = substr( file_get_contents( $path . '/.git/' . $match[1] ), 0, 7 );
 			}
-		}
-		if ( $rev == 0 ) {
-			$rev = intval( preg_replace( '/[^0-9]/', '', Version::HABARI_SVN_REV ) );
 		}
 		return $rev;
 	}

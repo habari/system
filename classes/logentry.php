@@ -10,6 +10,11 @@
  * Represents a log entry
  *
  * @todo Apply system error handling
+ *
+ * @property-read string $module The name of the module creating this entry
+ * @property-read string type The name of the type of this entry
+ * @property-read string $severity The name of the severity of this entry
+ * @property-write mixed $timestamp The time of this entry. Can be a HabariDateTime object or a valid parameter for HabariDateTime::date_create()
  */
 class LogEntry extends QueryRecord
 {
@@ -19,22 +24,22 @@ class LogEntry extends QueryRecord
 	 *
 	 * @final
 	 */
-	private static function severities()
+	private static function severities($translate = true)
 	{
 		return array(
-			0 => _t( 'any' ),
-			1 => _t( 'none' ),
-			2 => _t( 'debug' ),
-			3 => _t( 'info' ),
-			4 => _t( 'notice' ),
-			5 => _t( 'warning' ),
-			6 => _t( 'err' ),
-			7 => _t( 'crit' ),
-			8 => _t( 'alert' ),
-			9 => _t( 'emerg' ),
+			0 => $translate ? _t( 'any' ) : 'any',
+			1 => $translate ? _t( 'none' ) : 'none',
+			2 => $translate ? _t( 'debug' ) : 'debug',
+			3 => $translate ? _t( 'info' ) : 'info',
+			4 => $translate ? _t( 'notice' ) : 'notice',
+			5 => $translate ? _t( 'warning' ) : 'warning',
+			6 => $translate ? _t( 'err' ) : 'err',
+			7 => $translate ? _t( 'crit' ) : 'crit',
+			8 => $translate ? _t( 'alert' ) : 'alert',
+			9 => $translate ? _t( 'emerg' ) : 'emerg',
 		);
 	}
-	
+
 	/**
 	 * Cache for log_types
 	 */
@@ -111,14 +116,8 @@ class LogEntry extends QueryRecord
 	**/
 	public static function list_severities()
 	{
-		$results = array();
-		
-		foreach ( self::severities() as $id => $name ) {
-			if ( 'none' == $name ) {
-				continue;
-			}
-			$results[$id] = $name;
-		}
+		$results = self::severities();
+		unset($results[1]);
 		return $results;
 	}
 
@@ -161,7 +160,7 @@ class LogEntry extends QueryRecord
 		if ( is_numeric( $severity ) && array_key_exists( $severity, self::severities() ) ) {
 			return $severity;
 		}
-		return array_search( $severity, self::severities() );
+		return array_search( $severity, self::severities(false) );
 	}
 
 	/**
@@ -211,12 +210,12 @@ class LogEntry extends QueryRecord
 			unset( $this->fields['module'] );
 			unset( $this->fields['type'] );
 		}
-		
+
 		// if we're set to only log entries greater than a sertain level, make sure we're that level or higher
 		if ( $this->fields['severity_id'] < Options::get( 'log_min_severity' ) ) {
 			return;
 		}
-		
+
 		// make sure data is a string and can be stored. lots of times it's convenient to hand in an array of data values
 		if ( is_array( $this->fields['data'] ) || is_object( $this->fields['data'] ) ) {
 			$this->fields['data'] = serialize( $this->fields['data'] );
@@ -224,9 +223,9 @@ class LogEntry extends QueryRecord
 
 		Plugins::filter( 'insert_logentry', $this );
 		parent::insertRecord( DB::table( 'log' ) );
-		
+
 		$this->id = DB::last_insert_id();
-		
+
 	}
 
 	/**

@@ -284,19 +284,19 @@ a#site:hover {
 	background-color: #444;
 }
 
-#menulist li.selected a {
+#menulist li.selected > a {
 	background: url('../images/currentpageindicator.png') 8px center no-repeat;
 }
 
-#menulist li.selected a:hover, #menulist li.selected.carrot a {
+#menulist li.selected > a:hover, #menulist li.selected.carrot > a {
 	background: #444 url('../images/currentpageindicator.png') 8px center no-repeat;
 }
 
-#menulist li#link-tags, #menulist li#link-logs {
+#menulist li.over-spacer {
 	padding-bottom: 5px;
 }
 
-#menulist li#link-dashboard, #menulist li#link-logout {
+#menulist li.under-spacer {
 	border-top: 1px solid #444;
 	padding-top: 5px;
 }
@@ -715,6 +715,16 @@ body.page-comments .button{
 	-moz-border-radius: 3px;
 }
 
+.create select {
+	padding: 3px 5px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border: 1px solid #BBB;
+	margin: 0 0 0 -6px;
+	width: 100%;
+}
+
 .create label.overcontent {
 	text-transform: lowercase;
 	color: #aeaeae;
@@ -929,6 +939,7 @@ body.page-publish .buttons input {
 	border-right: 1px solid #303030;
 	padding: 0 10px;
 	min-width: 30px;
+	max-width: 150px;
 	position: relative;
 }
 
@@ -988,14 +999,23 @@ body.page-publish .buttons input {
 	opacity: 0.5;
 }
 
-.mediaphotos li.media img {
+.mediaphotos li.media .mediathumb {
 	margin: 0 0 5px;
-	height: 100px;
+	height: 102px;
 	border: 1px solid #fff;
 	cursor: pointer;
-	max-width: 300px;
+	width: 100%;
 	min-width: 30px;
+	box-sizing: border-box;
 	display: block;
+	text-align: center;
+	background: #111111;
+	line-height: 90px;
+}
+
+.mediaphotos li.media img {
+	vertical-align: middle;
+	max-height: 100px;
 }
 
 .mediaphotos li.media:last-child img {
@@ -1101,7 +1121,7 @@ body.page-publish .buttons input {
 .dashboard .module {
 	position: relative;
 	float: left;
-	width: 50%;
+	width: 460px;
 	height: 260px;
 }
 
@@ -1111,7 +1131,10 @@ body.page-publish .buttons input {
 
 .dashboard .module .modulecore,
 .dashboard .module .optionswindow {
-	height: 195px;
+	width: 450px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	height: 250px;
 	margin: 5px;
 	padding: 45px 0px 10px;
 	position: relative;
@@ -1137,9 +1160,12 @@ body.page-publish .buttons input {
 	cursor: move;
 }
 
+.dashboard .module .modulecore h2 {
+	background: url('../images/dashboardh2bg.png') right center no-repeat;
+}
+
 .dashboard .module h2 {
 	z-index: 50;
-	background: url('../images/dashboardh2bg.png') right center no-repeat;
 	padding-right: 10px;
 	position: absolute;
 	top: 15px;
@@ -1216,7 +1242,7 @@ body.page-publish .buttons input {
 	width: 16px;
 	background: url('../images/closebutton.png') center center no-repeat;
 	cursor: pointer;
-	z-index: 55;
+	z-index: 56;
 }
 
 .dashboard .module .options {
@@ -1233,10 +1259,15 @@ body.page-publish .buttons input {
 
 .dashboard .module .optionswindow {
 	z-index: 50;
-	height: 195px;
-	background: #111;
+	height: 250px;
+	background: #ddd;
 	color: #555;
+	position: absolute;
 	display: none;
+}
+
+.dashboard .module .optionswindow .optionsform {
+	margin: 0px 15px;
 }
 
 .dashboard .module.viewingoptions .optionswindow {
@@ -1245,6 +1276,11 @@ body.page-publish .buttons input {
 
 .dashboard .module.viewingoptions .modulecore {
 	display: none;
+}
+
+.dashboard .module .modulecore {
+	position: absolute;
+	display: block;
 }
 
 .dashboard .optionscontent {
@@ -1272,10 +1308,6 @@ body.page-publish .buttons input {
 	opacity: .3;
 }
 
-#page .dashboard .module.viewingoptions .optionswindow h2 {
-	background: url('../images/dashboardh2bgdark.png') right center no-repeat;
-	color: #eee;
-}
 
 /* Dashmodules Tables */
 
@@ -1366,6 +1398,10 @@ body.page-users .item .user {
 
 body.page-users .item .user a {
 	color: #444;
+}
+
+body.page-groups .allgroups .users {
+	width: 650px;
 }
 
 body.page-groups .allgroups .users, body.page-users .item .aka, body.page-users .item .userlogin {
@@ -1460,6 +1496,7 @@ body.page-group .container.groupmembers a.user {
 	padding-right:14px;
 	line-height:14px;
 	background:url('../images/closebutton.png') no-repeat right center;
+	float: left;
 }
 
 body.page-group .container.groupmembers a.user:hover, body.page-group .container.groupmembers #currentusers a.user:focus {
@@ -1514,22 +1551,43 @@ body.page-options .item {
 	font-size: 1.1em;
 }
 
+.plugins .requirements {
+	margin: 10px 0px;
+}
+
+.plugins .requirements ul {
+	list-style-type: disc;
+	margin-left: 30px;
+}
+
 .plugins .description {
 	margin: 0;
 	width: 80%;
 }
 
-.plugins .missing {
-	padding-top: 5px;
+.plugins .requirements .error {
 	color: red;
 }
 
-.plugins .missing a {
+.plugins .requirements .feature {
 	font-weight: bold;
 	color: #333333;
 }
 
-.plugins .item a.help, .plugins .item a.help.active:hover {
+.plugins .dependency_options {
+	margin-left: 10px;
+}
+
+.plugins .dependency_options li {
+	display: inline;
+	margin-right: 20px;
+}
+
+#page .plugins .fulfills a {
+	font-weight: bold;
+}
+
+.plugins .item a.help, .plugins .item a.help.active:hover, .currenttheme a.help, .currenttheme a.help.active:hover {
 	text-indent: -10000px;
 	background: transparent url('../images/help_icon.png') scroll no-repeat;
 	width: 15px;
@@ -1538,7 +1596,7 @@ body.page-options .item {
 	outline: none;
 }
 
-.plugins .item a.help:hover, .plugins .item a.help.active {
+.plugins .item a.help:hover, .plugins .item a.help.active, .currenttheme a.help:hover, .currenttheme a.help.active {
 	background-image: url('../images/help_icon_over.png');
 }
 
@@ -1548,7 +1606,7 @@ body.page-options .item {
 	width: 100%;
 }
 
-.plugins #pluginconfigure form, #pluginconfigure .help, .plugins .pluginhelp .help {
+.plugins #pluginconfigure form, #pluginconfigure .help, .plugins .pluginhelp .help, #themehelp .help {
 	background-color: #f8f8f8;
 	border: #bbb 1px solid;
 	padding: 12px;
@@ -1559,11 +1617,11 @@ body.page-options .item {
 	-webkit-border-radius: 5px;
 }
 
-.plugins .pluginhelp {
+.plugins .pluginhelp, .currenttheme #themehelp {
 	display: none;
 }
 
-.plugins .pluginhelp.active {
+.plugins .pluginhelp.active, .currenttheme #themehelp.active {
 	display: block;
 }
 
@@ -1592,91 +1650,90 @@ body.page-options .item {
 	text-indent: -2px;
 }
 
-/*-- PLUGINS HELP */
-.pluginhelp .help {
+/*-- PLUGIN AND THEME HELP */
+.pluginhelp .help, .currenttheme #themehelp .help {
 	line-height: 1.5em;
 }
 
-.pluginhelp .help p {
+.pluginhelp .help p, .currenttheme #themehelp .help p {
 	margin-bottom: 5px;
 }
 
-.pluginhelp .help h3 {
+.pluginhelp .help h3, .currenttheme #themehelp .help h3 {
 	margin-top: 10px;
 	margin-bottom: 5px;
 	font-size: 160%;
 	font-weight: bold;
 }
 
-.pluginhelp .help h4 {
+.pluginhelp .help h4, .currenttheme #themehelp .help h4 {
 	margin-top: 7px;
 	margin-bottom: 3px;
 	font-size: 110%;
 	font-style: italic;
 }
 
-.pluginhelp .help code {
+.pluginhelp .help code, .currenttheme #themehelp .help code {
 	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 	white-space: pre;
 	padding: 0.25em 0.5em 0;
 	background-color: #e3e3e3;
 }
 
-.pluginhelp .help code.block {
+.pluginhelp .help code.block, .currenttheme #themehelp .help code.block {
 	display: block;
 }
 
-.pluginhelp p.warning {
+.pluginhelp p.warning, .currenttheme #themehelp .help p.warning {
 	padding-left: 20px;
 	background: url('../images/warning.png') no-repeat left center;
 	color: #FF4500;
 }
 
-.pluginhelp .help em {
+.pluginhelp .help em, .currenttheme #themehelp .help em {
 	font-style: italic;
 }
 
-.pluginhelp .help strong {
+.pluginhelp .help strong, .currenttheme #themehelp .help em {
 	font-weight: bold;
 }
 
 
-.pluginhelp .help a, .pluginhelp .help a:visited {
+.pluginhelp .help a, .pluginhelp .help a:visited, .currenttheme #themehelp .help a, .currenttheme #themehelp .help a:visited {
 	color: #555;
 	text-decoration: underline;
 }
 
-.pluginhelp .help a:hover, .pluginhelp .help a:focus {
+.pluginhelp .help a:hover, .pluginhelp .help a:focus, .currenttheme #themehelp .help a:hover, .currenttheme #themehelp .help a:focus {
 	color: #000;
 }
 
-.pluginhelp .help ol, .pluginhelp .help ul {
+.pluginhelp .help ol, .pluginhelp .help ul, .currenttheme #themehelp .help ol, .currenttheme #themehelp .help ul {
 	margin: 5px 20px;
 }
 
-.pluginhelp .help ol, .pluginhelp .help ul ol {
+.pluginhelp .help ol, .pluginhelp .help ul ol, .currenttheme #themehelp .help ol, .currenttheme #themehelp .help ul ol {
 	list-style: decimal;
 }
 
-.pluginhelp .help ol ol {
+.pluginhelp .help ol ol, .currenttheme #themehelp .help ol ol {
 	list-style: lower-latin;
 }
 
-.pluginhelp .help ul, .pluginhelp .help ol ul {
+.pluginhelp .help ul, .pluginhelp .help ol ul, .currenttheme #themehelp .help ul, .currenttheme #themehelp .help ol ul {
 	list-style: disc;
 }
 
-.pluginhelp .help ul ul {
+.pluginhelp .help ul ul, .currenttheme #themehelp .help ul ul {
 	list-style: circle;
 }
 
-.pluginhelp .help ol ol, .pluginhelp .help ul ul, .pluginhelp .help ul ol, .pluginhelp .help ol ul {
+.pluginhelp .help ol ol, .pluginhelp .help ul ul, .pluginhelp .help ul ol, .pluginhelp .help ol ul, .currenttheme #themehelp .help ol ol, .currenttheme #themehelp .help ul ul, .currenttheme #themehelp .help ul ol, .currenttheme #themehelp .help ol ul {
 	margin-top: 0;
 	margin-bottom: 0;
 }
 
 /*- THEMES PAGE */
-
 body.page-themes .availablethemes .item {
     border: 1px dotted #efefef;
     text-align: center;
@@ -1879,11 +1936,8 @@ body.page-themes .currenttheme .thumb {
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
-	height: 18px;
 }
 #block_instances .block_instance h3 {
-	display: inline;
-	position: absolute;
 	color: #333;
 }
 #block_instances .block_instance h3 small {
@@ -1911,6 +1965,9 @@ body.page-themes .currenttheme .thumb {
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
+#block_instances .invalid_block {
+	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABZ0RVh0Q3JlYXRpb24gVGltZQAwNS8yMC8xMsEwy8oAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzbovLKMAAAAK0lEQVQImWXLsQ3AQAzDQHop77/ZpXKTJ6CGAkPVotsj0NxzzMz2yxY9An28ADPg8yUY/AAAAABJRU5ErkJggg==);
+}
 #block_instances .ui-draggable-dragging {
 	border-top: 3px double #888888;
 	border-bottom: 3px double #888888;
@@ -1922,6 +1979,7 @@ body.page-themes .currenttheme .thumb {
 }
 #block_instances .block_instance .dropbutton {
 	right: 320px;
+  margin-top: -1.8em;
 }
 #block_instances .ui-draggable-dragging .instance_controls {
 	display: none;
@@ -1986,7 +2044,9 @@ body.page-themes .currenttheme .thumb {
 /*- OPTIONS PAGE */
 
 body.page-options .container .item {
-	line-height: 34px;
+	line-height: 1.5;
+	padding-top: 1em;
+	padding-bottom: 1em;
 }
 
 body.page-options #title {

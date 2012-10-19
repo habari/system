@@ -33,6 +33,16 @@ class HabariLocale
 	}
 
 	/**
+	 * Return the current locale
+	 * @static
+	 * @return string The current locale.
+	 */
+	public static function get()
+	{
+		return self::$locale;
+	}
+
+	/**
 	 * Set system locale.
 	 *
 	 * The problem is that every platform has its own way to designate a locale,
@@ -118,7 +128,7 @@ class HabariLocale
 				$dirs = array_merge( $dirs, Utils::glob( $localedir . '*', GLOB_ONLYDIR | GLOB_MARK ) );
 			}
 		}
-		$dirs = array_filter( $dirs, create_function( '$a', 'return file_exists($a . "LC_MESSAGES/habari.mo");' ) );
+		$dirs = array_filter( $dirs, function( $a ) {return file_exists($a . "LC_MESSAGES/habari.mo"); } );
 
 		$locales = array_map( 'basename', $dirs );
 		ksort( $locales );
@@ -135,11 +145,11 @@ class HabariLocale
 	private static function load_file( $domain, $file )
 	{
 		if ( ! file_exists( $file ) ) {
-			Error::raise( sprintf( _t( 'No translations found for locale %s, domain %s!' ), self::$locale, $domain ) );
+			Error::raise( _t( 'No translations found for locale %s, domain %s!', array( self::$locale, $domain ) ) );
 			return false;
 		}
 		if ( filesize( $file ) < 24 ) {
-			Error::raise( sprintf( _t( 'Invalid .MO file for locale %s, domain %s!' ), self::$locale, $domain ) );
+			Error::raise( _t( 'Invalid .MO file for locale %s, domain %s!', array( self::$locale, $domain ) ) );
 			return false;
 		}
 
@@ -159,13 +169,13 @@ class HabariLocale
 				$little_endian = false;
 				break;
 			default:
-				Error::raise( sprintf( _t( 'Invalid magic number 0x%08x in %s!' ), $magic, $file ) );
+				Error::raise( _t( 'Invalid magic number 0x%08x in %s!', array( $magic, $file ) ) );
 				return false;
 		}
 
 		$revision = substr( $data, 4, 4 );
 		if ( $revision != 0 ) {
-			Error::raise( sprintf( _t( 'Unknown revision number %d in %s!' ), $revision, $file ) );
+			Error::raise( _t( 'Unknown revision number %d in %s!', array( $revision, $file ) ) );
 			return false;
 		}
 
@@ -176,7 +186,7 @@ class HabariLocale
 			$header = unpack( "{$l}1msgcount/{$l}1msgblock/{$l}1transblock", $header );
 
 			if ( $header['msgblock'] + ($header['msgcount'] - 1 ) * 8 > filesize( $file ) ) {
-				Error::raise( sprintf( _t( 'Message count (%d) out of bounds in %s!' ), $header['msgcount'], $file ) );
+				Error::raise( _t( 'Message count (%d) out of bounds in %s!', array( $header['msgcount'], $file ) ) );
 				return false;
 			}
 
@@ -316,6 +326,18 @@ class HabariLocale
 		}
 
 		return $t;
+	}
+
+	/**
+	 * Return the entire message catalog for a domain as an array
+	 *
+	 * @static
+	 * @param string $domain (optional) The domain to return
+	 * @return array The array of locale messages
+	 */
+	public static function get_messages($domain = 'habari')
+	{
+		return self::$messages[$domain];
 	}
 
 	/**

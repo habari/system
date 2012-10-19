@@ -1,5 +1,10 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-<fieldset<?php echo ($class) ? ' class="' . $class . '"' : ''?><?php echo ($id) ? ' id="' . $id . '"' : ''?>>
-	<legend><?php echo $caption; ?></legend>
+<fieldset<?php
+		echo $control->parameter_map(
+			array(
+				'class', 'id' => 'name'
+			)
+		); ?>>
+	<legend><?php echo $control->caption; ?></legend>
 	<?php echo $contents; ?>
 </fieldset>

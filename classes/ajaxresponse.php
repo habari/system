@@ -2,6 +2,10 @@
 /**
  * @package Habari
  *
+ * @property integer $response_code The HTTP response code to send with the message
+ * @property string  $message The message to return
+ * @property callback $callback The function to be called with the message
+ * @property mixed $data Data to return with the message
  */
 
 /**
@@ -10,13 +14,13 @@
  */
 class AjaxResponse
 {
-	
-	private $data;
+
+	public $data;
 	private $response_code;
 	private $message;
 	private $callback = null;
 	private $html = null;
-	
+
 	/* By default, we have a successful operation, with no data to return. */
 	function __construct( $response_code = 200, $message = null, $data = null )
 	{
@@ -24,7 +28,7 @@ class AjaxResponse
 		$this->message = $message;
 		$this->data = $data;
 	}
-	
+
 	public function __set( $var, $val )
 	{
 		switch ( $var ) {
@@ -36,7 +40,19 @@ class AjaxResponse
 				break;
 		}
 	}
-	
+
+	public function __get( $var )
+	{
+		switch ( $var ) {
+			case 'response_code':
+			case 'message':
+			case 'data':
+			case 'callback':
+				return $this->$var;
+				break;
+		}
+	}
+
 	public function html( $name, $value )
 	{
 		if ( empty( $this->html ) ) {
@@ -62,9 +78,9 @@ class AjaxResponse
 		if ( !empty( $this->html ) ) {
 			$ret_array['html'] = $this->html;
 		}
-		
-		// If the output is destined for an iframe, set appropriate headers we 
-		// know the browser will definitely be able to interpret. 
+
+		// If the output is destined for an iframe, set appropriate headers we
+		// know the browser will definitely be able to interpret.
 		// See discussion at https://github.com/habari/habari/issues/204
 		if ( $to_iframe ) {
 			header( 'Content-type: text/plain' );

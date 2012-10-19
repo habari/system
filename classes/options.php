@@ -220,13 +220,15 @@ class Options extends Singleton
 		if(Config::exists('default_options')) {
 			$this->options = array_merge($this->options, Config::get('default_options'));
 		}
-		$results = DB::get_results( 'SELECT name, value, type FROM {options}', array(), 'QueryRecord' );
-		foreach ( $results as $result ) {
-			if ( $result->type == 1 ) {
-				$this->options[$result->name] = unserialize( $result->value );
-			}
-			else {
-				$this->options[$result->name] = $result->value;
+		if(DB::is_connected()) {
+			$results = DB::get_results( 'SELECT name, value, type FROM {options}', array(), 'QueryRecord' );
+			foreach ( $results as $result ) {
+				if ( $result->type == 1 ) {
+					$this->options[$result->name] = unserialize( $result->value );
+				}
+				else {
+					$this->options[$result->name] = $result->value;
+				}
 			}
 		}
 		if(Config::exists('static_options')) {
@@ -276,6 +278,22 @@ class Options extends Singleton
 	public static function clear_cache()
 	{
 		self::instance()->options = null;
+	}
+
+	/**
+	 * Check if an option was set via the config, making it unsettable
+	 * @static
+	 * @param string $name The name of the option to check
+	 * @return bool True if the option is set in the config
+	 */
+	public static function is_static($name)
+	{
+		if($static_options = Config::exists('static_options')) {
+			if(isset($static_options[$name])) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

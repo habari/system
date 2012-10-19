@@ -17,6 +17,11 @@
 class Term extends QueryRecord
 {
 	protected $inforecords = null;
+
+	public $unsetfields = array(
+		'object_id' => 'object_id',
+		'type' => 'type',
+	);
 	
 	/**
 	 * Return the defined database columns for a Term.
@@ -123,8 +128,9 @@ class Term extends QueryRecord
 		// Let plugins disallow and act before we write to the database
 		$allow = true;
 		$allow = Plugins::filter( 'term_insert_allow', $allow, $this );
+		$allow = $this->is_valid();
 		if ( !$allow ) {
-			return false;
+			return $allow;
 		}
 		Plugins::act( 'term_insert_before', $this );
 
@@ -159,6 +165,7 @@ class Term extends QueryRecord
 		// Let plugins disallow and act before we write to the database
 		$allow = true;
 		$allow = Plugins::filter( 'term_update_allow', $allow, $this );
+		$allow = $this->is_valid();
 		if ( !$allow ) {
 			return;
 		}
@@ -201,7 +208,7 @@ class Term extends QueryRecord
 		DB::query( 'DELETE FROM {object_terms} WHERE term_id = :id', array( 'id' => $this->id ) );
 
 		$result = parent::deleteRecord( '{terms}', array( 'id'=>$this->id ) );
-		EventLog::log( sprintf( _t( 'Term %1$s (%2$s) deleted.' ), $this->id, $this->term_display ), 'info', 'content', 'habari' );
+		EventLog::log( _t( 'Term %1$s (%2$s) deleted.', array( $this->id, $this->term_display ) ), 'info', 'content', 'habari' );
 
 		// Let plugins act after we write to the database
 		Plugins::act( 'term_delete_after', $this );
@@ -339,9 +346,9 @@ WHERE parent.mptt_left > :left AND parent.mptt_right < :right
 	AND parent.vocabulary_id = :vocab
 GROUP BY child.term
 HAVING COUNT(child.term)=1
-ORDER BY NULL
+ORDER BY mptt_left
 SQL;
-		return DB::get_results( $query, $params, 'Term' );
+		return new Terms(DB::get_results( $query, $params, 'Term' ));
 	}
 
 	/**
@@ -360,11 +367,11 @@ SQL;
 	/**
 	 * Find the types of objects associated with this Term.
 	 *
-	 * @return Array of objects, keyed by object id, values are type names
+	 * @return Array of objects, with each object containing an object id and an object type name
 	 */
 	public function object_types()
 	{
-		$results = DB::get_keyvalue( "SELECT terms.object_id, types.name FROM {object_terms} terms, {object_types} types WHERE terms.object_type_id = types.id and term_id = ?", array( $this->id ) );
+		$results = DB::get_results( 'SELECT terms.object_id, types.name as `type` FROM {object_terms} terms, {object_types} types WHERE terms.object_type_id = types.id and term_id = :term_id', array( 'term_id' => $this->id ) );
 		return $results;
 	}
 
@@ -535,6 +542,19 @@ SQL;
 		return DB::get_row( $query, $params, $term_class );
 	}
 
+	/**
+	 * Make sure we have a valid term before inserting it in the database or updating it
+	 * @return bool True if a valid term, false if not
+	 */
+	protected function is_valid()
+	{
+		if( strlen( trim( $this->term_display ) )  && strlen( trim( $this->term ) ) && $this->vocabulary_id != 0 ) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 }
 
 ?>

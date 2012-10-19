@@ -5,19 +5,11 @@
 	<title><?php printf( _t('Login to %s'), Options::get( 'title' ) ); ?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-<?php	Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin'); ?>
-
-	<script src="<?php Site::out_url('vendor'); ?>/jquery.js" type="text/javascript"></script>
-	<script src="<?php Site::out_url('vendor'); ?>/jquery-ui.min.js" type="text/javascript"></script>
-	<script src="<?php Site::out_url('vendor'); ?>/humanmsg/humanmsg.js" type="text/javascript"></script>
-	<script src="<?php Site::out_url('vendor'); ?>/jquery.hotkeys.js" type="text/javascript"></script>
-
 	<script type="text/javascript">
 	var habari = {
 		url: { habari: '<?php Site::out_url('habari'); ?>' }
 	};
 	</script>
-	<script src="<?php Site::out_url('admin_theme'); ?>/js/admin.js" type="text/javascript"></script>
 
 	<?php
 		Plugins::act( 'admin_header', $this );
@@ -35,6 +27,10 @@
 		<div class="container">
 			<?php Plugins::act( 'theme_loginform_before' ); ?>
 				<form method="post" action="<?php URL::out( 'auth', array( 'page' => 'login' ) ); ?>">
+					<?php // TODO: Use Javascript to add this or automatically hide it on load rather than show it ?>
+					<p id="reset_message" style="display:none; margin-bottom:20px;">
+						<?php _e('Please enter the username you wish to reset the password for.  A unique password reset link will be emailed to that user.'); ?>
+					</p>
 
 					<p>
 						<label for="habari_username" class="incontent abovecontent"><?php _e('Name'); ?></label><input type="text" name="habari_username" id="habari_username"<?php if (isset( $habari_username )) { ?> value="<?php echo Utils::htmlspecialchars( $habari_username ); ?>"<?php } ?> placeholder="<?php _e('name'); ?>" class="styledformelement">
@@ -46,7 +42,6 @@
 					<p>
 						<input class="submit" type="submit" name="submit_button" value="<?php _e('Login'); ?>">
 					</p>
-					
 					<p id="password_utils">
 						<input class="submit" type="submit" name="submit_button" value="<?php _e('Reset password'); ?>">
 					</p>
@@ -74,7 +69,21 @@
 		} );
 		// for autofill without user input
 		setTimeout( function(){ labeler.check( password_label ); }, 10 );
-	})
+		
+		// Make the login form a bit more intuitive when requesting a password reset
+		// TODO: Stop this submitting the form when we click the Reset Password the first time when the field is populated.
+		$("#password_utils input").click(function() {
+			// Hide password box
+			$("p:has(input[name=habari_password])").hide();
+			// Hide Login button
+			$("p:has(input[name=submit_button])").first().hide();
+			// Show message that explains things a bit better
+			$("p#reset_message").fadeIn();
+			// Unbind click function
+			$("#password_utils input").unbind('click');
+			return false;
+		});
+	});
   </script>
 <?php
 	include ('db_profiling.php');

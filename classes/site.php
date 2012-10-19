@@ -116,9 +116,13 @@ class Site
 	 *		http://www.habariproject.org/user/sites/x.y.z/themes/theme_name
 	 *	'admin' returns http://www.habariproject.org/admin
 	 *	'admin_theme' returns http://www.habariproject.org/system/admin
+	 *  'login' returns http://www.habariproject.org/auth/login
+	 *  'logout' returns http://www.habariproject.org/auth/logout
 	 *	'system' returns http://www.habariproject.org/system
-	 *	'scripts' returns http://www.habariproject.org/scripts
+	 *	'vendor' returns http://www.habariproject.org/system/vendor
+	 *	'scripts' returns http://www.habariproject.org/system/vendor
 	 *	'3rdparty' returns http://www.habariproject.org/3rdparty
+	 *     if /3rdparty does not exists, /system/vendor will be returned
 	 *	'hostname' returns www.habariproject.org
 	 * @param string the name of the URL to return
 	 * @param bool whether to include a trailing slash.  Default: No
@@ -135,16 +139,14 @@ class Site
 				// add the port number to the value returned
 				// from host_url
 				$port = 80; // Default in case not set.
-				if ( isset( $_SERVER['SERVER_PORT'] ) ) {
-					$port = $_SERVER['SERVER_PORT'];
-				}
+				$port = Config::get( 'custom_http_port', isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : $port );
 				$portpart = '';
 				$host = Site::get_url( 'hostname' );
 				// if the port isn't a standard port, and isn't part of $host already, add it
 				if ( ( $port != 80 ) && ( $port != 443 ) && ( MultiByte::substr( $host, MultiByte::strlen( $host ) - strlen( $port ) ) != $port ) ) {
 					$portpart = ':' . $port;
 				}
-				if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' ) {
+				if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) {
 					$protocol = 'https';
 				}
 				$url = $protocol . '://' . $host . $portpart;
@@ -228,6 +230,7 @@ class Site
 	/**
 	 * get_path returns a relative URL path, without leading protocol or host
 	 *	'base' returns the URL sub-directory in which Habari is installed, if any.
+	 *  'habari' returns the same as 'base'
 	 *	'user' returns one of the following:
 	 *		user
 	 *		user/sites/x.y.z
@@ -280,6 +283,8 @@ class Site
 	 *	'config' returns the path of the directory containing config.php
 	 *	'user' returns the path of the user directory
 	 *	'theme' returns the path of the site's active theme
+	 *  'admin_theme' returns the path to the admin directory
+	 *  'vendor' returns the path to the vendor directory
 	 * @param string the name of the path item to return
 	 * @param bool whether to include a trailing slash.  Default: No
 	 * @return string Path

@@ -73,8 +73,8 @@ var installer = {
 		var installok = true;
 
 		// If admin passwords have been entered, check if they're the same
-		pass1 = $('#adminpass1');
-		pass2 = $('#adminpass2');
+		var pass1 = $('#adminpass1');
+		var pass2 = $('#adminpass2');
 
 		if ( pass1.val().length > 0 && pass2.val().length > 0 && pass1.val() == pass2.val() ) {
 			pass1.parents('.inputfield').removeClass('invalid').addClass('valid');
@@ -86,7 +86,7 @@ var installer = {
 		}
 
 		// Check other details have been entered
-		$('#sitename, #adminuser, #adminemail').each(function(){
+		$('#sitename, #adminuser').each(function(){
 			if ($(this).val() != '') {
 				$(this).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
 			}
@@ -96,24 +96,175 @@ var installer = {
 			}
 		});
 
+		// Very loosely check if the email is valid (don't be tempted to check this more strictly, you'll go mad, annoy people, or both).
+		var regexemail = /.+@.+/;
+		if (regexemail.test($('#adminemail').val())) {
+			$('#adminemail').parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
+		}
+		else {
+			$("#adminemail").parents('.inputfield').removeClass('valid').addClass('invalid');
+			installok = false;
+		}
+
 		if (installok) {
 //			installer.checkDBCredentials();
-			$('#siteconfiguration, #pluginactivation, #install').addClass('ready').addClass('done').children('.options').fadeIn().children('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
-			$('#pluginactivation').children('.help-me').show();
-			$('#submitinstall').removeAttr( 'disabled' );
+			$('#siteconfiguration, #themeselection').addClass('ready').addClass('done').children('.options').fadeIn().children('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
+			$('#themeselection').children('.help-me').show();
 		}
 		else {
 			$('#siteconfiguration').removeClass('done');
-			$('#pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
-			$('#pluginactivation').children('.help-me').hide();
+			$('#themeselection, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
+			$('#themeselection').children('.help-me').hide();
 		}
+	},
+
+	checkThemeConfiguration: function() {
+		$('#siteconfiguration, #pluginactivation, #install').addClass('ready').addClass('done').children('.options').fadeIn().children('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
+		$('#pluginactivation').children('.help-me').show();
+		$('#submitinstall').removeAttr( 'disabled' );
+
+		installer.resolveFeatures();
+	},
+
+	resolveFeatures: function() {
+		$('#pluginactivation .item').removeClass('provider').removeClass('conflict');
+		$('.feature_note').html('');
+
+		theme_requires = $('.theme_selection:checked').data('requires').split(',').filter(function(e){return e != ''});
+		theme_conflicts = $('.theme_selection:checked').data('conflicts').split(',').filter(function(e){return e != ''});
+		theme_provides = $('.theme_selection:checked').data('provides').split(',').filter(function(e){return e != ''});
+		requires = theme_requires;
+		provides = theme_provides;
+
+		$('.plugin_selection').each(function(){
+			var p = $(this);
+			plugin_requires = p.data('requires').split(',').filter(function(e){return e != ''});
+			plugin_provides = p.data('provides').split(',').filter(function(e){return e != ''});
+			plugin_conflicts = p.data('conflicts').split(',').filter(function(e){return e != ''});
+			p.attr('disabled', false);
+
+			if(p.attr('checked')) {
+				requires = requires.concat(plugin_requires);
+				provides = provides.concat(plugin_provides);
+
+				conflicting = intersect(theme_requires, plugin_conflicts);
+				providing = intersect(theme_requires, plugin_provides);
+
+				if(conflicting.length > 0) {
+					p.attr('checked', false).attr('disabled', true);
+					p.parents('.item')
+						.addClass('conflict')
+						.find('.feature_note').html(_t('This plugin conflics with a requirement of the theme: %s', conflicting.join(',')));
+				}
+				else if(providing.length > 0) {
+					p.attr('disabled', false);
+					p.parents('.item')
+						.addClass('provider')
+						.find('.feature_note').html(_t('This plugin provides a requirement of the theme: %s', providing.join(',')));
+					for(i in providing) {
+						if(installer.getProviders(providing[i]).length == 1) {
+							p.attr('checked', true).attr('disabled', true);
+							break;
+						}
+					}
+				}
+				else {
+					p.attr('disabled', false);
+				}
+
+				plugin_name = p.parents('.head').find('label .name').text();
+				for(i in plugin_provides) {
+					conflicters = installer.getConflicters(plugin_provides[i]);
+					for(u in conflicters) {
+						conflicters[u].attr('checked', false).attr('disabled', true);
+						conflicters[u].parents('.item')
+							.addClass('conflict')
+							.find('.feature_note').html(_t('This plugin conflics with the enabled plugin %s over this feature: %s', plugin_name, plugin_provides[i]));
+					}
+				}
+
+				for(i in plugin_conflicts) {
+					conflicters = installer.getProviders(plugin_conflicts[i]);
+					for(u in conflicters) {
+						conflicters[u].attr('checked', false).attr('disabled', true);
+						conflicters[u].parents('.item')
+							.addClass('conflict')
+							.find('.feature_note').html(_t('This plugin provides a feature that the enabled plugin %s conflicts with: %s', plugin_name, plugin_conflicts[i]));
+					}
+				}
+			}
+
+			for(i in plugin_requires) {
+				providers = installer.getProviders(plugin_requires[i]);
+				if(providers == 0 && theme_provides.indexOf(plugin_requires[i]) < 0) {
+					p.attr('checked', false).attr('disabled', true);
+					p.parents('.item')
+						.addClass('conflict')
+						.find('.feature_note').html(_t('This plugin requires a feature that is not provided by the current theme or any available plugin: %s', plugin_requires[i]));
+				}
+			}
+
+		});
+
+		requires = requires.filter(function(e,i,a){return e != '' && i == a.indexOf(e);});
+		provides = provides.filter(function(e,i,a){return e != '' && i == a.indexOf(e);});
+
+		unfulfilled = requires.filter(function(e,i,a){return provides.indexOf(e) < 0;});
+		missing_features = [];
+		if(unfulfilled.length > 0) {
+			for(i in unfulfilled) {
+				providers = installer.getProviders(unfulfilled[i]);
+				for(u in providers) {
+					if(!providers[u].parents('.item').hasClass('provider')) {
+						providers[u].parents('.item')
+							.addClass('provider')
+							.find('.feature_note').html(_t('This plugin provides a requirement of an active plugin: %s', unfulfilled[i]));
+					}
+				}
+				if(installer.getProviders(unfulfilled[i], true).length == 0) {
+					missing_features.push(unfulfilled[i]);
+				}
+			}
+		}
+		if(missing_features.length > 0) {
+			$('#unfulfilled_feature_list').html(missing_features.join(', '));
+			$('#feature_error').show();
+			$('#submitinstall').attr('disabled', true);
+		}
+		else {
+			$('#feature_error').hide();
+			$('#submitinstall').attr('disabled', false);
+		}
+
+	},
+
+	getProviders: function(feature, active) {
+		var result = [];
+		selector = active ? '.plugin_selection:checked' : '.plugin_selection';
+		$(selector).each(function(){
+			provides = $(this).data('provides').split(',').filter(function(e){return e != ''});
+			if(provides.indexOf(feature) >= 0 ) {
+				result.push($(this));
+			}
+		});
+		return result;
+	},
+
+	getConflicters: function(feature) {
+		var result = [];
+		$('.plugin_selection').each(function(){
+			provides = $(this).data('conflicts').split(',').filter(function(e){return e != ''});
+			if(provides.indexOf(feature) >= 0 ) {
+				result.push($(this));
+			}
+		});
+		return result;
 	},
 
 	noVerify: function() {
 		installer.verifyDB = false;
 		installer.showError('<strong>Verification Disabled</strong><p>The installer will no longer attempt to verify the database settings.</p>' + $('#installerror').html());
 	}
-	
 }
 
 installer.mysql = {
@@ -326,7 +477,7 @@ installer.sqlite = {
 			$('#siteconfiguration, #pluginactivation').children('.help-me').hide();
 		}
 	},
-	
+
 	validDBCredentials: function() {
 		$('#databasefile, #tableprefix').each(function() {
 			$(this).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
@@ -345,6 +496,24 @@ function queueTimer(timer){
 		clearTimeout(checktimer);
 	}
 	checktimer = setTimeout(timer, 500);
+}
+
+/* compute the intersection of two arrays */
+function intersect(a, b) {
+	var ai=0, bi=0, result = new Array();
+
+	while( ai < a.length && bi < b.length ) {
+		if(a[ai] < b[bi] ) ai++;
+		else if (a[ai] > b[bi] ) bi++;
+		else {
+			if(a[ai] != '') {
+				result.push(a[ai]);
+			}
+			ai++; bi++;
+		}
+	}
+
+	return result;
 }
 
 /* Manages Plugin Activation Items */
@@ -375,17 +544,17 @@ var itemManage = {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 0;
 			});
-			$('.item.controls label').addClass('none').removeClass('all').text('None selected');
+			$('.item.controls label').addClass('none').removeClass('all').text(_t('None selected'));
 		} else if(count == $('.item:not(.hidden):not(.ignore):not(.controls) .checkbox input[type=checkbox]').length) {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 1;
 			});
-			$('.item.controls label').removeClass('none').addClass('all').text('All selected');
+			$('.item.controls label').removeClass('none').addClass('all').text(_t('All selected'));
 		} else {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 0;
 			});
-			$('.item.controls label').removeClass('none').removeClass('all').text(count + ' selected');
+			$('.item.controls label').removeClass('none').removeClass('all').text(_t('%s selected', count));
 		}
 	},
 	uncheckAll: function() {
@@ -404,6 +573,7 @@ var itemManage = {
 
 $(document).ready(function() {
 	$('.help-me').click(function(){$(this).parents('.installstep').find('.help').slideToggle();return false;});
+	$('.help-items').click(function(){$(this).parents('.installstep').find('.items').fadeOut(function(){$(this).toggleClass('show-help').fadeIn()});$('html, body').animate({scrollTop: $("#themeselection").offset().top - 20}, 500);return false;});
 	$('.help').hide();
 	$('.installstep').removeClass('ready');
 	$('.installstep:eq(0), .installstep:eq(1)').addClass('ready');
@@ -420,5 +590,7 @@ $(document).ready(function() {
 	$('#databasesetup input').keyup(function(){queueTimer(installer.checkDBFields)});
 	$('#check_db_connection').click(function(){installer.checkDBCredentials()});
 	$('#siteconfiguration input').keyup(function(){queueTimer(installer.checkSiteConfigurationCredentials)});
+	$('#themeselection input').click(function(){queueTimer(installer.checkThemeConfiguration)});
+	$('.plugin_selection').click(function(){queueTimer(installer.resolveFeatures)});
 	$('#locale').focus().change(function() { $('#locale-form').submit();	});
 });

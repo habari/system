@@ -19,7 +19,9 @@ class AdminDashboardHandler extends AdminHandler
 	{
 		// Not sure how best to determine this yet, maybe set an option on install, maybe do this:
 		$firstpostdate = DB::get_value( 'SELECT min(pubdate) FROM {posts} WHERE status = ?', array( Post::status( 'published' ) ) );
-		$this->theme->active_time = HabariDateTime::date_create( $firstpostdate );
+		if ( $firstpostdate ) {
+			$this->theme->active_time = HabariDateTime::date_create( $firstpostdate );
+		}
 
 		// check to see if we have updates to display
 		$this->theme->updates = Options::get( 'updates_available', array() );
@@ -37,8 +39,6 @@ class AdminDashboardHandler extends AdminHandler
 			'user_scheduled_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'any' ), 'status' => Post::status( 'scheduled' ), 'user_id' => $user->id ) ),
 		);
 
-		$this->fetch_dashboard_modules();
-
 		// check for first run
 		$u = User::identify();
 		if ( ! isset( $u->info->experience_level ) ) {
@@ -49,6 +49,8 @@ class AdminDashboardHandler extends AdminHandler
 		else {
 			$this->theme->first_run = false;
 		}
+
+		$this->get_additem_form();
 
 		$this->display( 'dashboard' );
 	}
@@ -62,41 +64,17 @@ class AdminDashboardHandler extends AdminHandler
 	}
 
 	/**
-	 * Fetches active modules for display on the dashboard
+	 * Add the Add Item form to the theme for display
 	 */
-	public function fetch_dashboard_modules()
+	public function get_additem_form()
 	{
-		if ( count( Modules::get_all() ) == 0 ) {
-			$this->theme->modules = array();
-			return;
-		}
-
-		// get the active module list
-		$modules = Modules::get_active();
-
-		if ( User::identify()->can( 'manage_dash_modules' ) ) {
-			// append the 'Add Item' module
-			$modules['nosort'] = 'Add Item';
-
-			// register the 'Add Item' filter
-			Plugins::register( array( $this, 'filter_dash_module_add_item' ), 'filter', 'dash_module_add_item' );
-		}
-
-		foreach ( $modules as $id => $module_name ) {
-			$slug = Utils::slugify( (string) $module_name, '_' );
-			$module = array(
-				'name' => $module_name,
-				'title' => $module_name,
-				'content' => '',
-				'options' => ''
-				);
-
-			$module = Plugins::filter( 'dash_module_' .$slug, $module, $id, $this->theme );
-
-			$modules[$id] = $module;
-		}
-
-		$this->theme->modules = $modules;
+		$additem_form = new FormUI( 'dash_additem' );
+		$additem_form->append( 'select', 'module', 'null:unused' );
+		$additem_form->module->options = Plugins::filter( 'dashboard_block_list', array() );
+		$additem_form->append( 'submit', 'submit', _t( '+' ) );
+		//$form->on_success( array( $this, 'dash_additem' ) );
+		$additem_form->properties['onsubmit'] = "dashboard.add(); return false;";
+		$this->theme->additem_form = $additem_form->get();
 	}
 
 	/**
@@ -106,78 +84,65 @@ class AdminDashboardHandler extends AdminHandler
 	{
 		Utils::check_request_method( array( 'POST' ) );
 
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
-		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+		$this->create_theme();
+		$this->get_additem_form();
+		$available_modules = Plugins::filter('dashboard_block_list', array());
 
 		switch ( $handler_vars['action'] ) {
 			case 'updateModules':
-				$modules = array();
-				foreach ( $_POST as $key => $module ) {
-					// skip POST elements which are not module names
-					if ( preg_match( '/^module\d+$/', $key ) ) {
-						list( $module_id, $module_name ) = explode( ':', $module, 2 );
-						// remove non-sortable modules from the list
-						if ( $module_id != 'nosort' ) {
-							$modules[$module_id] = $module_name;
-						}
-					}
+				$modules = $_POST['moduleOrder'];
+				$order = 0;
+				foreach ( $modules as $module ) {
+					$order++;
+					DB::query('UPDATE {blocks_areas} SET display_order = :display_order WHERE block_id = :id AND area = "dashboard"', array('display_order' => $order, 'id' => $module));
 				}
-
-				Modules::set_active( $modules );
 				$ar = new AjaxResponse( 200, _t( 'Modules updated.' ) );
 				break;
 			case 'addModule':
-				$id = Modules::add( $handler_vars['module_name'] );
-				$this->fetch_dashboard_modules();
-				$ar = new AjaxResponse( 200, _t( 'Added module %s.', array( $handler_vars['module_name'] ) ) );
+				$type = $handler_vars['module_name'];
+				$title = $available_modules[$type];
+				$block = new Block( array( 'title' => $title, 'type' => $type ) );
+				$block->insert();
+				$max_display_order = DB::get_value('SELECT max(display_order) FROM {blocks_areas} WHERE area = "dashboard" and scope_id = 0;');
+				$max_display_order++;
+				DB::query( 'INSERT INTO {blocks_areas} (block_id, area, scope_id, display_order) VALUES (:block_id, "dashboard", 0, :display_order)', array( 'block_id'=>$block->id, 'display_order'=>$max_display_order ) );
+
+				$ar = new AjaxResponse( 200, _t( 'Added module %s.', array( $title ) ) );
 				$ar->html( 'modules', $this->theme->fetch( 'dashboard_modules' ) );
 				break;
 			case 'removeModule':
-				Modules::remove( $handler_vars['moduleid'] );
-				$this->fetch_dashboard_modules();
+				$block_id = $handler_vars['moduleid'];
+				DB::delete('{blocks}', array('id' => $block_id));
+				DB::delete('{blocks_areas}', array('block_id' => $block_id));
 				$ar = new AjaxResponse( 200, _t( 'Removed module.' ) );
 				$ar->html( 'modules', $this->theme->fetch( 'dashboard_modules' ) );
+				break;
+			case 'configModule':
+				$block_id = $handler_vars['moduleid'];
+
+				$block = DB::get_row('SELECT * FROM {blocks} b WHERE b.id = :id', array('id' => $block_id), 'Block');
+
+				/** Block $block */
+				$form = $block->get_form();
+				$form->_ajax = true;
+				$form->set_option( 'success_message', _t('Module Configuration Saved.')
+					. '<script type="text/javascript">window.setTimeout(function(){$(".form_message").fadeOut();}, 2000);</script>'
+				);
+				$control_id = new FormControlHidden('moduleid', 'null:null');
+				$control_id->value = $block->id;
+				$control_id->id = 'moduleid';
+				$form->append($control_id);
+				$control_action = new FormControlHidden('action', 'null:null');
+				$control_action->value = 'configModule';
+				$control_action->id = 'action';
+				$form->append($control_action);
+				$form->out();
+				$form_id = $form->name;
+				exit;
 				break;
 		}
 
 		$ar->out();
-	}
-
-	/**
-	 * Function used to set theme variables to the add module dashboard widget.
-	 * TODO make this form use an AJAX call instead of reloading the page
-	 */
-	public function filter_dash_module_add_item( $module, $id, $theme )
-	{
-		$modules = Modules::get_all();
-		if ( $modules ) {
-			$modules = array_combine( array_values( $modules ), array_values( $modules ) );
-		}
-
-		$form = new FormUI( 'dash_additem' );
-		$form->append( 'select', 'module', 'null:unused' );
-		$form->module->options = $modules;
-		$form->append( 'submit', 'submit', _t( '+' ) );
-		//$form->on_success( array( $this, 'dash_additem' ) );
-		$form->properties['onsubmit'] = "dashboard.add(); return false;";
-		$theme->additem_form = $form->get();
-
-		$module['content'] = $theme->fetch( 'dash_additem' );
-		$module['title'] = _t( 'Add Item' );
-		return $module;
-	}
-
-	/**
-	 * Adds a module to the user's dashboard
-	 * @param object form FormUI object
-	 */
-	public function dash_additem( $form )
-	{
-		$new_module = $form->module->value;
-		Modules::add( $new_module );
-
-		// return false to redisplay the form
-		return false;
 	}
 
 }

@@ -11,6 +11,7 @@ CREATE TABLE {$prefix}posts (
   pubdate INT UNSIGNED NOT NULL,
   updated INT UNSIGNED NOT NULL,
   modified INT UNSIGNED NOT NULL,
+  input_formats VARCHAR(255) NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY slug (slug(80))
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
@@ -124,6 +125,8 @@ CREATE TABLE {$prefix}crontab (
   end_time INT UNSIGNED,
   result VARCHAR(255) NOT NULL,
   notify VARCHAR(255) NOT NULL,
+  failures INT UNSIGNED NOT NULL DEFAULT 0,
+  active TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
   cron_class TINYINT unsigned NOT NULL DEFAULT 0,
   description TEXT NULL,
   PRIMARY KEY (cron_id)

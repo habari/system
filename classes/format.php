@@ -25,38 +25,38 @@ class Format
 			self::load_all();
 		}
 
-		foreach ( self::$formatters as $formatobj ) {
-			if ( method_exists( $formatobj, $format ) ) {
-				$index = array_search( $formatobj, self::$formatters );
-				$func = '$o = Format::by_index(' . $index . ');return $o->' . $format . '($a';
-				$args = func_get_args();
-				if ( count( $args ) > 2 ) {
-					$func.= ', ';
-					$args = array_map( create_function( '$a', 'return "\'{$a}\'";' ), array_slice( $args, 2 ) );
-					$func .= implode( ', ', $args );
+		$priority = 8;
+		if(preg_match('#^(.+)_(\d+)$#', $onwhat, $matches)) {
+			$priority = intval($matches[2]);
+			$onwhat = $matches[1];
+		}
+
+		$method = false;
+		if (is_callable($format)) {
+			$method = $format;
+		}
+		else {
+			foreach ( self::$formatters as $formatobj ) {
+				if ( method_exists( $formatobj, $format ) ) {
+					$method = array($formatobj, $format);
+					break;
 				}
-				$func .= ');';
-				$lambda = create_function( '$a', $func );
-				Plugins::register( $lambda, 'filter', $onwhat );
-				break;  // We only look for one matching format function to apply.
 			}
 		}
-	}
 
-	/**
-	 *
-	 *
-	 */
-	public static function apply_with_hook_serialize( $arg )
-	{
-		$arg = serialize( $arg );
-		return "'{$arg}'";
-	}
-
-	public static function apply_with_hook_unserialize( $arg )
-	{
-		$arg = unserialize( $arg );
-		return $arg;
+		if($method) {
+			$args = func_get_args();
+			$args = array_slice($args, 2);
+			$lambda = function() use ($args, $method) {
+				$filterargs = func_get_args();
+				$filterargs = array_slice($filterargs, 0, 1);
+				foreach($args as $arg) {
+					$filterargs[] = $arg;
+				}
+				return call_user_func_array($method, $filterargs);
+			};
+			Plugins::register( $lambda, 'filter', $onwhat, $priority );
+		}
 	}
 
 	/**
@@ -70,25 +70,37 @@ class Format
 			self::load_all();
 		}
 
-		foreach ( self::$formatters as $formatobj ) {
-			if ( method_exists( $formatobj, $format ) ) {
-				$index = array_search( $formatobj, self::$formatters );
-				$func = '$o = Format::by_index(' . $index . ');';
-				$func .= '$args = func_get_args();';
-				$func .= '$args = array_merge( $args';
-				$args = func_get_args();
-				if ( count( $args ) > 2 ) {
+		$priority = 8;
+		if(preg_match('#^(.+)_(\d+)$#', $onwhat, $matches)) {
+			$priority = intval($matches[2]);
+			$onwhat = $matches[1];
+		}
 
-					$func .= ', array_map( array( "Format", "apply_with_hook_unserialize" ),';
-					$args = array_map( array( "Format", "apply_with_hook_serialize" ), array_slice( $args, 2 ) );
-					$func .= 'array( ' . implode( ', ', $args ) . ' ))';
+		$method = false;
+		if (is_callable($format)) {
+			$method = $format;
+		}
+		else {
+			foreach ( self::$formatters as $formatobj ) {
+				if ( method_exists( $formatobj, $format ) ) {
+					$method = array($formatobj, $format);
+					break;
 				}
-				$func .= ');';
-				$func .= 'return call_user_func_array(array($o, "' . $format . '"), $args);';
-				$lambda = create_function( '$a', $func );
-				Plugins::register( $lambda, 'filter', $onwhat );
-				break;  // We only look for one matching format function to apply.
 			}
+		}
+
+		if($method) {
+			$args = func_get_args();
+			$args = array_slice($args, 2);
+			$lambda = function() use ($args, $method) {
+				$filterargs = func_get_args();
+				//$filterargs = array_slice($filterargs, 0, 1);
+				foreach($args as $arg) {
+					$filterargs[] = $arg;
+				}
+				return call_user_func_array($method, $filterargs);
+			};
+			Plugins::register( $lambda, 'filter', $onwhat );
 		}
 	}
 
@@ -147,13 +159,13 @@ class Format
 		// should never autop ANY content in these items
 		$no_auto_p = array(
 			'pre','code','ul','h1','h2','h3','h4','h5','h6',
-			'table','ul','ol','li','i','b','em','strong','script'
+			'table','ul','ol','li','i','b','em','strong','script', 'dl', 'dt', 'dd'
 		);
 
 		$block_elements = array(
 			'address','blockquote','center','dir','div','dl','fieldset','form',
 			'h1','h2','h3','h4','h5','h6','hr','isindex','menu','noframes',
-			'noscript','ol','p','pre','table','ul'
+			'noscript','ol','p','pre','table','ul','figure','figcaption'
 		);
 
 		$token = $set->current();
@@ -175,9 +187,9 @@ class Format
 				}
 			}
 
-			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && !in_array( strtolower( $token['name'] ), $block_elements ) && $value == '' ) {
+			if ( ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN || $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_EMPTY ) && !in_array( strtolower( $token['name'] ), $block_elements ) && !$open_p ) {
 				// first element, is not a block element
-				$value = '<p>';
+				$value .= '<p>';
 				$open_p = true;
 			}
 
@@ -248,7 +260,7 @@ class Format
 		}
 
 		$last = array_pop( $array );
-		$out = implode( ', ', $array );
+		$out = implode( $between, $array );
 		$out .= ($out == '') ? $last : $between_last . $last;
 		return $out;
 	}
@@ -273,7 +285,7 @@ class Format
 		foreach ( $terms as $term ) {
 			$array[$term->term] = $term->term_display;
 		}
-		
+
 		if ( $sort_alphabetical ) {
 			ksort( $array );
 		}
@@ -282,7 +294,9 @@ class Format
 			$between_last = _t( ' and ' );
 		}
 
-		$fn = create_function( '$a,$b', 'return "<a href=\\"" . URL::get("display_entries_by_tag", array( "tag" => $b) ) . "\\" rel=\\"tag\\">" . $a . "</a>";' );
+		$fn = function($a, $b) {
+			return "<a href=\"" . URL::get("display_entries_by_tag", array( "tag" => $b) ) . "\" rel=\"tag\">" . $a . "</a>";
+		};
 		$array = array_map( $fn, $array, array_keys( $array ) );
 		$last = array_pop( $array );
 		$out = implode( $between, $array );
@@ -314,8 +328,8 @@ class Format
 	/**
 	 * function nice_date
 	 * Formats a date using a date format string
-	 * @param HabariDateTime A date as a HabariDateTime object
-	 * @param string A date format string
+	 * @param HabariDateTime $date A date as a HabariDateTime object
+	 * @param string $dateformat A date format string
 	 * @returns string The date formatted as a string
 	 */
 	public static function nice_date( $date, $dateformat = 'F j, Y' )
@@ -329,8 +343,8 @@ class Format
 	/**
 	 * function nice_time
 	 * Formats a time using a date format string
-	 * @param HabariDateTime A date as a HabariDateTime object
-	 * @param string A date format string
+	 * @param HabariDateTime $date A date as a HabariDateTime object
+	 * @param string $dateformat A date format string
 	 * @returns string The time formatted as a string
 	 */
 	public static function nice_time( $date, $dateformat = 'H:i:s' )
@@ -425,6 +439,7 @@ class Format
 	 * @param string $more_text The text to use in the "read more" link.
 	 * @param integer $max_words null or the maximum number of words to use before showing the more link
 	 * @param integer $max_paragraphs null or the maximum number of paragraphs to use before showing the more link
+	 * @param boolean $inside_last Should the link be placed inside the last element, or not? Default: true
 	 * @return string The post content, suitable for display
 	 */
 	public static function more( $content, $post, $properties = array() )
@@ -438,6 +453,7 @@ class Format
 			$more_text = $properties;
 			$max_words = ( isset( $args[3] ) ? $args[3] : null );
 			$max_paragraphs = ( isset( $args[4] ) ? $args[4] : null );
+			$inside_last = ( isset( $args[5] ) ? $args[5] : true );
 			$paramstring = "";
 		}
 		else {
@@ -447,6 +463,7 @@ class Format
 			$more_text = ( isset( $paramarray['more_text'] ) ? $paramarray['more_text'] : 'Read More' );
 			$max_words = ( isset( $paramarray['max_words'] ) ? $paramarray['max_words'] : null );
 			$max_paragraphs = ( isset( $paramarray['max_paragraphs'] ) ? $paramarray['max_paragraphs'] : null );
+			$inside_last = ( isset( $paramarray['inside_last'] ) ? $paramarray['inside_last'] : true );
 
 			if ( isset( $paramarray['title:before'] ) || isset( $paramarray['title'] ) || isset( $paramarray['title:after'] ) ) {
 				$paramstring .= 'title="';
@@ -467,39 +484,68 @@ class Format
 			}
 
 		}
+
+		$link_text = '<a ' . $paramstring . ' href="' . $post->permalink . '">' . $more_text . '</a>';
+
+		// if we want it inside the last element, make sure there's a space before the link
+		if ( $inside_last ) {
+			$link_text = ' ' . $link_text;
+		}
+
+		// check for a <!--more--> link, which sets exactly where we should split
 		$matches = preg_split( '/<!--\s*more\s*-->/isu', $content, 2, PREG_SPLIT_NO_EMPTY );
 		if ( count( $matches ) > 1 ) {
-			return ( $more_text != '' ) ? reset( $matches ) . ' <a ' . $paramstring . 'href="' . $post->permalink . '">' . $more_text . '</a>' : reset( $matches );
+			$summary = reset( $matches );
 		}
-		elseif ( isset( $max_words ) || isset( $max_paragraphs ) ) {
+		else {
+			// otherwise, we need to summarize it automagically
 			$max_words = empty( $max_words ) ? 9999999 : intval( $max_words );
 			$max_paragraphs = empty( $max_paragraphs ) ? 9999999 : intval( $max_paragraphs );
 			$summary = Format::summarize( $content, $max_words, $max_paragraphs );
-			if ( MultiByte::strlen( $summary ) >= MultiByte::strlen( $content ) ) {
-				return $content;
-			}
-			else {
-				if ( strlen( $more_text  ) ) {
-					// Tokenize the summary and link
-					$ht = new HTMLTokenizer( $summary );
-					$summary_set = $ht->parse();
-					$ht = new HTMLTokenizer( '<a ' . $paramstring . ' href="' . $post->permalink . '">' . $more_text . '</a>' );
-					$link_set= $ht->parse();
-					// Find out where to put the link
-					$end = $summary_set->end();
-					$key = $summary_set->key();
-					// Inject the link
-					$summary_set->insert( $link_set, $key );
-
-					return (string)$summary_set;
-				}
-				else {
-					return $summary;
-				}
-			}
 		}
 
-	return $content;
+		// if the summary is equal to the length of the content (or somehow greater??), there's no need to add a link, just return the content
+		if ( MultiByte::strlen( $summary ) >= MultiByte::strlen( $content ) ) {
+			return $content;
+		}
+		else {
+			// make sure there's actually text to append before we waste our time
+			if ( strlen( $more_text ) ) {
+				// parse out the summary and stick in our linky goodness
+
+				// tokenize the summary
+				$ht = new HTMLTokenizer( $summary );
+				$summary_set = $ht->parse();
+
+				// tokenize the link we're adding
+				$ht = new HTMLTokenizer( $link_text );
+				$link_set = $ht->parse();
+
+				// find out where to put the link by bumping the iterator to the last element
+				$end = $summary_set->end();
+				// and what index is that?
+				$key = $summary_set->key();
+
+				// if we want it inside the last element, we're good to go - if we want it outside, we need to add it as the *next* element
+				if ( $inside_last == false ) {
+					$key++;
+				}
+
+				// inject it, whereever we decided it should go
+				$summary_set->insert( $link_set, $key );
+
+				// and return a stringified version
+				return (string)$summary_set;
+			}
+			else {
+				// no text to append? just return the summary
+				return $summary;
+			}
+
+		}
+
+		return $content;
+
 	}
 
 	/**
@@ -513,14 +559,14 @@ class Format
 	{
 		$output = '';
 		if ( count( $errors ) ) {
-			$output.= '<ul class="error">';
+			$output.= '<ul class="messages error">';
 			foreach ( $errors as $error ) {
 				$output.= '<li>' . $error . '</li>';
 			}
 			$output.= '</ul>';
 		}
 		if ( count( $notices ) ) {
-			$output.= '<ul class="success">';
+			$output.= '<ul class="messages success">';
 			foreach ( $notices as $notice ) {
 				$output.= '<li>' . $notice . '</li>';
 			}
@@ -589,7 +635,7 @@ class Format
 			'listattr' => array(),
 			'listend' => '</ol>',
 			'itemstart' => '<li %s>',
-			'itemattr' => array(),
+			'itemattr' => array('class' => 'treeitem'),
 			'itemend' => '</li>',
 			'wrapper' => '<div>%s</div>',
 			'linkcallback' => null,
@@ -597,7 +643,7 @@ class Format
 			'listcallback' => null,
 		);
 		$config = array_merge($defaults, $config);
-		
+
 		$out = sprintf($config['treestart'], Utils::html_attr($config['treeattr']));
 		$stack = array();
 		$tree_name = Utils::slugify($tree_name);
@@ -615,7 +661,7 @@ class Format
 					$out .= sprintf($config['liststart'], Utils::html_attr($config['listattr']));
 				}
 				while(count($stack) && $term->mptt_left > end($stack)->mptt_right) {
-					$out .= $config['itemend'] . $config['listend'] . "\n";
+					$out .= $config['listend'] . $config['itemend'] . "\n";
 					array_pop($stack);
 				}
 			}
@@ -640,7 +686,7 @@ class Format
 			}
 		}
 		while(count($stack)) {
-			$out .= $config['itemend'] . $config['listend'] . "\n";
+			$out .= $config['listend'] . $config['itemend'] . "\n";
 			array_pop($stack);
 		}
 

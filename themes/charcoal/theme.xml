@@ -22,5 +22,10 @@
 			<description><![CDATA[The sidebar area]]></description>
 		</area>
 	</areas>
-	
+	<provides>
+		<feature url="http://wiki.habariproject.org/en/feature/area">area</feature>
+	</provides>
+	<provides>
+		<feature url="http://wiki.habariproject.org/en/feature/menu">menu</feature>
+	</provides>
 </pluggable>

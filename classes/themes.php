@@ -29,7 +29,7 @@ class Themes
 				$themes = array_merge( $themes, Utils::glob( $dir, GLOB_ONLYDIR | GLOB_MARK ) );
 			}
 
-			$themes = array_filter( $themes, create_function( '$a', 'return file_exists( $a . "/theme.xml" );' ) );
+			$themes = array_filter( $themes, function($a) {return file_exists( $a . "/theme.xml" );} );
 			$themefiles = array_map( 'basename', $themes );
 			self::$all_themes = array_combine( $themefiles, $themes );
 		}
@@ -57,7 +57,12 @@ class Themes
 				}
 				else {
 					foreach ( $themedata['info'] as $name=>$value ) {
-						$themedata[$name] = (string) $value;
+						if($value->count() == 0) {
+							$themedata[$name] = (string) $value;
+						}
+						else {
+							$themedata[$name] = $value->children();
+						}
 					}
 
 					if ( $screenshot = Utils::glob( $theme_path . '/screenshot.{png,jpg,gif}', GLOB_BRACE ) ) {
@@ -67,16 +72,16 @@ class Themes
 						$themedata['screenshot'] = Site::get_url( 'admin_theme' ) . "/images/screenshot_default.png";
 					}
 				}
-				
+
 				self::$all_data[$theme_dir] = $themedata;
 			}
 		}
 		return self::$all_data;
 	}
-	
+
 	/**
 	 * Returns the name of the active or previewed theme
-	 * 
+	 *
 	 * @params boolean $nopreview If true, return the real active theme, not the preview
 	 * @return string the current theme or previewed theme's directory name
 	 */
@@ -168,13 +173,47 @@ class Themes
 	}
 
 	/**
+	 * Ensure that a theme meets requirements for activation/preview
+	 * @static
+	 * @param string $theme_dir the directory of the theme
+	 * @return bool True if the theme meets all requirements
+	 */
+	public static function validate_theme( $theme_dir )
+	{
+		$all_themes = Themes::get_all_data();
+		// @todo Make this a closure in php 5.3
+		$theme_names = Utils::array_map_field($all_themes, 'name');
+
+		$theme_data = $all_themes[$theme_dir];
+
+		$ok = true;
+
+		if(isset($theme_data['info']->parent) && !in_array((string)$theme_data['info']->parent, $theme_names)) {
+			Session::error(_t('This theme requires the parent theme named "%s" to be present prior to activation.', array($theme_data['info']->parent)));
+			$ok = false;
+		}
+
+		if(isset($theme_data['info']->requires)) {
+			$provided = Plugins::provided();
+			foreach($theme_data['info']->requires->feature as $requirement) {
+				if(!isset($provided[(string)$requirement])) {
+					Session::error(_t('This theme requires the feature "<a href="%2$s">%1$s</a>" to be present prior to activation.', array((string)$requirement, $requirement['url'])));
+					$ok = false;
+				}
+			}
+		}
+
+		return $ok;
+	}
+	/**
 	 * function activate_theme
 	 * Updates the database with the name of the new theme to use
 	 * @param string the name of the theme
 	**/
 	public static function activate_theme( $theme_name, $theme_dir )
 	{
-		$ok = true;
+		$ok = Themes::validate_theme($theme_dir);
+
 		$ok = Plugins::filter( 'activate_theme', $ok, $theme_name ); // Allow plugins to reject activation
 		if($ok) {
 			$old_active_theme = Themes::create();
@@ -182,15 +221,15 @@ class Themes
 			Plugins::act( 'theme_deactivated_any', $old_active_theme->name, $old_active_theme ); // For any plugin to react to its deactivation
 			Options::set( 'theme_name', $theme_name );
 			Options::set( 'theme_dir', $theme_dir );
-			$new_active_theme = Themes::create();
-			
+			$new_active_theme = Themes::create($theme_name);
+
 			// Set version of theme if it wasn't installed before
 			$versions = Options::get( 'pluggable_versions' );
 			if(!isset($versions[get_class($new_active_theme)])) {
 				$versions[get_class($new_active_theme)] = $new_active_theme->get_version();
 				Options::set( 'pluggable_versions', $versions );
 			}
-			
+
 			// Run activation hooks for theme activation
 			Plugins::act_id( 'theme_activated', $new_active_theme->plugin_id(), $theme_name, $new_active_theme ); // For the theme itself to react to its activation
 			Plugins::act( 'theme_activated_any', $theme_name, $new_active_theme ); // For any plugin to react to its activation
@@ -198,23 +237,29 @@ class Themes
 		}
 		return $ok;
 	}
-	
+
 	/**
 	 * Sets a theme to be the current user's preview theme
-	 * 
+	 *
 	 * @param string $theme_name The name of the theme to preview
 	 * @param string $theme_dir The directory of the theme to preview
 	 */
 	public static function preview_theme( $theme_name, $theme_dir )
 	{
-		$_SESSION['user_theme_name'] = $theme_name;
-		$_SESSION['user_theme_dir'] = $theme_dir;
-		// Execute the theme's activated action
-		$preview_theme = Themes::create();
-		Plugins::act_id( 'theme_activated', $preview_theme->plugin_id(), $theme_name, $preview_theme );
-		EventLog::log( _t( 'Previewed Theme: %s', array( $theme_name ) ), 'notice', 'theme', 'habari' );
+		$ok = Themes::validate_theme($theme_dir);
+
+		if($ok) {
+			$_SESSION['user_theme_name'] = $theme_name;
+			$_SESSION['user_theme_dir'] = $theme_dir;
+			// Execute the theme's activated action
+			$preview_theme = Themes::create();
+			Plugins::act_id( 'theme_activated', $preview_theme->plugin_id(), $theme_name, $preview_theme );
+			EventLog::log( _t( 'Previewed Theme: %s', array( $theme_name ) ), 'notice', 'theme', 'habari' );
+		}
+
+		return $ok;
 	}
-	
+
 	/**
 	 * Cancel the viewing of any preview theme
 	 */
@@ -243,7 +288,14 @@ class Themes
 	 **/
 	public static function create( $name = null, $template_engine = null, $theme_dir = null )
 	{
-		// If the name is not supplied, load the active theme
+		static $bound = array();
+
+		$hash = md5(serialize(array($name, $template_engine, $theme_dir)));
+		if(isset($bound[$hash])) {
+			return $bound[$hash];
+		}
+
+ 		// If the name is not supplied, load the active theme
 		if(empty($name)) {
 			$themedata = self::get_active();
 			if ( empty( $themedata ) ) {
@@ -317,8 +369,9 @@ class Themes
 		$created_theme->upgrade();
 		Plugins::act_id( 'init_theme', $created_theme->plugin_id(), $created_theme );
 		Plugins::act( 'init_theme_any', $created_theme );
-		return $created_theme;
 
+		$bound[$hash] = $created_theme;
+		return $created_theme;
 	}
 
 	public static function class_from_filename( $file, $check_realpath = false )

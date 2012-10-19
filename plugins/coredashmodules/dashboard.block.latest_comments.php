@@ -1,14 +1,14 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); } ?>
 	<ul class="items">
 
-		<?php foreach ( $latestcomments_posts as $post ): ?>
+		<?php foreach ( $content->latestcomments_posts as $post ): ?>
 		<li class="item clear">
 			<span class="comments pct15" style="float: right;"><a href="<?php echo $post->permalink; ?>#comments" title="<?php printf(_n('%1$d comment', '%1$d comments', $post->comments->approved->comments->count), $post->comments->approved->comments->count); ?>"><?php echo $post->comments->approved->comments->count; ?></a></span>
 			<span class="titleanddate pct85"><a href="<?php echo $post->permalink; ?>" class="title"><?php echo $post->title; ?></a> <?php $post->pubdate->out( 'M j' ); ?></span>
 			<ul class="commentauthors pct85 minor">
 				<?php
 				$comment_count = 0;
-				foreach( $latestcomments[$post->id] as $comment):
+				foreach( $content->latestcomments[$post->id] as $comment):
 					$comment_count++;
 					$opa = 'opa' . (100 - $comment_count * 15);
 				?>

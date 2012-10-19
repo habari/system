@@ -29,7 +29,7 @@ class Utils
 	 */
 	public static function get_params( $params )
 	{
-		if ( is_array( $params ) || $params instanceof ArrayObject || $params instanceof ArrayIterator ) {
+		if ( is_array( $params ) || $params instanceof Traversable ) {
 			return $params;
 		}
 		$paramarray = array();
@@ -419,7 +419,7 @@ class Utils
 					case 'md5':
 						return self::$algo( $password, $hash );
 					default:
-						Error::raise( sprintf( _t( 'Unsupported digest algorithm "%s"' ), $algo ) );
+						Error::raise( _t( 'Unsupported digest algorithm "%s"', array( $algo ) ) );
 						return false;
 				}
 			}
@@ -596,6 +596,25 @@ class Utils
 	}
 
 	/**
+	 * Creates one or more HTML inputs
+	 * @param string The name of the input element.
+	 * @param array An array of input options.  Each element should be
+	 *	an array containing "name", "value" and "type".
+	 * @return string The HTML of the inputs
+	 */
+	public static function html_inputs( $options )
+	{
+		$output = '';
+		foreach ( $options as $option ) {
+			$output .= '<input type="' . $option['type'] . '" id="' . $option[ 'name' ] . '" name="' . $option[ 'name' ];
+			$output .= '" value="' . $option[ 'value' ] . '"';
+			$output .= '>';
+		}
+		
+		return $output;
+	}
+
+	/**
 	 * Create an HTML select tag with options and a current value
 	 *
 	 * @param string $name The name and id of the select control
@@ -606,7 +625,8 @@ class Utils
 	 */
 	public static function html_select( $name, $options, $current = null, $properties = array() )
 	{
-		$output = '<select id="' . $name . '" name="' . $name . '"';
+		$id = isset($properties['id']) ? $properties['id'] : $name;
+		$output = '<select id="' . $id . '" name="' . $name . '"';
 		foreach ( $properties as $key => $value ) {
 			$output .= " {$key}=\"{$value}\"";
 		}
@@ -814,7 +834,7 @@ class Utils
 	 */
 	public static function single_array( $element )
 	{
-		if ( !is_array( $element ) ) {
+		if ( !is_array( $element ) && !$element instanceof Traversable ) {
 			return array( $element );
 		}
 		return $element;
@@ -829,7 +849,7 @@ class Utils
 	public static function mimetype( $filename )
 	{
 		$mimetype = null;
-		if ( function_exists( 'finfo_open' ) ) {
+		if ( function_exists( 'finfo_open' ) && file_exists($filename) ) {
 			$finfo = finfo_open( FILEINFO_MIME );
 			$mimetype = finfo_file( $finfo, $filename );
 			/* FILEINFO_MIME Returns the mime type and mime encoding as defined by RFC 2045.
@@ -868,6 +888,10 @@ class Utils
 				case 'swf':
 					$mimetype = 'application/x-shockwave-flash';
 					break;
+				case 'htm':
+				case 'html':
+				$mimetype = 'text/html';
+				break;
 			}
 		}
 		$mimetype = Plugins::filter( 'get_mime_type', $mimetype, $filename );
@@ -1087,12 +1111,17 @@ class Utils
 	* @param $string. string. The string to escape
 	* @param $quote_flag. integer. Sets what quotes and doublequotes are escaped
 	* @param $encoding. string. The encoding of the passed string
+	* @param $decode. bool. Whether or not to unescape any html entities first
+	* @param $double_encode. bool. Whether or not to double escape any html entities
 	*
 	* @return The escaped string
 	*/
-	public static function htmlspecialchars( $string, $quote_flag = ENT_COMPAT, $encoding = 'UTF-8' )
+	public static function htmlspecialchars( $string, $quote_flag = ENT_COMPAT, $encoding = 'UTF-8', $decode = true, $double_encode = true )
 	{
-		return htmlspecialchars( html_entity_decode( $string, ENT_QUOTES, $encoding ), $quote_flag, $encoding );
+		if( $decode ) {
+			$string = html_entity_decode($string, ENT_QUOTES, $encoding );
+		}
+		return htmlspecialchars( $string, $quote_flag, $encoding, $double_encode );
 	}
 
 	/**
@@ -1152,6 +1181,7 @@ class Utils
 	{
 		$out = '';
 		foreach($attrs as $key => $value) {
+			$value = is_array($value) ? implode(' ', $value) : $value;
 			if($value != '') {
 				$out .= ($out == '' ? '' : ' ') . $key . '="' . Utils::htmlspecialchars($value) . '"';
 			}
@@ -1186,6 +1216,146 @@ class Utils
 			}
 		}
 		return $settings;
+	}
+
+	/**
+	 * Are we in a testing environment?
+	 * @static
+	 * @param string $key The querystring key that can specify the environment to use
+	 * @return bool True if this is a test environment.
+	 */
+	public static function env_test($key = '_useenv')
+	{
+		return Utils::env_is('test', $key);
+	}
+
+	/**
+	 * Are we in a specific environment?
+	 * @static
+	 * @param string $env The environment to test for
+	 * @param string $key The querystring key that can specify the environment to use
+	 * @return bool True if this is a test environment.
+	 */
+	public static function env_is($env, $key = '_useenv')
+	{
+		if(defined('UNIT_TEST')) {
+			$_GET[$key] = is_string(UNIT_TEST) ? UNIT_TEST : 'test';
+		}
+		if(
+			(isset($_GET[$key]) && $_GET[$key] == $env) ||
+			(isset($_COOKIE[$key]) && $_COOKIE[$key] == $env && (!isset($_GET[$key]) || $_GET[$key] == $env))
+		) {
+			setcookie($key, $env);
+			return true;
+		}
+		else {
+			setcookie($key, false);
+			return false;
+		}
+	}
+
+	/**
+	 * Given an array of arrays, return an array that contains the value of a particular common field
+	 * Example:
+	 * $a = array(
+	 *   array('foo'=>1, 'bar'=>2),
+	 *   array('foo'=>3, 'bar'=>4),
+	 * );
+	 * $b = Utils::array_map_field($a, 'foo'); // $b = array(1, 3);
+	 *
+	 * @param Traversable $array An array of arrays or objects with similar keys or properties
+	 * @param string $field The name of a common field within each array/object
+	 * @return array An array of the values of the specified field within each array/object
+	 */
+	public static function array_map_field($array, $field, $key = null)
+	{
+		if(count($array) == 0) {
+			return $array;
+		}
+		if(is_null($key)) {
+			if($array instanceof ArrayObject) {
+				$array = $array->getArrayCopy();
+			}
+			return array_map( function( $element ) use ($field) {
+				return is_array($element) ? $element[$field] : (is_object($element) ? $element->$field : null);
+			}, $array);
+		}
+		else {
+			return array_combine(
+				Utils::array_map_field($array, $key),
+				Utils::array_map_field($array, $field)
+			);
+		}
+	}
+
+	/**
+	 * Replace shortcodes in content with shortcode output
+	 * @static
+	 * @param string $content The content within which to replace shortcodes
+	 * @param Object $obj_context The object context in which the content was found
+	 * @return string The content with shortcodes replaced
+	 */
+	public static function replace_shortcodes($content, $obj_context)
+	{
+		$regex = '%\[(\w+?)(?:\s+([^\]]+?))?/\]|\[(\w+?)(?:\s+(.+?))?(?<!/)](?:(.*?)\[/\3])%si';
+		if(preg_match_all($regex, $content, $match_set, PREG_SET_ORDER)) {
+			foreach($match_set as $matches) {
+				$matches = array_pad($matches, 6, '');
+				$code = $matches[1] . $matches[3];
+				$attrs = $matches[2] . $matches[4];
+				$code_contents = $matches[5];
+				if(preg_match($regex, $code_contents)) {
+					$code_contents = self::replace_shortcodes($code_contents, $obj_context);
+				}
+				preg_match_all('#(\w+)\s*=\s*(?:(["\'])?(.*?)\2|(\S+))#i', $attrs, $attr_match, PREG_SET_ORDER);
+				$attrs = array();
+				foreach($attr_match as $attr) {
+					$attr = array_pad($attr, 5, '');
+					$attrs[$attr[1]] = $attr[3] . $attr[4];
+				}
+				$replacement = Plugins::filter('shortcode_' . $code, $matches[0], $code, $attrs, $code_contents, $obj_context);
+				$content = str_replace($matches[0], $replacement, $content);
+			}
+		}
+		return $content;
+	}
+
+	public static function setup_wsse() {
+		$wsse = self::WSSE();
+		$inputs = array();
+		$inputs[] = array('type' => 'hidden', 'value' => $wsse['nonce'], 'name' => 'nonce', 'id' => 'nonce');
+		$inputs[] = array('type' => 'hidden', 'value' => $wsse['digest'], 'name' => 'digest', 'id' => 'digest');
+		$inputs[] = array('type' => 'hidden', 'value' => $wsse['timestamp'], 'name' => 'timestamp', 'id' => 'timestamp');
+		return self::html_inputs( $inputs );
+	}
+	
+	/**
+	 * Verify WSSE values passed in.
+	 * @static
+	 * @param array $data payload from a given request
+	 * @return bool True if the WSSE values passed are valid
+	 */
+	public static function verify_wsse($data) {
+		$pass = true;
+		if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
+			$extract = $data->handler_vars->filter_keys( 'nonce', 'timestamp', 'digest' );
+		
+			foreach ( $extract as $key => $value ) {
+				$$key = $value;
+			}
+	
+			if ( empty( $nonce ) || empty( $timestamp ) || empty( $digest ) ) {
+				$pass = false;
+			}
+	
+			if( $pass == true ) {
+				$check = self::WSSE( $nonce, $timestamp );
+				if ( $digest != $check['digest'] ) {
+					$pass = false;
+				}
+			}
+		}
+		return $pass;
 	}
 }
 ?>

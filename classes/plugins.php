@@ -32,6 +32,24 @@ class Plugins
 	{
 		if ( isset( self::$plugin_files[$class] ) ) {
 			require( self::$plugin_files[$class] );
+			if( !class_exists($class, false)) {
+				// The classname of a plugin changed.
+				$filename = self::$plugin_files[$class];
+				EventLog::log(_t('Plugin file "%s" has changed its plugin class name.', array($filename)));
+				Session::error(_t('Plugin file "%s" has changed its plugin class name.', array($filename)));
+
+				// Remove the plugin from the active list
+				$active_plugins = Options::get('active_plugins');
+				unset($active_plugins[$class]);
+				self::$plugin_files = array();
+				Options::set('active_plugins', $active_plugins);
+				self::list_active(true); // Refresh the internal list
+
+				// Reactivate it to try to get the new class loaded
+				self::activate_plugin($filename);
+				Utils::redirect(null, false);
+				exit();
+			}
 		}
 	}
 
@@ -239,6 +257,25 @@ class Plugins
 	}
 
 	/**
+	 * Determine if a hook of any type is implemented
+	 * @static
+	 * @param string $hookname The name of the hook to check for
+	 * @param string $searchtype Optional. The type of hook to check for
+	 * @return array|bool An array with the types of hook implemented, or false if not implemented
+	 */
+	public static function implemented( $hookname, $searchtype = null )
+	{
+		$result = array();
+		foreach(self::$hooks as $type => $hooks) {
+			if($searchtype && $searchtype != $type) continue;
+			if(isset($hooks[$hookname])) {
+				$result[$type] = $type;
+			}
+		}
+		return count($result) > 0 ? $result : false;
+	}
+
+	/**
 	 * function list_active
 	 * Gets a list of active plugin filenames to be included
 	 * @param boolean Whether to refresh the cached array.  Default false
@@ -274,7 +311,7 @@ class Plugins
 				}
 			}
 			// make sure things work on Windows
-			self::$plugin_files = array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), self::$plugin_files );
+			self::$plugin_files = array_map( function($s) {return str_replace('\\', '/', $s);}, self::$plugin_files );
 		}
 		return self::$plugin_files;
 	}
@@ -295,7 +332,7 @@ class Plugins
 	*/
 	public static function get_by_interface( $interface )
 	{
-		return array_filter( self::$plugins, create_function( '$a', 'return $a instanceof ' . $interface . ';' ) );
+		return array_filter( self::$plugins, function( $plugin_obj ) use ($interface) { return $plugin_obj instanceof $interface; } );
 	}
 
 	/**
@@ -324,7 +361,7 @@ class Plugins
 					// Use the basename of the file as the index to use the named plugin from the last directory in $dirs
 					array_map( 'basename', $dirfiles ),
 					// massage the filenames so that this works on Windows
-					array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), $dirfiles )
+					array_map( function($s) {return str_replace('\\', '/', $s);}, $dirfiles )
 				);
 				$plugins = array_merge( $plugins, $dirfiles );
 			}
@@ -462,6 +499,12 @@ class Plugins
 	public static function load( $class, $activate = true )
 	{
 		$plugin = new $class;
+		if(!$plugin instanceof Plugin) {
+			EventLog::log(_t('The class "%s" is not a Plugin, but was queued to load as a plugin.', array($class)));
+			Session::error(_t('The class "%s" is not a Plugin, but was queued to load as a plugin. It may not currently be active.', array($class)));
+			self::deactivate_plugin(self::$plugin_files[$class], true);
+			return false;
+		}
 		if ( $activate ) {
 			self::$plugins[$plugin->plugin_id] = $plugin;
 			$plugin->load();
@@ -553,6 +596,8 @@ class Plugins
 
 	/**
 	 * Deactivates a plugin file
+	 * @param string $file the Filename of the plugin to deactivate
+	 * @param boolean $force If true, deactivate this plugin regardless of what filters may say about it.
 	 */
 	public static function deactivate_plugin( $file, $force = false )
 	{
@@ -615,12 +660,12 @@ class Plugins
 		}
 		// If the file list is not identical, then they've changed.
 		$new_plugin_files = Plugins::list_all();
-		$old_plugin_files = array_map( create_function( '$a', 'return $a["file"];' ), $old_plugins );
+		$old_plugin_files = Utils::array_map_field($old_plugins, 'file');
 		if ( count( array_intersect( $new_plugin_files, $old_plugin_files ) ) != count( $new_plugin_files ) ) {
 			return true;
 		}
 		// If the files are not identical, then they've changed.
-		$old_plugin_checksums = array_map( create_function( '$a', 'return $a["checksum"];' ), $old_plugins );
+		$old_plugin_checksums = Utils::array_map_field($old_plugins, 'checksum');
 		$new_plugin_checksums = array_map( 'md5_file', $new_plugin_files );
 		if ( count( array_intersect( $old_plugin_checksums, $new_plugin_checksums ) ) != count( $new_plugin_checksums ) ) {
 			return true;
@@ -637,10 +682,10 @@ class Plugins
 		$plugin_files = Plugins::list_all();
 		// strip base path
 		foreach ( $plugin_files as $plugin_file ) {
-			$plugin_file = MultiByte::substr( $file, MultiByte::strlen( HABARI_PATH ) );
+			$plugin_file = MultiByte::substr( $plugin_file, MultiByte::strlen( HABARI_PATH ) );
 		}
 
-		$plugin_data = array_map( create_function( '$a', 'return array( "file" => $a, "checksum" => md5_file( $a ) );' ), $plugin_files );
+		$plugin_data = array_map( function($a) {return array( 'file' => $a, 'checksum' => md5_file( $a ) ); }, $plugin_files );
 		Options::set( 'plugins_present', $plugin_data );
 	}
 
@@ -689,7 +734,7 @@ class Plugins
 		foreach ( $all_plugins as $file ) {
 			$error = '';
 			if ( !Utils::php_check_file_syntax( $file, $error ) ) {
-				Session::error( sprintf( _t( 'Attempted to load the plugin file "%s", but it failed with syntax errors. <div class="reveal">%s</div>' ), basename( $file ), $error ) );
+				Session::error( _t( 'Attempted to load the plugin file "%s", but it failed with syntax errors. <div class="reveal">%s</div>', array( basename( $file ), $error ) ) );
 				$failed_plugins[] = $file;
 			}
 		}
@@ -699,19 +744,37 @@ class Plugins
 
 		return ( count( $failed_plugins ) > 0 ) ? false : true;
 	}
-	
+
 	/**
 	 * Produce the UI for a plugin based on the user's selected config option
-	 * 
+	 *
 	 * @param string $configure The id of the configured plugin
 	 * @param string $configuration The selected configuration option
-	 **/	 	 	 	 	
+	 **/
 	public static function plugin_ui( $configure, $configaction )
 	{
 		Plugins::act_id( 'plugin_ui_' . $configaction, $configure, $configure, $configaction );
 		Plugins::act( 'plugin_ui_any_' . $configaction, $configure, $configaction );
 		Plugins::act_id( 'plugin_ui', $configure, $configure, $configaction );
 		Plugins::act( 'plugin_ui_any', $configure, $configaction );
+	}
+
+	public static function provided($exclude = null)
+	{
+		$active_plugins = Plugins::get_active();
+
+		$provided = array();
+		foreach($active_plugins as $plugin_id => $plugin) {
+			if($plugin->info->name == $exclude || $plugin_id == $exclude) {
+				continue;
+			}
+			if(isset($plugin->info->provides)) {
+				foreach($plugin->info->provides->feature as $provide) {
+					$provided[(string)$provide][] = (string)$plugin->info->name;
+				}
+			}
+		}
+		return Plugins::filter( 'provided', $provided );
 	}
 }
 

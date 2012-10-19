@@ -63,7 +63,7 @@ class MySQLConnection extends DatabaseConnection
 	 */
 	function dbdelta( $queries, $execute = true, $silent = true, $doinserts = false )
 	{
-		$queries = preg_replace("/({\$prefix})/",$this->prefix,$queries);	//Converts {$prefix}table_name to prefix__table_name
+		$queries = str_replace('{$prefix}', $this->prefix, $queries);	//Converts {$prefix}table_name to prefix__table_name
 		$queries = $this->filter_tables( $queries );	//Converts {table_name} to prefix__table_name
 
 		if ( !is_array($queries) ) {
@@ -143,7 +143,7 @@ class MySQLConnection extends DatabaseConnection
 							}
 							if ( preg_match("| DEFAULT ([^ ]*)|i", $cfields[strtolower($tablefield->Field)], $matches) ) {
 								$default_value = $matches[1];
-								if ( $tablefield->Default != $default_value ) {
+								if ( $tablefield->Default != $default_value && !(is_null($tablefield->Default) && strtoupper($default_value) == 'NULL')) {
 									$cqueries[] = "ALTER TABLE {$table} ALTER COLUMN {$tablefield->Field} SET DEFAULT {$default_value}";
 									$for_update[$table.'.'.$tablefield->Field] = "Changed default value of {$table}.{$tablefield->Field} from {$tablefield->Default} to {$default_value}";
 								}

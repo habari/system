@@ -15,7 +15,11 @@
 		<![endif]-->
 
 		<p>
-		<?php _e( '%s has been active for %s', array( Options::get('title'), $active_time->friendly( 3, false ) ) ); ?>
+		<?php
+		if ( isset($active_time) ) {
+			_e( '%s has been active for %s', array( Options::get('title'), $active_time->friendly( 3, false ) ) );
+		}
+		?>
 		<br>
 
 		<?php
@@ -186,15 +190,12 @@
 
 <?php endif; ?>
 
-<?php if ( count( $modules ) > 0 ): ?>
-
 <div class="container dashboard transparent">
 
-	<?php $theme->area('dashboard'); ?>
-	<?php $theme->display('dashboard_modules'); ?>
+	<ul class="modules">
+		<?php echo $theme->display('dashboard_modules'); ?>
+	</ul>
 
 </div>
-
-<?php endif; ?>
 
 <?php include( 'footer.php' ); ?>

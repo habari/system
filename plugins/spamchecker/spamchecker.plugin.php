@@ -114,7 +114,7 @@ class SpamChecker extends Plugin
 			// If you've already got two spams on your IP address, all you ever do is spam
 			if ($spams > 1) {
 				$comment->status = Comment::STATUS_SPAM;
-				$spamcheck[] = sprintf(_t('Too many existing spams from this IP: %s'), $comment->ip);
+				$spamcheck[] = _t( 'Too many existing spams from this IP: %s', array( $comment->ip ) );
 			}
 		}
 

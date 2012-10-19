@@ -76,10 +76,9 @@ class Terms extends ArrayObject implements FormStorage
 						$terms[$k] = new $term_class( $term );
 					}
 				}
-//Utils::debug($terms);
 			}
 			else {
-				array_walk( $terms, create_function( '&$tag', '$tag = new ' . $term_class . '($tag);' ) );
+				array_walk( $terms, function( &$tag ) use ($term_class) {$tag = new $term_class($tag);} );
 			}
 			return new Terms( $terms );
 		}
@@ -118,23 +117,16 @@ class Terms extends ArrayObject implements FormStorage
 	 *
 	 * @return Terms A sorted Terms instance
 	 */
-	function tree_sort()
+	function tree_sort($sort_fn = null)
 	{
+		if(empty($sort_fn)) {
+			$sort_fn = function($a, $b) {
+				return $a->mptt_left > $b->mptt_left;
+			};
+		}
 		$terms = $this->getArrayCopy();
-		usort($terms, array($this, 'tree_sort_compare'));
+		usort($terms, $sort_fn);
 		return new Terms($terms);
-	}
-
-	/**
-	 * Comparison function for tree_sort()
-	 *
-	 * @param Term $a A term to compare
-	 * @param Term $b A term to compare
-	 * @return bool the sorting result for the usort in tree_sort()
-	 */
-	function tree_sort_compare($a, $b)
-	{
-		return $a->mptt_left > $b->mptt_left;
 	}
 }
 

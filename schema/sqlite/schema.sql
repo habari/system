@@ -12,7 +12,8 @@ CREATE TABLE {$prefix}posts (
   status SMALLINTEGER NOT NULL,
   pubdate INTEGER NOT NULL,
   updated INTEGER NOT NULL,
-  modified INTEGER NOT NULL
+  modified INTEGER NOT NULL,
+  input_formats VARCHAR(255) NOT NULL
 );
 CREATE UNIQUE INDEX IF NOT EXISTS slug ON {$prefix}posts(slug);
 
@@ -106,6 +107,8 @@ CREATE TABLE {$prefix}crontab (
   end_time INTEGER,
   result VARCHAR(255) NOT NULL,
   notify VARCHAR(255) NOT NULL,
+  failures INTEGER NOT NULL DEFAULT 0,
+  active TINYINTEGER NOT NULL DEFAULT 1,
   cron_class TINYINTEGER NOT NULL DEFAULT 0,
   description TEXT NULL
 );

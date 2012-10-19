@@ -19,4 +19,8 @@
 			<description><![CDATA[Sidebar]]></description>
 		</area>
 	</areas>
+	<provides>
+		<feature url="http://wiki.habariproject.org/en/feature/area">area</feature>
+	</provides>
+
 </pluggable>
