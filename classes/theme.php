@@ -320,25 +320,16 @@ class Theme extends Pluggable
 		header('Pragma: public', true);
 		header('Cache-Control: public, max-age=' . HabariDateTime::DAY * 30, true);
 
-		$etag = var_export( $this, true );
-		$etag = sha1( $etag );
+		// we need to manually build a representation of the current content displayed to be sure comments are included
+		$displayed_content = array();
 
-		header('ETag: "' . $etag . '"', true);
+		// while we're at it, we'll also look for the most recently modified post, rather than iterating back over everything again later
+		$last_modified = null;
 
-		if ( isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) ) {
-			if ( $etag == trim( $_SERVER->raw('HTTP_IF_NONE_MATCH'), '"' ) ) {
-				header( 'HTTP/1.1 304 Not Modified', true, 304);
-				header( 'X-Habari-Cache-Match: ETag');
-				// don't send any further content
-				die();
-			}
-		}
-
+		// is there actually anything?
 		if ( isset( $posts ) ) {
 
-			$last_modified = null;
-
-			// if $posts is actually a single post (ie: we are displaying a single entry), wrap it up in an array instead
+			// if $posts is actually a single post (ie: we are displaying a single entry), wrap it up as an array isntead
 			if ( $posts instanceof Post ) {
 				$available_posts = array( $posts );
 			}
@@ -348,6 +339,9 @@ class Theme extends Pluggable
 
 			foreach ( $available_posts as $post ) {
 
+				// hash this post in possibly the most crude way possible
+				$displayed_content[] = sha1( serialize( $post ) );
+
 				// if the post was modified more recently than the last (or we don't have one, duh), use that date
 				if ( $last_modified == null || $post->modified > $last_modified ) {
 					$last_modified = $post->modified;
@@ -355,6 +349,9 @@ class Theme extends Pluggable
 
 				// if there are approved comments, we want to take those into account, too
 				foreach ( $post->comments->moderated->comments as $comment ) {
+
+					// hash the post comment too
+					$displayed_content[] = sha1( serialize( $comment ) );
 
 					// if it was modified more recently than anything else we've seen, use that
 					if ( $last_modified == null || $comment->date > $last_modified ) {
@@ -365,30 +362,46 @@ class Theme extends Pluggable
 
 			}
 
-			// assuming we got posts to find a last modified date, check its headers
-			if ( $last_modified != null ) {
+		}
 
-				// go ahead and send the header to let them know when it last changed, even if we match
-				header( 'Last-Modified: ' . $last_modified->set_timezone( 'UTC' )->format( 'D, d M Y H:i:s e'), true );
+		// now generate an etag from the content we are displaying
+		$etag = sha1( serialize( $displayed_content ) );
 
-				// does their browser already have something cached?
-				if ( isset( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) ) {
-					$if_modified_since = HabariDateTime::date_create( $_SERVER['HTTP_IF_MODIFIED_SINCE'] );
+		// let the client know what content is on the page currently
+		header('ETag: "' . $etag . '"', true);
 
-					// if we don't have content modified more recently, tell them just to use what they have
-					if ( $last_modified <= $if_modified_since ) {
-						header( 'HTTP/1.1 304 Not Modified', true, 304 );
-						header( 'X-Habari-Cache-Match: Modified' );
-						// do not send any further content
-						die();
-					}
-				}
-
-				// and tell them how long they should expect this to be valid
-				$expires = HabariDateTime::date_create( '30 days' )->set_timezone( 'UTC' )->format( 'D, d M Y H:i:s e' );
-				header( 'Expires: ' . $expires, true );
-
+		// and check to see if they gave us an etag they have cached
+		if ( isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) ) {
+			if ( $etag == trim( $_SERVER->raw('HTTP_IF_NONE_MATCH'), '"' ) ) {
+				header( 'HTTP/1.1 304 Not Modified', true, 304);
+				header( 'X-Habari-Cache-Match: ETag');
+				// don't send any further content
+				die();
 			}
+		}
+
+		// if we didn't match the etag, but we have a last modified date to check, do that as a fallback
+		if ( $last_modified != null ) {
+
+			// go ahead and send the header to let them know when it last changed, even if we match
+			header( 'Last-Modified: ' . $last_modified->set_timezone( 'UTC' )->format( 'D, d M Y H:i:s e'), true );
+
+			// does their browser already have something cached?
+			if ( isset( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) ) {
+				$if_modified_since = HabariDateTime::date_create( $_SERVER['HTTP_IF_MODIFIED_SINCE'] );
+
+				// if we don't have content modified more recently, tell them just to use what they have
+				if ( $last_modified <= $if_modified_since ) {
+					header( 'HTTP/1.1 304 Not Modified', true, 304 );
+					header( 'X-Habari-Cache-Match: Modified' );
+					// do not send any further content
+					die();
+				}
+			}
+
+			// and tell them how long they should expect this to be valid
+			$expires = HabariDateTime::date_create( '30 days' )->set_timezone( 'UTC' )->format( 'D, d M Y H:i:s e' );
+			header( 'Expires: ' . $expires, true );
 
 		}
 
