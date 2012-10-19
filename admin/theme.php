@@ -23,7 +23,6 @@ class Monolith extends Theme
 
 		Stack::add( 'admin_stylesheet', 'admin-css' );
 		Stack::add( 'admin_stylesheet', 'jquery.ui-css' );
-		Stack::add( 'admin_stylesheet', 'humanmsg-css' );
 
 	}
 

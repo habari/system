@@ -220,32 +220,22 @@
 	<a href="#" class="help-items"><?php _e('Help'); ?></a>
 	<div class="options items">
 		<?php foreach($themes as $key => $theme) { ?>
-		<?php if ( !isset($theme['info']) ) { ?>
-
-			<div class="item clear">
-				<div class="head">
-					<p><?php printf( _t('The theme file %s is a legacy theme, and does not include an XML info file.'), $theme['file'] ); ?></p>
-				</div>
-			</div>
-
-			<?php } else { ?>
 			<div class="item clear clearfix">
 				<div class="head">
-						<span class="checkbox">
-							<input type="radio" name="theme" value="<?php echo $key; ?>"
-								id="theme_<?php echo $theme['dir']; ?>" tabindex="<?php echo $tab++ ?>"
-								class="theme_selection"
-								data-requires="<?php echo isset($theme['requires']) ? (string)InstallHandler::get_feature_list($theme['requires']) : ''; ?>"
-								data-provides="<?php echo isset($theme['provides']) ? (string)InstallHandler::get_feature_list($theme['provides']) : ''; ?>"
-								data-conflicts="<?php echo isset($theme['conflicts']) ? (string)InstallHandler::get_feature_list($theme['conflicts']) : ''; ?>"
-								/>
-						</span>
-						<label for="theme_<?php echo $theme['dir']; ?>" class="name"><?php echo $theme['info']->name; ?> <span class="version"><?php echo $theme['info']->version; ?></span></label>
-						<label for="theme_<?php echo $theme['dir']; ?>" class="image"><img src="<?php echo $theme['screenshot']; ?>" width="150px"></label>
+					<span class="checkbox">
+						<input type="radio" name="theme" value="<?php echo $key; ?>"
+							id="theme_<?php echo $theme['dir']; ?>" tabindex="<?php echo $tab++ ?>"
+							class="theme_selection"
+							data-requires="<?php echo isset($theme['requires']) ? (string)InstallHandler::get_feature_list($theme['requires']) : ''; ?>"
+							data-provides="<?php echo isset($theme['provides']) ? (string)InstallHandler::get_feature_list($theme['provides']) : ''; ?>"
+							data-conflicts="<?php echo isset($theme['conflicts']) ? (string)InstallHandler::get_feature_list($theme['conflicts']) : ''; ?>"
+							/>
+					</span>
+					<label for="theme_<?php echo $theme['dir']; ?>" class="name"><?php echo $theme['info']->name; ?> <span class="version"><?php echo $theme['info']->version; ?></span></label>
+					<label for="theme_<?php echo $theme['dir']; ?>" class="image"><img src="<?php echo $theme['screenshot']; ?>" width="150px"></label>
 				</div>
 				<div class="item-help"><?php echo $theme['info']->description; ?></div>
 			</div>
-			<?php } ?>
 		<?php } ?>
 	</div>
 	<div class="bottom"></div>

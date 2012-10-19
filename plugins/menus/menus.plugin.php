@@ -167,8 +167,8 @@ class Menus extends Plugin
 		$term_title = $post->title;
 		$selected_menus = $form->menus->value;
 		foreach( $this->get_menus() as $menu ) {
+			$terms = $menu->get_object_terms( 'post', $post->id );
 			if ( in_array( $menu->id, $selected_menus ) ) {
-				$terms = $menu->get_object_terms( 'post', $post->id );
 				if ( count( $terms ) == 0 ) {
 					$term = new Term(array(
 						'term_display' => $post->title,
@@ -179,6 +179,11 @@ class Menus extends Plugin
 					$menu->set_object_terms( 'post',
 						$post->id,
 						array( $term->term ) );
+				}
+			}
+			else {
+				foreach( $terms as $term ) {
+					$term->delete();
 				}
 			}
 		}
@@ -308,7 +313,7 @@ class Menus extends Plugin
 				$form->append( $link_url );
 			},
 			'save' => function($menu, $form) {
-				if ( !$form->term->value ) {
+				if ( ! isset( $form->term->value ) ) {
 					$term = new Term(array(
 						'term_display' => $form->link_name->value,
 						'term' => Utils::slugify($form->link_name->value),
@@ -361,7 +366,7 @@ class Menus extends Plugin
 				$form->append( $spacer );
 			},
 			'save' => function($menu, $form) {
-				if ( !$form->term->value ) {
+				if ( ! isset( $form->term->value ) ) {
 					$term = new Term(array(
 						'term_display' => ($form->spacer_text->value !== '' ? $form->spacer_text->value : '&nbsp;'), // totally blank values collapse the term display in the formcontrol
 						'term' => Utils::slugify(($form->spacer_text->value !== '' ? $form->spacer_text->value : 'menu_spacer')),
@@ -403,7 +408,7 @@ class Menus extends Plugin
 				}
 			},
 			'save' => function($menu, $form) {
-				if ( !$form->term->value )  {
+				if ( ! isset( $form->term->value ) )  {
 					$post_ids = explode( ',', $form->post_ids->value );
 					foreach( $post_ids as $post_id ) {
 						$post = Post::get( array( 'id' => $post_id ) );

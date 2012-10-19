@@ -161,7 +161,7 @@ class Error extends Exception
 				Error::print_backtrace();
 			}
 
-			if ( Options::get( 'log_backtraces' ) || DEBUG ) {
+			if ( Options::get( 'log_backtraces', false ) || DEBUG ) {
 				$backtrace = print_r( debug_backtrace(), true );
 			}
 			else {
@@ -173,7 +173,9 @@ class Error extends Exception
 			$backtrace= null;
 		}
 
-		EventLog::log( $errstr . ' in ' . $errfile . ':' . $errline, 'err', 'default', null, $backtrace );
+		if(DB::is_connected()) {
+			EventLog::log( $errstr . ' in ' . $errfile . ':' . $errline, 'err', 'default', null, $backtrace );
+		}
 
 		// throwing an Error make every error fatal!
 		//throw new Error($errstr, 0, true);
