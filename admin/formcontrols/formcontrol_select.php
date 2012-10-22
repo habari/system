@@ -17,11 +17,11 @@
 			array(
 				'tabindex', 'disabled', 'readonly', 'multiple',
 				'id' => 'field',
-				'name' => 'field',
 			),
 			array(
+				'name' => ( $control->multiple ) ? $control->field . '[]' : $control->field,
 				'value' => Utils::htmlspecialchars( $control->value ),
-				'size' => ( $control->multiple ) ? $control->size : '',
+				'size' => ( $control->multiple ) ? $control->size : '1',
 			)
 		);
 		?>>
