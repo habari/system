@@ -67,6 +67,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 					$classes[] = 'index_' . $this->_area_index;
 				}
 				$classes[] = 'block-type-' . Utils::slugify($this->type);
+				$classes[] = 'block-title-' . Utils::slugify($this->title);
 				$classes[] = 'block';
 				$classes = Plugins::filter('block_classes', $classes, $this);
 				return implode(' ', $classes);
