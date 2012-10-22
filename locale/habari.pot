@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-14 00:00+0000\n"
+"POT-Creation-Date: 2012-10-21 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,7 +28,7 @@ msgstr ""
 msgid "Vocabulary %1$s (%2$s) deleted."
 msgstr ""
 
-#: classes/vocabulary.php:837
+#: classes/vocabulary.php:840
 #, php-format
 msgid "Term %1$s in the %2$s vocabulary has been renamed to %3$s."
 msgid_plural "Terms %1$s in the %2$s vocabulary have been renamed to %3$s."
@@ -245,12 +245,12 @@ msgstr ""
 msgid "Perform a single check for plugin updates, the plugin set has changed."
 msgstr ""
 
-#: classes/term.php:150
+#: classes/term.php:151
 #, php-format
 msgid "New term %1$s: %2$s"
 msgstr ""
 
-#: classes/term.php:209
+#: classes/term.php:211
 #, php-format
 msgid "Term %1$s (%2$s) deleted."
 msgstr ""
@@ -1165,14 +1165,14 @@ msgstr ""
 msgid "User deprecated violation"
 msgstr ""
 
-#: classes/error.php:227
+#: classes/error.php:229
 #, php-format
 msgid " &hellip;%d arg&hellip; "
 msgid_plural " &hellip;%d args&hellip; "
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/error.php:231
+#: classes/error.php:233
 #, php-format
 msgid ""
 "%s line %d:\n"
@@ -1925,7 +1925,7 @@ msgstr ""
 #. @locale First variable is the post status, second is the post type
 #: plugins/coredashmodules/coredashmodules.plugin.php:133
 #: plugins/coredashmodules/coredashmodules.plugin.php:201
-#: plugins/menus/menus.plugin.php:483
+#: plugins/menus/menus.plugin.php:475
 #, php-format
 msgid "%1$s %2$s"
 msgstr ""
@@ -1993,7 +1993,7 @@ msgstr ""
 msgid "Manage menus"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:83 plugins/menus/menus.plugin.php:548
+#: plugins/menus/menus.plugin.php:83 plugins/menus/menus.plugin.php:540
 msgid "Menu"
 msgstr ""
 
@@ -2009,135 +2009,135 @@ msgstr ""
 msgid "Custom class for the tree ordered list element"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:140 plugins/menus/menus.plugin.php:141
-#: plugins/menus/menus.plugin.php:219 plugins/menus/menus.plugin.php:220
+#: plugins/menus/menus.plugin.php:127 plugins/menus/menus.plugin.php:128
+#: plugins/menus/menus.plugin.php:211 plugins/menus/menus.plugin.php:212
 msgid "Menus"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:295
+#: plugins/menus/menus.plugin.php:287
 msgid "Link"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:297
+#: plugins/menus/menus.plugin.php:289
 msgid "Link Title"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:298
+#: plugins/menus/menus.plugin.php:290
 msgid "A name is required."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:299
+#: plugins/menus/menus.plugin.php:291
 msgid "Link URL"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:301
+#: plugins/menus/menus.plugin.php:293
 msgid "You must supply a valid URL."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:322
+#: plugins/menus/menus.plugin.php:314
 msgid "Link added."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:340 plugins/menus/menus.plugin.php:427
+#: plugins/menus/menus.plugin.php:332 plugins/menus/menus.plugin.php:419
 msgid "Link updated."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:352
+#: plugins/menus/menus.plugin.php:344
 msgid "Spacer"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:354
+#: plugins/menus/menus.plugin.php:346
 msgid "Item text"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:355
+#: plugins/menus/menus.plugin.php:347
 msgid "Leave blank for blank space"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:374
+#: plugins/menus/menus.plugin.php:366
 msgid "Spacer added."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:380
+#: plugins/menus/menus.plugin.php:372
 msgid "Spacer updated."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:386
+#: plugins/menus/menus.plugin.php:378
 msgid "Links to Posts"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:392
+#: plugins/menus/menus.plugin.php:384
 msgid "Title to display"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:400
+#: plugins/menus/menus.plugin.php:392
 msgid "Posts"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:420
+#: plugins/menus/menus.plugin.php:412
 msgid "Link(s) added."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:483
+#: plugins/menus/menus.plugin.php:475
 msgid "Update"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:483 admin/group.php:48
+#: plugins/menus/menus.plugin.php:475 admin/group.php:48
 msgid "Add"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:494
+#: plugins/menus/menus.plugin.php:486
 msgid "Menu item added."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:520
+#: plugins/menus/menus.plugin.php:512
 msgid "<h2>Invalid Menu.</h2>"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:527 themes/charcoal/theme.php:226
+#: plugins/menus/menus.plugin.php:519 themes/charcoal/theme.php:226
 #: admin/login.php:36
 msgid "Name"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:528 plugins/menus/menus.plugin.php:570
+#: plugins/menus/menus.plugin.php:520 plugins/menus/menus.plugin.php:563
 msgid "You must supply a valid menu name"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:533 plugins/menus/menus.plugin.php:572
+#: plugins/menus/menus.plugin.php:525 plugins/menus/menus.plugin.php:565
 msgid "Description"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:544
+#: plugins/menus/menus.plugin.php:536
 #, php-format
 msgid "Add %s"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:554
+#: plugins/menus/menus.plugin.php:547
 msgid "Apply Changes"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:569
+#: plugins/menus/menus.plugin.php:562
 msgid "Menu Name"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:573
+#: plugins/menus/menus.plugin.php:566
 msgid "Create Menu"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:583
+#: plugins/menus/menus.plugin.php:576
 msgid "Menu deleted."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:593
+#: plugins/menus/menus.plugin.php:586
 msgid "Item deleted."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:637
+#: plugins/menus/menus.plugin.php:630
 #, php-format
 msgid "Updated menu \"%s\"."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:686
+#: plugins/menus/menus.plugin.php:679
 msgid "Please choose a vocabulary name that does not already exist."
 msgstr ""
 
@@ -3372,7 +3372,7 @@ msgstr ""
 
 #: handlers/adminpluginshandler.php:127 installer/db_setup.php:11
 #: installer/db_setup.php:166 installer/db_setup.php:220
-#: installer/db_setup.php:258 admin/themes.php:21 admin/themes.php:23
+#: installer/db_setup.php:248 admin/themes.php:21 admin/themes.php:23
 msgid "Help"
 msgstr ""
 
@@ -4016,34 +4016,29 @@ msgstr ""
 msgid "Theme Selection"
 msgstr ""
 
-#: installer/db_setup.php:227
-#, php-format
-msgid "The theme file %s is a legacy theme, and does not include an XML info file."
-msgstr ""
-
-#: installer/db_setup.php:257
+#: installer/db_setup.php:247
 msgid "Plugin Activation"
 msgstr ""
 
-#: installer/db_setup.php:265 admin/plugin.php:18
+#: installer/db_setup.php:255 admin/plugin.php:18
 #, php-format
 msgid "The plugin file %s is a legacy plugin, and does not include an XML info file."
 msgstr ""
 
-#: installer/db_setup.php:299 installer/htaccess.php:25
+#: installer/db_setup.php:289 installer/htaccess.php:25
 #: installer/config.php:31 installer/sqlite.php:25
 msgid "Install"
 msgstr ""
 
-#: installer/db_setup.php:302
+#: installer/db_setup.php:292
 msgid "Habari now has all of the information needed to install itself on your server."
 msgstr ""
 
-#: installer/db_setup.php:303
+#: installer/db_setup.php:293
 msgid "The selected theme and plugins require additional features:"
 msgstr ""
 
-#: installer/db_setup.php:304 installer/header.php:20
+#: installer/db_setup.php:294 installer/header.php:20
 msgid "Install Habari"
 msgstr ""
 
@@ -4884,7 +4879,7 @@ msgstr ""
 msgid "Type and wait to search tags"
 msgstr ""
 
-#: admin/tags.php:27 admin/tags.php:147 admin/tags.php:150
+#: admin/tags.php:27 admin/tags.php:151 admin/tags.php:154
 msgid "Rename"
 msgstr ""
 
@@ -4892,7 +4887,11 @@ msgstr ""
 msgid "Error: No tags selected."
 msgstr ""
 
-#: admin/tags.php:153
+#: admin/tags.php:111
+msgid "Error: New name can't be just whitespace."
+msgstr ""
+
+#: admin/tags.php:157
 msgid "Merge"
 msgstr ""
 
