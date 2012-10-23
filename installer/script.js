@@ -179,7 +179,7 @@ var installer = {
 						conflicters[u].attr('checked', false).attr('disabled', true);
 						conflicters[u].parents('.item')
 							.addClass('conflict')
-							.find('.feature_note').html(_t('This plugin conflics with the enabled plugin %s over this feature: %s', plugin_name, plugin_provides[i]));
+							.find('.feature_note').html(_t('This plugin conflicts with the enabled plugin %1$s over this feature: %2$s', plugin_name, plugin_provides[i]));
 					}
 				}
 
@@ -189,7 +189,7 @@ var installer = {
 						conflicters[u].attr('checked', false).attr('disabled', true);
 						conflicters[u].parents('.item')
 							.addClass('conflict')
-							.find('.feature_note').html(_t('This plugin provides a feature that the enabled plugin %s conflicts with: %s', plugin_name, plugin_conflicts[i]));
+							.find('.feature_note').html(_t('This plugin provides a feature that the enabled plugin %1$s conflicts with: %2$s', plugin_name, plugin_conflicts[i]));
 					}
 				}
 			}
