@@ -87,6 +87,8 @@ class AdminDashboardHandler extends AdminHandler
 		$this->create_theme();
 		$this->get_additem_form();
 		$available_modules = Plugins::filter('dashboard_block_list', array());
+		$user_id = User::identify()->id;
+		$dashboard_area = 'dashboard_' . $user_id;
 
 		switch ( $handler_vars['action'] ) {
 			case 'updateModules':
@@ -94,7 +96,7 @@ class AdminDashboardHandler extends AdminHandler
 				$order = 0;
 				foreach ( $modules as $module ) {
 					$order++;
-					DB::query('UPDATE {blocks_areas} SET display_order = :display_order WHERE block_id = :id AND area = "dashboard"', array('display_order' => $order, 'id' => $module));
+					DB::query('UPDATE {blocks_areas} SET display_order = :display_order WHERE block_id = :id AND area = :dashboardarea', array('display_order' => $order, 'id' => $module, 'dashboardarea' => $dashboard_area));
 				}
 				$ar = new AjaxResponse( 200, _t( 'Modules updated.' ) );
 				break;
@@ -103,9 +105,9 @@ class AdminDashboardHandler extends AdminHandler
 				$title = $available_modules[$type];
 				$block = new Block( array( 'title' => $title, 'type' => $type ) );
 				$block->insert();
-				$max_display_order = DB::get_value('SELECT max(display_order) FROM {blocks_areas} WHERE area = "dashboard" and scope_id = 0;');
+				$max_display_order = DB::get_value('SELECT max(display_order) FROM {blocks_areas} WHERE area = :dashboardarea and scope_id = 0;', array('dashboardarea' => $dashboard_area));
 				$max_display_order++;
-				DB::query( 'INSERT INTO {blocks_areas} (block_id, area, scope_id, display_order) VALUES (:block_id, "dashboard", 0, :display_order)', array( 'block_id'=>$block->id, 'display_order'=>$max_display_order ) );
+				DB::query( 'INSERT INTO {blocks_areas} (block_id, area, scope_id, display_order) VALUES (:block_id, :dashboardarea, 0, :display_order)', array( 'block_id'=>$block->id, 'display_order'=>$max_display_order, 'dashboardarea' => $dashboard_area ) );
 
 				$ar = new AjaxResponse( 200, _t( 'Added module %s.', array( $title ) ) );
 				$ar->html( 'modules', $this->theme->fetch( 'dashboard_modules' ) );
@@ -144,5 +146,4 @@ class AdminDashboardHandler extends AdminHandler
 
 		$ar->out();
 	}
-
 }
