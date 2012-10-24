@@ -496,6 +496,7 @@ JAVSCRIPT_RESPONSE;
 					$theme->page_content .= <<< JAVSCRIPT_RESPONSE
 <script type="text/javascript">
 human_msg.display_msg('{$msg}');
+$('#menu_popup').dialog('close');
 $('#edit_menu').load('{$treeurl}', habari.menu_admin.init_form);
 </script>
 JAVSCRIPT_RESPONSE;
