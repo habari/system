@@ -356,7 +356,7 @@ class Menus extends Plugin
 				if ( ! isset( $form->term->value ) ) {
 					$term = new Term(array(
 						'term_display' => ($form->spacer_text->value !== '' ? $form->spacer_text->value : '&nbsp;'), // totally blank values collapse the term display in the formcontrol
-						'term' => Utils::slugify(($form->spacer_text->value !== '' ? $form->spacer_text->value : 'menu_spacer')),
+						'term' => 'menu_spacer',
 					));
 					$term->info->type = "spacer";
 					$term->info->menu = $menu->id;
@@ -383,7 +383,6 @@ class Menus extends Plugin
 
 					$post_display = $form->append( 'text', 'term_display', 'null:null', _t( 'Title to display' ) );
 					$post_display->value = $term->term_display;
-					$post_display->disabled = 'disabled';
 					$post = Post::get( $term_object->object_id );
 					$post_term = $form->append( 'static', 'post_link', _t( "Links to <a target='_blank' href='{$post->permalink}'>{$post->title}</a>" ) );
 					$form->append( 'hidden', 'term' )->value = $term->id;
@@ -423,6 +422,10 @@ class Menus extends Plugin
 			'render' => function($term, $object_id, $config) {
 				$result = array();
 				if ($post = Post::get($object_id)) {
+					$rule = Controller::get_matched_rule();
+					if(isset($rule->named_arg_values['slug']) && $rule->named_arg_values['slug'] == $post->slug) {
+						$result['active'] = true;
+					}
 					$result['link'] = $post->permalink;
 				}
 				return $result;
@@ -479,14 +482,25 @@ class Menus extends Plugin
 
 		$theme->page_content = $form->get();
 
-		if ( isset($_GET['result']) ) {
-			switch ( $_GET['result'] ) {
+		if ( isset($form->has_result) ) {
+			switch ( $form->has_result ) {
 				case 'added':
 					$treeurl = URL::get( 'admin', array('page' => 'menus', 'menu' => $handler->handler_vars[ 'menu' ], 'action' => 'edit') ) . ' #edit_menu>*';
 					$msg = _t( 'Menu item added.' ); // @todo: update this to reflect if more than one item has been added, or reword entirely.
 					$theme->page_content .= <<< JAVSCRIPT_RESPONSE
 <script type="text/javascript">
 human_msg.display_msg('{$msg}');
+$('#edit_menu').load('{$treeurl}', habari.menu_admin.init_form);
+</script>
+JAVSCRIPT_RESPONSE;
+					break;
+				case 'updated':
+					$treeurl = URL::get( 'admin', array('page' => 'menus', 'menu' => $handler->handler_vars[ 'menu' ], 'action' => 'edit') ) . ' #edit_menu>*';
+					$msg = _t( 'Menu item updated.' ); // @todo: update this to reflect if more than one item has been added, or reword entirely.
+					$theme->page_content .= <<< JAVSCRIPT_RESPONSE
+<script type="text/javascript">
+human_msg.display_msg('{$msg}');
+$('#menu_popup').dialog('close');
 $('#edit_menu').load('{$treeurl}', habari.menu_admin.init_form);
 </script>
 JAVSCRIPT_RESPONSE;
@@ -651,6 +665,8 @@ JAVSCRIPT_RESPONSE;
 				$menu_type_data[$type]['save']($menu, $form);
 			}
 
+			$form->has_result = 'updated';
+
 		}
 		else { // if no term is set, create a new item.
 			// create a term for the link, store the URL
@@ -660,13 +676,7 @@ JAVSCRIPT_RESPONSE;
 				$menu_type_data[$type]['save']($menu, $form);
 			}
 
-			// if not for this redirect, this whole if/else could be simplified considerably.
-			Utils::redirect(URL::get( 'admin', array(
-				'page' => 'menu_iframe',
-				'action' => $type,
-				'menu' => $menu_vocab,
-				'result' => 'added',
-			) ) );
+			$form->has_result = 'added';
 		}
 	}
 

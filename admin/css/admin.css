@@ -2784,8 +2784,8 @@ body.login .remember label {
 
 body.login input[type=submit] {
 	float: right;
-	width: 100px;
 	margin-right: -1px;
+	width: 12em;
 }
 
 body.login #password_utils {

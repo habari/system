@@ -1684,7 +1684,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function field_save( $key, $value )
 	{
-		$this->info->$key = $value;
+		$this->info->$key = Plugins::filter('post_field_save', $value, $key);
 		$this->info->commit();
 	}
 
@@ -1696,7 +1696,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 * @return mixed The stored value returned
 	 */
 	function field_load( $key ) {
-		return $this->info->$key;
+		return Plugins::filter('post_field_load', $this->info->$key, $key);
 	}
 }
 ?>
