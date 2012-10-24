@@ -1108,11 +1108,11 @@ class Utils
 	*
 	* @todo Should htmlspecialchars_decode() be used instead of html_entity_decode()?
 	*
-	* @param $string. string. The string to escape
-	* @param $quote_flag. integer. Sets what quotes and doublequotes are escaped
-	* @param $encoding. string. The encoding of the passed string
-	* @param $decode. bool. Whether or not to unescape any html entities first
-	* @param $double_encode. bool. Whether or not to double escape any html entities
+	* @param string|array $string The string or array of strings to escape
+	* @param integer $quote_flag Sets what quotes and doublequotes are escaped
+	* @param string $encoding The encoding of the passed string
+	* @param boolean $decode Whether or not to unescape any html entities first
+	* @param boolean $double_encode Whether or not to double escape any html entities
 	*
 	* @return The escaped string
 	*/
