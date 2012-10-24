@@ -24,6 +24,8 @@
  * unset ( $this->info->option1 ); // delete "option1" info record
  * </code>
  *
+ * @property UserInfo $info Metadata stored about this user in the userinfo table
+ *
  */
 class User extends QueryRecord implements FormStorage, IsContent
 {
