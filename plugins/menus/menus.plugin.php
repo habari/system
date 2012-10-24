@@ -383,7 +383,6 @@ class Menus extends Plugin
 
 					$post_display = $form->append( 'text', 'term_display', 'null:null', _t( 'Title to display' ) );
 					$post_display->value = $term->term_display;
-					$post_display->disabled = 'disabled';
 					$post = Post::get( $term_object->object_id );
 					$post_term = $form->append( 'static', 'post_link', _t( "Links to <a target='_blank' href='{$post->permalink}'>{$post->title}</a>" ) );
 					$form->append( 'hidden', 'term' )->value = $term->id;
