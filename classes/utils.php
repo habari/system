@@ -1118,10 +1118,22 @@ class Utils
 	*/
 	public static function htmlspecialchars( $string, $quote_flag = ENT_COMPAT, $encoding = 'UTF-8', $decode = true, $double_encode = true )
 	{
-		if( $decode ) {
-			$string = html_entity_decode($string, ENT_QUOTES, $encoding );
+		if(is_array($string)) {
+			if( $decode ) {
+				return array_map(
+					function($v) use($quote_flag, $encoding, $decode, $double_encode) {
+						return self::htmlspecialchars($v, $quote_flag, $encoding, $decode, $double_encode);
+					},
+					$string
+				);
+			}
 		}
-		return htmlspecialchars( $string, $quote_flag, $encoding, $double_encode );
+		else {
+			if( $decode ) {
+				$string = html_entity_decode($string, ENT_QUOTES, $encoding );
+			}
+			return htmlspecialchars( $string, $quote_flag, $encoding, $double_encode );
+		}
 	}
 
 	/**
