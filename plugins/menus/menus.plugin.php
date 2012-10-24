@@ -356,7 +356,7 @@ class Menus extends Plugin
 				if ( ! isset( $form->term->value ) ) {
 					$term = new Term(array(
 						'term_display' => ($form->spacer_text->value !== '' ? $form->spacer_text->value : '&nbsp;'), // totally blank values collapse the term display in the formcontrol
-						'term' => Utils::slugify(($form->spacer_text->value !== '' ? $form->spacer_text->value : 'menu_spacer')),
+						'term' => 'menu_spacer',
 					));
 					$term->info->type = "spacer";
 					$term->info->menu = $menu->id;
