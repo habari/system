@@ -478,11 +478,21 @@ class Menus extends Plugin
 
 		$theme->page_content = $form->get();
 
-		if ( isset($_GET['result']) ) {
-			switch ( $_GET['result'] ) {
+		if ( isset($form->has_result) ) {
+			switch ( $form->has_result ) {
 				case 'added':
 					$treeurl = URL::get( 'admin', array('page' => 'menus', 'menu' => $handler->handler_vars[ 'menu' ], 'action' => 'edit') ) . ' #edit_menu>*';
 					$msg = _t( 'Menu item added.' ); // @todo: update this to reflect if more than one item has been added, or reword entirely.
+					$theme->page_content .= <<< JAVSCRIPT_RESPONSE
+<script type="text/javascript">
+human_msg.display_msg('{$msg}');
+$('#edit_menu').load('{$treeurl}', habari.menu_admin.init_form);
+</script>
+JAVSCRIPT_RESPONSE;
+					break;
+				case 'updated':
+					$treeurl = URL::get( 'admin', array('page' => 'menus', 'menu' => $handler->handler_vars[ 'menu' ], 'action' => 'edit') ) . ' #edit_menu>*';
+					$msg = _t( 'Menu item updated.' ); // @todo: update this to reflect if more than one item has been added, or reword entirely.
 					$theme->page_content .= <<< JAVSCRIPT_RESPONSE
 <script type="text/javascript">
 human_msg.display_msg('{$msg}');
@@ -650,6 +660,8 @@ JAVSCRIPT_RESPONSE;
 				$menu_type_data[$type]['save']($menu, $form);
 			}
 
+			$form->has_result = 'updated';
+
 		}
 		else { // if no term is set, create a new item.
 			// create a term for the link, store the URL
@@ -659,13 +671,7 @@ JAVSCRIPT_RESPONSE;
 				$menu_type_data[$type]['save']($menu, $form);
 			}
 
-			// if not for this redirect, this whole if/else could be simplified considerably.
-			Utils::redirect(URL::get( 'admin', array(
-				'page' => 'menu_iframe',
-				'action' => $type,
-				'menu' => $menu_vocab,
-				'result' => 'added',
-			) ) );
+			$form->has_result = 'added';
 		}
 	}
 
