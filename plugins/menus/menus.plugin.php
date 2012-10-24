@@ -422,6 +422,10 @@ class Menus extends Plugin
 			'render' => function($term, $object_id, $config) {
 				$result = array();
 				if ($post = Post::get($object_id)) {
+					$rule = Controller::get_matched_rule();
+					if(isset($rule->named_arg_values['slug']) && $rule->named_arg_values['slug'] == $post->slug) {
+						$result['active'] = true;
+					}
 					$result['link'] = $post->permalink;
 				}
 				return $result;
