@@ -62,16 +62,14 @@ class Users extends ArrayObject
 				$paramset = array_merge( (array) $paramarray, (array) $paramset );
 
 				$default_fields = User::default_fields();
-
-				foreach ( User::default_fields() as $field => $scrap ) {
+				unset($default_fields['id']);
+				
+				foreach ( $default_fields as $field => $scrap ) {
 					if ( !isset( $paramset[$field] ) ) {
 						continue;
 					}
+					
 					switch ( $field ) {
-						case 'id':
-							if ( !is_numeric( $paramset[$field] ) ) {
-								continue;
-							}
 						default:
 							$where[] = "{$field} = ?";
 							$params[] = $paramset[$field];
@@ -93,6 +91,17 @@ class Users extends ArrayObject
 						$group_id = UserGroup::get_by_name( $group )->id;
 						$where[] = '{users_groups}.group_id = ?';
 						$params[] = $group_id;
+					}
+				}
+
+				if( isset( $paramset['id']) ) {
+					if( is_array($paramset['id']) ) {
+						array_walk( $paramset['id'], function(&$a) {$a = intval( $a );} );
+						$where[] = "{users}.id IN (" . implode( ',', array_fill( 0, count( $paramset['id'] ), '?' ) ) . ")";
+						$params = array_merge( $params, $paramset['id'] );
+					} else {
+						$where[] = "{users}.id = ?";
+						$params[] = (int) $paramset['id'];
 					}
 				}
 
