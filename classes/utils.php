@@ -93,16 +93,20 @@ class Utils
 	}
 
 	/**
-	 * function WSSE
-	 * returns an array of tokens used for WSSE authentication
+	 * Returns an array of tokens used for WSSE authentication
 	 *    http://www.xml.com/pub/a/2003/12/17/dive.html
 	 *    http://www.sixapart.com/developers/atom/protocol/atom_authentication.html
-	 * @param String a nonce
-	 * @param String a timestamp
-	 * @return Array an array of WSSE authentication elements
+	 * @param string|array $nonce a string nonce or an existing array to add nonce parameters to
+	 * @param string $timestamp a timestamp
+	 * @return array an array of WSSE authentication elements
 	 */
 	public static function WSSE( $nonce = '', $timestamp = '' )
 	{
+		$wsse = array();
+		if (is_array($nonce)) {
+			$wsse = $nonce;
+			$nonce = '';
+		}
 		if ( '' === $nonce ) {
 			$nonce = Utils::crypt( Options::get( 'GUID' ) . Utils::nonce() );
 		}
@@ -110,10 +114,13 @@ class Utils
 			$timestamp = date( 'c' );
 		}
 		$user = User::identify();
-		$wsse = array(
-			'nonce' => $nonce,
-			'timestamp' => $timestamp,
-			'digest' => base64_encode( pack( 'H*', sha1( $nonce . $timestamp . $user->password ) ) )
+		$wsse = array_merge(
+			$wsse,
+			array(
+				'nonce' => $nonce,
+				'timestamp' => $timestamp,
+				'digest' => base64_encode( pack( 'H*', sha1( $nonce . $timestamp . $user->password ) ) )
+			)
 		);
 		return $wsse;
 	}
