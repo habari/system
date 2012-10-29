@@ -812,7 +812,7 @@ JAVSCRIPT_RESPONSE;
 			Stack::add( 'admin_stylesheet', array( Site::get_url( 'admin_theme' ) . '/css/token-input.css', 'screen' ), 'admin_tokeninput', 'jquery.ui-css' );
 
 			// Add the callback URL.
-			$url = "habari.url.ajaxPostTokens = '" . URL::get( 'ajax', array( 'context' => 'post_tokens' ) ) . "';";
+			$url = "habari.url.ajaxPostTokens = '" . URL::get( 'auth_ajax', array( 'context' => 'post_tokens' ) ) . "';";
 			Stack::add( 'admin_header_javascript', $url, 'post_tokens_url', 'post_tokens' );
 
 			// Add the menu administration javascript
@@ -824,7 +824,7 @@ JAVSCRIPT_RESPONSE;
 	 * Respond to Javascript callbacks
 	 * The name of this method is action_ajax_ followed by what you passed to the context parameter above.
 	 */
-	public function action_ajax_post_tokens( $handler )
+	public function action_auth_ajax_post_tokens( $handler )
 	{
 		// Get the data that was sent
 		$response = $handler->handler_vars[ 'q' ];
