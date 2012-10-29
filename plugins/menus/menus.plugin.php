@@ -831,7 +831,7 @@ JAVSCRIPT_RESPONSE;
 		// Wipe anything else that's in the buffer
 		ob_end_clean();
 
-		$new_response = Posts::get( array( "title_search" => $response ) );
+		$new_response = Posts::get( array( "title_search" => $response, "status" => Post::status( 'published' ) ) );
 
 		$final_response = array();
 		foreach ( $new_response as $post ) {
