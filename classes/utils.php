@@ -1108,20 +1108,32 @@ class Utils
 	*
 	* @todo Should htmlspecialchars_decode() be used instead of html_entity_decode()?
 	*
-	* @param $string. string. The string to escape
-	* @param $quote_flag. integer. Sets what quotes and doublequotes are escaped
-	* @param $encoding. string. The encoding of the passed string
-	* @param $decode. bool. Whether or not to unescape any html entities first
-	* @param $double_encode. bool. Whether or not to double escape any html entities
+	* @param string|array $string The string or array of strings to escape
+	* @param integer $quote_flag Sets what quotes and doublequotes are escaped
+	* @param string $encoding The encoding of the passed string
+	* @param boolean $decode Whether or not to unescape any html entities first
+	* @param boolean $double_encode Whether or not to double escape any html entities
 	*
 	* @return The escaped string
 	*/
 	public static function htmlspecialchars( $string, $quote_flag = ENT_COMPAT, $encoding = 'UTF-8', $decode = true, $double_encode = true )
 	{
-		if( $decode ) {
-			$string = html_entity_decode($string, ENT_QUOTES, $encoding );
+		if(is_array($string)) {
+			if( $decode ) {
+				return array_map(
+					function($v) use($quote_flag, $encoding, $decode, $double_encode) {
+						return self::htmlspecialchars($v, $quote_flag, $encoding, $decode, $double_encode);
+					},
+					$string
+				);
+			}
 		}
-		return htmlspecialchars( $string, $quote_flag, $encoding, $double_encode );
+		else {
+			if( $decode ) {
+				$string = html_entity_decode($string, ENT_QUOTES, $encoding );
+			}
+			return htmlspecialchars( $string, $quote_flag, $encoding, $double_encode );
+		}
 	}
 
 	/**

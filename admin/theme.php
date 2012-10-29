@@ -26,5 +26,14 @@ class Monolith extends Theme
 
 	}
 
+	public function get_blocks( $area, $scope, $theme )
+	{
+		if($area == 'dashboard') {
+			$area = 'dashboard_' . User::identify()->id;
+		}
+		return parent::get_blocks($area, $scope, $theme);
+	}
+
+
 }
 ?>

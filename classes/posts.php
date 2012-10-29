@@ -1000,13 +1000,16 @@ class Posts extends ArrayObject implements IsContent
 			}
 			$posts = Posts::get( $params );
 		}
-		// find $post and return the next one.
-		$index = $posts->search( $post );
-		$target = $index + 1;
-		if ( array_key_exists( $target, $posts ) ) {
-			$ascend = $posts[$target];
+		if($posts) {
+			// find $post and return the next one.
+			$index = $posts->search( $post );
+			$target = $index + 1;
+			if ( array_key_exists( $target, $posts ) ) {
+				$ascend = $posts[$target];
+				return $ascend;
+			}
 		}
-		return $ascend;
+		return false;
 	}
 
 	/**
@@ -1033,13 +1036,16 @@ class Posts extends ArrayObject implements IsContent
 			}
 			$posts = Posts::get( $params );
 		}
-		// find $post and return the next one.
-		$index = $posts->search( $post );
-		$target = $index + 1;
-		if ( array_key_exists( $target, $posts ) ) {
-			$descend = $posts[$target];
+		if($posts) {
+			// find $post and return the next one.
+			$index = $posts->search( $post );
+			$target = $index + 1;
+			if ( array_key_exists( $target, $posts ) ) {
+				$descend = $posts[$target];
+				return $descend;
+			}
 		}
-		return $descend;
+		return false;
 	}
 
 	/**

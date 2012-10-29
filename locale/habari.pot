@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-21 00:00+0000\n"
+"POT-Creation-Date: 2012-10-28 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -351,7 +351,7 @@ msgstr ""
 msgid "Unable to fetch response body for a pending request."
 msgstr ""
 
-#: classes/comment.php:216 classes/user.php:81
+#: classes/comment.php:216 classes/user.php:83
 msgid "Anonymous"
 msgstr ""
 
@@ -732,56 +732,56 @@ msgstr ""
 msgid "Panic! No database connection class appears to be found for the connection string specified. Please check config.php"
 msgstr ""
 
-#: classes/user.php:169
+#: classes/user.php:171
 #, php-format
 msgid "New user created: %s"
 msgstr ""
 
-#: classes/user.php:211
+#: classes/user.php:213
 #, php-format
 msgid "User deleted: %s"
 msgstr ""
 
-#: classes/user.php:287 classes/user.php:316
+#: classes/user.php:289 classes/user.php:318
 #, php-format
 msgid "Successful login for %s"
 msgstr ""
 
-#: classes/user.php:294
+#: classes/user.php:296
 #, php-format
 msgid "Login attempt (via authentication plugin) for non-existent user %s"
 msgstr ""
 
-#: classes/user.php:295 classes/user.php:307 classes/user.php:325
+#: classes/user.php:297 classes/user.php:309 classes/user.php:327
 msgid "Invalid username/password"
 msgstr ""
 
-#: classes/user.php:306
+#: classes/user.php:308
 #, php-format
 msgid "Login attempt for non-existent user %s"
 msgstr ""
 
-#: classes/user.php:324
+#: classes/user.php:326
 #, php-format
 msgid "Wrong password for user %s"
 msgstr ""
 
-#: classes/user.php:542
+#: classes/user.php:544
 #, php-format
 msgid "User %1$s: Access to %2$s changed to %3$s"
 msgstr ""
 
-#: classes/user.php:566
+#: classes/user.php:568
 #, php-format
 msgid "User %1$s: Permission to %2$s revoked."
 msgstr ""
 
-#: classes/user.php:605
+#: classes/user.php:607
 #, php-format
 msgid " User %1$s: Added to %2$s group."
 msgstr ""
 
-#: classes/user.php:620
+#: classes/user.php:622
 #, php-format
 msgid " User %1$s: Removed from %2$s group."
 msgstr ""
@@ -799,7 +799,7 @@ msgstr ""
 msgid "Unbalanced braces."
 msgstr ""
 
-#: classes/utils.php:1212
+#: classes/utils.php:1224
 msgid "Not set"
 msgstr ""
 
@@ -1075,12 +1075,12 @@ msgstr ""
 msgid "create"
 msgstr ""
 
-#: classes/block.php:238
+#: classes/block.php:239
 #, php-format
 msgid "New block %1$s: %2$s"
 msgstr ""
 
-#: classes/block.php:287
+#: classes/block.php:288
 #, php-format
 msgid "Block %1$s (%2$s) deleted."
 msgstr ""
@@ -1925,7 +1925,7 @@ msgstr ""
 #. @locale First variable is the post status, second is the post type
 #: plugins/coredashmodules/coredashmodules.plugin.php:133
 #: plugins/coredashmodules/coredashmodules.plugin.php:201
-#: plugins/menus/menus.plugin.php:475
+#: plugins/menus/menus.plugin.php:478
 #, php-format
 msgid "%1$s %2$s"
 msgstr ""
@@ -1993,7 +1993,7 @@ msgstr ""
 msgid "Manage menus"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:83 plugins/menus/menus.plugin.php:540
+#: plugins/menus/menus.plugin.php:83 plugins/menus/menus.plugin.php:554
 msgid "Menu"
 msgstr ""
 
@@ -2038,7 +2038,7 @@ msgstr ""
 msgid "Link added."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:332 plugins/menus/menus.plugin.php:419
+#: plugins/menus/menus.plugin.php:332 plugins/menus/menus.plugin.php:418
 msgid "Link updated."
 msgstr ""
 
@@ -2070,74 +2070,78 @@ msgstr ""
 msgid "Title to display"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:392
+#: plugins/menus/menus.plugin.php:391
 msgid "Posts"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:412
+#: plugins/menus/menus.plugin.php:411
 msgid "Link(s) added."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:475
+#: plugins/menus/menus.plugin.php:478
 msgid "Update"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:475 admin/group.php:48
+#: plugins/menus/menus.plugin.php:478 admin/group.php:48
 msgid "Add"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:486
+#: plugins/menus/menus.plugin.php:489
 msgid "Menu item added."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:512
+#: plugins/menus/menus.plugin.php:499
+msgid "Menu item updated."
+msgstr ""
+
+#: plugins/menus/menus.plugin.php:526
 msgid "<h2>Invalid Menu.</h2>"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:519 themes/charcoal/theme.php:226
+#: plugins/menus/menus.plugin.php:533 themes/charcoal/theme.php:226
 #: admin/login.php:36
 msgid "Name"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:520 plugins/menus/menus.plugin.php:563
+#: plugins/menus/menus.plugin.php:534 plugins/menus/menus.plugin.php:577
 msgid "You must supply a valid menu name"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:525 plugins/menus/menus.plugin.php:565
+#: plugins/menus/menus.plugin.php:539 plugins/menus/menus.plugin.php:579
 msgid "Description"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:536
+#: plugins/menus/menus.plugin.php:550
 #, php-format
 msgid "Add %s"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:547
+#: plugins/menus/menus.plugin.php:561
 msgid "Apply Changes"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:562
+#: plugins/menus/menus.plugin.php:576
 msgid "Menu Name"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:566
+#: plugins/menus/menus.plugin.php:580
 msgid "Create Menu"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:576
+#: plugins/menus/menus.plugin.php:590
 msgid "Menu deleted."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:586
+#: plugins/menus/menus.plugin.php:600
 msgid "Item deleted."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:630
+#: plugins/menus/menus.plugin.php:644
 #, php-format
 msgid "Updated menu \"%s\"."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:679
+#: plugins/menus/menus.plugin.php:689
 msgid "Please choose a vocabulary name that does not already exist."
 msgstr ""
 
@@ -3098,20 +3102,20 @@ msgstr ""
 msgid "+"
 msgstr ""
 
-#: handlers/admindashboardhandler.php:99
+#: handlers/admindashboardhandler.php:101
 msgid "Modules updated."
 msgstr ""
 
-#: handlers/admindashboardhandler.php:110
+#: handlers/admindashboardhandler.php:112
 #, php-format
 msgid "Added module %s."
 msgstr ""
 
-#: handlers/admindashboardhandler.php:117
+#: handlers/admindashboardhandler.php:119
 msgid "Removed module."
 msgstr ""
 
-#: handlers/admindashboardhandler.php:128
+#: handlers/admindashboardhandler.php:130
 msgid "Module Configuration Saved."
 msgstr ""
 
@@ -4931,12 +4935,12 @@ msgstr ""
 
 #: installer/script.js:182
 #, perl-format
-msgid "This plugin conflics with the enabled plugin %s over this feature: %s"
+msgid "This plugin conflicts with the enabled plugin %1$s over this feature: %2$s"
 msgstr ""
 
 #: installer/script.js:192
 #, perl-format
-msgid "This plugin provides a feature that the enabled plugin %s conflicts with: %s"
+msgid "This plugin provides a feature that the enabled plugin %1$s conflicts with: %2$s"
 msgstr ""
 
 #: installer/script.js:203
