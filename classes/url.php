@@ -236,8 +236,8 @@ class URL extends Singleton
 	 * Get a fully-qualified URL from a filesystem path
 	 *
 	 * @param string $path The filesystem path
-	 * @param bool whether to include a trailing slash.  Default: No
-	 * @param bool whether to leave a filename on the URL.  Default: No
+	 * @param string|bool If true, include a trailing slash.  If string, append this to the requested url.  Default: Add nothing.
+	 * @param bool If true, leave the filename on the URL.  Default: Remove filename.
 	 * @return string URL
 	 */
 	public static function get_from_filesystem( $path, $trail = false, $preserve_file = false )
