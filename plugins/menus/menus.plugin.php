@@ -812,7 +812,7 @@ JAVSCRIPT_RESPONSE;
 			Stack::add( 'admin_stylesheet', array( Site::get_url( 'admin_theme' ) . '/css/token-input.css', 'screen' ), 'admin_tokeninput', 'jquery.ui-css' );
 
 			// Add the callback URL.
-			$url = "habari.url.ajaxPostTokens = '" . URL::get( 'auth_ajax', array( 'context' => 'post_tokens' ) ) . "';";
+			$url = "habari.url.ajaxPostTokens = '" . URL::get( 'auth_ajax', Utils::WSSE( array( 'context' => 'post_tokens' ) ) ) . "';";
 			Stack::add( 'admin_header_javascript', $url, 'post_tokens_url', 'post_tokens' );
 
 			// Add the menu administration javascript
@@ -831,15 +831,18 @@ JAVSCRIPT_RESPONSE;
 		// Wipe anything else that's in the buffer
 		ob_end_clean();
 
-		$new_response = Posts::get( array( "title_search" => $response, "status" => Post::status( 'published' ) ) );
-
 		$final_response = array();
-		foreach ( $new_response as $post ) {
 
-			$final_response[] = array(
-				'id' => $post->id,
-				'name' => $post->title,
-			);
+		if ( Utils::verify_wsse( $_GET ) ) {
+
+			$new_response = Posts::get( array( "title_search" => $response, "status" => Post::status( 'published' ) ) );
+			foreach ( $new_response as $post ) {
+
+				$final_response[] = array(
+					'id' => $post->id,
+					'name' => $post->title,
+				);
+			}
 		}
 		// Send the response
 		echo json_encode( $final_response );
