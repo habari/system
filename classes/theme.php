@@ -619,6 +619,8 @@ class Theme extends Pluggable
 	public function theme_footer( $theme )
 	{
 		Plugins::act( 'template_footer', $theme );
+		Stack::dependent('template_footer_javascript', 'template_header_javascript');
+		Stack::dependent('template_footer_stylesheet', 'template_stylesheet');
 		$output = Stack::get( 'template_footer_stylesheet', array( 'Stack', 'styles' ) );
 		$output .= Stack::get( 'template_footer_javascript', array( 'Stack', 'scripts' ) );
 		return $output;

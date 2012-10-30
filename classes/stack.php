@@ -32,6 +32,7 @@ class Stack
 	private static $stacks = array();
 	private static $stack_sort = array();
 	private static $sorting;
+	private static $depends = array();
 
 	/**
 	 * Private constructor for Stack.
@@ -183,7 +184,17 @@ class Stack
 		$raw_stack = self::get_named_stack( $stack_name );
 		$sorted = array();
 
-		$sort = function(&$stackitem, $sort) use (&$sorted) {
+		$dependency_items = array();
+		if(isset(self::$depends[$stack_name])) {
+			foreach(self::$depends[$stack_name] as $stack) {
+				$items = self::get_named_stack( $stack );
+				foreach($items as $item) {
+					$dependency_items[$item->name] = $item->name;
+				}
+			}
+		}
+
+		$sort = function(&$stackitem, $sort) use (&$sorted, $dependency_items) {
 			static $sortindex = array();
 			if(isset($sortindex[$stackitem->name])) {
 				return;
@@ -193,10 +204,12 @@ class Stack
 			$dependencies = $stackitem->get_dependencies();
 			/** @var StackItem $dependency */
 			foreach($dependencies as &$dependency) {
-				$sort($dependency, $sort);
-				if(!$dependency->in_stack_index($sorted)) {
-					$sorted[$dependency->name] = $dependency;
-					$have_everything = false;
+				if(!in_array($dependency->name, $dependency_items)) {
+					$sort($dependency, $sort);
+					if(!$dependency->in_stack_index($sorted)) {
+						$sorted[$dependency->name] = $dependency;
+						$have_everything = false;
+					}
 				}
 			}
 			$sorted[$stackitem->name] = $stackitem;
@@ -303,6 +316,19 @@ class Stack
 	private static function is_url( $url ) 
 	{
 		return ( ( strpos( $url, 'http://' ) === 0 || strpos( $url, 'https://' ) === 0 || strpos( $url, '//' ) === 0 || strpos( $url, '/' ) === 0 ) && strpos( $url, "\n" ) === false );
+	}
+
+	/**
+	 * Make a stack's dependencies be provided by another stack
+	 * @param string $dependent The name of a stack that should be made to depend on another stack
+	 * @param string $dependson The name of the stack that the dependent stack should depend on
+	 */
+	public static function dependent($dependent, $dependson)
+	{
+		if(!isset(self::$depends[$dependent])) {
+			self::$depends[$dependent] = array();
+		}
+		self::$depends[$dependent][$dependson] = $dependson;
 	}
 
 	/**
