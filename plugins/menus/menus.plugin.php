@@ -189,7 +189,7 @@ class Menus extends Plugin
 		$menus_array = array( 'create_menu' => array(
 			'title' => "Create a new Menu",
 			'text' => "New Menu",
-			'hotkey' => 'N',
+			'hotkey' => '1',
 			'url' => URL::get( 'admin', array( 'page' => 'menus', 'action' => 'create' ) ),
 			'class' => 'over-spacer',
 			'access' => array( 'manage_menus' => true ),
@@ -200,7 +200,7 @@ class Menus extends Plugin
 			$menus_array[ ++$items ] = array(
 				'title' => "{$item->name}: {$item->description}",
 				'text' => $item->name,
-				'hotkey' => $items,
+				'hotkey' => $items+1,
 				'url' => URL::get( 'admin', array( 'page' => 'menus', 'action' => 'edit', 'menu' => $item->id ) ),
 				'access' => array( 'manage_menus' => true ),
 			);
