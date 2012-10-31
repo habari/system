@@ -59,7 +59,7 @@ abstract class Pluggable
 	/**
 	 * Get a fully-qualified URL directory that contains this pluggable class
 	 *
-	 * @param bool whether to include a trailing slash.  Default: No
+	 * @param bool|string $trail If true, include a trailing slash.  If string, append this to the requested url.  Default: Add nothing.
 	 * @return string URL
 	 */
 	public function get_url( $trail = false )

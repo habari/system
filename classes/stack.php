@@ -32,6 +32,7 @@ class Stack
 	private static $stacks = array();
 	private static $stack_sort = array();
 	private static $sorting;
+	private static $depends = array();
 
 	/**
 	 * Private constructor for Stack.
@@ -183,7 +184,17 @@ class Stack
 		$raw_stack = self::get_named_stack( $stack_name );
 		$sorted = array();
 
-		$sort = function(&$stackitem, $sort) use (&$sorted) {
+		$dependency_items = array();
+		if(isset(self::$depends[$stack_name])) {
+			foreach(self::$depends[$stack_name] as $stack) {
+				$items = self::get_named_stack( $stack );
+				foreach($items as $item) {
+					$dependency_items[$item->name] = $item->name;
+				}
+			}
+		}
+
+		$sort = function(&$stackitem, $sort) use (&$sorted, $dependency_items) {
 			static $sortindex = array();
 			if(isset($sortindex[$stackitem->name])) {
 				return;
@@ -193,10 +204,12 @@ class Stack
 			$dependencies = $stackitem->get_dependencies();
 			/** @var StackItem $dependency */
 			foreach($dependencies as &$dependency) {
-				$sort($dependency, $sort);
-				if(!$dependency->in_stack_index($sorted)) {
-					$sorted[$dependency->name] = $dependency;
-					$have_everything = false;
+				if(!in_array($dependency->name, $dependency_items)) {
+					$sort($dependency, $sort);
+					if(!$dependency->in_stack_index($sorted)) {
+						$sorted[$dependency->name] = $dependency;
+						$have_everything = false;
+					}
 				}
 			}
 			$sorted[$stackitem->name] = $stackitem;
@@ -306,6 +319,19 @@ class Stack
 	}
 
 	/**
+	 * Make a stack's dependencies be provided by another stack
+	 * @param string $dependent The name of a stack that should be made to depend on another stack
+	 * @param string $dependson The name of the stack that the dependent stack should depend on
+	 */
+	public static function dependent($dependent, $dependson)
+	{
+		if(!isset(self::$depends[$dependent])) {
+			self::$depends[$dependent] = array();
+		}
+		self::$depends[$dependent][$dependson] = $dependson;
+	}
+
+	/**
 	 * Allow plugins to register StackItems that can be added to Stacks later
 	 * Initialize this class for plugin behavior so it can add system default StackItems
 	 */
@@ -321,20 +347,20 @@ class Stack
 	public static function action_register_stackitems()
 	{
 		// Register default StackItems
-		StackItem::register( 'jquery', Site::get_url( 'vendor', '/jquery.js' ) );
-		StackItem::register( 'jquery.ui', Site::get_url( 'vendor', '/jquery-ui.min.js' ) )->add_dependency( 'jquery' );
+		StackItem::register( 'jquery', Site::get_url( 'vendor', '/jquery.js' ), '1.8.2' );
+		StackItem::register( 'jquery.ui', Site::get_url( 'vendor', '/jquery-ui.min.js', '1.9.0' ) )->add_dependency( 'jquery' );
 		StackItem::register( 'jquery.color', Site::get_url( 'vendor', '/jquery.color.js' ) )->add_dependency('jquery.ui' );
-		StackItem::register( 'jquery-nested-sortable', Site::get_url( 'vendor', '/jquery.ui.nestedSortable.js') ) ->add_dependency('jquery.ui' );
-		StackItem::register( 'humanmsg', Site::get_url( 'vendor', '/humanmsg/humanmsg.js' ) )->add_dependency( 'jquery' )->add_dependency( 'locale-js' );
-		StackItem::register( 'jquery.hotkeys', Site::get_url( 'vendor', '/jquery.hotkeys.js' ) )->add_dependency( 'jquery' );
+		StackItem::register( 'jquery-nested-sortable', Site::get_url( 'vendor', '/jquery.ui.nestedSortable.js'), '1.2.1' ) ->add_dependency('jquery.ui' );
+		StackItem::register( 'humanmsg', Site::get_url( 'vendor', '/humanmsg/humanmsg.js' ), '2' )->add_dependency( 'jquery' )->add_dependency( 'locale-js' );
+		StackItem::register( 'jquery.hotkeys', Site::get_url( 'vendor', '/jquery.hotkeys.js' ), '2.00.A' )->add_dependency( 'jquery' );
 		StackItem::register( 'locale-js', URL::get( 'ajax', 'context=locale' ) );
 		StackItem::register( 'media', Site::get_url( 'admin_theme', '/js/media.js' ) )->add_dependency( 'jquery' )->add_dependency( 'locale-js' );
 		StackItem::register( 'admin-js', Site::get_url( 'admin_theme', '/js/admin.js' ) )->add_dependency( 'jquery' )->add_dependency( 'locale-js' );
-		StackItem::register( 'crc32', Site::get_url( 'vendor', '/crc32.js' ) );
+		StackItem::register( 'crc32', Site::get_url( 'vendor', '/crc32.js' ), '1.2' );
 
 		StackItem::register( 'admin-css', array( Site::get_url( 'admin_theme', '/css/admin.css'), 'screen' ) );
-		StackItem::register( 'jquery.ui-css', array( Site::get_url( 'admin_theme', '/css/jqueryui.css'), 'screen' ) );
-		StackItem::register( 'humanmsg-css', array( Site::get_url( 'vendor', '/humanmsg/humanmsg.css'), 'screen' ) );
+		StackItem::register( 'jquery.ui-css', array( Site::get_url( 'admin_theme', '/css/jqueryui.css'), 'screen' ), '1.8.14' );
+		StackItem::register( 'humanmsg-css', array( Site::get_url( 'vendor', '/humanmsg/humanmsg.css'), 'screen' ), '1.0.habari' );
 	}
 
 }

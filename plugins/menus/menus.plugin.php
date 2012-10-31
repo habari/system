@@ -1,6 +1,8 @@
 <?php
 /**
  * Menus
+ * 
+ * @property Vocabulary $vocabulary The Vocabulary object used to hold the menu
  *
  * @todo allow renaming/editing of menu items
  * @todo style everything so it looks good
@@ -8,8 +10,14 @@
  * @todo PHPDoc
  * @todo ACL, CSRF, etc.
  */
+
 class Menus extends Plugin
 {
+	/**
+	 * Return properties of this object
+	 * @param $name
+	 * @return Vocabulary
+	 */
 	public function  __get($name)
 	{
 		switch ( $name ) {
@@ -48,9 +56,6 @@ class Menus extends Plugin
 		// formcontrol for tokens
 		$this->add_template( 'text_tokens', dirname( __FILE__ ) . '/formcontrol_tokens.php' );
 		$this->add_template( 'transparent_text', dirname( __FILE__ ) . '/admincontrol_text_transparent.php' );
-
-		// i18n
-		$this->load_text_domain( 'menus' );
 	}
 
 	/**
@@ -184,7 +189,7 @@ class Menus extends Plugin
 		$menus_array = array( 'create_menu' => array(
 			'title' => "Create a new Menu",
 			'text' => "New Menu",
-			'hotkey' => 'N',
+			'hotkey' => '1',
 			'url' => URL::get( 'admin', array( 'page' => 'menus', 'action' => 'create' ) ),
 			'class' => 'over-spacer',
 			'access' => array( 'manage_menus' => true ),
@@ -195,7 +200,7 @@ class Menus extends Plugin
 			$menus_array[ ++$items ] = array(
 				'title' => "{$item->name}: {$item->description}",
 				'text' => $item->name,
-				'hotkey' => $items,
+				'hotkey' => $items+1,
 				'url' => URL::get( 'admin', array( 'page' => 'menus', 'action' => 'edit', 'menu' => $item->id ) ),
 				'access' => array( 'manage_menus' => true ),
 			);
@@ -475,7 +480,13 @@ class Menus extends Plugin
 		if ( isset($menu_types[$action]) ) {
 			$menu_types[$action]['form']($form, $term);
 			$form->append( 'hidden', 'menu_type' )->value = $action;
-			$form->append( 'submit', 'submit', _t( '%1$s %2$s', array( $term ? _t( 'Update' ) : _t( 'Add' ), $menu_types[$action]['label'] ) ) );
+			if($term) {
+				$label = _t( 'Update %s', array( $menu_types[$action]['label'] ));
+			}
+			else {
+				$label = _t( 'Add %s', array( $menu_types[$action]['label'] ));
+			}
+			$form->append( 'submit', 'submit', $label );
 		}
 
 		$form->properties['onsubmit'] = "return habari.menu_admin.submit_menu_item_edit(this)";
@@ -523,7 +534,7 @@ JAVSCRIPT_RESPONSE;
 			case 'edit':
 				$vocabulary = Vocabulary::get_by_id( intval( $handler->handler_vars[ 'menu' ] ) );
 				if ( $vocabulary == false ) {
-					$theme->page_content = _t( '<h2>Invalid Menu.</h2>' );
+					$theme->page_content = '<h2>' . _t( 'Invalid Menu.' );
 					// that's it, we're done. Maybe we show the list of menus instead?
 					break;
 				}
@@ -557,14 +568,15 @@ JAVSCRIPT_RESPONSE;
 //						$form->tree->value = $vocabulary->get_root_terms();
 					// append other needed controls, if there are any.
 
-					$form->append( 'static', 'buttons', _t( "<div id='menu_item_button_container'>$edit_items</div>" ) );
+					$form->append( 'static', 'buttons', '<div id="menu_item_button_container">' . $edit_items . '</div>' );
 					$form->append( 'submit', 'save', _t( 'Apply Changes' ) );
 				}
 				else {
-					$form->append( 'static', 'buttons', _t( "<div id='menu_item_button_container'>$edit_items</div>" ) );
+					$form->append( 'static', 'buttons', '<div id="menu_item_button_container">' . $edit_items . '</div>' );
 				}
-				$delete_link = URL::get( 'admin', array( 'page' => 'menus', 'action' => 'delete_menu', 'menu' => $handler->handler_vars[ 'menu' ] ) );
-				$form->append( 'static', 'deletebutton', _t( "<a class='a_button' href='$delete_link'>Delete Menu</a>" ) );
+				$delete_link = URL::get( 'admin', Utils::WSSE( array( 'page' => 'menus', 'action' => 'delete_menu', 'menu' => $handler->handler_vars[ 'menu' ] ) ) );
+				//$delete_link = URL::get( 'admin', array( 'page' => 'menus', 'action' => 'delete_menu', 'menu' => $handler->handler_vars[ 'menu' ] ) );
+				$form->append( 'static', 'deletebutton', '<a class="a_button" href="' . $delete_link . '">' . _t( 'Delete Menu' ) . '</a>' );
 				$form->append( new FormControlHidden( 'menu', 'null:null' ) )->value = $handler->handler_vars[ 'menu' ];
 				$form->on_success( array( $this, 'rename_menu_form_save' ) );
 				$form->properties['onsubmit'] = "return habari.menu_admin.submit_menu_update();";
@@ -584,21 +596,33 @@ JAVSCRIPT_RESPONSE;
 				break;
 
 			case 'delete_menu':
-				$menu_vocab = Vocabulary::get_by_id( intval( $handler->handler_vars[ 'menu' ] ) );
-				$menu_vocab->delete();
-				// log that it has been deleted?
-				Session::notice( _t( 'Menu deleted.' ) );
-				// redirect to a blank menu creation form
-				Utils::redirect( URL::get( 'admin', array( 'page' => 'menus', 'action' => 'create' ) ) );
+				if(Utils::verify_wsse($_GET, true)) {
+					$menu_vocab = Vocabulary::get_by_id( intval( $handler->handler_vars[ 'menu' ] ) );
+					$menu_vocab->delete();
+					// log that it has been deleted?
+					Session::notice( _t( 'Menu deleted.' ) );
+					// redirect to a blank menu creation form
+					Utils::redirect( URL::get( 'admin', array( 'page' => 'menus', 'action' => 'create' ) ) );
+				}
+				else {
+					Session::notice( _t( 'Menu deletion failed - please try again.' ) );
+					Utils::redirect(URL::get('admin', array('page' => 'menus', 'action' => 'edit', 'menu' => $handler->handler_vars[ 'menu' ])));
+				}
 				break;
 
 			case 'delete_term':
 				$term = Term::get( intval( $handler->handler_vars[ 'term' ] ) );
 				$menu_vocab = $term->vocabulary_id;
-				$term->delete();
-				// log that it has been deleted?
-				Session::notice( _t( 'Item deleted.' ) );
-				Utils::redirect( URL::get( 'admin', array( 'page' => 'menus', 'action' => 'edit', 'menu' => $menu_vocab ) ) );
+				if(Utils::verify_wsse($_GET, true)) {
+					$term->delete();
+					// log that it has been deleted?
+					Session::notice( _t( 'Item deleted.' ) );
+					Utils::redirect( URL::get( 'admin', array( 'page' => 'menus', 'action' => 'edit', 'menu' => $menu_vocab ) ) );
+				}
+				else {
+					Session::notice( _t( 'Item deletion failed - please try again.' ) );
+					Utils::redirect(URL::get('admin', array('page' => 'menus', 'action' => 'edit', 'menu' => $menu_vocab)));
+				}
 				break;
 			default:
 				Utils::debug( $_GET, $action ); die();
@@ -732,17 +756,30 @@ JAVSCRIPT_RESPONSE;
 			'term' => $term->id,
 			'menu' => $term->info->menu,
 		) );
-		$delete_link = URL::get( 'admin', array(
+		$delete_link = URL::get( 'admin', Utils::WSSE( array(
 			'page' => 'menus',
 			'action' => 'delete_term',
 			'term' => $term->id,
 			'menu' => $term->info->menu,
-		) );
+		) ) );
+
+		$delete_link = str_replace('%', '%%', $delete_link); // This is so it doesn't break the sprintf in Format::term_tree()
 
 		// insert them into the wrapper
-		// @TODO _t() this line or replace it altogether.
-		$links = "<ul class='dropbutton'><li><a title='Edit this' class='modal_popup_form' href='$edit_link'>edit</a></li><li><a title='Delete this' href='$delete_link'>delete</a></li></ul>";
-		$config[ 'wrapper' ] = "<div>%s $links</div>";
+		$edit_title = _t('Edit this');
+		$edit_label = _t('edit');
+		$delete_title = _t('Delete this');
+		$delete_label = _t('delete');
+		
+		$links = <<< LINKS
+<ul class="dropbutton">
+	<li><a title="{$edit_title}" class="modal_popup_form" href="{$edit_link}">{$edit_label}</a></li>
+	<li><a title="{$delete_title}" href="{$delete_link}">{$delete_label}</a></li>
+</ul>
+LINKS;
+
+		// Put the dropbutton links for each item at the end of the item's div
+		$config[ 'wrapper' ] = "<div>%s {$links}</div>";
 
 		return $config;
 	}
@@ -812,7 +849,7 @@ JAVSCRIPT_RESPONSE;
 			Stack::add( 'admin_stylesheet', array( Site::get_url( 'admin_theme' ) . '/css/token-input.css', 'screen' ), 'admin_tokeninput', 'jquery.ui-css' );
 
 			// Add the callback URL.
-			$url = "habari.url.ajaxPostTokens = '" . URL::get( 'ajax', array( 'context' => 'post_tokens' ) ) . "';";
+			$url = "habari.url.ajaxPostTokens = '" . URL::get( 'auth_ajax', array( 'context' => 'post_tokens' ) ) . "';";
 			Stack::add( 'admin_header_javascript', $url, 'post_tokens_url', 'post_tokens' );
 
 			// Add the menu administration javascript
@@ -821,19 +858,16 @@ JAVSCRIPT_RESPONSE;
 	}
 
 	/**
-	 * Respond to Javascript callbacks
-	 * The name of this method is action_ajax_ followed by what you passed to the context parameter above.
+	 * Respond to Javascript callbacks for autocomplete when creating items linking to posts
 	 */
-	public function action_ajax_post_tokens( $handler )
+	public function action_auth_ajax_post_tokens( $handler )
 	{
 		// Get the data that was sent
 		$response = $handler->handler_vars[ 'q' ];
-		// Wipe anything else that's in the buffer
-		ob_end_clean();
-
-		$new_response = Posts::get( array( "title_search" => $response ) );
 
 		$final_response = array();
+
+		$new_response = Posts::get( array( "title_search" => $response, "status" => Post::status( 'published' ) ) );
 		foreach ( $new_response as $post ) {
 
 			$final_response[] = array(
@@ -841,6 +875,7 @@ JAVSCRIPT_RESPONSE;
 				'name' => $post->title,
 			);
 		}
+
 		// Send the response
 		echo json_encode( $final_response );
 	}

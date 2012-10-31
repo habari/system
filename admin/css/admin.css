@@ -2765,6 +2765,12 @@ body.login input[type=text], body.login input[type=password], body.login label.o
 	-moz-box-shadow: 0 0 20px #ddd;
 }
 
+body.login input:-moz-placeholder,
+body.login input:-ms-input-placeholder,
+body.login input::-webkit-input-placeholder {
+	color: #cccccc;
+}
+
 body.login label.overcontent {
 	text-transform: lowercase;
 	color: #aeaeae;

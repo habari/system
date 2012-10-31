@@ -81,7 +81,7 @@ var dashboard = {
 			}
 		});
 
-		$('.options').click(function(){
+		$('.options').live('click', function(){
 			var li = $(this).closest('li');
 			if(li.hasClass('viewingoptions')) {
 				li.toggleClass('viewingoptions');
@@ -99,7 +99,7 @@ var dashboard = {
 			}
 		});
 
-		$('.close', '.modules').click( function() {
+		$('.close', '.modules').live('click', function() {
 			// grab the module ID from the parent DIV data attribute.
 			dashboard.remove( $(this).parents('.module').data('module-id') );
 		});
@@ -143,13 +143,16 @@ var dashboard = {
 			habari.url.ajaxDashboard,
 			query,
 			{modules: '.modules'},
-			dashboard.init
+			function(){
+				$('.modules').sortable('refresh');
+				$('.modules').sortable('enable');
+			}
 		);
 	},
 	remove: function( id ) {
 		spinner.start();
 		// disable dragging and dropping while we update
-		$('.modules').sortable('disable');
+		$('.modules').sortable('destroy');
 		var query = {};
 		query.action = 'removeModule';
 		query.moduleid = id;
