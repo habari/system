@@ -17,7 +17,7 @@ class Version
 	const API_VERSION = 4958;
 
 	const HABARI_MAJOR_MINOR = '0.9';
-	const HABARI_RELEASE = '-alpha';
+	const HABARI_RELEASE = '-beta';
 
 	/**
 	 * Get the database version
