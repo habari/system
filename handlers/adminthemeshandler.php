@@ -362,6 +362,9 @@ class AdminThemesHandler extends AdminHandler
 			if(isset($block_types[$instance->type])) {
 				$block_instances[] = $instance;
 			}
+			elseif(isset($dash_blocks[$instance->type])) {
+				// Do not add this dashboard block to the block instance list on the theme page
+			}
 			else {
 				$instance->invalid_message = _t('This data is for a block of type "%s", which is no longer provided by a theme or plugin.', array($instance->type));
 				$invalid_block_instances[] = $instance;
