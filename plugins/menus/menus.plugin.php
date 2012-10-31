@@ -574,7 +574,8 @@ JAVSCRIPT_RESPONSE;
 				else {
 					$form->append( 'static', 'buttons', '<div id="menu_item_button_container">' . $edit_items . '</div>' );
 				}
-				$delete_link = URL::get( 'admin', array( 'page' => 'menus', 'action' => 'delete_menu', 'menu' => $handler->handler_vars[ 'menu' ] ) );
+				$delete_link = URL::get( 'admin', Utils::WSSE( array( 'page' => 'menus', 'action' => 'delete_menu', 'menu' => $handler->handler_vars[ 'menu' ] ) ) );
+				//$delete_link = URL::get( 'admin', array( 'page' => 'menus', 'action' => 'delete_menu', 'menu' => $handler->handler_vars[ 'menu' ] ) );
 				$form->append( 'static', 'deletebutton', '<a class="a_button" href="' . $delete_link . '">' . _t( 'Delete Menu' ) . '</a>' );
 				$form->append( new FormControlHidden( 'menu', 'null:null' ) )->value = $handler->handler_vars[ 'menu' ];
 				$form->on_success( array( $this, 'rename_menu_form_save' ) );
@@ -595,21 +596,33 @@ JAVSCRIPT_RESPONSE;
 				break;
 
 			case 'delete_menu':
-				$menu_vocab = Vocabulary::get_by_id( intval( $handler->handler_vars[ 'menu' ] ) );
-				$menu_vocab->delete();
-				// log that it has been deleted?
-				Session::notice( _t( 'Menu deleted.' ) );
-				// redirect to a blank menu creation form
-				Utils::redirect( URL::get( 'admin', array( 'page' => 'menus', 'action' => 'create' ) ) );
+				if(Utils::verify_wsse($_GET, true)) {
+					$menu_vocab = Vocabulary::get_by_id( intval( $handler->handler_vars[ 'menu' ] ) );
+					$menu_vocab->delete();
+					// log that it has been deleted?
+					Session::notice( _t( 'Menu deleted.' ) );
+					// redirect to a blank menu creation form
+					Utils::redirect( URL::get( 'admin', array( 'page' => 'menus', 'action' => 'create' ) ) );
+				}
+				else {
+					Session::notice( _t( 'Menu deletion failed - please try again.' ) );
+					Utils::redirect(URL::get('admin', array('page' => 'menus', 'action' => 'edit', 'menu' => $handler->handler_vars[ 'menu' ])));
+				}
 				break;
 
 			case 'delete_term':
 				$term = Term::get( intval( $handler->handler_vars[ 'term' ] ) );
 				$menu_vocab = $term->vocabulary_id;
-				$term->delete();
-				// log that it has been deleted?
-				Session::notice( _t( 'Item deleted.' ) );
-				Utils::redirect( URL::get( 'admin', array( 'page' => 'menus', 'action' => 'edit', 'menu' => $menu_vocab ) ) );
+				if(Utils::verify_wsse($_GET, true)) {
+					$term->delete();
+					// log that it has been deleted?
+					Session::notice( _t( 'Item deleted.' ) );
+					Utils::redirect( URL::get( 'admin', array( 'page' => 'menus', 'action' => 'edit', 'menu' => $menu_vocab ) ) );
+				}
+				else {
+					Session::notice( _t( 'Item deletion failed - please try again.' ) );
+					Utils::redirect(URL::get('admin', array('page' => 'menus', 'action' => 'edit', 'menu' => $menu_vocab)));
+				}
 				break;
 			default:
 				Utils::debug( $_GET, $action ); die();
@@ -743,12 +756,14 @@ JAVSCRIPT_RESPONSE;
 			'term' => $term->id,
 			'menu' => $term->info->menu,
 		) );
-		$delete_link = URL::get( 'admin', array(
+		$delete_link = URL::get( 'admin', Utils::WSSE( array(
 			'page' => 'menus',
 			'action' => 'delete_term',
 			'term' => $term->id,
 			'menu' => $term->info->menu,
-		) );
+		) ) );
+
+		$delete_link = str_replace('%', '%%', $delete_link); // This is so it doesn't break the sprintf in Format::term_tree()
 
 		// insert them into the wrapper
 		$edit_title = _t('Edit this');
@@ -834,7 +849,7 @@ LINKS;
 			Stack::add( 'admin_stylesheet', array( Site::get_url( 'admin_theme' ) . '/css/token-input.css', 'screen' ), 'admin_tokeninput', 'jquery.ui-css' );
 
 			// Add the callback URL.
-			$url = "habari.url.ajaxPostTokens = '" . URL::get( 'auth_ajax', Utils::WSSE( array( 'context' => 'post_tokens' ) ) ) . "';";
+			$url = "habari.url.ajaxPostTokens = '" . URL::get( 'auth_ajax', array( 'context' => 'post_tokens' ) ) . "';";
 			Stack::add( 'admin_header_javascript', $url, 'post_tokens_url', 'post_tokens' );
 
 			// Add the menu administration javascript
@@ -852,17 +867,15 @@ LINKS;
 
 		$final_response = array();
 
-		if ( Utils::verify_wsse( $_GET, true ) ) {
+		$new_response = Posts::get( array( "title_search" => $response, "status" => Post::status( 'published' ) ) );
+		foreach ( $new_response as $post ) {
 
-			$new_response = Posts::get( array( "title_search" => $response, "status" => Post::status( 'published' ) ) );
-			foreach ( $new_response as $post ) {
-
-				$final_response[] = array(
-					'id' => $post->id,
-					'name' => $post->title,
-				);
-			}
+			$final_response[] = array(
+				'id' => $post->id,
+				'name' => $post->title,
+			);
 		}
+
 		// Send the response
 		echo json_encode( $final_response );
 	}
