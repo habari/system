@@ -44,7 +44,11 @@ class CoreDashModules extends Plugin
 	 */
 	public function filter_dashboard_block_list($block_list)
 	{
-		return $this->filter_block_list($block_list);
+		$block_list['latest_entries'] = _t( 'Latest Entries');
+		$block_list['latest_comments'] = _t( 'Latest Comments');
+		$block_list['latest_log_activity'] = _t( 'Latest Log Activity');
+		$block_list['post_types_statuses'] = _t( 'Post Types and Statuses');
+		return $block_list;
 	}
 
 	/**
