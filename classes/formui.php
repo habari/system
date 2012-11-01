@@ -1612,6 +1612,17 @@ class FormControlNoSave extends FormControl
 	{
 		// This function should do nothing.
 	}
+
+	/**
+	 * Return a checksum representing this control
+	 *
+	 * @return string A checksum
+	 */
+	public function checksum()
+	{
+		return md5($this->name . 'static');
+	}
+
 }
 
 /**
