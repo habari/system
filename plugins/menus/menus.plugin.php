@@ -96,7 +96,7 @@ class Menus extends Plugin
 	{
 		$form->append('select', 'menu_taxonomy', $block, _t( 'Menu Taxonomy' ), $this->get_menus( true ) );
 		$form->append('checkbox', 'div_wrap', $block, _t( 'Wrap each menu link in a div' ) );
-		$form->append('text', 'list_class', $block, _t( 'Custom class for the tree ordered list element' ) );
+		$form->append('text', 'list_class', $block, _t( 'Custom class for the tree\'s ordered list element' ) );
 	}
 
 	/**
