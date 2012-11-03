@@ -137,7 +137,7 @@ class Comment extends QueryRecord implements IsContent
 			return;
 		}
 		Plugins::act( 'comment_insert_before', $this );
-		// Invoke plugins for all fields, since they're all "chnaged" when inserted
+		// Invoke plugins for all fields, since they're all "changed" when inserted
 		foreach ( $this->fields as $fieldname => $value ) {
 			Plugins::act( 'comment_update_' . $fieldname, $this, $this->$fieldname, $value );
 		}
