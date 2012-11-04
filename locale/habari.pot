@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-28 00:00+0000\n"
+"POT-Creation-Date: 2012-11-04 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -422,28 +422,28 @@ msgstr ""
 msgid "Whoops! 404. The page you were trying to access is not really there. Please try again."
 msgstr ""
 
-#: classes/theme.php:671
+#: classes/theme.php:673
 #, php-format
 msgid "Content could not be displayed. One of the following templates - %s - has to be present in the active theme."
 msgstr ""
 
-#: classes/theme.php:829
+#: classes/theme.php:831
 msgid "Previous"
 msgstr ""
 
-#: classes/theme.php:856
+#: classes/theme.php:858
 msgid "Next"
 msgstr ""
 
-#: classes/theme.php:882
+#: classes/theme.php:884
 msgid "Read Comments"
 msgstr ""
 
-#: classes/theme.php:903 themes/charcoal/theme.php:159
+#: classes/theme.php:905 themes/charcoal/theme.php:159
 msgid "No Comments"
 msgstr ""
 
-#: classes/theme.php:908
+#: classes/theme.php:910
 #, php-format
 msgid "%s Comment"
 msgid_plural "%s Comments"
@@ -690,7 +690,7 @@ msgstr[1] ""
 msgid "The Comment field value is required"
 msgstr ""
 
-#: classes/post.php:1284 plugins/coredashmodules/coredashmodules.plugin.php:88
+#: classes/post.php:1284 plugins/coredashmodules/coredashmodules.plugin.php:92
 #: plugins/habarisilo/habarisilo.plugin.php:467 themes/mzingi/theme.php:114
 #: themes/charcoal/theme.php:233
 msgid "Submit"
@@ -786,20 +786,20 @@ msgstr ""
 msgid " User %1$s: Removed from %2$s group."
 msgstr ""
 
-#: classes/utils.php:422
+#: classes/utils.php:429
 #, php-format
 msgid "Unsupported digest algorithm \"%s\""
 msgstr ""
 
-#: classes/utils.php:432 classes/utils.php:493 classes/utils.php:532
+#: classes/utils.php:439 classes/utils.php:500 classes/utils.php:539
 msgid "Invalid hash"
 msgstr ""
 
-#: classes/utils.php:738
+#: classes/utils.php:745
 msgid "Unbalanced braces."
 msgstr ""
 
-#: classes/utils.php:1224
+#: classes/utils.php:1231
 msgid "Not set"
 msgstr ""
 
@@ -924,15 +924,15 @@ msgstr ""
 msgid "The value entered is greater than the maximum of %d."
 msgstr ""
 
-#: classes/formui.php:1858
+#: classes/formui.php:1869
 msgid "Remove item"
 msgstr ""
 
-#: classes/formui.php:1858 admin/formcontrols/formcontrol_textmulti.php:30
+#: classes/formui.php:1869 admin/formcontrols/formcontrol_textmulti.php:30
 msgid "remove"
 msgstr ""
 
-#: classes/formui.php:1862
+#: classes/formui.php:1873
 msgid "Remove this item?"
 msgstr ""
 
@@ -1063,11 +1063,11 @@ msgstr ""
 msgid "read"
 msgstr ""
 
-#: classes/acl.php:856
+#: classes/acl.php:856 plugins/menus/menus.plugin.php:770
 msgid "edit"
 msgstr ""
 
-#: classes/acl.php:856
+#: classes/acl.php:856 plugins/menus/menus.plugin.php:772
 msgid "delete"
 msgstr ""
 
@@ -1902,30 +1902,33 @@ msgid "Private Post"
 msgstr ""
 
 #: plugins/coredashmodules/coredashmodules.plugin.php:29
+#: plugins/coredashmodules/coredashmodules.plugin.php:47
 msgid "Latest Entries"
 msgstr ""
 
 #: plugins/coredashmodules/coredashmodules.plugin.php:31
+#: plugins/coredashmodules/coredashmodules.plugin.php:48
 msgid "Latest Comments"
 msgstr ""
 
 #: plugins/coredashmodules/coredashmodules.plugin.php:34
+#: plugins/coredashmodules/coredashmodules.plugin.php:49
 msgid "Latest Log Activity"
 msgstr ""
 
 #: plugins/coredashmodules/coredashmodules.plugin.php:36
-#: plugins/coredashmodules/coredashmodules.plugin.php:244
+#: plugins/coredashmodules/coredashmodules.plugin.php:50
+#: plugins/coredashmodules/coredashmodules.plugin.php:248
 msgid "Post Types and Statuses"
 msgstr ""
 
-#: plugins/coredashmodules/coredashmodules.plugin.php:87
+#: plugins/coredashmodules/coredashmodules.plugin.php:91
 msgid "Number of items"
 msgstr ""
 
 #. @locale First variable is the post status, second is the post type
-#: plugins/coredashmodules/coredashmodules.plugin.php:133
-#: plugins/coredashmodules/coredashmodules.plugin.php:201
-#: plugins/menus/menus.plugin.php:478
+#: plugins/coredashmodules/coredashmodules.plugin.php:137
+#: plugins/coredashmodules/coredashmodules.plugin.php:205
 #, php-format
 msgid "%1$s %2$s"
 msgstr ""
@@ -1989,160 +1992,177 @@ msgstr ""
 msgid "by"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:30
+#: plugins/menus/menus.plugin.php:38
 msgid "Manage menus"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:83 plugins/menus/menus.plugin.php:554
+#: plugins/menus/menus.plugin.php:88 plugins/menus/menus.plugin.php:565
 msgid "Menu"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:92
+#: plugins/menus/menus.plugin.php:97
 msgid "Menu Taxonomy"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:93
+#: plugins/menus/menus.plugin.php:98
 msgid "Wrap each menu link in a div"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:94
-msgid "Custom class for the tree ordered list element"
+#: plugins/menus/menus.plugin.php:99
+msgid "Custom class for the tree's ordered list element"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:127 plugins/menus/menus.plugin.php:128
-#: plugins/menus/menus.plugin.php:211 plugins/menus/menus.plugin.php:212
+#: plugins/menus/menus.plugin.php:132 plugins/menus/menus.plugin.php:133
+#: plugins/menus/menus.plugin.php:216 plugins/menus/menus.plugin.php:217
 msgid "Menus"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:287
+#: plugins/menus/menus.plugin.php:292
 msgid "Link"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:289
+#: plugins/menus/menus.plugin.php:294
 msgid "Link Title"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:290
+#: plugins/menus/menus.plugin.php:295
 msgid "A name is required."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:291
+#: plugins/menus/menus.plugin.php:296
 msgid "Link URL"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:293
+#: plugins/menus/menus.plugin.php:298
 msgid "You must supply a valid URL."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:314
+#: plugins/menus/menus.plugin.php:319
 msgid "Link added."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:332 plugins/menus/menus.plugin.php:418
+#: plugins/menus/menus.plugin.php:337 plugins/menus/menus.plugin.php:423
 msgid "Link updated."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:344
+#: plugins/menus/menus.plugin.php:349
 msgid "Spacer"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:346
+#: plugins/menus/menus.plugin.php:351
 msgid "Item text"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:347
+#: plugins/menus/menus.plugin.php:352
 msgid "Leave blank for blank space"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:366
+#: plugins/menus/menus.plugin.php:371
 msgid "Spacer added."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:372
+#: plugins/menus/menus.plugin.php:377
 msgid "Spacer updated."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:378
+#: plugins/menus/menus.plugin.php:383
 msgid "Links to Posts"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:384
+#: plugins/menus/menus.plugin.php:389
 msgid "Title to display"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:391
+#: plugins/menus/menus.plugin.php:396
 msgid "Posts"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:411
+#: plugins/menus/menus.plugin.php:416
 msgid "Link(s) added."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:478
-msgid "Update"
+#: plugins/menus/menus.plugin.php:484
+#, php-format
+msgid "Update %s"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:478 admin/group.php:48
-msgid "Add"
-msgstr ""
-
-#: plugins/menus/menus.plugin.php:489
-msgid "Menu item added."
-msgstr ""
-
-#: plugins/menus/menus.plugin.php:499
-msgid "Menu item updated."
-msgstr ""
-
-#: plugins/menus/menus.plugin.php:526
-msgid "<h2>Invalid Menu.</h2>"
-msgstr ""
-
-#: plugins/menus/menus.plugin.php:533 themes/charcoal/theme.php:226
-#: admin/login.php:36
-msgid "Name"
-msgstr ""
-
-#: plugins/menus/menus.plugin.php:534 plugins/menus/menus.plugin.php:577
-msgid "You must supply a valid menu name"
-msgstr ""
-
-#: plugins/menus/menus.plugin.php:539 plugins/menus/menus.plugin.php:579
-msgid "Description"
-msgstr ""
-
-#: plugins/menus/menus.plugin.php:550
+#: plugins/menus/menus.plugin.php:487 plugins/menus/menus.plugin.php:561
 #, php-format
 msgid "Add %s"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:561
+#: plugins/menus/menus.plugin.php:500
+msgid "Menu item added."
+msgstr ""
+
+#: plugins/menus/menus.plugin.php:510
+msgid "Menu item updated."
+msgstr ""
+
+#: plugins/menus/menus.plugin.php:537
+msgid "Invalid Menu."
+msgstr ""
+
+#: plugins/menus/menus.plugin.php:544 themes/charcoal/theme.php:226
+#: admin/login.php:36
+msgid "Name"
+msgstr ""
+
+#: plugins/menus/menus.plugin.php:545 plugins/menus/menus.plugin.php:589
+msgid "You must supply a valid menu name"
+msgstr ""
+
+#: plugins/menus/menus.plugin.php:550 plugins/menus/menus.plugin.php:591
+msgid "Description"
+msgstr ""
+
+#: plugins/menus/menus.plugin.php:572
 msgid "Apply Changes"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:576
+#: plugins/menus/menus.plugin.php:579
+msgid "Delete Menu"
+msgstr ""
+
+#: plugins/menus/menus.plugin.php:588
 msgid "Menu Name"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:580
+#: plugins/menus/menus.plugin.php:592
 msgid "Create Menu"
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:590
+#: plugins/menus/menus.plugin.php:603
 msgid "Menu deleted."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:600
+#: plugins/menus/menus.plugin.php:608
+msgid "Menu deletion failed - please try again."
+msgstr ""
+
+#: plugins/menus/menus.plugin.php:619
 msgid "Item deleted."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:644
+#: plugins/menus/menus.plugin.php:623
+msgid "Item deletion failed - please try again."
+msgstr ""
+
+#: plugins/menus/menus.plugin.php:668
 #, php-format
 msgid "Updated menu \"%s\"."
 msgstr ""
 
-#: plugins/menus/menus.plugin.php:689
+#: plugins/menus/menus.plugin.php:713
 msgid "Please choose a vocabulary name that does not already exist."
+msgstr ""
+
+#: plugins/menus/menus.plugin.php:769
+msgid "Edit this"
+msgstr ""
+
+#: plugins/menus/menus.plugin.php:771
+msgid "Delete this"
 msgstr ""
 
 #: plugins/coreblocks/coreblocks.plugin.php:18
@@ -3361,7 +3381,7 @@ msgstr ""
 msgid "Saved block areas settings."
 msgstr ""
 
-#: handlers/adminthemeshandler.php:366
+#: handlers/adminthemeshandler.php:369
 #, php-format
 msgid "This data is for a block of type \"%s\", which is no longer provided by a theme or plugin."
 msgstr ""
@@ -4350,7 +4370,7 @@ msgstr ""
 
 #: admin/users.php:65 admin/logs.php:15 admin/logs.php:78
 #: admin/comments.php:16 admin/comments.php:40 admin/tags.php:22
-#: admin/posts.php:13 admin/posts.php:39 admin/js/admin.js:319
+#: admin/posts.php:13 admin/posts.php:39 admin/js/admin.js:322
 msgid "None selected"
 msgstr ""
 
@@ -4549,6 +4569,10 @@ msgstr ""
 
 #: admin/group.php:38
 msgid "Members To Add"
+msgstr ""
+
+#: admin/group.php:48
+msgid "Add"
 msgstr ""
 
 #: admin/group.php:53
@@ -4957,26 +4981,26 @@ msgstr ""
 msgid "Uh Oh. An error has occurred. Please try again later."
 msgstr ""
 
-#: admin/js/admin.js:324
+#: admin/js/admin.js:327
 #, perl-format
 msgid "All %1$s visible selected (<a href=\"#all\" class=\"everything\">Select all %2$s</a>)"
 msgstr ""
 
-#: admin/js/admin.js:336
+#: admin/js/admin.js:339
 #, perl-format
 msgid "All %s selected"
 msgstr ""
 
-#: admin/js/admin.js:342
+#: admin/js/admin.js:345
 #, perl-format
 msgid "%s selected"
 msgstr ""
 
-#: admin/js/admin.js:345
+#: admin/js/admin.js:348
 #, perl-format
 msgid "%1$s selected (%2$s visible)"
 msgstr ""
 
-#: admin/js/admin.js:561
+#: admin/js/admin.js:564
 msgid "You did not save the changes you made. \\nLeaving this page will result in the lose of data."
 msgstr ""
