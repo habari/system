@@ -218,7 +218,7 @@ class FormContainer extends FormComponents
 		$theme->caption = $this->caption;
 		$theme->control = $this;
 
-		return $theme->fetch( $this->template, true );
+		return $this->prefix . $theme->fetch( $this->template, true ) . $this->postfix;
 	}
 
 	/**
