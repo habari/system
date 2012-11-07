@@ -8,7 +8,7 @@
 	<div class="modulecore">
 		<h2>
 			<?php if(isset($block->link)): ?>
-			<a href="<?php echo $block->link; ?>"><?php echo $block->title; ?></a>
+			<a href="<?php echo $block->link; ?>"><?php echo $block->_title; ?></a>
 			<?php else: ?>
 			<?php echo $block->title; ?>
 			<?php endif; ?>

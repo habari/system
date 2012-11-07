@@ -26,6 +26,14 @@ class Monolith extends Theme
 
 	}
 
+	/**
+	 * Get the blocks for this theme in teh specified area,
+	 * overrides the default handling to implement dashboard modules
+	 * @param string $area The area to return blocks for
+	 * @param string $scope The scope in which the blocks exist
+	 * @param Theme $theme The theme for which the blocks will be returned
+	 * @return array An array of Blocks
+	 */
 	public function get_blocks( $area, $scope, $theme )
 	{
 		if($area == 'dashboard') {
@@ -34,6 +42,20 @@ class Monolith extends Theme
 		return parent::get_blocks($area, $scope, $theme);
 	}
 
-
+	/**
+	 * When adding dashboard modules, the titles should remain as they're written in their providing plugin
+	 * This function adds a value for the title of the block that is the same as the name of the type of block.
+	 * The value is in _title because overwriting the main title value causes the block data to reload.
+	 * @param Block $block The block that has data stored for the title
+	 * @param Theme $theme The theme displaying this block
+	 */
+	public function action_block_content($block, $theme)
+	{
+		static $available_modules;
+		if(!isset($available_modules)) {
+			$available_modules = Plugins::filter('dashboard_block_list', array());
+		}
+		$block->_title = $available_modules[$block->type];
+	}
 }
 ?>
