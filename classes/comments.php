@@ -578,8 +578,7 @@ class Comments extends ArrayObject
 			// first, divvy up approved and unapproved comments
 			switch ( $c->status ) {
 				case Comment::STATUS_APPROVED:
-					$this->sort['approved'][] = $c;
-					$this->sort['moderated'][] = $c;
+					$categories = array( 'approved', 'moderated' );
 					break;
 				case Comment::STATUS_UNAPPROVED:
 					if ( isset( $_COOKIE['comment_' . Options::get( 'GUID' )] ) ) {
@@ -590,21 +589,29 @@ class Comments extends ArrayObject
 						$email = '';
 						$url = '';
 					}
+					$categories = array( 'unapproved' );
 					if ( ( $c->ip == Utils::get_ip() )
 						&& ( $c->name == $name )
 						&& ( $c->email == $email )
 						&& ( $c->url == $url ) ) {
-							$this->sort['moderated'][] = $c;
+							array_push( $categories, 'moderated' );
 					}
-					$this->sort['unapproved'][] = $c;
 					break;
 				case Comment::STATUS_SPAM:
-					$this->sort['spam'][] = $c;
+					$categories = array( 'spam' );
 					break;
 			}
+			
+			// add the comment type
+			if ( in_array( $c->type, $type_sort ) ) {
+				array_push( $categories, $type_sort[$c->type] );
+			}
+			
+			$categories = Plugins::filter( 'comment_categories', $categories, $this );
 
-			// now sort by comment type
-			$this->sort[$type_sort[$c->type]][] = $c;
+			foreach ( $categories as $cat ) {
+				$this->sort[$cat][] = $c;
+			}
 		}
 	}
 
@@ -633,18 +640,9 @@ class Comments extends ArrayObject
 	*/
 	public function __get( $name )
 	{
-		switch ( $name ) {
-			case 'count':
-				return count( $this );
-			case 'approved':
-			case 'unapproved':
-			case 'moderated':
-			case 'comments':
-			case 'pingbacks':
-			case 'trackbacks':
-			case 'spam':
-				return new Comments( $this->only( $name ) );
-		}
+		if ( $name == 'count' )
+			return count( $this );
+		return new Comments( $this->only( $name ) );
 	}
 
 	/**
