@@ -69,7 +69,9 @@ class Pingback extends Plugin
 	public function action_add_template_vars()
 	{
 		$action = Controller::get_action();
-		if ( $action == 'display_post' ) {
+		$add_header = $action == 'display_post';
+		$add_header = Plugins::filter( 'pingback_add_header', $add_header, $action );
+		if ( $add_header ) {
 			header( 'X-Pingback: ' . URL::get( 'xmlrpc' ) );
 		}
 		else {
