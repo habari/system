@@ -1,24 +1,24 @@
 [submodule "locale/de"]
 	path = locale/de
-	url = https://github.com/Habari-Locales/de
+	url = https://github.com/habari-locales/de
 [submodule "locale/da"]
 	path = locale/da
-	url = https://github.com/Habari-Locales/da
+	url = https://github.com/habari-locales/da
 [submodule "locale/fr"]
 	path = locale/fr
-	url = https://github.com/Habari-Locales/fr
+	url = https://github.com/habari-locales/fr
 [submodule "locale/it"]
 	path = locale/it
-	url = https://github.com/Habari-Locales/it
+	url = https://github.com/habari-locales/it
 [submodule "locale/es"]
 	path = locale/es
-	url = https://github.com/Habari-Locales/es
+	url = https://github.com/habari-locales/es
 [submodule "locale/ja"]
 	path = locale/ja
-	url = https://github.com/Habari-Locales/ja
+	url = https://github.com/habari-locales/ja
 [submodule "locale/ru"]
 	path = locale/ru
-	url = https://github.com/Habari-Locales/ru
+	url = https://github.com/habari-locales/ru
 [submodule "locale/zh_TW"]
 	path = locale/zh_TW
-	url = https://github.com/Habari-Locales/zh_TW
+	url = https://github.com/habari-locales/zh_TW
