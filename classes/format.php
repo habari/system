@@ -159,12 +159,14 @@ class Format
 		// should never autop ANY content in these items
 		$no_auto_p = array(
 			'pre','code','ul','h1','h2','h3','h4','h5','h6',
+			'object','applet','embed',
 			'table','ul','ol','li','i','b','em','strong','script', 'dl', 'dt', 'dd'
 		);
 
 		$block_elements = array(
 			'address','blockquote','center','dir','div','dl','fieldset','form',
 			'h1','h2','h3','h4','h5','h6','hr','isindex','menu','noframes',
+			'object','applet','embed',
 			'noscript','ol','p','pre','table','ul','figure','figcaption'
 		);
 
