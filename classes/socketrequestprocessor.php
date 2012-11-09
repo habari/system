@@ -95,8 +95,6 @@
 				$headersx = is_array( $header ) ? $header : array( $header );
 				foreach ( $headersx as $header ) {
 					if ( !is_string( $header ) ) {
-						if (!is_null( $header ) && var_export( $header, true ) != 'NULL')
-							EventLog::log('meta wrapper_data is not a string: '.var_export( $header, true ), 'warning');
 						continue;
 					}
 
