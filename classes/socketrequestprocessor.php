@@ -91,7 +91,7 @@
 			
 			// $meta['wrapper_data'] should be a list of the headers, the same as is loaded into $http_response_header
 			$headers = array();
-			foreach ( $meta['wrapper_data'] as $header ) {
+			foreach ( $http_response_header as $header ) {
 				
 				// break the header up into field and value
 				$pieces = explode( ': ', $header, 2 );
