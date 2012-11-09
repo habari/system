@@ -91,11 +91,20 @@
 			
 			// $meta['wrapper_data'] should be a list of the headers, the same as is loaded into $http_response_header
 			$headers = array();
-			foreach ( $meta['wrapper_data'] as $header ) {
-				
+			if ( isset( $meta['wrapper_data']['headers'] ) ) {
+				$hdrs = $meta['wrapper_data']['headers'];
+			}
+			else {
+				$hdrs = $meta['wrapper_data'];
+			}
+			foreach ( $hdrs as $header ) {
+				if ( !is_string( $header ) ) {
+					continue;
+				}
+
 				// break the header up into field and value
 				$pieces = explode( ': ', $header, 2 );
-				
+			
 				if ( count( $pieces ) > 1 ) {
 					// if the header was a key: value format, store it keyed in the array
 					$headers[ $pieces[0] ] = $pieces[1];
@@ -104,7 +113,6 @@
 					// some headers (like the HTTP version in use) aren't keyed, so just store it keyed as itself
 					$headers[ $pieces[0] ] = $pieces[0];
 				}
-				
 			}
 			
 			// check to see if the response was compressed
