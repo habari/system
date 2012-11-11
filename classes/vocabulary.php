@@ -807,34 +807,50 @@ SQL;
 		// get array of existing tags first to make sure we don't conflict with a new master tag
 		foreach ( $tags as $tag ) {
 
-			$posts = array();
+			// if this is the master tag, there's nothing to do
+			if ( $tag == $master ) {
+				continue;
+			}
+
 			$term = $this->get_term( $tag );
 
 			// get all the post ID's tagged with this tag
 			$posts = $term->objects( $object_type );
 
+			$ok_to_delete = true;
+
+			// if there actually are posts, let's link those up with the new tag now
 			if ( count( $posts ) > 0 ) {
-				// merge the current post ids into the list of all the post_ids we need for the new tag
-				$post_ids = array_merge( $post_ids, $posts );
+				// only try and add the master tag to posts it's not already on
+				$post_ids = array_diff( $posts, $master_ids );
+
+				foreach ( $post_ids as $post_id ) {
+					$r = $master_term->associate( $object_type, $post_id );
+
+					// if we failed linking this post, we can keep trying others, but don't delete this tag when finished
+					if ( $r == false ) {
+						$ok_to_delete = false;
+					}
+					else {
+						// otherwise, we did in fact merge a tag - make sure the tag is in the list of ones we merged
+						$tag_names[ $tag ] = $tag;
+
+						// and disassociate this post from the existing tag
+						$term->dissociate( $object_type, $post_id );
+					}
+
+				}
 			}
 
-			$tag_names[] = $tag;
-			if ( $tag != $master ) {
+			// if it's still ok to delete the tag entirely, do so
+			if ( $ok_to_delete ) {
 				$this->delete_term( $term->id );
 			}
-		}
+			else {
+				// otherwise, log a special message that we didn't delete it
+				EventLog::log( _t( 'Not all posts tagged "%1$s" could be reassigned to "%2$s". They have been left alone.', array( $tag, $master ) ), 'err', 'vocabulary', 'habari' );
+			}
 
-
-		if ( count( $post_ids ) > 0 ) {
-			// only try and add the master tag to posts it's not already on
-			$post_ids = array_diff( $post_ids, $master_ids );
-		}
-		else {
-			$post_ids = $master_ids;
-		}
-		// link the master tag to each distinct post we removed tags from
-		foreach ( $post_ids as $post_id ) {
-			$master_term->associate( $object_type, $post_id );
 		}
 
 		EventLog::log( sprintf(
