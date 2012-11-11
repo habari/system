@@ -841,7 +841,7 @@ SQL;
 			_n( 'Term %1$s in the %2$s vocabulary has been renamed to %3$s.',
 				'Terms %1$s in the %2$s vocabulary have been renamed to %3$s.',
 				count( $tags )
-			), implode( $tag_names, ', ' ), $this->name, $master ), 'info', 'vocabulary', 'habari'
+			), implode( ', ', $tag_names ), $this->name, $master ), 'info', 'vocabulary', 'habari'
 		);
 
 	}
