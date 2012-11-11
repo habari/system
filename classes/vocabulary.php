@@ -790,8 +790,9 @@ SQL;
 
 		if ( !isset( $master_term->term ) ) {
 			// it didn't exist, so we assume it's tag text and create it
-			$ok = $this->add_term( $master );
-			if( !$ok ) {
+			$master_term = $this->add_term( $master );
+
+			if( !$master_term ) {
 				return;
 			}
 
