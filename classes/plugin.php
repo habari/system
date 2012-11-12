@@ -59,6 +59,7 @@ abstract class Plugin extends Pluggable
 				if ( $name == '' ) {
 					$name = '_help';
 				}
+				// @locale Displayed as an icon indicating there is help text available for a plugin.
 				$actions[$name] = _t( '?' );
 			}
 		}

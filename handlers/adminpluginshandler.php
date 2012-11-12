@@ -54,6 +54,7 @@ class AdminPluginsHandler extends AdminHandler
 						$urlparams = array( 'page' => 'plugins', 'configure'=>$plugin_id);
 						$action['url'] = URL::get( 'admin', $urlparams );
 
+						// @locale Displayed as an icon indicating there is help text available for a plugin.
 						if ( $action['caption'] == _t( '?' ) ) {
 							if ( isset( $_GET['configaction'] ) ) {
 								$urlparams['configaction'] = $_GET['configaction'];
@@ -104,6 +105,7 @@ class AdminPluginsHandler extends AdminHandler
 						if ( $_GET['help'] != '_help' ) {
 							$urlparams['help'] = '_help';
 						}
+						// @locale Displayed as an icon indicating there is help text available for a plugin.
 						$action['caption'] = _t( '?' );
 						$action['action'] = '_help';
 						$urlparams = array( 'page' => 'plugins', 'configure' => $plugin_id );

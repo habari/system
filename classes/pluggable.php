@@ -244,6 +244,7 @@ abstract class Pluggable
 	public function _help_plugin_config( $actions, $plugin_id )
 	{
 		if ( $plugin_id == $this->plugin_id() ) {
+			// @locale Displayed as an icon indicating there is help text available for a plugin.
 			$actions['_help'] = _t( '?' );
 		}
 		return $actions;
