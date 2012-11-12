@@ -132,7 +132,6 @@ abstract class Pluggable
 				// make sure the method name is of the form
 				// action_foo or filter_foo of xmlrpc_foo or theme_foo
 				if ( preg_match( '#^(action|filter|xmlrpc|theme|rest)_#i', $hook ) ) {
-//var_dump($hook);
 					$priority = 8;
 					if(isset($priorities[$hook])) {
 						$priority = $priorities[$hook];

@@ -565,7 +565,7 @@ class Plugins
 		else {
 			$short_file = MultiByte::substr( $file, strlen( HABARI_PATH ) );
 		}
-//Utils::debug($stream, $file);die();
+
 		$activated = Options::get( 'active_plugins' );
 		if ( !is_array( $activated ) || !in_array( $short_file, $activated ) ) {
 			include_once( $file );
@@ -649,7 +649,7 @@ class Plugins
 	public static function changed_since_last_activation()
 	{
 		$old_plugins = Options::get( 'plugins_present' );
-		//self::set_present();
+
 		// If the plugin list was never stored, then they've changed.
 		if ( !is_array( $old_plugins ) ) {
 			return true;
