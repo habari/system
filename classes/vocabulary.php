@@ -436,9 +436,6 @@ class Vocabulary extends QueryRecord
 	 **/
 	public function set_object_terms( $object_type, $id, $terms )
 	{
-		if ( ! isset( $object_type ) || ! isset( $id ) ) {
-			return false;
-		}
 
 		if ( ! isset( $terms ) || empty( $terms ) ) {
 			$terms = array();
