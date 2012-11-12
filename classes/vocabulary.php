@@ -434,14 +434,8 @@ class Vocabulary extends QueryRecord
 	 *
 	 * @return boolean. Whether the associations were successful or not
 	 **/
-	public function set_object_terms( $object_type, $id, $terms )
+	public function set_object_terms( $object_type, $id, $terms = array() )
 	{
-
-		if ( ! isset( $terms ) || empty( $terms ) ) {
-			$terms = array();
-//			DB::query( "DELETE FROM {object_terms} WHERE object_id = :object_id AND object_type_id = :type_id", array( 'object_id' => $id, 'type_id' => Vocabulary::get_object_id( $object_type ) ) );
-//			return true;
-		}
 
 		// Make sure we have an array
 		$terms = new Terms( $terms );
