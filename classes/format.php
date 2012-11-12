@@ -258,6 +258,7 @@ class Format
 		}
 
 		if ( $between_last === null ) {
+			// @locale The default string used between the last two items in a series (one, two, three *and* four).
 			$between_last = _t( ' and ' );
 		}
 
@@ -293,6 +294,7 @@ class Format
 		}
 
 		if ( $between_last === null ) {
+			// @locale The default string used between the last two items in a series of tags (one, two, three *and* four).
 			$between_last = _t( ' and ' );
 		}
 

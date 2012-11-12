@@ -39,6 +39,7 @@
 		foreach ( $plugin['info']->author as $author ) {
 			$authors[] = isset( $author['url'] ) ? '<a href="' . $author['url'] . '">' . $author . '</a>' : $author;
 		}
+		// @locale The string used between the last two items in the list of authors of a plugin on the admin page (one, two, three *and* four).
 		echo Format::and_list( $authors, '<span class="dim">, </span>', '<span class="dim">' . _t( ' and ' ) . '</span>');
 		?>
 
