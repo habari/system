@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-11 00:00+0000\n"
+"POT-Creation-Date: 2012-11-18 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,7 +28,12 @@ msgstr ""
 msgid "Vocabulary %1$s (%2$s) deleted."
 msgstr ""
 
-#: classes/vocabulary.php:840
+#: classes/vocabulary.php:842
+#, php-format
+msgid "Not all posts tagged \"%1$s\" could be reassigned to \"%2$s\". They have been left alone."
+msgstr ""
+
+#: classes/vocabulary.php:848
 #, php-format
 msgid "Term %1$s in the %2$s vocabulary has been renamed to %3$s."
 msgid_plural "Terms %1$s in the %2$s vocabulary have been renamed to %3$s."
@@ -403,8 +408,9 @@ msgstr ""
 msgid "spam"
 msgstr ""
 
-#: classes/pluggable.php:248 classes/plugin.php:62
-#: handlers/adminpluginshandler.php:57 handlers/adminpluginshandler.php:107
+#. @locale Displayed as an icon indicating there is help text available for a plugin.
+#: classes/pluggable.php:248 classes/plugin.php:63
+#: handlers/adminpluginshandler.php:58 handlers/adminpluginshandler.php:109
 msgid "?"
 msgstr ""
 
@@ -512,8 +518,12 @@ msgstr ""
 msgid "CronJob %s is not scheduled to run again and is being deleted."
 msgstr ""
 
-#: classes/format.php:261 classes/format.php:296 themes/charcoal/footer.php:12
-#: admin/plugin.php:42 admin/themes.php:15 admin/themes.php:123
+#. @locale The default string used between the last two items in a series (one, two, three *and* four).
+#. @locale The default string used between the last two items in a series of tags (one, two, three *and* four).
+#. @locale The string used between the last two items in the list of authors of a plugin on the admin page (one, two, three *and* four).
+#. @locale The string used between the last two items in the list of authors of a theme on the admin page (one, two, three *and* four).
+#: classes/format.php:262 classes/format.php:298 admin/plugin.php:43
+#: admin/themes.php:16 admin/themes.php:125
 msgid " and "
 msgstr ""
 
@@ -569,7 +579,7 @@ msgid "Tags, separated by, commas"
 msgstr ""
 
 #: classes/post.php:979 handlers/admincommentshandler.php:73
-#: admin/themes.php:31
+#: admin/themes.php:32
 msgid "Settings"
 msgstr ""
 
@@ -600,7 +610,7 @@ msgstr ""
 #: classes/post.php:1019 plugins/undelete/undelete.plugin.php:181
 #: plugins/flickrsilo/flickrsilo.plugin.php:876
 #: handlers/adminthemeshandler.php:154 themes/charcoal/theme.php:66
-#: admin/themes.php:89
+#: admin/themes.php:90
 msgid "Save"
 msgstr ""
 
@@ -1609,36 +1619,23 @@ msgid "You have already successfully authorized Habari to access your Flickr acc
 msgstr ""
 
 #: plugins/flickrsilo/flickrsilo.plugin.php:817
-#: plugins/flickrsilo/flickrsilo.plugin.php:864
-msgid "Do you want to "
-msgstr ""
-
-#: plugins/flickrsilo/flickrsilo.plugin.php:817
-msgid "revoke authorization"
+#, php-format
+msgid "Do you want to <a href=\"%1$s\">revoke authorization</a>?"
 msgstr ""
 
 #: plugins/flickrsilo/flickrsilo.plugin.php:824
-msgid "To use this plugin, you must "
-msgstr ""
-
-#: plugins/flickrsilo/flickrsilo.plugin.php:824
-msgid "authorize Habari to have access to your Flickr account"
+#, php-format
+msgid "To use this plugin, you must <a href=\"%1$s\">authorized Habari to have access to your Flickr account</a>."
 msgstr ""
 
 #: plugins/flickrsilo/flickrsilo.plugin.php:825
-msgid "When you have completed the authorization on Flickr, return here and "
-msgstr ""
-
-#: plugins/flickrsilo/flickrsilo.plugin.php:825
-msgid "confirm that the authorization was successful"
+#, php-format
+msgid "When you have completed the authorization on Flickr, return here and <a href=\"%1$s\">confirm that the authorization was successful</a>."
 msgstr ""
 
 #: plugins/flickrsilo/flickrsilo.plugin.php:839
-msgid "Either you have already authorized Habari to access your flickr account, or you have not yet done so.  Please "
-msgstr ""
-
-#: plugins/flickrsilo/flickrsilo.plugin.php:839
-msgid "try again"
+#, php-format
+msgid "Either you have already authorized Habari to access your flickr account, or you have not yet done so.  Please <a href=\"%1$s\">try again</a>."
 msgstr ""
 
 #: plugins/flickrsilo/flickrsilo.plugin.php:845
@@ -1651,6 +1648,10 @@ msgstr ""
 
 #: plugins/flickrsilo/flickrsilo.plugin.php:863
 msgid "The Flickr Silo Plugin authorization has been deleted."
+msgstr ""
+
+#: plugins/flickrsilo/flickrsilo.plugin.php:864
+msgid "Do you want to "
 msgstr ""
 
 #: plugins/flickrsilo/flickrsilo.plugin.php:864
@@ -1988,7 +1989,7 @@ msgstr ""
 
 #: plugins/coredashmodules/dashboard.block.latest_entries.php:9
 #: admin/plugin.php:35 admin/posts_items.php:21 admin/themes.php:9
-#: admin/themes.php:117
+#: admin/themes.php:118
 msgid "by"
 msgstr ""
 
@@ -2883,8 +2884,8 @@ msgstr ""
 msgid "Habari successfully installed."
 msgstr ""
 
-#: handlers/installhandler.php:226 handlers/adminpluginshandler.php:92
-#: handlers/adminpluginshandler.php:96 admin/themes.php:149
+#: handlers/installhandler.php:226 handlers/adminpluginshandler.php:93
+#: handlers/adminpluginshandler.php:97 admin/themes.php:151
 msgid "Activate"
 msgstr ""
 
@@ -3390,22 +3391,22 @@ msgstr ""
 msgid "Plugins that conflict with importing are active. To prevent undesirable consequences, please de-activate the following plugins until the import is finished: "
 msgstr ""
 
-#: handlers/adminpluginshandler.php:39 handlers/adminpluginshandler.php:78
+#: handlers/adminpluginshandler.php:39 handlers/adminpluginshandler.php:79
 msgid "Deactivate"
 msgstr ""
 
-#: handlers/adminpluginshandler.php:127 installer/db_setup.php:11
+#: handlers/adminpluginshandler.php:129 installer/db_setup.php:11
 #: installer/db_setup.php:166 installer/db_setup.php:220
-#: installer/db_setup.php:248 admin/themes.php:21 admin/themes.php:23
+#: installer/db_setup.php:248 admin/themes.php:22 admin/themes.php:24
 msgid "Help"
 msgstr ""
 
-#: handlers/adminpluginshandler.php:219
+#: handlers/adminpluginshandler.php:221
 #, php-format
 msgid "Activated plugin '%s'"
 msgstr ""
 
-#: handlers/adminpluginshandler.php:228
+#: handlers/adminpluginshandler.php:230
 #, php-format
 msgid "Deactivated plugin '%s'"
 msgstr ""
@@ -3858,17 +3859,14 @@ msgstr ""
 msgid "Be the first to write a comment!"
 msgstr ""
 
-#: themes/charcoal/footer.php:8
+#: themes/charcoal/footer.php:10
 #, php-format
 msgid "%1$s is powered by %2$s"
 msgstr ""
 
-#: themes/charcoal/footer.php:12
-msgid "Atom Entries"
-msgstr ""
-
-#: themes/charcoal/footer.php:13
-msgid "Atom Comments"
+#: themes/charcoal/footer.php:17
+#, php-format
+msgid "<a href=\"%1$s\">Atom Entries</a> and <a href=\"%2$s\">Atom Comments</a>"
 msgstr ""
 
 #: themes/charcoal/home.php:40
@@ -4609,26 +4607,26 @@ msgstr ""
 msgid "The XML file for the plugin %s contained errors and could not be loaded."
 msgstr ""
 
-#: admin/plugin.php:57
+#: admin/plugin.php:58
 msgid "v1.1 Update Available Now"
 msgstr ""
 
-#: admin/plugin.php:71
+#: admin/plugin.php:72
 #, php-format
 msgid "This plugin requires the %1$s feature and cannot be activated."
 msgstr ""
 
-#: admin/plugin.php:81
+#: admin/plugin.php:82
 #, php-format
 msgid "%1$s will be activated to provide %2$s."
 msgstr ""
 
-#: admin/plugin.php:86
+#: admin/plugin.php:87
 #, php-format
 msgid "One of these plugins must be activated to provide %s:"
 msgstr ""
 
-#: admin/plugin.php:119
+#: admin/plugin.php:120
 msgid "Close"
 msgstr ""
 
@@ -4845,45 +4843,45 @@ msgstr ""
 msgid "Current Theme"
 msgstr ""
 
-#: admin/themes.php:37
+#: admin/themes.php:38
 msgid "v"
 msgstr ""
 
-#: admin/themes.php:37
+#: admin/themes.php:38
 msgid "Update Available"
 msgstr ""
 
-#: admin/themes.php:48 admin/themes.php:133
+#: admin/themes.php:49 admin/themes.php:135
 #, php-format
 msgid "%1$s is licensed under the %2$s"
 msgstr ""
 
-#: admin/themes.php:71
+#: admin/themes.php:72
 msgid "General"
 msgstr ""
 
-#: admin/themes.php:79
+#: admin/themes.php:80
 msgid "Areas"
 msgstr ""
 
-#: admin/themes.php:111
+#: admin/themes.php:112
 msgid "Available Themes"
 msgstr ""
 
-#: admin/themes.php:139
+#: admin/themes.php:141
 msgid "Legacy theme."
 msgstr ""
 
-#: admin/themes.php:141
+#: admin/themes.php:143
 #, php-format
 msgid "This theme requires the parent theme named \"%s\"."
 msgstr ""
 
-#: admin/themes.php:145
+#: admin/themes.php:147
 msgid "End Preview"
 msgstr ""
 
-#: admin/themes.php:147
+#: admin/themes.php:149
 msgid "Preview"
 msgstr ""
 
