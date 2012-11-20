@@ -143,7 +143,7 @@ class AdminLogsHandler extends AdminHandler
 	{
 		$db_dates = DB::get_column( 'SELECT timestamp FROM {log} ORDER BY timestamp DESC' );
 		$dates = array(
-			'any' => 'Any'
+			'any' => _t( 'Any' )
 		);
 
 		foreach ( $db_dates as $db_date ) {
@@ -157,7 +157,7 @@ class AdminLogsHandler extends AdminHandler
 	{
 		$db_users = DB::get_results( 'SELECT DISTINCT username, user_id FROM {users} JOIN {log} ON {users}.id = {log}.user_id ORDER BY username ASC' );
 		$users = array(
-			'any' => 'Any'
+			'any' => _t( 'Any' )
 		);
 		foreach ( $db_users as $db_user ) {
 			$users[ $db_user->user_id ] = $db_user->username;
@@ -169,7 +169,7 @@ class AdminLogsHandler extends AdminHandler
 	{
 		$db_ips = DB::get_column( 'SELECT DISTINCT(ip) FROM {log}' );
 		$ips = array(
-			'any' => 'Any'
+			'any' => _t( 'Any' )
 		);
 
 		foreach ( $db_ips as $db_ip ) {
@@ -182,7 +182,7 @@ class AdminLogsHandler extends AdminHandler
 	{
 		$module_list = LogEntry::list_logentry_types();
 		$modules = $types = array(
-			'any' => 'Any',
+			'any' => _t( 'Any' )
 		);
 
 		foreach ( $module_list as $module_name => $type_array ) {
