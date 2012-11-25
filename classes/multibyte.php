@@ -1,11 +1,11 @@
 <?php
-/*
- * @package Habari
+/** * @package Habari
  *
  */
 
-/*
- * Habari MultiByte Class
+namespace Habari\System\Utils;
+
+/** * Habari MultiByte Class
  *
  * Provides multibyte character set services,
  * a necessity since all of Habari's internal string
@@ -18,28 +18,24 @@ class MultiByte
 
 	const USE_MBSTRING = 1;
 
-	/*
+	/**
 	* @var $hab_enc String holding the current encoding the class is using
 	*/
 	static $hab_enc = 'UTF-8';
-	/*
+	/**
 	* @var $use_library Integer denoting the current multibyte
 	* library the class is using
 	*/
 	private static $use_library = self::USE_MBSTRING;
 
 	/**
-	* function __construct
-	*
 	* An empty constructor since all functions are static
 	*/
 	private function __construct()
 	{
 	}
 
-	/*
-	* function hab_encoding
-	*
+	/**
 	* Sets and returns the internal encoding.
 	*
 	* @param $use_enc string. The encoding to be used
@@ -59,12 +55,10 @@ class MultiByte
 		}
 	}
 
-	/*
-	* function library
-	*
+	/**
 	* Sets and returns the multibyte library being used internally
 	*
-	* @param $int The new library to use. One of the self::USE_* constants, null to simply return, or false to disable and use native non-multibyte-safe PHP methods.
+	* @param int $new_library The new library to use. One of the self::USE_* constants, null to simply return, or false to disable and use native non-multibyte-safe PHP methods.
 	*
 	* @return mixed  If $new_library is null, returns the current library
 	* being used. If $new_library has a valid value, returns the old library,
@@ -91,10 +85,7 @@ class MultiByte
 		}
 	}
 
-	/*
-	* function convert_encoding
-	*
-	* Converts a string's encoding to a new encoding
+	/**	* Converts a string's encoding to a new encoding
 	*
 	* @param $str string. The string who's encoding is being changed.
 	* @param $use_enc string. The encoding to convert to. If not set,
@@ -123,9 +114,7 @@ class MultiByte
 		return $ret;
 	}
 
-	/*
-	* function detect_encoding
-	*
+	/**
 	* Detects the encoding being used for a string
 	*
 	* @param $str string. The string whose encoding is being detected
@@ -150,17 +139,15 @@ class MultiByte
 		return $enc;
 	}
 
-	/*
-	* function detect_bom_encoding
-	*
+	/**
 	* Detects the encoding being used for a string using the existence
 	* of a byte order mark
 	*
-	* @param $str string. The string whose encoding is being detected
+	* @param $source_contents string. The string whose encoding is being detected
 	*
 	* @return mixed The source string's detected encoding, or boolean false.
 	*/
-	public static function detect_bom_encoding( $str )
+	public static function detect_bom_encoding( $source_contents )
 	{
 		$ret = false;
 		if ( "\xFE\xFF" == substr( 0, 2, $source_contents ) ) {
@@ -176,9 +163,7 @@ class MultiByte
 		return $ret;
 	}
 
-	/*
-	* function substr
-	*
+	/**
 	* Get a section of a string
 	*
 	* @param $str string. The original string
@@ -195,8 +180,6 @@ class MultiByte
 	*/
 	public static function substr( $str, $begin, $len = null, $use_enc = null )
 	{
-		$ret = false;
-
 		$enc = self::$hab_enc;
 		if ( $use_enc !== null ) {
 			$enc = $use_enc;
@@ -214,10 +197,7 @@ class MultiByte
 		return $ret;
 	}
 
-	/*
-	* function strlen
-	*
-	* Gets the length of a string in characters
+	/**	* Gets the length of a string in characters
 	*
 	* @param $str string. The string who's length is being returned.
 	* @param $use_enc string. The encoding to be used. If not set,
@@ -228,8 +208,6 @@ class MultiByte
 	*/
 	public static function strlen( $str, $use_enc = null )
 	{
-		$len = 0;
-
 		$enc = self::$hab_enc;
 		if ( $use_enc !== null ) {
 			$enc = $use_enc;
@@ -245,10 +223,7 @@ class MultiByte
 		return $len;
 	}
 
-	/*
-	* function strpos
-	*
-	* Find position of first occurrence of string in a string
+	/**	* Find position of first occurrence of string in a string
 	*
 	* @param $haysack string. The string being checked.
 	* @param $needle. string. The position counted from the beginning of haystack .
@@ -276,10 +251,7 @@ class MultiByte
 		return $ret;
 	}
 
-	/*
-	* function stripos
-	*
-	* Find position of first occurrence of string in a string. Case insensitive.
+	/**	* Find position of first occurrence of string in a string. Case insensitive.
 	*
 	* @param $haysack string. The string being checked.
 	* @param $needle. string. The position counted from the beginning of haystack .
@@ -307,8 +279,7 @@ class MultiByte
 		return $ret;
 	}
 
-	/*
-	* function strrpos
+	/**	* function strrpos
 	*
 	* Find position of last occurrence of string in a string.
 	*
@@ -338,10 +309,7 @@ class MultiByte
 		return $ret;
 	}
 
-	/*
-	* function strripos
-	*
-	* Find position of last occurrence of string in a string. Case insensitive.
+	/**	* Find position of last occurrence of string in a string. Case insensitive.
 	*
 	* @param $haysack string. The string being checked.
 	* @param $needle. string. The position counted from the beginning of haystack .
@@ -369,38 +337,35 @@ class MultiByte
 		return $ret;
 	}
 
-	/*
-	 * function strtolower
-	 *
-	 * Converts a multibyte string to lowercase. If a valid multibyte library
+	/**
+	* function strtolower
+	*
+	* Converts a multibyte string to lowercase. If a valid multibyte library
 	* isn't loaded, strtolower() will be used, which can lead to unexpected results.
-	 *
-	 * @param $str string. The string to lowercase
+	*
+	* @param $str string. The string to lowercase
 	* @param $use_enc string. The encoding to be used. If not set,
 	* the internal encoding will be used.
 	 *
 	 * @return string. The lowercased string.
 	*/
-	public static function strtolower( $str, $use_enc = null )
+	public static function strtolower($str, $use_enc = null)
 	{
 		$enc = self::$hab_enc;
-		if ( $use_enc !== null ) {
+		if( $use_enc !== null ) {
 			$enc = $use_enc;
 		}
 
-		if ( self::$use_library == self::USE_MBSTRING ) {
-			$ret = mb_strtolower( $str, $enc );
-		}
-		else {
-			$ret = strtolower( $str );
+		if( self::$use_library == self::USE_MBSTRING ) {
+			$ret = mb_strtolower($str, $enc);
+		} else {
+			$ret = strtolower($str);
 		}
 
 		return $ret;
 	}
 
-	/*
-	* function strtoupper
-	*
+	/**
 	* Converts a multibyte string to uppercase. If a valid multibyte library
 	* isn't loaded, strtoupper() will be used, which can lead to unexpected results.
 	*
@@ -431,6 +396,7 @@ class MultiByte
 	 * Determines if the passed string is valid character data (according to mbstring)
 	 *
 	 * @param string $str the string to check
+	 * @param null $use_enc
 	 * @return bool
 	 */
 	public static function valid_data( $str, $use_enc = null )

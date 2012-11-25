@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari\System\Core;
+
 /**
  * Habari Options Class
  *

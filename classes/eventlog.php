@@ -5,12 +5,14 @@
  * @property-read bool $onelogentry True if this object only has one entry
  */
 
+namespace Habari\System\Data\Model;
+
 /**
  * Habari EventLog class
  *
  * @todo Apply system error handling
  */
-class EventLog extends ArrayObject
+class EventLog extends \ArrayObject
 {
 	protected $get_param_cache; // Stores info about the last set of data fetched that was not a single value
 
@@ -47,7 +49,7 @@ class EventLog extends ArrayObject
 		try {
 			DB::query( 'INSERT INTO {log_types} (module, type) VALUES (?,?)', array( self::get_module( $module ), $type ) );
 		}
-		catch( Exception $e ) {
+		catch( \Exception $e ) {
 			// Don't really care if there's a duplicate.
 		}
 	}

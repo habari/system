@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari\System\Pluggable;
+
 /**
  * Habari Theme Class
  *

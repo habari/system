@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari\System\Security;
+
 /**
  * Input filtering functions.
  *

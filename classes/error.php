@@ -4,11 +4,13 @@
  *
  */
 
+namespace Habari\System\Core;
+
 /**
  * Contains error-related functions and Habari's error handler.
  *
  **/
-class Error extends Exception
+class Error extends \Exception
 {
 	protected $message = '';
 	protected $is_error = false;

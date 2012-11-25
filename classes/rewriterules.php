@@ -4,10 +4,17 @@
  *
  */
 
+namespace Habari\System\Data\Model;
+
+use Habari\System\Pluggable\Plugins;
+use Habari\System\Utils\Utils;
+use Habari\System\Data\Model\RewriteRule;
+use Habari\System\Data\Database\DB;
+
 /**
  * Class for storing and retrieving rewrite rules from the DB.
  */
-class RewriteRules extends ArrayObject
+class RewriteRules extends \ArrayObject
 {
 	// cache sorted rules
 	protected static $sorted_rules_cache = null;

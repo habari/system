@@ -4,6 +4,10 @@
  *
  */
 
+namespace Habari\System\Data\Database;
+
+use Habari\System\Core\Singleton;
+
 /**
  * Habari DB Class
  *

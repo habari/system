@@ -4,6 +4,10 @@
  *
  */
 
+namespace Habari\System\Data\Database;
+
+use Habari\System\Core\Config;
+
 /**
  * Habari DatabaseConnection Class
  *
@@ -11,7 +15,7 @@
  */
 class DatabaseConnection
 {
-	private $fetch_mode = PDO::FETCH_CLASS;          // PDO Fetch mode
+	private $fetch_mode = \PDO::FETCH_CLASS;          // PDO Fetch mode
 	private $fetch_class_name = 'QueryRecord';       // The default class name for fetching classes
 	private $driver;                                 // PDO driver name
 	private $keep_profile = DEBUG;                   // keep profiling and timing information?
@@ -112,8 +116,8 @@ class DatabaseConnection
 	 */
 	public function connect ( $connect_string, $db_user, $db_pass )
 	{
-		$this->pdo = @new PDO( $connect_string, $db_user, $db_pass );
-		$this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
+		$this->pdo = @new \PDO( $connect_string, $db_user, $db_pass );
+		$this->pdo->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING );
 		$this->load_tables();
 		return true;
 	}

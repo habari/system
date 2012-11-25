@@ -4,6 +4,15 @@
  *
  */
 
+namespace Habari\System\Utils;
+
+use Habari\System\Core\Controller;
+use Habari\System\Core\Options;
+use Habari\System\Data\Model\User;
+use Habari\System\Security\InputFilter;
+use Habari\System\Core\Error;
+use Habari\System\Pluggable\Plugins;
+
 /**
  * Habari Utility Class
  *
@@ -21,15 +30,14 @@ class Utils
 	}
 
 	/**
-	 * function get_params
 	 * Returns an associative array of parameters, whether the input value is
 	 * a querystring or an associative array.
-	 * @param mixed An associative array or querystring parameter list
+	 * @param mixed $params An associative array or querystring parameter list
 	 * @return array An associative array of parameters
 	 */
 	public static function get_params( $params )
 	{
-		if ( is_array( $params ) || $params instanceof Traversable ) {
+		if ( is_array( $params ) || $params instanceof \Traversable ) {
 			return $params;
 		}
 		$paramarray = array();
@@ -38,9 +46,8 @@ class Utils
 	}
 
 	/**
-	 * function end_in_slash
 	 * Forces a string to end in a single slash
-	 * @param string A string, usually a path
+	 * @param string $value A string, usually a path
 	 * @return string The string with the slash added or extra slashes removed, but with one slash only
 	 */
 	public static function end_in_slash( $value )
@@ -49,7 +56,6 @@ class Utils
 	}
 
 	/**
-	 * function redirect
 	 * Redirects the request to a new URL
 	 * @param string $url The URL to redirect to, or omit to redirect to the current url
 	 * @param boolean $continue Whether to continue processing the script (default false for security reasons, cf. #749)
@@ -65,9 +71,8 @@ class Utils
 	}
 
 	/**
-	 * function atomtime
 	 * Returns RFC-3339 time from a time string or integer timestamp
-	 * @param mixed A string of time or integer timestamp
+	 * @param mixed $t A string of time or integer timestamp
 	 * @return string An RFC-3339 formatted time
 	 */
 	public static function atomtime( $t )
@@ -84,7 +89,6 @@ class Utils
 	}
 
 	/**
-	 * function nonce
 	 * Returns a random 12-digit hex number
 	 */
 	public static function nonce()
@@ -126,7 +130,6 @@ class Utils
 	}
 
 	/**
-	 * function stripslashes
 	 * Removes slashes from escaped strings, including strings in arrays
 	 */
 	public static function stripslashes( $value )
@@ -141,7 +144,6 @@ class Utils
 	}
 
 	/**
-	 * function addslashes
 	 * Adds slashes to escape strings, including strings in arrays
 	 */
 	public static function addslashes( $value )
@@ -156,9 +158,9 @@ class Utils
 	}
 
 	/**
-	 * function de_amp
-	 * Returns &amp; entities in a URL querystring to their previous & glory, for use in redirects
+	 * Return &amp; entities in a URL querystring to their previous & glory, for use in redirects
 	 * @param string $value A URL, maybe with a querystring
+	 * @return bool|string The valid, de-amped URL
 	 */
 	public static function de_amp( $value )
 	{
@@ -168,7 +170,6 @@ class Utils
 	}
 
 	/**
-	 * function revert_magic_quotes_gpc
 	 * Reverts magicquotes_gpc behavior
 	 */
 	public static function revert_magic_quotes_gpc()
@@ -184,9 +185,8 @@ class Utils
 	}
 
 	/**
-	 * function quote_spaced
 	 * Adds quotes around values that have spaces in them
-	 * @param string A string value that might have spaces
+	 * @param string $value A string value that might have spaces
 	 * @return string The string value, quoted if it has spaces
 	 */
 	public static function quote_spaced( $value )
@@ -195,10 +195,9 @@ class Utils
 	}
 
 	/**
-	 * function implode_quoted
 	 * Behaves like the implode() function, except it quotes values that contain spaces
-	 * @param string A separator between each value
-	 * @param	array An array of values to separate
+	 * @param string $separator A separator between each value
+	 * @param array $values An array of values to separate
 	 * @return string The concatenated string
 	 */
 	public static function implode_quoted( $separator, $values )
@@ -216,8 +215,8 @@ class Utils
 	 *
 	 * Useful when building, for instance, an IN() list for SQL
 	 *
-	 * @param		count		Number of placeholders to put in the string
-	 * @return	string	Placeholder string
+	 * @param integer $count Count of placeholders to put in the string
+	 * @return string Placeholder string
 	 */
 	public static function placeholder_string( $count )
 	{
@@ -228,18 +227,17 @@ class Utils
 	}
 
 	/**
-	 * function archive_pages
 	 * Returns the number of pages in an archive using the number of items per page set in options
-	 * @param integer Number of items in the archive
-	 * @param integer Number of items per page
-	 * @returns integer Number of pages based on pagination option.
+	 * @param int $item_total Number of items in the archive
+	 * @param int $items_per_page Number of items per page
+	 * @return int Number of pages based on pagination option.
 	 */
 	public static function archive_pages( $item_total, $items_per_page = null )
 	{
-		if ( $items_per_page ) {
-			return ceil( $item_total / $items_per_page );
+		if ( ! $items_per_page ) {
+			$items_per_page = Options::get( 'pagination' );
 		}
-		return ceil( $item_total / Options::get( 'pagination' ) );
+		return intval(ceil( $item_total / $items_per_page ));
 	}
 
 	/**
@@ -256,6 +254,10 @@ class Utils
 	{
 		return $prefix . $value . $postfix;
 	}
+
+	/**
+	 * @todo Pull all of these debug functions out into their own class
+	 */
 
 	/**
 	 * Helper function used by debug()
@@ -279,7 +281,6 @@ class Utils
 	public static function debug()
 	{
 		$debugid = md5( microtime() );
-		$tracect = 0;
 
 		$fooargs = func_get_args();
 		echo "<div class=\"utils__debugger\">";
@@ -403,16 +404,14 @@ class Utils
 	/**
 	 * Crypt a given password, or verify a given password against a given hash.
 	 *
-	 * @todo Enable best algo selection after DB schema change.
-	 *
 	 * @param string $password the password to crypt or verify
 	 * @param string $hash (optional) if given, verify $password against $hash
-	 * @return crypted password, or boolean for verification
+	 * @return string|bool Encrypted password, or boolean for verification
 	 */
 	public static function crypt( $password, $hash = null )
 	{
 		if ( $hash == null ) {
-			return self::ssha512( $password, $hash );
+			return self::ssha512( $password, $hash );  // This line should always reflect the best algorithm at the time
 		}
 		elseif ( strlen( $hash ) > 3 ) { // need at least {, } and a char :p
 			// verify
@@ -478,7 +477,7 @@ class Utils
 	 *
 	 * @param string $password the password to crypt or verify
 	 * @param string $hash (optional) if given, verify $password against $hash
-	 * @return crypted password, or boolean for verification
+	 * @return string Encrypted password, or boolean for verification
 	 */
 	public static function ssha( $password, $hash = null )
 	{
@@ -521,7 +520,7 @@ class Utils
 	 *
 	 * @param string $password the password to crypt or verify
 	 * @param string $hash (optional) if given, verify $password against $hash
-	 * @return crypted password, or boolean for verification
+	 * @return string encrypted password, or boolean for verification
 	 */
 	public static function ssha512( $password, $hash = null )
 	{
@@ -1282,8 +1281,9 @@ class Utils
 	 * );
 	 * $b = Utils::array_map_field($a, 'foo'); // $b = array(1, 3);
 	 *
-	 * @param Traversable $array An array of arrays or objects with similar keys or properties
+	 * @param \Traversable $array An array of arrays or objects with similar keys or properties
 	 * @param string $field The name of a common field within each array/object
+	 * @param string $key Optional field to use as the key in the result array
 	 * @return array An array of the values of the specified field within each array/object
 	 */
 	public static function array_map_field($array, $field, $key = null)
@@ -1292,7 +1292,7 @@ class Utils
 			return $array;
 		}
 		if(is_null($key)) {
-			if($array instanceof ArrayObject) {
+			if($array instanceof \ArrayObject) {
 				$array = $array->getArrayCopy();
 			}
 			return array_map( function( $element ) use ($field) {

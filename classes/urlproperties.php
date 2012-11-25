@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari\System\Net;
+
 /**
  * Habari URLProperties interface
  *

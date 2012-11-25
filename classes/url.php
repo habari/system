@@ -4,6 +4,11 @@
  *
  */
 
+namespace Habari\System\Net;
+
+use Habari\System\Core\Singleton;
+use Habari\System\Data\Model\RewriteRules;
+
 /**
  * URL class which handles creation of URLs based on the rewrite
  * rules in the database.  Uses rules to construct pretty URLs for use

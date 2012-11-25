@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari\System\Core;
+
 /**
  * Class which handles incoming requests and drives the
  * MVC strategy for building the model and assigning to

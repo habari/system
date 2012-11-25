@@ -4,6 +4,11 @@
  *
  */
 
+namespace Habari\System\Pluggable;
+
+use Habari\System\Data\Database\DB;
+use Habari\System\Net\Url;
+
 /**
  * Pluggable class
  * Implements methods that allow descendant classes to register functions to plugin hooks
@@ -39,7 +44,7 @@ abstract class Pluggable
 	final public function get_file()
 	{
 		if ( empty( $this->_class_name ) ) {
-			$class = new ReflectionClass( get_class( $this ) );
+			$class = new \ReflectionClass( get_class( $this ) );
 			$this->_class_name = $class->getFileName();
 		}
 		return $this->_class_name;

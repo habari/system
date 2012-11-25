@@ -8,6 +8,8 @@
  * @property-read boolean $loggedin Whether or not this user is currently identified
  */
 
+namespace Habari\System\Data\Model;
+
 /**
  * Habari UserRecord Class
  *
