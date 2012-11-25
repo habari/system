@@ -5,6 +5,8 @@
  */
 
 namespace Habari\System\Core;
+use Habari\System\Pluggable\Plugins;
+use Habari\System\Data\Database\DB;
 
 /**
  * Habari Options Class

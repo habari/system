@@ -94,7 +94,7 @@ class Plugins
 	 * @param string $hookname The name of the action to execute
 	 * @param mixed $param Optional arguments needed for action
 	 */
-	public static function act($hookname, $param)
+	public static function act($hookname, $param = null)
 	{
 		$args = func_get_args();
 		$hookname = array_shift( $args );
@@ -114,7 +114,7 @@ class Plugins
 	 * @param string $hookname The name of the action to execute
 	 * @param mixed $param Optional arguments needed for action
 	 */
-	public static function act_id($hookname, $param)
+	public static function act_id($hookname, $param = null)
 	{
 		$args = func_get_args();
 		list( $hookname, $id ) = $args;

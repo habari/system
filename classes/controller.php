@@ -5,6 +5,8 @@
  */
 
 namespace Habari\System\Core;
+use Habari\System\Pluggable\Plugins;
+use Habari\System\Net\URL;
 
 /**
  * Class which handles incoming requests and drives the
@@ -72,7 +74,7 @@ class Controller extends Singleton
 	/**
 	 * Returns the action handler
 	 *
-	 * @return  ActionHandler  handler object
+	 * @return \Habari\System\Handler\ActionHandler handler object
 	 */
 	public static function get_handler()
 	{
@@ -104,7 +106,7 @@ class Controller extends Singleton
 
 	/**
 	 * A convenience method for returning the rewrite rule that matches the requested URL
-	 * @return RewriteRule|null The rule that matches the requested URL
+	 * @return \Habari\System\Data\Model\RewriteRule|null The rule that matches the requested URL
 	 */
 	public static function get_matched_rule()
 	{
@@ -125,8 +127,6 @@ class Controller extends Singleton
 		$controller->base_url = Site::get_path( 'base', true );
 
 		/* Start with the entire URL coming from web server... */
-		$start_url = '';
-		
 		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
 			$start_url = $_SERVER['REQUEST_URI'];
 		}

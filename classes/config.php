@@ -51,6 +51,7 @@ class Config
 	 * Fetch data from registry
 	 *
 	 * @param string $key key name
+	 * @param null $default
 	 * @return mixed (empty object on invalid key)
 	 */
 	public static function get( $key, $default = null )

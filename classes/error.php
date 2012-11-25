@@ -5,6 +5,8 @@
  */
 
 namespace Habari\System\Core;
+use Habari\System\Data\Model\EventLog;
+use Habari\System\Data\Database\DB;
 
 /**
  * Contains error-related functions and Habari's error handler.
