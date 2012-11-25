@@ -898,7 +898,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	public function __call( $name, $args )
 	{
 		array_unshift( $args, 'post_call_' . $name, null, $this );
-		return call_user_func_array( array( 'Plugins', 'filter' ), $args );
+		return call_user_func_array( array( '\\Habari\\System\\Pluggable\\Plugins', 'filter' ), $args );
 	}
 
 	/**

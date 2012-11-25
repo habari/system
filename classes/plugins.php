@@ -215,7 +215,7 @@ class Plugins
 		if ( !isset( self::$hooks['theme'][$hookname] ) ) {
 			if ( substr( $hookname, -6 ) != '_empty' ) {
 				array_unshift( $filter_args, $hookname . '_empty' );
-				return call_user_func_array( array( 'Plugins', 'theme' ), $filter_args );
+				return call_user_func_array( array( '\\Habari\\System\\Pluggable\\Plugins', 'theme' ), $filter_args );
 			}
 			return array();
 		}
@@ -245,10 +245,10 @@ class Plugins
 		}
 		if ( count( $return ) == 0 && substr( $hookname, -6 ) != '_empty' ) {
 			array_unshift( $filter_args, $hookname . '_empty' );
-			$result = call_user_func_array( array( '\Habari\System\Pluggable\Plugins', 'theme' ), $filter_args );
+			$result = call_user_func_array( array( '\\Habari\\System\\Pluggable\\Plugins', 'theme' ), $filter_args );
 		}
 		array_unshift( $filter_args, 'theme_call_' . $hookname, $return );
-		$result = call_user_func_array( array( '\Habari\System\Pluggable\Plugins', 'filter' ), $filter_args );
+		$result = call_user_func_array( array( '\\Habari\\System\\Pluggable\\Plugins', 'filter' ), $filter_args );
 		return $result;
 	}
 

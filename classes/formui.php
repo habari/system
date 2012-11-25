@@ -804,7 +804,7 @@ class FormUI extends FormContainer implements IsContent
 			}
 			else {
 				array_unshift( $save, $callback, $this );
-				call_user_func_array( array( 'Plugins', 'act' ), $save );
+				call_user_func_array( array( '\\Habari\\System\\Pluggable\\Plugins', 'act' ), $save );
 			}
 		}
 		if ( $this->has_user_options() ) {
@@ -1324,7 +1324,7 @@ class FormControl extends FormComponents
 			}
 			else {
 				$params = array_merge( array( $validator_fn, $valid, $this->value, $this, $this->container ), $validator );
-				$valid = array_merge( $valid, call_user_func_array( array( 'Plugins', 'filter' ), $params ) );
+				$valid = array_merge( $valid, call_user_func_array( array( '\\Habari\\System\\Pluggable\\Plugins', 'filter' ), $params ) );
 			}
 		}
 		$this->errors = $valid;

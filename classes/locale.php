@@ -303,7 +303,7 @@ class Locale
 	public static function _e()
 	{
 		$args = func_get_args();
-		echo call_user_func_array( array( 'HabariLocale', '_t' ), $args );
+		echo call_user_func_array( array( '\\Habari\\System\\Locale\\Locale', '_t' ), $args );
 	}
 
 	/**
