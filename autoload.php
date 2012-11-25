@@ -1,4 +1,5 @@
 <?php
+use Habari\System\Core\Site;
 
 /**
  * Attempt to load the class before PHP fails with an error.
@@ -19,6 +20,7 @@ function habari_autoload( $class_name )
 	static $files = null;
 
 	$success = false;
+	$class_name = preg_replace('#^.+\\\\#', '', $class_name);
 	$class_file = strtolower( $class_name ) . '.php';
 
 	if ( empty( $files ) ) {

@@ -37,9 +37,9 @@ class Error extends \Exception
 	 */
 	public static function handle_errors()
 	{
-		set_error_handler( array( 'Error', 'error_handler' ) );
-		set_exception_handler( array( 'Error', 'exception_handler' ) );
-		register_shutdown_function( array( 'Error', 'shutdown_handler' ) );
+		set_error_handler( array( '\Habari\System\Core\Error', 'error_handler' ) );
+		set_exception_handler( array( '\Habari\System\Core\Error', 'exception_handler' ) );
+		register_shutdown_function( array( '\Habari\System\Core\Error', 'shutdown_handler' ) );
 	}
 
 	public static function shutdown_handler ( ) {

@@ -1,4 +1,18 @@
 <?php
+use Habari\System\Core\SuperGlobal;
+use Habari\System\Handler\CronHandler;
+use Habari\System\Core\Controller;
+use Habari\System\Core\Session;
+use Habari\System\Pluggable\Plugins;
+use Habari\System\Utils\Utils;
+use Habari\System\Core\Version;
+use Habari\System\Core\Options;
+use Habari\System\Data\Database\DB;
+use Habari\System\Core\Config;
+use Habari\System\Core\Site;
+use Habari\System\Core\Error;
+use Habari\System\Locale\Locale;
+
 /**
  * Habari Index
  *
@@ -81,7 +95,7 @@ if ( file_exists( $config ) ) {
 // db_connection is an array with necessary informations to connect to the database.
 if ( Config::exists('db_connection') ) {
 	// Set the default locale.
-	HabariLocale::set( Config::get('locale', 'en-us' ) );
+	Locale::set( Config::get('locale', 'en-us' ) );
 
 	if ( !defined( 'DEBUG' ) ) {
 		define( 'DEBUG', false );
@@ -131,9 +145,9 @@ else {
 /* Habari is installed and we established a connection with the database */
 
 // Set the locale from config, database, then default english locale
-HabariLocale::set( Config::get('locale', Options::get( 'locale', 'en-us' )) );
+Locale::set( Config::get('locale', Options::get( 'locale', 'en-us' )) );
 if ( Options::get( 'system_locale' ) ) {
-	HabariLocale::set_system_locale( Options::get( 'system_locale' ) );
+	Locale::set_system_locale( Options::get( 'system_locale' ) );
 }
 
 // Verify if the database has to be upgraded.
@@ -185,7 +199,7 @@ if ( defined( 'SUPPRESS_REQUEST' ) ) {
 Controller::parse_request();
 
 // Run the cron jobs asyncronously.
-CronTab::run_cron( true );
+CronHandler::run_cron( true );
 
 // Dispatch the request (action) to the matched handler.
 Controller::dispatch_request();

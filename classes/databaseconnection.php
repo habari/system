@@ -84,9 +84,14 @@ class DatabaseConnection
 	public static function ConnectionFactory( $connect_string )
 	{
 		list( $engine ) = explode( ':', $connect_string, 2 );
+		$engines = array(
+			'sqlite' => '\Habari\System\Data\Database\SQLiteConnection',
+			'mysql' => '\Habari\System\Data\Database\MySQLConnection',
+		);
+
 		require_once( HABARI_PATH . "/system/schema/{$engine}/connection.php" );
-		$engine .= 'Connection';
-		return new $engine();
+		$engine_class = $engines[$engine];
+		return new $engine_class();
 	}
 
 	/**
