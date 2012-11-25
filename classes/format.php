@@ -6,6 +6,8 @@
 
 namespace Habari\System\View;
 
+use Habari\System\Pluggable\Plugins;
+
 /**
  * Habari Format Class
  *

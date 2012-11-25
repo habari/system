@@ -5,6 +5,12 @@
  */
 
 namespace Habari\System\Security;
+use Habari\System\Pluggable\Plugins;
+use Habari\System\View\HTMLTokenSet;
+use Habari\System\View\HTMLTokenizer;
+use Habari\System\Core\Error;
+use Habari\System\Utils\Utils;
+use Habari\System\Utils\MultiByte;
 
 /**
  * Input filtering functions.

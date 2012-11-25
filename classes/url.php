@@ -189,7 +189,7 @@ class URL extends Singleton
 				if ( $rules = $url->rules->by_name( $rule_name ) ) {
 					$rating = null;
 					foreach ( $rules as $rule ) {
-						$newrating = $rule->arg_match( $args );
+						$newrating = 0;// $rule->arg_match( $args ); // This was removed in b5fa3c998bb9fe754ab25061e5d4dd36f4ce3868#L13L151, see if it works.
 						// Is the rating perfect?
 						if ( $rating == 0 ) {
 							$selectedrule = $rule;

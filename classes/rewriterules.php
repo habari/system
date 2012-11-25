@@ -142,7 +142,7 @@ class RewriteRules extends \ArrayObject
 				FROM {rewrite_rules} AS rr
 				WHERE rr.is_active= 1
 				ORDER BY rr.priority";
-			$db_rules = DB::get_results( $sql, array(), 'RewriteRule' );
+			$db_rules = DB::get_results( $sql, array(), '\Habari\System\Data\Model\RewriteRule' );
 
 			$system_rules = self::add_system_rules( $db_rules );
 		}

@@ -372,7 +372,7 @@ class Themes
 
 		// the final fallback, for the admin "theme"
 		if ( $classname == '' ) {
-			$classname = 'Theme';
+			$classname = '\\Habari\\System\\Pluggable\\Theme';
 		}
 
 		$created_theme = new $classname( $themedata );

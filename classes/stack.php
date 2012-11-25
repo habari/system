@@ -4,6 +4,13 @@
  *
  */
 
+namespace Habari\System\Utils;
+
+use Habari\System\Pluggable\Pluggable;
+use Habari\System\Pluggable\Plugins;
+use Habari\System\Core\Site;
+use Habari\System\Net\URL;
+
 /**
  * Habari Stack Class
  *

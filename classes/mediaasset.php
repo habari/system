@@ -4,6 +4,9 @@
  *
  */
 
+namespace Habari\System\Media;
+use Habari\System\Pluggable\Plugins;
+
 /**
  * MediaAsset represents a file or directory in the media system
  *

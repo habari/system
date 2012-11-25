@@ -1,5 +1,9 @@
 <?php
 
+use Habari\System\Pluggable\Theme;
+use Habari\System\Core\Session;
+use Habari\System\Utils\Stack;
+
 class WaziTheme extends Theme
 {
 	function action_template_header($theme) {

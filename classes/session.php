@@ -6,6 +6,11 @@
 
 namespace Habari\System\Core;
 
+use Habari\System\Pluggable\Plugins;
+use Habari\System\Utils\Utils;
+use Habari\System\Data\Database\DB;
+use Habari\System\Locale\DateTime;
+
 /**
  * Habari Session class
  *
@@ -61,12 +66,12 @@ class Session
 		
 
 		$handlers = array(
-			array( 'Session', 'open' ),
-			array( 'Session', 'close' ),
-			array( 'Session', 'read' ),
-			array( 'Session', 'write' ),
-			array( 'Session', 'destroy' ),
-			array( 'Session', 'gc' ),
+			array( __CLASS__, 'open' ),
+			array( __CLASS__, 'close' ),
+			array( __CLASS__, 'read' ),
+			array( __CLASS__, 'write' ),
+			array( __CLASS__, 'destroy' ),
+			array( __CLASS__, 'gc' ),
 		);
 
 		$handlers = Plugins::filter('session_handlers', $handlers);
@@ -203,7 +208,7 @@ class Session
 			// DB::update() checks if the record key exists, and inserts if not
 			$record = array(
 				'ip' => self::get_subnet( $remote_address ),
-				'expires' => HabariDateTime::date_create()->int + self::$lifetime,
+				'expires' => DateTime::date_create()->int + self::$lifetime,
 				'ua' => MultiByte::substr( $user_agent, 0, 255 ),
 				'data' => $data,
 			);

@@ -6,6 +6,12 @@
 
 namespace Habari\System\Pluggable;
 
+use Habari\System\Utils\Utils;
+use Habari\System\Core\Options;
+use Habari\System\Utils\MultiByte;
+use Habari\System\Data\Model\User;
+use Habari\System\Utils\Stack;
+
 /**
  * Habari Theme Class
  *
@@ -96,7 +102,7 @@ class Theme extends Pluggable
 
 		$xml_file = end($this->theme_dir) . '/theme.xml';
 		if(!file_exists($xml_file)) {
-			return new SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?>
+			return new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?>
 <pluggable type="theme">
 	<name>Unknown Theme</name>
 	<version>1.0</version>
@@ -104,7 +110,7 @@ class Theme extends Pluggable
 ');
 		}
 		if ( $xml_content = file_get_contents( $xml_file ) ) {
-			$theme_data = new SimpleXMLElement( $xml_content );
+			$theme_data = new \SimpleXMLElement( $xml_content );
 			return $theme_data;
 		}
 	}
@@ -1063,7 +1069,7 @@ class Theme extends Pluggable
 				$function = $matches[1];
 			}
 			array_unshift( $params, $function, $this );
-			$result = call_user_func_array( array( 'Plugins', 'theme' ), $params );
+			$result = call_user_func_array( array( '\\Habari\\System\\Pluggable\\Plugins', 'theme' ), $params );
 			switch ( $purposed ) {
 				case 'return':
 					return $result;

@@ -1,4 +1,13 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
+<?php
+use Habari\System\Data\Model\RewriteRule;
+use Habari\System\Core\Controller;
+use Habari\System\Data\Database\DB;
+use Habari\System\Security\InputFilter;
+use Habari\System\Pluggable\Plugins;
+use Habari\System\Core\Options;
+use Habari\System\Utils\Utils;
+
+if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 
 /**
  * SpamChecker Class

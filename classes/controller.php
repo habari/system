@@ -172,7 +172,12 @@ class Controller extends Singleton
 
 		/* OK, we have a matching rule.  Set the action and create a handler */
 		$controller->action = $matched_rule->action;
-		$controller->handler = new $matched_rule->handler();
+		$handler = $matched_rule->handler;
+		// @todo This is pretty kludgy.  If there's no namespace in the handler class, add one.
+		if(strpos($handler, '\\') === false) {
+			$handler = '\\Habari\\System\\Handler\\' . $handler;
+		}
+		$controller->handler = new $handler();
 		/* Insert the regexed submatches as the named parameters */
 		$controller->handler->handler_vars['entire_match'] = $matched_rule->entire_match; // The entire matched string is returned at index 0
 		$controller->handler->handler_vars['matched_rule'] = $matched_rule;

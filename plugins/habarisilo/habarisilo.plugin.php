@@ -1,5 +1,19 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 
+use Habari\System\Pluggable\Plugin;
+use Habari\System\View\Form\FormUI;
+use Habari\System\Data\Model\User;
+use Habari\System\Media\Media;
+use Habari\System\Media\MediaAsset;
+use Habari\System\Utils\Utils;
+use Habari\System\Net\URL;
+use Habari\System\Core\Session;
+use Habari\System\Data\Model\EventLog;
+use Habari\System\Pluggable\Plugins;
+use Habari\System\Core\Site;
+use Habari\System\Media\MediaSilo;
+
+
 /**
  * Simple file access silo
  *

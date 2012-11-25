@@ -4,7 +4,10 @@
 	*
 	*/
 
-	/**
+namespace Habari\System\Utils;
+use Habari\System\Pluggable\Plugins;
+
+/**
 	 * Habari StackItem Class
 	 *
 	 * This class represents a single item that can be used as a component in Habari's stack output

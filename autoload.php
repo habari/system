@@ -20,6 +20,7 @@ function habari_autoload( $class_name )
 	static $files = null;
 
 	$success = false;
+	$full_class_name = $class_name;
 	$class_name = preg_replace('#^.+\\\\#', '', $class_name);
 	$class_file = strtolower( $class_name ) . '.php';
 
@@ -65,8 +66,8 @@ function habari_autoload( $class_name )
 	if ( isset( $files[$class_file] ) ) {
 		require( $files[$class_file] );
 		// If the class has a static method named __static(), execute it now, on initial load.
-		if ( class_exists( $class_name, false ) && method_exists( $class_name, '__static' ) ) {
-			call_user_func( array( $class_name, '__static' ) );
+		if ( class_exists( $full_class_name, false ) && method_exists( $full_class_name, '__static' ) ) {
+			call_user_func( array( $full_class_name, '__static' ) );
 		}
 		$success = true;
 	}
