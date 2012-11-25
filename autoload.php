@@ -65,6 +65,7 @@ function habari_autoload( $class_name )
 	// Search in the available files for the undefined class file.
 	if ( isset( $files[$class_file] ) ) {
 		require( $files[$class_file] );
+		unset($files[$class_file]);  // Remove the file from the list to expose duplicate class names // @todo remove this line
 		// If the class has a static method named __static(), execute it now, on initial load.
 		if ( class_exists( $full_class_name, false ) && method_exists( $full_class_name, '__static' ) ) {
 			call_user_func( array( $full_class_name, '__static' ) );

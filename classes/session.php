@@ -10,6 +10,7 @@ use Habari\System\Pluggable\Plugins;
 use Habari\System\Utils\Utils;
 use Habari\System\Data\Database\DB;
 use Habari\System\Locale\DateTime;
+use Habari\System\Utils\MultiByte;
 
 /**
  * Habari Session class
@@ -138,7 +139,7 @@ class Session
 		}
 
 		// Verify expiry
-		if ( HabariDateTime::date_create()->int > $session->expires ) {
+		if ( DateTime::date_create()->int > $session->expires ) {
 			if ( $session->user_id ) {
 				Session::error( _t( 'Your session expired.' ), 'expired_session' );
 			}
@@ -173,7 +174,7 @@ class Session
 		self::$initial_data = $session->data;
 		
 		// but if the expiration is close (less than half the session lifetime away), null it out so the session always gets written so we extend the session
-		if ( ( $session->expires - HabariDateTime::date_create()->int ) < ( self::$lifetime / 2 ) ) {
+		if ( ( $session->expires - DateTime::date_create()->int ) < ( self::$lifetime / 2 ) ) {
 			self::$initial_data = null;
 		}
 
@@ -243,7 +244,7 @@ class Session
 	public static function gc( $max_lifetime )
 	{
 		$sql = 'DELETE FROM {sessions} WHERE expires < ?';
-		$args = array( HabariDateTime::date_create()->int );
+		$args = array( DateTime::date_create()->int );
 		$sql = Plugins::filter( 'sessions_clean', $sql, 'gc', $args );
 		DB::query( $sql, $args );
 		return true;

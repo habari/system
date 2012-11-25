@@ -4,6 +4,14 @@
  *
  */
 
+namespace Habari\System\Data\Model;
+
+use Habari\System\Data\IsContent;
+use Habari\System\Locale\DateTime;
+use Habari\System\Pluggable\Pluggable;
+use Habari\System\Data\Database\DB;
+use Habari\System\Pluggable\Plugins;
+
 /**
  * Habari CommentRecord Class
  *
@@ -19,7 +27,7 @@
  * </code>
  *
  * @property-write mixed $status The status of the comment. Can be a string or an integer
- * @property-write mixed $date The date of the comment. Can be a HabariDateTime object or any of the formats accepted by HabariDateTime::date_create()
+ * @property-write mixed $date The date of the comment. Can be a DateTime object or any of the formats accepted by DateTime::date_create()
  * @property mixed $post The post with which the comment is associated. Can be an integer, a string, or a Post object on write. Always a Post object on read
  * @property-read string $name The comment author's name, Anonymous if empty
  * @property-read CommentInfo $info The CommentInfo associated with the comment
@@ -64,7 +72,7 @@ class Comment extends QueryRecord implements IsContent
 			'ip' => 0,
 			'content' => '',
 			'status' => self::STATUS_UNAPPROVED,
-			'date' => HabariDateTime::date_create(),
+			'date' => DateTime::date_create(),
 			'type' => self::COMMENT
 		);
 	}
@@ -255,8 +263,8 @@ class Comment extends QueryRecord implements IsContent
 			case 'status':
 				return $this->setstatus( $value );
 			case 'date':
-				if ( !( $value instanceOf HabariDateTime ) ) {
-					$value = HabariDateTime::date_create( $value );
+				if ( !( $value instanceOf DateTime ) ) {
+					$value = DateTime::date_create( $value );
 				}
 				break;
 			case 'post':
