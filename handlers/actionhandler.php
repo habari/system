@@ -4,6 +4,15 @@
  *
  */
 
+namespace Habari\System\Handler;
+
+use Habari\System\Core\SuperGlobal;
+use Habari\System\Pluggable\Theme;
+use Habari\System\Pluggable\Plugins;
+use Habari\System\Utils\Utils;
+use Habari\System\Net\URL;
+use Habari\System\Pluggable\Themes;
+
 /**
  * A base class handler for URL-based actions. All ActionHandlers must
  * extend this class for the Controller to call their actions.
@@ -111,7 +120,7 @@ class ActionHandler
 	{
 		$this->theme = Themes::create();
 		$this->theme->assign( 'matched_rule', URL::get_matched_rule() );
-		$request = new StdClass();
+		$request = new \StdClass();
 		foreach ( URL::get_active_rules() as $rule ) {
 			$request->{$rule->name} = false;
 		}

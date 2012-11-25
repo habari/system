@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari\System\View\Form;
+
 /**
  * FormUI Library - Create interfaces for plugins
  *

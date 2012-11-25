@@ -7,6 +7,10 @@
 namespace Habari\System\Pluggable;
 
 use Habari\System\Data\Database\DB;
+use Habari\System\Core\Options;
+use Habari\System\View\Form\FormUI;
+use Habari\System\Data\Model\RewriteRule;
+use Habari\System\Locale\Locale;
 use Habari\System\Net\Url;
 
 /**
@@ -87,13 +91,14 @@ abstract class Pluggable
 
 	/**
 	 * Load a translation domain/file for this pluggable
+	 * @param string $domain The name of the domain to load
 	 * @return boolean true if data was successfully loaded, false otherwise
 	 */
 	public function load_text_domain( $domain )
 	{
 		$base_dir = realpath( dirname( $this->get_file() ) );
 
-		return HabariLocale::load_pluggable_domain( $domain, $base_dir );
+		return Locale::load_pluggable_domain( $domain, $base_dir );
 	}
 	
 	/**
@@ -314,7 +319,7 @@ abstract class Pluggable
 	 *
 	 * @param mixed $rule An old-style rewrite rule string, where quoted segments are literals and unquoted segments are variable names, OR a RewriteRule object
 	 * @param string $hook The suffix of the hook function: action_plugin_act_{$suffix}
-	 * #param Callback $fn A potential function/method to register directly to the newly created hook
+	 * @param Callback $fn A potential function/method to register directly to the newly created hook
 	 */
 	public function add_rule( $rule, $hook, $fn = null )
 	{
@@ -405,6 +410,7 @@ abstract class Pluggable
 	 */
 	public function upgrade()
 	{
+		// This call to Options::get() is suppressed because if the database options table isn't created, it fails.
 		if(DB::is_connected() && @ Options::get( 'installed' )) {
 			$pluggable_class = get_class($this);
 			$versions = Options::get( 'pluggable_versions' );

@@ -4,10 +4,17 @@
  *
  */
 
+namespace Habari\System\Locale;
+
+use Habari\System\Core\Options;
+use Habari\System\View\Format;
+use Habari\System\Utils\MultiByte;
+use Habari\System\Data\Model\User;
+
 /**
  * HabariDateTime class to wrap dates in.
  *
- * @property-read HabariDateTime $clone Returns a clonned object.
+ * @property-read DateTime $clone Returns a clonned object.
  * @property-read string $sql Returns a unix timestamp for inserting into DB.
  * @property-read int $int Returns a unix timestamp as integer.
  * @property-read string $time Returns the time formatted according to the blog's settings.
@@ -15,7 +22,7 @@
  * @property-read string $friendly Returns the time as a friendly string (ie: 4 months, 3 days ago, etc.).
  * @property-read string $fuzzy Returns the time as a short "fuzzy" string (ie: "just now", "yesterday", "2 weeks ago", etc.). 
  */
-class HabariDateTime extends DateTime
+class DateTime extends \DateTime
 {
 	private static $default_timezone;
 	private static $default_datetime_format = 'c';
@@ -97,7 +104,6 @@ class HabariDateTime extends DateTime
 	 *
 	 * @static
 	 * @see set_default_timezone()
-	 * @param string The deafult timezone.
 	 */
 	public static function get_default_timezone()
 	{
@@ -114,13 +120,14 @@ class HabariDateTime extends DateTime
 	 * @param string $time String in a format accepted by
 	 * {@link http://ca.php.net/strtotime strtotime()}, defaults to "now".
 	 * @param string $timezone A timezone name, not an abbreviation.
+	 * @return \Habari\System\Locale\DateTime
 	 */
 	public static function date_create( $time = null, $timezone = null )
 	{
-		if ( $time instanceOf HabariDateTime ) {
+		if ( $time instanceOf DateTime ) {
 			return $time;
 		}
-		elseif ( $time instanceOf DateTime ) {
+		elseif ( $time instanceOf \DateTime ) {
 			$time = $time->format( 'U' );
 		}
 		elseif ( $time === null ) {
@@ -135,7 +142,7 @@ class HabariDateTime extends DateTime
 		}
 
 		// passing the timezone to construct doesn't seem to do anything.
-		$datetime = new HabariDateTime( $time );
+		$datetime = new DateTime( $time );
 		$datetime->set_timezone( $timezone );
 		return $datetime;
 	}
@@ -147,6 +154,7 @@ class HabariDateTime extends DateTime
 	 * @param int $year Year of the date
 	 * @param int $month Month of the date
 	 * @param int $day Day of the date
+	 * @return \Habari\System\Locale\DateTime
 	 */
 	public function set_date( $year, $month, $day )
 	{
@@ -161,6 +169,7 @@ class HabariDateTime extends DateTime
 	 * @param int $year Year of the date
 	 * @param int $month Month of the date
 	 * @param int $day Day of the date
+	 * @return \Habari\System\Locale\DateTime
 	 */
 	public function set_isodate( $year, $week, $day = null )
 	{
@@ -175,6 +184,7 @@ class HabariDateTime extends DateTime
 	 * @param int $hour Hour of the time
 	 * @param int $minute Minute of the time
 	 * @param int $second Second of the time
+	 * @return \Habari\System\Locale\DateTime
 	 */
 	public function set_time( $hour, $minute, $second = null )
 	{
@@ -187,13 +197,13 @@ class HabariDateTime extends DateTime
 	 * timezone identifier, or DateTimeZone object.
 	 *
 	 * @see DateTime::setTimezone()
-	 * @param mixed The timezone to use.
-	 * @return HabariDateTime $this object.
+	 * @param mixed $timezone The timezone to use.
+	 * @return DateTime $this object.
 	 */
 	public function set_timezone( $timezone )
 	{
-		if ( ! $timezone instanceof DateTimeZone ) {
-			$timezone = new DateTimeZone( $timezone );
+		if ( ! $timezone instanceof \DateTimeZone ) {
+			$timezone = new \DateTimeZone( $timezone );
 		}
 		parent::setTimezone( $timezone );
 		return $this;
@@ -202,7 +212,7 @@ class HabariDateTime extends DateTime
 	/**
 	 * Get the timezone identifier that is set for this datetime object.
 	 *
-	 * @return DateTimeZone The timezone object.
+	 * @return \DateTimeZone The timezone object.
 	 */
 	public function get_timezone()
 	{
@@ -298,7 +308,7 @@ class HabariDateTime extends DateTime
 	 * 
 	 * @param array $matches The matches found in the regular expression.
 	 * @return string The date component value for the matched character.
-	 */	 
+	 */
 	private function text_format_callback( $matches )
 	{
 		return $this->format( $matches[1] );
@@ -307,8 +317,8 @@ class HabariDateTime extends DateTime
 	/**
 	 * Alters the timestamp
 	 *
-	 * @param string $format A format accepted by {@link http://php.net/strtotime strtotime()}.
-	 * @return HabariDateTime $this object.
+	 * @param string $args A format accepted by {@link http://php.net/strtotime strtotime()}..
+	 * @return DateTime $this object.
 	 */
 	public function modify( $args )
 	{
@@ -394,7 +404,7 @@ class HabariDateTime extends DateTime
 	/**
 	 * Return the default date format, as set in the Options table
 	 *
-	 * @return The default date format
+	 * @return string The default date format
 	 **/
 	public static function get_default_date_format()
 	{
@@ -419,7 +429,7 @@ class HabariDateTime extends DateTime
 	/**
 	 * Return the default time format, as set in the Options table
 	 *
-	 * @return The default time format
+	 * @return string The default time format
 	 **/
 	public static function get_default_time_format()
 	{
@@ -583,12 +593,12 @@ class HabariDateTime extends DateTime
 	{
 		
 		// if the dates aren't HDT objects, try to convert them to one. this lets you pass in just about any format
-		if ( !$start_date instanceof HabariDateTime ) {
-			$start_date = HabariDateTime::date_create( $start_date );
+		if ( !$start_date instanceof DateTime ) {
+			$start_date = DateTime::date_create( $start_date );
 		}
 		
-		if ( !$end_date instanceof HabariDateTime ) {
-			$end_date = HabariDateTime::date_create( $end_date );
+		if ( !$end_date instanceof DateTime ) {
+			$end_date = DateTime::date_create( $end_date );
 		}
 		
 		$result = array();

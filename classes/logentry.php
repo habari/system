@@ -4,6 +4,14 @@
  *
  */
 
+namespace Habari\System\Data\Model;
+
+use Habari\System\Locale\DateTime;
+use Habari\System\Utils\Utils;
+use Habari\System\Pluggable\Plugins;
+use Habari\System\Core\Options;
+use Habari\System\Data\Database\DB;
+
 /**
  * Habari LogEntry class
  *
@@ -59,7 +67,7 @@ class LogEntry extends QueryRecord
 			'severity_id' => null,
 			'message' => '',
 			'data' => '',
-			'timestamp' => HabariDateTime::date_create(),
+			'timestamp' => DateTime::date_create(),
 			'ip' => 0,
 		);
 	}
@@ -87,7 +95,7 @@ class LogEntry extends QueryRecord
 			$this->fields['severity'] = 'info';
 		}
 		if ( isset( $this->fields['timestamp'] ) ) {
-			$this->fields['timestamp'] = HabariDateTime::date_create( $this->fields['timestamp'] );
+			$this->fields['timestamp'] = DateTime::date_create( $this->fields['timestamp'] );
 		}
 		$this->exclude_fields( 'id' );
 	}
@@ -95,7 +103,7 @@ class LogEntry extends QueryRecord
 	/**
 	 * Returns an associative array of LogEntry types
 	 *
-	 * @param bool whether to force a refresh of the cached values
+	 * @param bool $force whether to force a refresh of the cached values
 	 * @return array An array of log entry type names => integer values
 	 */
 	public static function list_logentry_types( $force = false )
@@ -123,7 +131,7 @@ class LogEntry extends QueryRecord
 
 	/**
 	 * Returns an array of LogEntry modules
-	 * @param bool Whether to refresh the cached values
+	 * @param bool $refresh Whether to refresh the cached values
 	 * @return array An array of LogEntry module id => name pairs
 	**/
 	public static function list_modules( $refresh = false )
@@ -136,7 +144,7 @@ class LogEntry extends QueryRecord
 
 	/**
 	 * Returns an array of LogEntry types
-	 * @param bool Whether to refresh the cached values
+	 * @param bool $refresh Whether to refresh the cached values
 	 * @return array An array of LogEntry id => name pairs
 	**/
 	public static function list_types( $refresh = false )
@@ -298,25 +306,25 @@ class LogEntry extends QueryRecord
 	}
 
 	/**
-	 * function delete
 	 * Deletes this logentry
 	 */
 	public function delete()
 	{
 		$allow = true;
 		$allow = Plugins::filter( 'logentry_delete_allow', $allow, $this );
-		if ( ! $allow ) {
-			return;
+		$result = false;
+		if ( $allow ) {
+			Plugins::act( 'logentry_delete_before', $this );
+			$result = parent::deleteRecord( DB::table( 'log' ), array( 'id'=>$this->id ) );
+			Plugins::act( 'logentry_delete_after', $this );
 		}
-		Plugins::act( 'logentry_delete_before', $this );
-		return parent::deleteRecord( DB::table( 'log' ), array( 'id'=>$this->id ) );
-		Plugins::act( 'logentry_delete_after', $this );
+		return $result;
 	}
 
 	/**
 	 * Overrides QueryRecord __get to implement custom object properties
 	 *
-	 * @param string Name of property to return
+	 * @param string $name Name of property to return
 	 * @return mixed The requested field value
 	 */
 	public function __get( $name )
@@ -354,15 +362,16 @@ class LogEntry extends QueryRecord
 	/**
 	 * Overrides QueryRecord __set to implement custom object properties
 	 *
-	 * @param string Name of property to return
+	 * @param string $name name of property to return
+	 * @param mixed $value The requested field value
 	 * @return mixed The requested field value
 	 */
 	public function __set( $name, $value )
 	{
 		switch ( $name ) {
 			case 'timestamp':
-				if ( !( $value instanceOf HabariDateTime ) ) {
-					$value = HabariDateTime::date_create( $value );
+				if ( !( $value instanceOf DateTime ) ) {
+					$value = DateTime::date_create( $value );
 				}
 				break;
 		}

@@ -6,6 +6,12 @@
  */
 
 namespace Habari\System\Data\Model;
+use Habari\System\Data\Database\DB;
+use Habari\System\Locale\DateTime;
+use Habari\System\Utils\MultiByte;
+use Habari\System\Core\Options;
+use Habari\System\Utils\Utils;
+use Habari\System\Data\Model\LogEntry;
 
 /**
  * Habari EventLog class
@@ -26,7 +32,8 @@ class EventLog extends \ArrayObject
 	 * the data returned doesn't necessarily match the request, such as when
 	 * several log entries are requested, but only one is available to return.
 	 *
-	 * @param string The name of the property to return.
+	 * @param string $name The name of the property to return.
+	 * @return bool
 	 */
 	public function __get( $name )
 	{
@@ -102,6 +109,7 @@ class EventLog extends \ArrayObject
 	/**
 	 * Get the module in which the logged code was executed
 	 *
+	 * @param null $module
 	 * @param integer $level How many backtrace calls to go back through the trace
 	 * @return string The classname or .php module in which the log code was called.
 	 */
@@ -120,7 +128,7 @@ class EventLog extends \ArrayObject
 	 * By default,fetch as many entries as pagination allows and order them in a descending fashion based on timestamp.
 	 *
 	 * @todo Cache query results.
-	 * @param array $paramarry An associated array of parameters, or a querystring
+	 * @param array $paramarray An associated array of parameters, or a querystring
 	 * @return array An array of LogEntry objects, or a single LogEntry object, depending on request
 	 */
 	public static function get( $paramarray = array() )
@@ -257,7 +265,7 @@ class EventLog extends \ArrayObject
 				if ( isset( $paramset['day'] ) ) {
 					$where[] = 'timestamp BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
-					$start_date = HabariDateTime::date_create( $start_date );
+					$start_date = DateTime::date_create( $start_date );
 					$params[] = $start_date->sql;
 					$params[] = $start_date->modify( '+1 day' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
@@ -266,7 +274,7 @@ class EventLog extends \ArrayObject
 				elseif ( isset( $paramset['month'] ) ) {
 					$where[] = 'timestamp BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
-					$start_date = HabariDateTime::date_create( $start_date );
+					$start_date = DateTime::date_create( $start_date );
 					$params[] = $start_date->sql;
 					$params[] = $start_date->modify( '+1 month' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
@@ -275,7 +283,7 @@ class EventLog extends \ArrayObject
 				elseif ( isset( $paramset['year'] ) ) {
 					$where[] = 'timestamp BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
-					$start_date = HabariDateTime::date_create( $start_date );
+					$start_date = DateTime::date_create( $start_date );
 					$params[] = $start_date->sql;
 					$params[] = $start_date->modify( '+1 year' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
@@ -332,7 +340,7 @@ class EventLog extends \ArrayObject
 		$query .= $orderby . $limit;
 		// Utils::debug( $paramarray, $fetch_fn, $query, $params );
 
-		DB::set_fetch_mode( PDO::FETCH_CLASS );
+		DB::set_fetch_mode( \PDO::FETCH_CLASS );
 		DB::set_fetch_class( 'LogEntry' );
 		$results = DB::$fetch_fn( $query, $params, 'LogEntry' );
 
@@ -361,7 +369,7 @@ class EventLog extends \ArrayObject
 		$retention = '-' . intval( $retention ) . ' days';
 
 		// Trim the log table down
-		$date = HabariDateTime::date_create()->modify( $retention );
+		$date = DateTime::date_create()->modify( $retention );
 
 		return DB::query( 'DELETE FROM {log} WHERE timestamp < ?', array( $date->sql ) );
 

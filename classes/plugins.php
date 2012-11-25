@@ -7,6 +7,8 @@
 namespace Habari\System\Pluggable;
 
 use Habari\System\Data\Model\EventLog;
+use Habari\System\Utils\MultiByte;
+use Habari\System\Locale\Locale;
 use Habari\System\Core\Session;
 use Habari\System\Core\Options;
 use Habari\System\Utils\Utils;
@@ -243,10 +245,10 @@ class Plugins
 		}
 		if ( count( $return ) == 0 && substr( $hookname, -6 ) != '_empty' ) {
 			array_unshift( $filter_args, $hookname . '_empty' );
-			$result = call_user_func_array( array( 'Plugins', 'theme' ), $filter_args );
+			$result = call_user_func_array( array( '\Habari\System\Pluggable\Plugins', 'theme' ), $filter_args );
 		}
 		array_unshift( $filter_args, 'theme_call_' . $hookname, $return );
-		$result = call_user_func_array( array( 'Plugins', 'filter' ), $filter_args );
+		$result = call_user_func_array( array( '\Habari\System\Pluggable\Plugins', 'filter' ), $filter_args );
 		return $result;
 	}
 
@@ -450,7 +452,7 @@ class Plugins
 	 * Return the info XML for a plugin based on a filename
 	 *
 	 * @param string $file The filename of the plugin file
-	 * @return SimpleXMLElement The info structure for the plugin, or null if no info could be loaded
+	 * @return \SimpleXMLElement The info structure for the plugin, or null if no info could be loaded
 	 */
 	public static function load_info( $file )
 	{
@@ -463,7 +465,7 @@ class Plugins
 			$old_error = libxml_use_internal_errors( true );
 			
 			try {
-				$info = new SimpleXMLElement( $xml_content );
+				$info = new \SimpleXMLElement( $xml_content );
 				
 				// if the xml file uses a theme element name instead of pluggable, it's old
 				if ( $info->getName() != 'pluggable' ) {
@@ -471,15 +473,15 @@ class Plugins
 				}
 
 				// Translate the plugin description
-				HabariLocale::translate_xml( $info, $info->description );
+				Locale::translate_xml( $info, $info->description );
 
 				// Translate the plugin help
 				foreach( $info->help as $help ) {
-					HabariLocale::translate_xml( $help, $help->value );
+					Locale::translate_xml( $help, $help->value );
 				}
 				
 			}
-			catch ( Exception $e ) {
+			catch ( \Exception $e ) {
 				
 				EventLog::log( _t( 'Invalid plugin XML file: %1$s', array( $xml_file ) ), 'err', 'plugin' );
 				$info = 'broken';
@@ -603,6 +605,7 @@ class Plugins
 	 * Deactivates a plugin file
 	 * @param string $file the Filename of the plugin to deactivate
 	 * @param boolean $force If true, deactivate this plugin regardless of what filters may say about it.
+	 * @return bool If true, the plugin was deactivated
 	 */
 	public static function deactivate_plugin( $file, $force = false )
 	{
@@ -754,8 +757,9 @@ class Plugins
 	 * Produce the UI for a plugin based on the user's selected config option
 	 *
 	 * @param string $configure The id of the configured plugin
-	 * @param string $configuration The selected configuration option
-	 **/
+	 * @param $configaction
+	 * @internal param string $configuration The selected configuration option
+	 */
 	public static function plugin_ui( $configure, $configaction )
 	{
 		Plugins::act_id( 'plugin_ui_' . $configaction, $configure, $configure, $configaction );

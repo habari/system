@@ -4,6 +4,15 @@
  *
  */
 
+namespace Habari\System\Pluggable;
+
+use Habari\System\Core\Site;
+use Habari\System\Utils\Utils;
+use Habari\System\Core\Options;
+use Habari\System\Data\Model\EventLog;
+use Habari\System\Data\Model\QueryRecord;
+use Habari\System\Core\Session;
+
 /**
  * Habari Themes class
  *
@@ -282,9 +291,10 @@ class Themes
 	 *
 	 * If no theme option is set, a fatal error is thrown
 	 *
-	 * @param name            ( optional ) override the default theme lookup
-	 * @param template_engine ( optional ) specify a template engine
-	 * @param theme_dir       ( optional ) specify a theme directory
+	 * @param string $name ( optional ) override the default theme lookup
+	 * @param string $template_engine ( optional ) specify a template engine
+	 * @param string $theme_dir ( optional ) specify a theme directory
+	 * @return Theme An instance of the requested theme or the default theme
 	 **/
 	public static function create( $name = null, $template_engine = null, $theme_dir = null )
 	{
@@ -382,7 +392,7 @@ class Themes
 
 		$theme_classes = self::get_theme_classes();
 		foreach ( $theme_classes as $theme ) {
-			$class = new ReflectionClass( $theme );
+			$class = new \ReflectionClass( $theme );
 			$classfile = str_replace( '\\', '/', $class->getFileName() );
 			if ( $classfile == $file ) {
 				return $theme;
