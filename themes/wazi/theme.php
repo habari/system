@@ -12,7 +12,7 @@ class WaziTheme extends Theme
 			Session::error('This is a <b>sample error</b>');
 			Session::notice('This is a <b>sample notice</b> for ' . $_SERVER['REQUEST_URI']);
 
-			Stack::add('template_header_javascript', $theme->get_url('/less/less-1.3.0.min.js'), 'less');
+			Stack::add('template_header_javascript', 'less' );
 			Stack::add('template_stylesheet', array($theme->get_url('/less/style.less'), null, array('type'=> null, 'rel' => 'stylesheet/less')), 'style');
 		}
 		else {

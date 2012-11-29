@@ -359,6 +359,8 @@ class Stack
 		StackItem::register( 'crc32', Site::get_url( 'vendor', '/crc32.js' ), '1.2' );
 
 		StackItem::register( 'admin-css', array( Site::get_url( 'admin_theme', '/css/admin.css'), 'screen' ) );
+		StackItem::register( 'less', array( Site::get_url( 'vendor', '/less.min.js') ) );
+		StackItem::register( 'admin-less', array( Site::get_url( 'admin_theme', '/less/admin.less'), null, array('rel' => 'stylesheet/less') ) );
 		StackItem::register( 'jquery.ui-css', array( Site::get_url( 'admin_theme', '/css/jqueryui.css'), 'screen' ), '1.8.14' );
 		StackItem::register( 'humanmsg-css', array( Site::get_url( 'vendor', '/humanmsg/humanmsg.css'), 'screen' ), '1.0.habari' );
 	}
