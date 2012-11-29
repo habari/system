@@ -146,7 +146,7 @@ class Site
 				if ( ( $port != 80 ) && ( $port != 443 ) && ( MultiByte::substr( $host, MultiByte::strlen( $host ) - strlen( $port ) ) != $port ) ) {
 					$portpart = ':' . $port;
 				}
-				if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) {
+				if ( isset( $_SERVER['HTTPS'] ) && !empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' ) {
 					$protocol = 'https';
 				}
 				$url = $protocol . '://' . $host . $portpart;
