@@ -1751,7 +1751,6 @@ class InstallHandler extends ActionHandler
 		DB::exec( 'drop table {tags}' );
 		DB::exec( 'drop table {tag2post}' );
 		
-		// what about postgres and sqlite indexes?	
 	}
 	
 	private function upgrade_db_post_5097()
