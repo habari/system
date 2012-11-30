@@ -8,6 +8,11 @@ namespace Habari\System\View\Form;
 
 use Habari\System\Data\IsContent;
 use Habari\System\Pluggable\Plugins;
+use Habari\System\Utils\Utils;
+use Habari\System\Core\Site;
+use Habari\System\Pluggable\Themes;
+use Habari\System\Core\Options;
+use Habari\System\Core\Controller;
 
 /**
  * FormUI Library - Create interfaces for plugins
