@@ -17,6 +17,16 @@ use Habari\System\Pluggable\Plugins;
 use Habari\System\Net\URL;
 use Habari\System\Data\Model\Info\PostInfo;
 use Habari\System\Utils\Utils;
+use Habari\System\Security\Acl;
+use Habari\System\Data\Model\Comments;
+use Habari\System\Data\Model\EventLog;
+use Habari\System\Media\Media;
+use Habari\System\Core\Options;
+use Habari\System\Data\Model\Posts;
+use Habari\System\Core\Session;
+use Habari\System\Core\Site;
+use Habari\System\Data\Model\Tags;
+use Habari\System\Data\Model\User;
 
 /**
  *
