@@ -6,6 +6,9 @@
 
 namespace Habari\System\View\Form;
 
+use Habari\System\Data\IsContent;
+use Habari\System\Pluggable\Plugins;
+
 /**
  * FormUI Library - Create interfaces for plugins
  *
@@ -100,13 +103,13 @@ class FormContainer extends FormComponents
 			$control = $type;
 			$name = $control->name;
 		}
-		elseif ( is_string( $type ) && class_exists( 'FormControl' . ucwords( $type ) ) ) {
+		elseif ( is_string( $type ) && class_exists( '\\Habari\\System\\View\\Form\\FormControl' . ucwords( $type ) ) ) {
 			$name = reset( $args );
-			$type = 'FormControl' . ucwords( $type );
+			$type = '\\Habari\\System\\View\\Form\\FormControl' . ucwords( $type );
 
 			if ( class_exists( $type ) ) {
 				// Instanciate a new object from $type
-				$controlreflect = new ReflectionClass( $type );
+				$controlreflect = new \ReflectionClass( $type );
 				$control = $controlreflect->newInstanceArgs( $args );
 			}
 		}

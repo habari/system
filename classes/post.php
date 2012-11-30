@@ -27,6 +27,7 @@ use Habari\System\Core\Session;
 use Habari\System\Core\Site;
 use Habari\System\Data\Model\Tags;
 use Habari\System\Data\Model\User;
+use Habari\System\View\Form\FormUI;
 
 /**
  *

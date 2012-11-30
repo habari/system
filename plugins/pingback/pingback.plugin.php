@@ -9,6 +9,7 @@
 use Habari\System\Pluggable\Plugin;
 use Habari\System\Core\Controller;
 use Habari\System\Pluggable\Plugins;
+use Habari\System\Net\URL;
 
 class Pingback extends Plugin
 {

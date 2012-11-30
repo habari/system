@@ -4,11 +4,19 @@
  *
  */
 
+namespace Habari\System\Data\Model;
+
+use Habari\System\Core\Options;
+use Habari\System\Utils\Utils;
+use Habari\System\Pluggable\Plugins;
+use Habari\System\Security\ACL;
+use Habari\System\Data\Database\DB;
+
 /**
  * Habari Comments Class
  *
  */
-class Comments extends ArrayObject
+class Comments extends \ArrayObject
 {
 	private $sort;
 
@@ -365,7 +373,7 @@ class Comments extends ArrayObject
 		$query .= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
 		//Utils::debug( $query, $params );
 
-		DB::set_fetch_mode( PDO::FETCH_CLASS );
+		DB::set_fetch_mode( \PDO::FETCH_CLASS );
 		DB::set_fetch_class( 'Comment' );
 		$results = DB::$fetch_fn( $query, $params, 'Comment' );
 

@@ -7,6 +7,7 @@
 namespace Habari\System\Data\Model\Info;
 
 use Habari\System\Data\Database\DB;
+use Habari\System\Pluggable\Plugins;
 
 /**
  * Post metadata
