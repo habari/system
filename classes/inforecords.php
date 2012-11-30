@@ -4,6 +4,11 @@
  *
  */
 
+namespace Habari\System\Data\Model\Info;
+
+use Habari\System\Net\URLProperties;
+use Habari\System\Data\Database\DB;
+
 /**
  * Habari InfoRecords Class
  *

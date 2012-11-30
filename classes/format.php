@@ -7,6 +7,8 @@
 namespace Habari\System\View;
 
 use Habari\System\Pluggable\Plugins;
+use Habari\System\Data\Model\Terms;
+use Habari\System\Net\URL;
 
 /**
  * Habari Format Class

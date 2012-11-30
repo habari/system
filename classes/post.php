@@ -15,6 +15,8 @@ use Habari\System\Locale\DateTime;
 use Habari\System\Data\Database\Query;
 use Habari\System\Pluggable\Plugins;
 use Habari\System\Net\URL;
+use Habari\System\Data\Model\Info\PostInfo;
+use Habari\System\Utils\Utils;
 
 /**
  *

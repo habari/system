@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari\System\Data\Model;
+
 /**
 * Habari Tags Class
 *

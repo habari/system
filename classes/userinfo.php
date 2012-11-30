@@ -4,6 +4,10 @@
  *
  */
 
+namespace Habari\System\Data\Model\Info;
+
+use Habari\System\Data\Database\DB;
+
 /**
  * Habari UserInfo class
  *

@@ -1,3 +1,8 @@
+<?php
+use Habari\System\Core\Options;
+use Habari\System\View\Format;
+?>
+
 <article id="post-<?php echo $content->id; ?>" class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
 	<header class="metadata">

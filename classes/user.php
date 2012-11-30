@@ -15,6 +15,7 @@ use Habari\System\Data\IsContent;
 use Habari\System\Pluggable\Plugins;
 use Habari\System\Security\ACL;
 use Habari\System\Net\URL;
+use Habari\System\Data\Model\Info\UserInfo;
 
 /**
  * Habari UserRecord Class
