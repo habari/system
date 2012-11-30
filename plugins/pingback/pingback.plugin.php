@@ -6,6 +6,10 @@
  * @package Habari
  */
 
+use Habari\System\Pluggable\Plugin;
+use Habari\System\Core\Controller;
+use Habari\System\Pluggable\Plugins;
+
 class Pingback extends Plugin
 {
 

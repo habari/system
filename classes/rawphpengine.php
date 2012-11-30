@@ -4,6 +4,11 @@
  *
  */
 
+namespace Habari\System\View\Engine;
+
+use Habari\System\Utils\Utils;
+use Habari\System\Pluggable\Plugins;
+
 /**
  * Habari RawPHPEngine class
  *

@@ -4,6 +4,20 @@
  *
  */
 
+namespace Habari\System\Data\Model;
+
+use Habari\System\View\Form\FormStorage;
+use Habari\System\Data\IsContent;
+use Habari\System\Pluggable\Pluggable;
+use Habari\System\Utils\Utils;
+use Habari\System\Pluggable\Plugins;
+use Habari\System\Data\Database\DB;
+use Habari\System\Data\Database\Query;
+use Habari\System\Data\Database\QueryWhere;
+use Habari\System\Core\Options;
+use Habari\System\Core\SuperGlobal;
+use Habari\System\Security\ACL;
+
 /**
  * Habari Posts Class
  *
@@ -23,7 +37,7 @@
  * @property-read array $preset The presets for this object
  *
  */
-class Posts extends ArrayObject implements IsContent
+class Posts extends \ArrayObject implements IsContent
 {
 	public $get_param_cache; // Stores info about the last set of data fetched that was not a single value
 
@@ -134,8 +148,9 @@ class Posts extends ArrayObject implements IsContent
 			foreach($paramarray['preset'] as $presetname => $fallbackpreset) {
 				if(isset($presets[$fallbackpreset])) {
 					$preset = Plugins::filter('posts_get_update_preset', $presets[$fallbackpreset], $presetname, $paramarray);
-					if(is_array( $preset ) || $preset instanceof ArrayObject || $preset instanceof ArrayIterator) {
-						$paramarray = array_merge($preset, $paramarray);
+					if(is_array( $preset ) || $preset instanceof \ArrayObject || $preset instanceof \ArrayIterator) {
+						$preset = new SuperGlobal($preset);
+						$paramarray = $preset->merge($paramarray)->getArrayCopy();
 						break;
 					}
 				}
@@ -749,7 +764,7 @@ class Posts extends ArrayObject implements IsContent
 		/**
 		 * Execute the SQL statement using the PDO extension
 		 */
-		DB::set_fetch_mode( PDO::FETCH_CLASS );
+		DB::set_fetch_mode( \PDO::FETCH_CLASS );
 		$fetch_class = 'Post';
 		if(isset($paramarray['fetch_class'])) {
 			$fetch_class = $paramarray['fetch_class'];
@@ -1252,7 +1267,7 @@ class Posts extends ArrayObject implements IsContent
 	 */
 	public static function __static()
 	{
-		Pluggable::load_hooks('Posts');
+		Pluggable::load_hooks(__CLASS__);
 	}
 
 	/**

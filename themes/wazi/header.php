@@ -1,3 +1,8 @@
+<?php
+use Habari\System\Core\Options;
+use Habari\System\Core\Site;
+use Habari\System\Core\Session;
+?>
 <!DOCTYPE HTML>
 <html>
 <head>

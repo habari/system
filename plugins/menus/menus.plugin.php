@@ -11,6 +11,9 @@
  * @todo ACL, CSRF, etc.
  */
 
+use Habari\System\Pluggable\Plugin;
+use Habari\System\Data\Model\Vocabulary;
+
 class Menus extends Plugin
 {
 	/**

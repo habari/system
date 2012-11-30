@@ -1,5 +1,9 @@
 <?php
 
+namespace Habari\System\Data\Database;
+
+use Habari\System\Utils\Utils;
+
 /**
  * Base Query class for building new queries
  * @see Posts::get

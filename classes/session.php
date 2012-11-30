@@ -11,6 +11,7 @@ use Habari\System\Utils\Utils;
 use Habari\System\Data\Database\DB;
 use Habari\System\Locale\DateTime;
 use Habari\System\Utils\MultiByte;
+use Habari\System\View\Format;
 
 /**
  * Habari Session class

@@ -6,6 +6,7 @@
  */
 
 namespace Habari\System\Data\Model;
+
 use Habari\System\Data\Database\DB;
 use Habari\System\Locale\DateTime;
 use Habari\System\Utils\MultiByte;

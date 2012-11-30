@@ -11,6 +11,13 @@ use Habari\System\Core\Options;
 use Habari\System\Utils\MultiByte;
 use Habari\System\Data\Model\User;
 use Habari\System\Utils\Stack;
+use Habari\System\Core\Controller;
+use Habari\System\Data\Model\Post;
+use Habari\System\Data\Model\Posts;
+use Habari\System\Core\Site;
+use Habari\System\Net\URL;
+use Habari\System\Data\Database\DB;
+
 
 /**
  * Habari Theme Class
@@ -84,7 +91,12 @@ class Theme extends Pluggable
 		$this->version = $themedata->version;
 		$theme_dir = Utils::single_array($themedata->theme_dir);
 		// Set up the corresponding engine to handle the templating
-		$this->template_engine = new $themedata->template_engine();
+		$engine = $themedata->template_engine;
+		// @todo Big namespace Kludge. Prefixes the template engine with a namespace if not provided
+		if(strpos($engine, '\\') == false) {
+			$engine = 'Habari\\System\\View\\Engine\\' . $engine;
+		}
+		$this->template_engine = new $engine();
 
 		$this->theme_dir = $theme_dir;
 		$this->template_engine->set_template_dir( $theme_dir );
@@ -651,7 +663,7 @@ class Theme extends Pluggable
 			$content_types = Utils::single_array( $object->content_type() );
 		}
 		if ( is_object( $object ) ) {
-			$content_types[] = strtolower( get_class( $object ) );
+			$content_types[] = strtolower( Utils::class_only( $object ) );
 		}
 		$content_types[] = 'content';
 		$content_types = array_flip( $content_types );

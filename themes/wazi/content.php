@@ -1,1 +1,1 @@
-<?php echo $content; ?>
+<?php \Habari\System\Utils\Utils::debug($content); echo $content; ?>

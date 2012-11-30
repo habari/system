@@ -261,8 +261,13 @@ class DatabaseConnection
 		if ( $this->pdo_statement = $this->pdo->prepare( $query ) ) {
 			if ( $this->fetch_mode == \PDO::FETCH_CLASS ) {
 				/* Try to get the result class autoloaded. */
-				if ( ! class_exists( strtolower( $this->fetch_class_name ) ) ) {
+				if ( ! class_exists( strtolower( $this->fetch_class_name ), true ) ) {
 					$tmp = $this->fetch_class_name;
+					// @todo This is a GIANT namespace kludge, replacing Model class names with no namespace with a default prefixed class
+					if(strpos($tmp, '\\') == false) {
+						$tmp = '\\Habari\\System\\Data\\Model\\' . $tmp;
+						$this->fetch_class_name = $tmp;
+					}
 					new $tmp();
 				}
 				/* Ensure that the class is actually available now, otherwise segfault happens (if we haven't died earlier anyway). */

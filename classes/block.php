@@ -4,6 +4,13 @@
  *
  */
 
+namespace Habari\System\Data\Model;
+
+use Habari\System\Data\IsContent;
+use Habari\System\View\Form\FormStorage;
+use Habari\System\Utils\Utils;
+use Habari\System\Pluggable\Plugins;
+
 /**
  * Habari Block class
  * Block class for theme display of pluggable content

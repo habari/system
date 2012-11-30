@@ -98,7 +98,7 @@ class Comment extends QueryRecord implements IsContent
 	 */
 	public static function __static()
 	{
-		Pluggable::load_hooks('Comment');
+		Pluggable::load_hooks(__CLASS__);
 	}
 
 	/**

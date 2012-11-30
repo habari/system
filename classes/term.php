@@ -14,6 +14,10 @@
  * @property int vocabulary_id
  */
 
+namespace Habari\System\Data\Model;
+
+use Habari\System\Utils\Utils;
+
 class Term extends QueryRecord
 {
 	protected $inforecords = null;

@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari\System\View\Engine;
+
 /**
  * Habari TemplateEngine abstract base class
  *

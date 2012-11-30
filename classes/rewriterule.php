@@ -27,8 +27,6 @@ class RewriteRule extends QueryRecord
 	public $named_arg_values = array(); // Values of named arguments filled during URL::parse()
 	private $m_named_args = null; // Named arguments matches
 
-	public $action = null;
-
 
 	/**
 	 * Returns the defined database columns for a rewrite rule.

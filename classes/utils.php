@@ -1389,5 +1389,21 @@ class Utils
 		}
 		return $pass;
 	}
+
+	/**
+	 * Strip the namespace off of the fully-qualified class name
+	 * @param string|object $classname The fully-qualified name of the class, or an object instance
+	 * @return string The class name, with namespace removed
+	 */
+	public static function class_only($classname) {
+		if(is_object($classname)) {
+			$classname = get_class($classname);
+		}
+		$pos = strrpos($classname, '\\');
+		if($pos !== false) {
+			$classname = substr($classname, $pos + 1);
+		}
+		return $classname;
+	}
 }
 ?>

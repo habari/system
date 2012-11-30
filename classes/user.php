@@ -10,6 +10,12 @@
 
 namespace Habari\System\Data\Model;
 
+use Habari\System\View\Form\FormStorage;
+use Habari\System\Data\IsContent;
+use Habari\System\Pluggable\Plugins;
+use Habari\System\Security\ACL;
+use Habari\System\Net\URL;
+
 /**
  * Habari UserRecord Class
  *

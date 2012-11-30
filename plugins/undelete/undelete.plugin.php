@@ -1,5 +1,8 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 
+use Habari\System\Pluggable\Plugin;
+use Habari\System\Data\Model\User;
+
 /**
  * Undelete Class
  *
