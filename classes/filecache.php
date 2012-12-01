@@ -28,7 +28,7 @@ class FileCache extends Cache
 			define( 'FILE_CACHE_LOCATION', HABARI_PATH . '/user/cache/' );
 		}
 		$this->cache_location = FILE_CACHE_LOCATION;
-		$this->index_file = $this->cache_location . md5( 'index' . Options::get( 'GUID' ) ) . '.data';
+		$this->index_file = $this->cache_location . md5( 'index' . Options::get( 'private-GUID' ) ) . '.data';
 		$this->enabled = is_writeable( $this->cache_location );
 		if ( $this->enabled ) {
 			if ( file_exists( $this->index_file ) ) {
@@ -293,7 +293,7 @@ class FileCache extends Cache
 	 */
 	private function get_name_hash( $name )
 	{
-		return md5( $name . Options::get( 'GUID' ) ) . '.cache';
+		return md5( $name . Options::get( 'private-GUID' ) ) . '.cache';
 	}
 
 	/**
@@ -303,7 +303,7 @@ class FileCache extends Cache
 	 */
 	private function get_group_hash( $group )
 	{
-		return md5( $group . Options::get( 'GUID' ) ) . '.';
+		return md5( $group . Options::get( 'private-GUID' ) ) . '.';
 	}
 
 	/**

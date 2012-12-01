@@ -1168,7 +1168,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	public function comment_form( $context = 'public' )
 	{
 		// Handle comment submissions and default commenter id values
-		$cookie = 'comment_' . Options::get( 'GUID' );
+		$cookie = 'comment_' . Options::get( 'public-GUID' );
 		$commenter_name = '';
 		$commenter_email = '';
 		$commenter_url = '';

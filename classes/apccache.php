@@ -19,7 +19,7 @@ class APCCache extends Cache
 	 */
 	public function __construct()
 	{
-		$this->prefix = Options::get( 'GUID' );
+		$this->prefix = Options::get( 'private-GUID' );
 		$this->enabled = extension_loaded( 'apc' );
 		if ( !$this->enabled ) {
 			Session::error( _t( "The APC Cache PHP module is not loaded - the cache is disabled.", "apccache" ), 'filecache' );

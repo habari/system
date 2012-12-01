@@ -217,7 +217,7 @@ class SpamChecker extends Plugin
 		if ( $ip == '' ) {
 			$ip = Utils::get_ip();
 		}
-		$code = substr( md5( $post_id . Options::get( 'GUID' ) . 'more salt' . $ip ), 0, 10 );
+		$code = substr( md5( $post_id . Options::get( 'public-GUID' ) . 'more salt' . $ip ), 0, 10 );
 		$code = Plugins::filter( 'comment_code', $code, $post_id, $ip );
 		return $code;
 	}

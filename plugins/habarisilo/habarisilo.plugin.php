@@ -677,7 +677,7 @@ UPLOAD_FORM;
 	 */
 	private static function create_token( $timestamp )
 	{
-		return substr( md5( $timestamp . Options::get( 'GUID' ) ), 0, 10 );
+		return substr( md5( $timestamp . Options::get( 'public-GUID' ) ), 0, 10 );
 	}
 
 	/**

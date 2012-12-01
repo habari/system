@@ -108,7 +108,7 @@ class Utils
 			$nonce = '';
 		}
 		if ( '' === $nonce ) {
-			$nonce = Utils::crypt( Options::get( 'GUID' ) . Utils::nonce() );
+			$nonce = Utils::crypt( Options::get( 'public-GUID' ) . Utils::nonce() );
 		}
 		if ( '' === $timestamp ) {
 			$timestamp = date( 'c' );

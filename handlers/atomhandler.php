@@ -82,7 +82,7 @@ class AtomHandler extends ActionHandler
 		$feed_generator->addAttribute( 'uri', 'http://www.habariproject.org/' );
 		$feed_generator->addAttribute( 'version', Version::get_habariversion() );
 
-		$feed_id = $xml->addChild( 'id', 'tag:' . Site::get_url( 'hostname' ) . ',' . date( "Y-m-d" ) . ':' . $id . '/' . Options::get( 'GUID' ) );
+		$feed_id = $xml->addChild( 'id', 'tag:' . Site::get_url( 'hostname' ) . ',' . date( "Y-m-d" ) . ':' . $id . '/' . Options::get( 'public-GUID' ) );
 
 		$feed_title = $xml->addChild( 'title', Utils::htmlspecialchars( Options::get( 'title' ) ) );
 
