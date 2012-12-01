@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari\System\Handler;
+
 /**
  * Habari AdminCommentsHandler Class
  * Handles comment-related actions in the admin

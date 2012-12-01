@@ -4,6 +4,13 @@
  *
  */
 
+namespace Habari\System\Handler;
+
+use Habari\System\Data\Model\User;
+use Habari\System\Core\Session;
+use Habari\System\Net\URL;
+use Habari\System\Utils\Utils;
+
 /**
  * Habari AdminHandler Class
  * Backbone of the admin area, handles requests and functionality.

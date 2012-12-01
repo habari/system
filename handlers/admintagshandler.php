@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari\System\Handler;
+
 /**
  * Habari AdminTagsHandler Class
  * Handles tag-related actions in the admin

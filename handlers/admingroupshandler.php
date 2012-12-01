@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari\System\Handler;
+
 /**
  * Habari AdminGroupsHandler Class
  * Handles group-related actions in the admin

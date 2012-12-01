@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari\System\Handler;
+
 /**
  * Habari AdminDashboardHandler Class
  * Handles dashboard-related actions in the admin

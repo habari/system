@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari\System\Handler;
+
 /**
  * Habari AdminLogsHandler Class
  * Handles log-related actions in the admin

@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari\System\Handler;
+
 /**
  * Handles Ajax requests, sending them to plugin sinks.
  *

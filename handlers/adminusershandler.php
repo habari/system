@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari\System\Handler;
+
 /**
  * Habari AdminUsersHandler Class
  * Handles user-related actions in the admin

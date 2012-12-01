@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari\System\Handler;
+
 /**
  * Habari AdminThemesHandler Class
  * Handles theme-related actions in the admin

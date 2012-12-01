@@ -4,6 +4,11 @@
  *
  */
 
+namespace Habari\System\Handler;
+
+use Habari\System\Utils\Utils;
+use Habari\System\Pluggable\Themes;
+
 /**
  * Habari UserHandler Class
  *

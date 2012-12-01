@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari\System\Handler;
+
 /**
  * Habari AdminPluginsHandler Class
  * Handles plugin-related actions in the admin
