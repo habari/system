@@ -766,6 +766,8 @@ class InstallHandler extends ActionHandler
 			// a SHA1 hash that will serve as the unique identifier for
 			// this installation.  Also for use in cookies
 			'GUID' => sha1( Utils::nonce() ),
+			'private-GUID' => sha1( Utils::nonce() ),
+			'public-GUID' => sha1( Utils::nonce() ),
 		);
 
 		// Get values from config installation profile
@@ -1762,6 +1764,25 @@ class InstallHandler extends ActionHandler
 		if ( ! ACL::token_exists( 'manage_dash_modules' ) ) {
 			$this->upgrade_db_post_3701();
 		}
+	}
+
+	private function upgrade_db_post_5105 ( ) {
+
+		// generate two new GUIDs -- one that will be used for private (server-side) operations like caching and another that can be used for public (client-side) operations to uniquely identify this Habari install
+		// we will not delete the current GUID. though it's use is now deprecated it should be considered synonymous with the new public-GUID
+		$private = sha1( Utils::nonce() );
+		$public = sha1( Utils::nonce() );
+
+		// the cache class is using the new private-GUID option now, so let's fake it out and use the existing GUID for a second
+		Options::set( 'private-GUID', Options::get( 'GUID' ) );
+
+		// purge the cache. this sucks, but it's really the only way...
+		Cache::purge();
+
+		// now save the new private and public GUIDs
+		Options::set( 'private-GUID', $private );
+		Options::set( 'public-GUID', $public );
+
 	}
 	
 	/**
