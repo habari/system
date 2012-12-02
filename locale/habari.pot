@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-25 00:00+0000\n"
+"POT-Creation-Date: 2012-12-02 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -538,7 +538,7 @@ msgstr ""
 
 #: classes/post.php:274 classes/post.php:951 classes/acl.php:780
 #: classes/acl.php:781 classes/acl.php:782 classes/acl.php:784
-#: handlers/installhandler.php:1732
+#: handlers/installhandler.php:1734
 msgid "Content"
 msgstr ""
 
@@ -1023,7 +1023,7 @@ msgstr ""
 msgid "Add, remove, and edit users"
 msgstr ""
 
-#: classes/acl.php:774 handlers/installhandler.php:1627
+#: classes/acl.php:774 handlers/installhandler.php:1629
 msgid "Edit own profile"
 msgstr ""
 
@@ -1035,11 +1035,11 @@ msgstr ""
 msgid "Manage logs"
 msgstr ""
 
-#: classes/acl.php:777 handlers/installhandler.php:1632
+#: classes/acl.php:777 handlers/installhandler.php:1634
 msgid "Manage dashboard modules"
 msgstr ""
 
-#: classes/acl.php:780 handlers/installhandler.php:1578
+#: classes/acl.php:780 handlers/installhandler.php:1580
 msgid "Permissions on one's own posts"
 msgstr ""
 
@@ -1047,7 +1047,7 @@ msgstr ""
 msgid "Permissions to all posts"
 msgstr ""
 
-#: classes/acl.php:782 handlers/installhandler.php:1732
+#: classes/acl.php:782 handlers/installhandler.php:1734
 msgid "Permissions to other users' unpublished posts"
 msgstr ""
 
@@ -1063,8 +1063,8 @@ msgstr ""
 msgid "anonymous"
 msgstr ""
 
-#: classes/acl.php:841 classes/acl.php:843 handlers/installhandler.php:1589
-#: handlers/installhandler.php:1591
+#: classes/acl.php:841 classes/acl.php:843 handlers/installhandler.php:1591
+#: handlers/installhandler.php:1593
 msgid "authenticated"
 msgstr ""
 
@@ -2871,8 +2871,8 @@ msgstr ""
 msgid "Only printable characters are allowed."
 msgstr ""
 
-#: handlers/installhandler.php:157 handlers/installhandler.php:1798
-#: handlers/installhandler.php:1869
+#: handlers/installhandler.php:157 handlers/installhandler.php:1818
+#: handlers/installhandler.php:1889
 msgid "Allowed characters are A-Z, a-z and \"_\"."
 msgstr ""
 
@@ -2935,26 +2935,26 @@ msgid "Problem creating first post."
 msgstr ""
 
 #: handlers/installhandler.php:555 handlers/installhandler.php:588
-#: handlers/installhandler.php:1813 handlers/installhandler.php:1884
+#: handlers/installhandler.php:1833 handlers/installhandler.php:1904
 msgid "Access denied. Make sure these credentials are valid."
 msgstr ""
 
 #: handlers/installhandler.php:558 handlers/installhandler.php:591
-#: handlers/installhandler.php:1817 handlers/installhandler.php:1888
+#: handlers/installhandler.php:1837 handlers/installhandler.php:1908
 msgid "That database does not exist."
 msgstr ""
 
 #: handlers/installhandler.php:561 handlers/installhandler.php:594
-#: handlers/installhandler.php:1821 handlers/installhandler.php:1892
+#: handlers/installhandler.php:1841 handlers/installhandler.php:1912
 msgid "Could not connect to host."
 msgstr ""
 
-#: handlers/installhandler.php:622 handlers/installhandler.php:1940
+#: handlers/installhandler.php:622 handlers/installhandler.php:1960
 #, php-format
 msgid "Cannot write to %s. The SQLite data file is not writable by the web server."
 msgstr ""
 
-#: handlers/installhandler.php:626 handlers/installhandler.php:1933
+#: handlers/installhandler.php:626 handlers/installhandler.php:1953
 #, php-format
 msgid "Cannot write to %s directory. SQLite requires that the directory that holds the DB file be writable by the web server."
 msgstr ""
@@ -2964,55 +2964,55 @@ msgstr ""
 msgid "Cannot write to %s directory. The SQLite data file does not exist, and it cannot be created in the specified directory. SQLite requires that the directory containing the database file be writable by the web server."
 msgstr ""
 
-#: handlers/installhandler.php:784 handlers/installhandler.php:1709
+#: handlers/installhandler.php:786 handlers/installhandler.php:1711
 msgid "Trim the log table"
 msgstr ""
 
-#: handlers/installhandler.php:787 handlers/installhandler.php:1717
+#: handlers/installhandler.php:789 handlers/installhandler.php:1719
 msgid "Perform a check for plugin updates."
 msgstr ""
 
-#: handlers/installhandler.php:831
+#: handlers/installhandler.php:833
 msgid "This site is running <a href=\"http://habariproject.org/\">Habari</a>, a state-of-the-art publishing platform!  Habari is a community-driven project created and supported by people from all over the world.  Please visit <a href=\"http://habariproject.org/\">http://habariproject.org/</a> to find out more!"
 msgstr ""
 
-#: handlers/installhandler.php:894
+#: handlers/installhandler.php:896
 msgid "currently unsupported."
 msgstr ""
 
-#: handlers/installhandler.php:1002 handlers/installhandler.php:1031
+#: handlers/installhandler.php:1004 handlers/installhandler.php:1033
 msgid "No admin user found"
 msgstr ""
 
-#: handlers/installhandler.php:1439
+#: handlers/installhandler.php:1441
 msgid "Site Maintenance"
 msgstr ""
 
-#: handlers/installhandler.php:1440
+#: handlers/installhandler.php:1442
 msgid "Habari is currently being upgraded."
 msgstr ""
 
-#: handlers/installhandler.php:1441
+#: handlers/installhandler.php:1443
 msgid "Try again in a little while."
 msgstr ""
 
-#: handlers/installhandler.php:1454
+#: handlers/installhandler.php:1456
 msgid "Truncate the log table"
 msgstr ""
 
-#: handlers/installhandler.php:1780 handlers/installhandler.php:1851
+#: handlers/installhandler.php:1800 handlers/installhandler.php:1871
 msgid "The database host field was left empty."
 msgstr ""
 
-#: handlers/installhandler.php:1786 handlers/installhandler.php:1857
+#: handlers/installhandler.php:1806 handlers/installhandler.php:1877
 msgid "The database name field was left empty."
 msgstr ""
 
-#: handlers/installhandler.php:1792 handlers/installhandler.php:1863
+#: handlers/installhandler.php:1812 handlers/installhandler.php:1883
 msgid "The database user field was left empty."
 msgstr ""
 
-#: handlers/installhandler.php:1923
+#: handlers/installhandler.php:1943
 msgid "The database file was left empty."
 msgstr ""
 
