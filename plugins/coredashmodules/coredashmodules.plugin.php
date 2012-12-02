@@ -1,3 +1,7 @@
+<?php
+use Habari\System\Core\Controller;
+use Habari\System\Utils\Stack;
+?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 
 /**

@@ -16,6 +16,9 @@ use Habari\System\Pluggable\Plugins;
 use Habari\System\Security\ACL;
 use Habari\System\Net\URL;
 use Habari\System\Data\Model\Info\UserInfo;
+use Habari\System\Utils\Utils;
+use Habari\System\Core\Session;
+use Habari\System\Data\Database\DB;
 
 /**
  * Habari UserRecord Class
@@ -289,7 +292,7 @@ class User extends QueryRecord implements FormStorage, IsContent
 			return false;
 		}
 
-		$user = new StdClass();
+		$user = new \StdClass();
 		$require = false;
 		$user = Plugins::filter( 'user_authenticate', $user, $who, $pw );
 		if ( $user instanceof User ) {

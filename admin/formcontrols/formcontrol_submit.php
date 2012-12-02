@@ -1,3 +1,6 @@
+<?php
+use Habari\System\Utils\Utils;
+?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <div<?php
 		echo $control->parameter_map(

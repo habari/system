@@ -2,6 +2,7 @@
 
 use Habari\System\Pluggable\Plugin;
 use Habari\System\Data\Model\User;
+use Habari\System\Core\Options;
 
 /**
  * Undelete Class

@@ -6,6 +6,20 @@
 
 namespace Habari\System\Handler;
 
+use Habari\System\Data\Database\DB;
+use Habari\System\Data\Model\Post;
+use Habari\System\Data\Model\Comments;
+use Habari\System\Data\Model\Users;
+use Habari\System\Data\Model\User;
+use Habari\System\Data\Model\Tags;
+use Habari\System\Locale\DateTime;
+use Habari\System\Core\Options;
+use Habari\System\Data\Model\Posts;
+use Habari\System\Data\Model\Comment;
+use Habari\System\View\Form\FormUI;
+use Habari\System\Pluggable\Plugins;
+use Habari\System\Utils\Utils;
+
 /**
  * Habari AdminDashboardHandler Class
  * Handles dashboard-related actions in the admin
@@ -22,7 +36,7 @@ class AdminDashboardHandler extends AdminHandler
 		// Not sure how best to determine this yet, maybe set an option on install, maybe do this:
 		$firstpostdate = DB::get_value( 'SELECT min(pubdate) FROM {posts} WHERE status = ?', array( Post::status( 'published' ) ) );
 		if ( $firstpostdate ) {
-			$this->theme->active_time = HabariDateTime::date_create( $firstpostdate );
+			$this->theme->active_time = DateTime::date_create( $firstpostdate );
 		}
 
 		// check to see if we have updates to display

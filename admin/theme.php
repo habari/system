@@ -1,5 +1,7 @@
 <?php
 
+use Habari\System\Pluggable\Theme;
+
 class Monolith extends Theme
 {
 	/**

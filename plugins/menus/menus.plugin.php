@@ -13,6 +13,7 @@
 
 use Habari\System\Pluggable\Plugin;
 use Habari\System\Data\Model\Vocabulary;
+use Habari\System\Net\URL;
 
 class Menus extends Plugin
 {

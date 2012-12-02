@@ -13,8 +13,8 @@
 	</script>
 	<?php
 	Plugins::act( 'admin_header', $this );
-	Stack::out( 'admin_header_javascript', array('Stack', 'scripts') );
-	Stack::out( 'admin_stylesheet', array('Stack', 'styles') );
+	Stack::out( 'admin_header_javascript', array('\\Habari\\System\\Utils\\Stack', 'scripts') );
+	Stack::out( 'admin_stylesheet', array('\\Habari\\System\\Utils\\Stack', 'styles') );
 	?>
 	<!--[if IE 7]>
 	<link rel="stylesheet" type="text/css" href="<?php Site::out_url('admin_theme'); ?>/css/ie.css" media="screen">
@@ -36,7 +36,7 @@
 
 <?php
 Plugins::act( 'admin_footer', $this );
-Stack::out( 'admin_footer_javascript', array('Stack', 'scripts') );
+Stack::out( 'admin_footer_javascript', array('\\Habari\\System\\Utils\\Stack', 'scripts') );
 ?>
 
 </div>

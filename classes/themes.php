@@ -427,7 +427,7 @@ class Themes
 		do {
 			$delta = count($theme_classes);
 			foreach($class_parents as $class => $parents) {
-				if(count(array_intersect($theme_classes + array('Theme'), $parents))>0) {
+				if(count(array_intersect($theme_classes + array('Habari\\System\\Pluggable\\Theme'), $parents))>0) {
 					$theme_classes[$class] = $class;
 				}
 			}

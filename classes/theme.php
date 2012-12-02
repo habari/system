@@ -623,8 +623,8 @@ class Theme extends Pluggable
 		Plugins::act( 'template_header', $theme );
 
 		$atom = Stack::get( 'template_atom', '<link rel="%1$s" type="%2$s" title="%3$s" href="%4$s">' );
-		$styles = Stack::get( 'template_stylesheet', array( 'Stack', 'styles' ) );
-		$scripts = Stack::get( 'template_header_javascript', array( 'Stack', 'scripts' ) );
+		$styles = Stack::get( 'template_stylesheet', array( '\\Habari\\System\\Utils\\Stack', 'styles' ) );
+		$scripts = Stack::get( 'template_header_javascript', array( '\\Habari\\System\\Utils\\Stack', 'scripts' ) );
 		
 		$output = implode( "\n", array( $atom, $styles, $scripts ) );
 		
@@ -641,8 +641,8 @@ class Theme extends Pluggable
 		Plugins::act( 'template_footer', $theme );
 		Stack::dependent('template_footer_javascript', 'template_header_javascript');
 		Stack::dependent('template_footer_stylesheet', 'template_stylesheet');
-		$output = Stack::get( 'template_footer_stylesheet', array( 'Stack', 'styles' ) );
-		$output .= Stack::get( 'template_footer_javascript', array( 'Stack', 'scripts' ) );
+		$output = Stack::get( 'template_footer_stylesheet', array( '\\Habari\\System\\Utils\\Stack', 'styles' ) );
+		$output .= Stack::get( 'template_footer_javascript', array( '\\Habari\\System\\Utils\\Stack', 'scripts' ) );
 		return $output;
 	}
 

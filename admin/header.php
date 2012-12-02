@@ -1,4 +1,11 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); } 
+<?php
+use Habari\System\Pluggable\Plugins;
+use Habari\System\Utils\Stack;
+use Habari\System\Core\Options;
+use Habari\System\Core\Site;
+use Habari\System\Net\URL;
+?>
+<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 header( 'X-Frame-Options: DENY' );
 ?>
 <!doctype html>
@@ -29,8 +36,8 @@ header( 'X-Frame-Options: DENY' );
 	</script>
 	<?php
 		Plugins::act( 'admin_header', $this );
-		Stack::out( 'admin_header_javascript', array( 'Stack', 'scripts' ) );
-		Stack::out( 'admin_stylesheet', array( 'Stack', 'styles' ) );
+		Stack::out( 'admin_header_javascript', array( '\\Habari\\System\\Utils\\Stack', 'scripts' ) );
+		Stack::out( 'admin_stylesheet', array( '\\Habari\\System\\Utils\\Stack' , 'styles' ) );
 	?>
 	<!--[if IE 7]>
 	<link rel="stylesheet" type="text/css" href="<?php Site::out_url( 'admin_theme' ); ?>/css/ie.css" media="screen">
