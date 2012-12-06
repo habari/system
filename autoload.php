@@ -49,8 +49,8 @@ function habari_autoload( $class_name )
 		if ( ( $site_user_dir = Site::get_dir( 'user' ) ) != HABARI_PATH . '/user' ) {
 			// We are dealing with a site defined in /user/sites/x.y.z
 			// Add the available files in that directory in the $files array.
-			$glob_classes = glob( $site_user_dir . '/classes/*.php' );
-			$glob_handlers = glob( $site_user_dir . '/handlers/*.php' );
+			$glob_classes = Utils::glob( $site_user_dir . '/classes/*.php' );
+			$glob_handlers = Utils::glob( $site_user_dir . '/handlers/*.php' );
 			$glob = array_merge( $glob_classes, $glob_handlers );
 			if ( $glob !== false && !empty( $glob ) ) {
 				$fnames = array_map( $lower_basename, $glob );
