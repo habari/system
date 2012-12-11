@@ -431,6 +431,11 @@ class Utils
 				}
 			}
 			else {
+				if (substr($hash, 0, 3) == '$P$') {
+				    require_once('class-phpass.php');
+				    $phpass = new PasswordHash(8, true);
+				    return $phpass->CheckPassword($password, $hash);
+				}
 				// legacy sha1
 				return ( sha1( $password ) == $hash );
 			}
