@@ -300,14 +300,14 @@ WP_IMPORT_AJAX;
 						$u->email = $wp_user->user_email;
 						
 						// set their password so the user will be able to login. they're auto-added to the 'authenticated' ACL group
-                                                if( substr($wp_user->user_pass, 0, 3) == '$P$' )
-                                                {
-                                                    $u->password = $wp_user->user_pass;
-   
-                                                } else
-                                                {
-                                                    $u->password = Utils::crypt( $wp_user->user_pass );
-                                                }
+						if ( substr( $wp_user->user_pass, 0, 3 ) == '$P$' ) {
+							// phpass style hash: use as-is
+							$u->password = $wp_user->user_pass;
+						}
+						else {
+							// XXX does this make sense?
+							$u->password = Utils::crypt( $wp_user->user_pass );
+						}
 						$u->info->wp_id = intval( $wp_user->id );
 						$u->info->displayname = $wp_user->display_name;
 						
