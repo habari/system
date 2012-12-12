@@ -50,7 +50,9 @@ function habari_autoload( $class_name )
 			// We are dealing with a site defined in /user/sites/x.y.z
 			// Add the available files in that directory in the $files array.
 			$glob_classes = glob( $site_user_dir . '/classes/*.php' );
+			if ($glob_classes === false) $glob_classes = array();
 			$glob_handlers = glob( $site_user_dir . '/handlers/*.php' );
+			if ($glob_handlers === false) $glob_handlers = array();
 			$glob = array_merge( $glob_classes, $glob_handlers );
 			if ( $glob !== false && !empty( $glob ) ) {
 				$fnames = array_map( $lower_basename, $glob );
