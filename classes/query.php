@@ -1,5 +1,7 @@
 <?php
 
+namespace Habari;
+
 /**
  * Base Query class for building new queries
  * @see Posts::get

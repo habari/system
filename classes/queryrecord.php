@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari QueryRecord Class
  *
@@ -18,7 +20,7 @@ class QueryRecord implements URLProperties
 	/**
 	 * constructor __construct
 	 * Constructor for the QueryRecord class.
-	 * @param array an associative array of initial field values.
+	 * @param array $paramarray an associative array of initial field values.
 	 */
 	public function __construct( $paramarray = array() )
 	{
@@ -40,7 +42,7 @@ class QueryRecord implements URLProperties
 	/**
 	 * function __get
 	 * Handles getting virtual properties for this class
-	 * @param string Name of the property
+	 * @param string $name Name of the property
 	 * @return mixed The set value or null if none exists
 	 **/
 	public function __get( $name )
@@ -59,8 +61,8 @@ class QueryRecord implements URLProperties
 	/**
 	 * function __set
 	 * Handles setting virtual properties for this class
-	 * @param string Name of the property
-	 * @param mixed Value to set it to
+	 * @param string $name Name of the property
+	 * @param mixed $value Value to set it to
 	 * @return mixed The set value
 	 **/
 	public function __set( $name, $value )
@@ -68,7 +70,8 @@ class QueryRecord implements URLProperties
 		$classname = strtolower(get_class($this));
 		$hook = 'set_' . $classname . '_' . $name;
 		if(Plugins::implemented($hook, 'action')) {
-			return Plugins::act('set_' . $classname . '_' . $name, $value, $this);
+			Plugins::act('set_' . $classname . '_' . $name, $value, $this);
+			return $value;
 		}
 		if ( isset( $this->properties_loaded[$name] ) ) {
 			$this->newfields[$name] = $value;
@@ -92,7 +95,7 @@ class QueryRecord implements URLProperties
 
 	/**
 	* Registers a (list of) fields(s) as being managed exclusively by the database.
-	* @param mixed A database field name (string) or an array of field names
+	* @param mixed $fields A database field name (string) or an array of field names
 	*/
 	public function exclude_fields( $fields )
 	{
@@ -124,7 +127,8 @@ class QueryRecord implements URLProperties
 	/**
 	 * function insertRecord(
 	 * Inserts this record's fields as a new row
-	 * @param string Table to update, use table name without prefix and without braces
+	 * @param string $table Table to update, use table name without prefix and without braces
+	 * @param null|array $schema An array describing the schema of auxiliary tables
 	 * @return integer The inserted record id on success, false if not
 	 *
 	 * Again, the parent class's method's signature must match that of the
@@ -216,8 +220,9 @@ class QueryRecord implements URLProperties
 	/**
 	 * function updateRecord
 	 * Updates this record's fields using the new data
-	 * @param string Table to update, use table name without prefix and without braces
-	 * @param array An associative array of field data to match
+	 * @param string $table Table to update, use table name without prefix and without braces
+	 * @param array $updatekeyfields An associative array of field data to match
+	 * @param null|array $schema An array describing the schema of auxiliary tables
 	 * @return boolean True on success, false if not
 	 */
 	protected function updateRecord( $table, $updatekeyfields = array(), $schema = null )
@@ -228,7 +233,6 @@ class QueryRecord implements URLProperties
 			$result = DB::update( $ptable, array_diff_key( $merge, $this->unsetfields ), $updatekeyfields );
 		}
 		else {
-			$result = false;
 			if($result = DB::update( $ptable, array_intersect_key(array_diff_key( $merge, $this->unsetfields ), $schema[$table]), $updatekeyfields )) {
 				foreach($updatekeyfields as $kf => $kd) {
 					$merge['*'.$kf] = $kd;
@@ -266,8 +270,8 @@ class QueryRecord implements URLProperties
 	/**
 	 * function deleteRecord
 	 * Deletes a record based on the match array
-	 * @param string Table to delete from
-	 * @param array An associative array of field data to match
+	 * @param string $table Table to delete from
+	 * @param array $updatekeyfields An associative array of field data to match
 	 * @return boolean True on success, false if not
 	 */
 	protected function deleteRecord( $table, $updatekeyfields )

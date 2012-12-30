@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari UserHandler Class
  *
@@ -54,7 +56,7 @@ class UserHandler extends ActionHandler
 					
 					/* Successfully authenticated. */
 					// Timestamp last login date and time.
-					$user->info->authenticate_time = HabariDateTime::date_create()->format( 'Y-m-d H:i:s' );
+					$user->info->authenticate_time = DateTime::date_create()->format( 'Y-m-d H:i:s' );
 					$user->update();
 
 					// Remove left over expired session error message.
@@ -143,7 +145,7 @@ class UserHandler extends ActionHandler
 			$this->theme = Themes::create( 'admin', 'RawPHPEngine', Site::get_dir( 'admin_theme', true ) );
 			$this->theme->assign( 'admin_page', 'login' );
 		}
-		$request = new StdClass();
+		$request = new \StdClass();
 		foreach ( URL::get_active_rules() as $rule ) {
 			$request->{$rule->name} = ( $rule->name == URL::get_matched_rule()->name );
 		}

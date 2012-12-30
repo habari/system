@@ -4,13 +4,15 @@
  *
  */
 
+namespace Habari;
+
 /**
 * Habari Terms Class
 * Holds multiple Term object instances in an array-like structure, 
 * for the purpose of acting on them en-masse, or testing against them. 
 *
 */
-class Terms extends ArrayObject implements FormStorage
+class Terms extends \ArrayObject implements FormStorage
 {
 
 	/**

@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Class to wrap around bitmap field functionality
  *

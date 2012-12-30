@@ -5,6 +5,8 @@
  * @package Habari
  */
 
+namespace Habari;
+
 class SQLiteConnection extends DatabaseConnection
 {
 	 /**
@@ -222,7 +224,7 @@ class SQLiteConnection extends DatabaseConnection
 	/**
 	 * Filter out the fieldnames from whole pragma rows
 	 *
-	 * @param StdClass $row A row result from a SQLite PRAGMA table_info query
+	 * @param \StdClass $row A row result from a SQLite PRAGMA table_info query
 	 * @return string The name of the associated field
 	 */
 	protected function filter_fieldnames($row)

@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari Themes class
  *
@@ -282,9 +284,10 @@ class Themes
 	 *
 	 * If no theme option is set, a fatal error is thrown
 	 *
-	 * @param name            ( optional ) override the default theme lookup
-	 * @param template_engine ( optional ) specify a template engine
-	 * @param theme_dir       ( optional ) specify a theme directory
+	 * @param string $name ( optional ) override the default theme lookup
+	 * @param string $template_engine ( optional ) specify a template engine
+	 * @param string $theme_dir ( optional ) specify a theme directory
+	 * @return Theme An instance of the requested theme or the default theme
 	 **/
 	public static function create( $name = null, $template_engine = null, $theme_dir = null )
 	{
@@ -362,7 +365,7 @@ class Themes
 
 		// the final fallback, for the admin "theme"
 		if ( $classname == '' ) {
-			$classname = 'Theme';
+			$classname = '\\Habari\\Theme';
 		}
 
 		$created_theme = new $classname( $themedata );
@@ -382,7 +385,7 @@ class Themes
 
 		$theme_classes = self::get_theme_classes();
 		foreach ( $theme_classes as $theme ) {
-			$class = new ReflectionClass( $theme );
+			$class = new \ReflectionClass( $theme );
 			$classfile = str_replace( '\\', '/', $class->getFileName() );
 			if ( $classfile == $file ) {
 				return $theme;
@@ -417,7 +420,7 @@ class Themes
 		do {
 			$delta = count($theme_classes);
 			foreach($class_parents as $class => $parents) {
-				if(count(array_intersect($theme_classes + array('Theme'), $parents))>0) {
+				if(count(array_intersect($theme_classes + array('Habari\\Theme'), $parents))>0) {
 					$theme_classes[$class] = $class;
 				}
 			}

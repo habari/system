@@ -4,6 +4,10 @@
  *
  */
 
+namespace Habari;
+
+use \Habari\Locale as HabariLocale;
+
 /**
  * Handles Ajax requests, sending them to plugin sinks.
  *

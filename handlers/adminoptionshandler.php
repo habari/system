@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari AdminOptionsHandler Class
  * Handles options-related actions in the admin

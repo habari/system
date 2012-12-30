@@ -14,6 +14,8 @@
  * @property int vocabulary_id
  */
 
+namespace Habari;
+
 class Term extends QueryRecord
 {
 	protected $inforecords = null;
@@ -512,7 +514,7 @@ SQL;
 	public function __call( $name, $args )
 	{
 		array_unshift( $args, 'term_call_' . $name, null, $this );
-		return call_user_func_array( array( 'Plugins', 'filter' ), $args );
+		return call_user_func_array( array( '\\Habari\\Plugins', 'filter' ), $args );
 	}
 
 	/**

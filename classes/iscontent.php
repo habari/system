@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * IsContent Interface for Habari
  * Defines an interface for classes to return the type of content they are

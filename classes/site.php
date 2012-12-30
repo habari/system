@@ -4,6 +4,7 @@
  *
  */
 
+namespace Habari;
 /**
  * Habari Site class
  *
@@ -75,7 +76,7 @@ class Site
 	 * @examples:
 	 *	if ( Site::is('main') )
 	 *	if ( Site::is('multi') )
-	 * @param string The name of the boolean to test
+	 * @param string $what The name of the boolean to test
 	 * @return bool the result of the check
 	 */
 	public static function is( $what )
@@ -124,8 +125,8 @@ class Site
 	 *	'3rdparty' returns http://www.habariproject.org/3rdparty
 	 *     if /3rdparty does not exists, /system/vendor will be returned
 	 *	'hostname' returns www.habariproject.org
-	 * @param string the name of the URL to return
-	 * @param bool whether to include a trailing slash.  Default: No
+	 * @param string $name the name of the URL to return
+	 * @param bool|string $trail whether to include a trailing slash, or a string to use as the trailing value.  Default: false
 	 * @return string URL
 	 */
 	public static function get_url( $name, $trail = false )
@@ -237,8 +238,9 @@ class Site
 	 *	'theme' returns one of the following:
 	 *		/user/themes/theme_name
 	 *		/user/sites/x.y.z/themes/theme_dir
-	 * @param string the name of the path to return
-	 * @param bool whether to include a trailing slash.  Default: No
+	 * @param string $name the name of the path to return
+	 * @param bool|string $trail whether to include a trailing slash, or a string to use as the trailing value.  Default: false
+	 * @return mixed
 	 */
 	public static function get_path( $name, $trail = false )
 	{
@@ -262,7 +264,7 @@ class Site
 					$path = Site::get_path( 'user' ) . '/themes/' . $theme;
 				}
 				elseif ( file_exists( HABARI_PATH . '/3rdparty/themes/' . $theme ) ) {
-					$url = Site::get_url( 'habari' ) . '/3rdparty/themes/' . $theme;
+					$path = Site::get_path( 'habari' ) . '/3rdparty/themes/' . $theme;
 				}
 				else {
 					$path = Site::get_path( 'base' ) . '/user/themes/' . $theme;
@@ -285,8 +287,8 @@ class Site
 	 *	'theme' returns the path of the site's active theme
 	 *  'admin_theme' returns the path to the admin directory
 	 *  'vendor' returns the path to the vendor directory
-	 * @param string the name of the path item to return
-	 * @param bool whether to include a trailing slash.  Default: No
+	 * @param string $name the name of the path item to return
+	 * @param bool|string $trail whether to include a trailing slash, or a string to use as the trailing value.  Default: false
 	 * @return string Path
 	 */
 	public static function get_dir( $name, $trail = false )
@@ -356,7 +358,7 @@ class Site
 					$path = HABARI_PATH . '/user/themes/' . $theme;
 				}
 				elseif ( file_exists( HABARI_PATH . '/3rdparty/themes/' . $theme ) ) {
-					$url = Site::get_url( 'habari' ) . '/3rdparty/themes/' . $theme;
+					$path = Site::get_dir( 'habari' ) . '/3rdparty/themes/' . $theme;
 				}
 				else {
 					$path = HABARI_PATH . '/system/themes/' . $theme;
@@ -376,8 +378,8 @@ class Site
 
 	/**
 	 * out_url echos out a URL
-	 * @param string the URL to display
-	 * @param bool whether or not to include a trailing slash.  Default: No
+	 * @param string $url the URL to display
+	 * @param bool|string $trail whether or not to include a trailing slash, or a string to use as the trailing value.  Default: false
 	 */
 	public static function out_url( $url, $trail = false )
 	{
@@ -386,8 +388,8 @@ class Site
 
 	/**
 	 * out_path echos a URL path
-	 * @param string the URL path to display
-	 * @param bool whether or not to include a trailing slash.  Default: No
+	 * @param string $path the URL path to display
+	 * @param bool $trail whether or not to include a trailing slash, or a string to use as the trailing value.  Default: false
 	 */
 	public static function out_path( $path, $trail = false )
 	{
@@ -396,27 +398,13 @@ class Site
 
 	/**
 	 * our_dir echos our a filesystem directory
-	 * @param string the filesystem directory to display
-	 * @param bool whether or not to include a trailing slash.  Default: No
+	 * @param string $dir the filesystem directory to display
+	 * @param bool $trail whether or not to include a trailing slash, or a string to use as the trailing value.  Default: false
 	 */
 	public static function out_dir( $dir, $trail = false )
 	{
 		echo Site::get_dir( $dir, $trail );
 	}
-
-/*
-I'm unclear whether we need these.  If so, they likely belong in a new method, since they're neither URLs, paths, nor directories.
-
-			case 'config_type':
-				self::get_config_path();
-				$path= self::$config_type;
-				break;
-			case 'config_name':
-				self::get_dir( 'config' );
-				$path= self::$config_dir;
-				break;
-*/
-
 }
 
 ?>

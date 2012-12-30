@@ -4,11 +4,13 @@
  *
  */
 
+namespace Habari;
+
 /**
  * SuperGlobals class
  *
  */
-class SuperGlobal extends ArrayIterator
+class SuperGlobal extends \ArrayIterator
 {
 	protected $values = array();
 	protected $raw_values = array();
@@ -16,7 +18,7 @@ class SuperGlobal extends ArrayIterator
 	public function __construct( $array )
 	{
 		if ( !is_array( $array ) && !$array instanceof SuperGlobal ) {
-			throw new Exception( 'Parameter must be array or SuperGlobal' );
+			throw new \Exception( 'Parameter must be array or SuperGlobal' );
 		}
 		parent::__construct( $array );
 	}
@@ -197,7 +199,7 @@ class SuperGlobal extends ArrayIterator
 					$ary->next();
 				}
 			}
-			elseif ( $ary instanceof ArrayObject || $ary instanceof ArrayIterator ) {
+			elseif ( $ary instanceof \ArrayObject || $ary instanceof \ArrayIterator ) {
 				$arycp = $ary->getArrayCopy();  // Don't trigger offsetGet for ArrayObject
 				foreach ( $arycp as $key => $value ) {
 					if ( is_numeric( $key ) ) {

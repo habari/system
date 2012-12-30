@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php include( 'header.php' ); ?>
 
@@ -5,7 +6,7 @@
 		<!--[if lte IE 6]>
 		<p><?php
 		
-			$ie6_age = HabariDateTime::difference( 'now', 'August 27, 2001' );
+			$ie6_age = DateTime::difference( 'now', 'August 27, 2001' );
 			
 			echo _t( "Oh, great! You're using IE6! I've finally found someone I can pawn this old betamax player off on!" ) . '<br />';
 			echo _t( "If you're reading this you're surfing using Internet Explorer 6, a browser that is %d %s old and cannot cope with the demands of the modern internet.", array( $ie6_age['y'], _n( 'year', 'years', $ie6_age['y'] ) ) ) . '<br />';
@@ -134,7 +135,7 @@
 								foreach ( $beacon['updates'] as $u_version => $u ) {
 									
 									if ( !empty( $u['date'] ) ) {
-										$u_title = _t( '%1$s update released on %2$s: %3$s', array( MultiByte::ucfirst( $u['severity'] ), HabariDateTime::date_create( $u['date'] )->format( 'Y-m-d' ), Utils::htmlspecialchars( $u['text'] ) ) );
+										$u_title = _t( '%1$s update released on %2$s: %3$s', array( MultiByte::ucfirst( $u['severity'] ), DateTime::date_create( $u['date'] )->format( 'Y-m-d' ), Utils::htmlspecialchars( $u['text'] ) ) );
 									}
 									else {
 										$u_title = _t( '%1$s update: %3$s', array( MultiByte::ucfirst( $u['severity'] ), $u['date'], Utils::htmlspecialchars( $u['text'] ) ) );

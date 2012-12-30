@@ -1,5 +1,7 @@
 <?php
 
+namespace Habari;
+
 /**
  * interface FormStorage
  *

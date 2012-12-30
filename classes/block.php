@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari Block class
  * Block class for theme display of pluggable content

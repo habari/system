@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari FeedbackHandler Class
  * Deals with feedback mechnisms: Commenting, Pingbacking, and the like.

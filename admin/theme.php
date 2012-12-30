@@ -1,5 +1,7 @@
 <?php
 
+namespace Habari;
+
 class Monolith extends Theme
 {
 	/**

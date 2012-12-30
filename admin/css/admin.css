@@ -1650,6 +1650,16 @@ body.page-options .item {
 	text-indent: -2px;
 }
 
+.plugins .core {
+	font-size: x-small;
+	background-color: #ddd;
+	padding: 0px 3px;
+	border-radius: 5px;
+	box-shadow: inset 1px 1px 1px #666;
+	color: #333;
+	letter-spacing: 1.5px;
+}
+
 /*-- PLUGIN AND THEME HELP */
 .pluginhelp .help, .currenttheme #themehelp .help {
 	line-height: 1.5em;

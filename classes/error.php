@@ -4,11 +4,12 @@
  *
  */
 
+namespace Habari;
 /**
  * Contains error-related functions and Habari's error handler.
  *
  **/
-class Error extends Exception
+class Error extends \Exception
 {
 	protected $message = '';
 	protected $is_error = false;
@@ -33,9 +34,9 @@ class Error extends Exception
 	 */
 	public static function handle_errors()
 	{
-		set_error_handler( array( 'Error', 'error_handler' ) );
-		set_exception_handler( array( 'Error', 'exception_handler' ) );
-		register_shutdown_function( array( 'Error', 'shutdown_handler' ) );
+		set_error_handler( array( '\Habari\Error', 'error_handler' ) );
+		set_exception_handler( array( '\Habari\Error', 'exception_handler' ) );
+		register_shutdown_function( array( '\Habari\Error', 'shutdown_handler' ) );
 	}
 
 	public static function shutdown_handler ( ) {

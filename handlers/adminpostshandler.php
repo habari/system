@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari AdminPostsHandler Class
  * Handles posts-related actions in the admin

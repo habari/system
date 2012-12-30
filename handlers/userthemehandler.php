@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Class for handling default user theme actions.
  *

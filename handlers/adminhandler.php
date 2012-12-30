@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari AdminHandler Class
  * Backbone of the admin area, handles requests and functionality.

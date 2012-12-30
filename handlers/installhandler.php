@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 define( 'MIN_PHP_VERSION', '5.3.3' );
 
 /**

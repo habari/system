@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Handles Rest requests, sending them to plugin sinks.
  *

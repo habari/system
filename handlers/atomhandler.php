@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari AtomHandler class
  * Produces Atom feeds and accepts Atom Publishing Protocol input

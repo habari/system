@@ -1,5 +1,7 @@
 <?php
 
+namespace Habari;
+
 class WaziTheme extends Theme
 {
 	function action_template_header($theme) {

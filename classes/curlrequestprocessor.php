@@ -1,4 +1,6 @@
 <?php
+
+namespace Habari;
 /**
  * RequestProcessor using CURL.
  */
@@ -90,12 +92,12 @@ class CURLRequestProcessor extends RequestProcessor
 		 */
 		$tmp = tempnam( FILE_CACHE_LOCATION, 'RR' );
 		if ( ! $tmp ) {
-			throw new Exception( _t( 'CURL Error. Unable to create temporary file name.' ) );
+			throw new \Exception( _t( 'CURL Error. Unable to create temporary file name.' ) );
 		}
 
 		$fh = @fopen( $tmp, 'w+b' );
 		if ( ! $fh ) {
-			throw new Exception( _t( 'CURL Error. Unable to open temporary file.' ) );
+			throw new \Exception( _t( 'CURL Error. Unable to open temporary file.' ) );
 		}
 
 		curl_setopt( $ch, CURLOPT_FILE, $fh );
@@ -130,7 +132,7 @@ class CURLRequestProcessor extends RequestProcessor
 					break;
 					
 				default:
-					throw new Exception( _t( 'CURL Error %1$d: %2$s', array( $errno, $error ) ) );
+					throw new \Exception( _t( 'CURL Error %1$d: %2$s', array( $errno, $error ) ) );
 					break;
 				
 			}
@@ -183,7 +185,7 @@ class CURLRequestProcessor extends RequestProcessor
 	public function get_response_body()
 	{
 		if ( ! $this->executed ) {
-			throw new Exception( _t( 'Unable to get response body. Request did not yet execute.' ) );
+			throw new \Exception( _t( 'Unable to get response body. Request did not yet execute.' ) );
 		}
 
 		return $this->response_body;
@@ -192,7 +194,7 @@ class CURLRequestProcessor extends RequestProcessor
 	public function get_response_headers()
 	{
 		if ( ! $this->executed ) {
-			throw new Exception( _t( 'Unable to get response headers. Request did not yet execute.' ) );
+			throw new \Exception( _t( 'Unable to get response headers. Request did not yet execute.' ) );
 		}
 
 		return $this->response_headers;

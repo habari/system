@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Access Control List class
  *
@@ -489,7 +491,7 @@ SQL;
 			$token_ids = DB::get_column( 'SELECT id as token_id FROM {tokens}' );
 			$result = array();
 			foreach ( $token_ids as $id ) {
-				$result_row = new StdClass();
+				$result_row = new \StdClass();
 				$result_row->token_id = $id;
 				$result_row->access_mask = $bitmask->full;
 				$result[] = $result_row;

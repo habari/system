@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari RewriteRule Class
  *
@@ -63,7 +65,7 @@ class RewriteRule extends QueryRecord
 	/**
 	 * Match the stub against this rule
 	 * Also sets internal structures based on a successful match
-	 * @param string The URL stub to match against
+	 * @param string $stub The URL stub to match against
 	 * @return boolean True if this rule matches the stub, false if not
 	 */
 	public function match( $stub )
@@ -101,6 +103,7 @@ class RewriteRule extends QueryRecord
 	 * Builds a URL using this rule based on the passed in data
 	 * @param array $args An associative array of arguments to use for replacement in the rule
 	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring
+	 * @param bool $noamp If true, use HTML-encoded ampersands in the output URL
 	 * @return string The URL created from the substituted arguments
 	 */
 	public function build( $args, $useall = true, $noamp = false )
@@ -142,33 +145,9 @@ class RewriteRule extends QueryRecord
 	}
 
 	/**
-	 * Returns a distance from 0 indicating the appropriateness of the rule
-	 * based on the passed-in arguments.
-	 * @param array $args An array of arguments
-	 * @return integer Returns 0 for an exact match, a higher number for less of a match
-	 * @todo Enable this logic
-	 */
-	public function arg_match( $args )
-	{
-		return 0; // Let's let this logic linger for a little while
-
-		/* This needs further testing once that logic is established */
-		$named_args = $this->named_args; // Direct call prints a PHP notice
-		$named_args_combined = array_flip( array_merge( $named_args['required'], $named_args['optional'] ) );
-
-		$args = Plugins::filter( 'rewrite_args', $args, $this->name );
-
-		$diffargs = array_diff_key( $args, $named_args_combined );
-		$sameargs = array_intersect_key( $args, $named_args_combined );
-		$rating = count( $named_args_combined ) - count( $sameargs ) + count( $diffargs );
-
-		return $rating;
-	}
-
-	/**
 	 * Magic property getter for this class
 	 * @param string $name The name of the class property to return
-	 * @returns mixed The value of that field in this object
+	 * @return mixed The value of that field in this object
 	 */
 	public function __get( $name )
 	{

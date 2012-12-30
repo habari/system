@@ -5,6 +5,9 @@
  */
 // vim: le=unix syntax=php ts=4 noet sw=4
 
+namespace Habari;
+
+
 /**
  * Habari Config Class
  *
@@ -48,6 +51,7 @@ class Config
 	 * Fetch data from registry
 	 *
 	 * @param string $key key name
+	 * @param null $default
 	 * @return mixed (empty object on invalid key)
 	 */
 	public static function get( $key, $default = null )

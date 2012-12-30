@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari Plugins Class
  *
@@ -14,7 +16,6 @@ class Plugins
 	private static $hooks = array();
 	private static $plugins = array();
 	private static $plugin_files = array();
-	private static $plugin_classes = array();
 
 	/**
 	 * function __construct
@@ -56,10 +57,10 @@ class Plugins
 	/**
 	 * function register
 	 * Registers a plugin action for possible execution
-	 * @param mixed A reference to the function to register by string or array(object, string)
-	 * @param string Usually either 'filter' or 'action' depending on the hook type.
-	 * @param string The plugin hook to register
-	 * @param hex An optional execution priority, in hex.  The lower the priority, the earlier the function will execute in the chain.  Default value = 8.
+	 * @param Callable $fn A reference to the function to register by string or array(object, string)
+	 * @param string $type Usually either 'filter' or 'action' depending on the hook type.
+	 * @param string $hook The plugin hook to register
+	 * @param integer $priority An optional execution priority, from 1-16.  The lower the priority, the earlier the function will execute in the chain.  Default value = 8.
 	 */
 	public static function register( $fn, $type, $hook, $priority = 8 )
 	{
@@ -81,67 +82,64 @@ class Plugins
 
 	/**
 	 * Call to execute a plugin action
-	 * @param string The name of the action to execute
-	 * @param mixed Optional arguments needed for action
+	 * @param string $hookname The name of the action to execute
+	 * @param mixed $param Optional arguments needed for action
 	 */
-	public static function act()
+	public static function act($hookname, $param = null)
 	{
 		$args = func_get_args();
 		$hookname = array_shift( $args );
-		if ( ! isset( self::$hooks['action'][$hookname] ) ) {
-			return false;
-		}
-		foreach ( self::$hooks['action'][$hookname] as $priority ) {
-			foreach ( $priority as $action ) {
-				// $action is an array of object reference
-				// and method name
-				call_user_func_array( $action, $args );
+		if ( isset( self::$hooks['action'][$hookname] ) ) {
+			foreach ( self::$hooks['action'][$hookname] as $priority ) {
+				foreach ( $priority as $action ) {
+					// $action is an array of object reference
+					// and method name
+					call_user_func_array( $action, $args );
+				}
 			}
 		}
 	}
 
 	/**
 	 * Call to execute a plugin action, by id
-	 * @param string The name of the action to execute
-	 * @param mixed Optional arguments needed for action
+	 * @param string $hookname The name of the action to execute
+	 * @param mixed $param Optional arguments needed for action
 	 */
-	public static function act_id()
+	public static function act_id($hookname, $param = null)
 	{
 		$args = func_get_args();
 		list( $hookname, $id ) = $args;
 		$args = array_slice( func_get_args(), 2 );
 		$hookname = $hookname . ':' . $id;
-		if ( ! isset( self::$hooks['action'][$hookname] ) ) {
-			return false;
-		}
-		foreach ( self::$hooks['action'][$hookname] as $priority ) {
-			foreach ( $priority as $action ) {
-				// $action is an array of object reference
-				// and method name
-				call_user_func_array( $action, $args );
+		if ( isset( self::$hooks['action'][$hookname] ) ) {
+			foreach ( self::$hooks['action'][$hookname] as $priority ) {
+				foreach ( $priority as $action ) {
+					// $action is an array of object reference
+					// and method name
+					call_user_func_array( $action, $args );
+				}
 			}
 		}
 	}
 
 	/**
 	 * Call to execute a plugin filter
-	 * @param string The name of the filter to execute
-	 * @param mixed The value to filter.
+	 * @param string $hookname The name of the filter to execute
+	 * @param mixed $param The value to filter.
+	 * @return mixed The result of filtering the first $param value
 	 */
-	public static function filter()
+	public static function filter($hookname, $param)
 	{
 		list( $hookname, $return ) = func_get_args();
-		if ( ! isset( self::$hooks['filter'][$hookname] ) ) {
-			return $return;
-		}
-
-		$filterargs = array_slice( func_get_args(), 2 );
-		foreach ( self::$hooks['filter'][$hookname] as $priority ) {
-			foreach ( $priority as $filter ) {
-				// $filter is an array of object reference and method name
-				$callargs = $filterargs;
-				array_unshift( $callargs, $return );
-				$return = call_user_func_array( $filter, $callargs );
+		if ( isset( self::$hooks['filter'][$hookname] ) ) {
+			$filterargs = array_slice( func_get_args(), 2 );
+			foreach ( self::$hooks['filter'][$hookname] as $priority ) {
+				foreach ( $priority as $filter ) {
+					// $filter is an array of object reference and method name
+					$callargs = $filterargs;
+					array_unshift( $callargs, $return );
+					$return = call_user_func_array( $filter, $callargs );
+				}
 			}
 		}
 		return $return;
@@ -149,25 +147,24 @@ class Plugins
 
 	/**
 	 * Call to execute a plugin filter on a specific plugin, by id
-	 * @param string The name of the filter to execute
-	 * @param string The id of the only plugin on which to execute
-	 * @param mixed The value to filter.
+	 * @param string $hookname The name of the filter to execute
+	 * @param string $id The id of the only plugin on which to execute
+	 * @param mixed $param The value to filter.
+	 * @return mixed The result of filtering the first $param value
 	 */
-	public static function filter_id()
+	public static function filter_id($hookname, $id, $param)
 	{
 		list( $hookname, $id, $return ) = func_get_args();
 		$hookname = $hookname . ':' . $id;
-		if ( ! isset( self::$hooks['filter'][$hookname] ) ) {
-			return $return;
-		}
-
-		$filterargs = array_slice( func_get_args(), 3 );
-		foreach ( self::$hooks['filter'][$hookname] as $priority ) {
-			foreach ( $priority as $filter ) {
-				// $filter is an array of object reference and method name
-				$callargs = $filterargs;
-				array_unshift( $callargs, $return );
-				$return = call_user_func_array( $filter, $callargs );
+		if ( isset( self::$hooks['filter'][$hookname] ) ) {
+			$filterargs = array_slice( func_get_args(), 3 );
+			foreach ( self::$hooks['filter'][$hookname] as $priority ) {
+				foreach ( $priority as $filter ) {
+					// $filter is an array of object reference and method name
+					$callargs = $filterargs;
+					array_unshift( $callargs, $return );
+					$return = call_user_func_array( $filter, $callargs );
+				}
 			}
 		}
 		return $return;
@@ -175,20 +172,20 @@ class Plugins
 
 	/**
 	 * Call to execute an XMLRPC function
-	 * @param string The name of the filter to execute
-	 * @param mixed The value to filter.
+	 * @param string $hookname The name of the filter to execute
+	 * @param mixed $param The value to filter.
+	 * @return bool|mixed The result of the XMLRPC call
 	 */
-	public static function xmlrpc()
+	public static function xmlrpc($hookname, $param)
 	{
 		list( $hookname, $return ) = func_get_args();
-		if ( ! isset( self::$hooks['xmlrpc'][$hookname] ) ) {
-			return false;
-		}
-		$filterargs = array_slice( func_get_args(), 2 );
-		foreach ( self::$hooks['xmlrpc'][$hookname] as $priority ) {
-			foreach ( $priority as $filter ) {
-				// $filter is an array of object reference and method name
-				return call_user_func_array( $filter, $filterargs );
+		if ( isset( self::$hooks['xmlrpc'][$hookname] ) ) {
+			$filterargs = array_slice( func_get_args(), 2 );
+			foreach ( self::$hooks['xmlrpc'][$hookname] as $priority ) {
+				foreach ( $priority as $filter ) {
+					// $filter is an array of object reference and method name
+					return call_user_func_array( $filter, $filterargs );
+				}
 			}
 		}
 		return false;
@@ -196,11 +193,11 @@ class Plugins
 
 	/**
 	 * Call to execute a theme function
-	 * @param string The name of the filter to execute
-	 * @param mixed The value to filter
-	 * @return The filtered value
+	 * @param string $hookname The name of the filter to execute
+	 * @param mixed $param The value to filter
+	 * @return mixed The filtered value
 	 */
-	public static function theme()
+	public static function theme($hookname, $param)
 	{
 		$filter_args = func_get_args();
 		$hookname = array_shift( $filter_args );
@@ -209,7 +206,7 @@ class Plugins
 		if ( !isset( self::$hooks['theme'][$hookname] ) ) {
 			if ( substr( $hookname, -6 ) != '_empty' ) {
 				array_unshift( $filter_args, $hookname . '_empty' );
-				return call_user_func_array( array( 'Plugins', 'theme' ), $filter_args );
+				return call_user_func_array( array( '\\Habari\\Plugins', 'theme' ), $filter_args );
 			}
 			return array();
 		}
@@ -225,6 +222,7 @@ class Plugins
 					}
 					else {
 						$module = get_class( $filter[0] );
+						// @todo Make sure this doesn't break after the namespace update
 						if ( $filter[0] instanceof Theme && $module != get_class( $callargs[0] ) ) {
 							continue;
 						}
@@ -238,10 +236,10 @@ class Plugins
 		}
 		if ( count( $return ) == 0 && substr( $hookname, -6 ) != '_empty' ) {
 			array_unshift( $filter_args, $hookname . '_empty' );
-			$result = call_user_func_array( array( 'Plugins', 'theme' ), $filter_args );
+			$result = call_user_func_array( array( '\\Habari\\Plugins', 'theme' ), $filter_args );
 		}
 		array_unshift( $filter_args, 'theme_call_' . $hookname, $return );
-		$result = call_user_func_array( array( 'Plugins', 'filter' ), $filter_args );
+		$result = call_user_func_array( array( '\\Habari\\Plugins', 'filter' ), $filter_args );
 		return $result;
 	}
 
@@ -278,7 +276,7 @@ class Plugins
 	/**
 	 * function list_active
 	 * Gets a list of active plugin filenames to be included
-	 * @param boolean Whether to refresh the cached array.  Default false
+	 * @param boolean $refresh Whether to refresh the cached array.  Default false
 	 * @return array An array of filenames
 	 */
 	public static function list_active( $refresh = false )
@@ -368,7 +366,7 @@ class Plugins
 			$dirfiles = Utils::glob( $dir . '*.phar' );
 			foreach($dirfiles as $filename) {
 				if(preg_match('/\.phar$/i', $filename)) {
-					$d = new DirectoryIterator('phar://' . $filename);
+					$d = new \DirectoryIterator('phar://' . $filename);
 					foreach ($d as $fileinfo) {
 						if ($fileinfo->isFile() && preg_match('/\.plugin.php$/i', $fileinfo->getFilename())) {
 							$plugins[$fileinfo->getFilename()] = str_replace('\\', '/', $fileinfo->getPathname());
@@ -406,7 +404,7 @@ class Plugins
 			$file = realpath( $file );
 		}
 		foreach ( self::get_plugin_classes() as $plugin ) {
-			$class = new ReflectionClass( $plugin );
+			$class = new \ReflectionClass( $plugin );
 			$classfile = str_replace( '\\', '/', $class->getFileName() );
 			if ( $classfile == $file ) {
 				return $plugin;
@@ -425,14 +423,14 @@ class Plugins
 	public static function get_plugin_classes()
 	{
 		$classes = get_declared_classes();
-		return array_filter( $classes, array( 'Plugins', 'extends_plugin' ) );
+		return array_filter( $classes, array( 'Habari\Plugins', 'extends_plugin' ) );
 	}
 
 	/**
 	 * Initialize all loaded plugins by calling their load() method
 	 * @param string $file the class name to load
 	 * @param boolean $activate True if the plugin's load() method should be called
-	 * @return Plugin The instantiated plugin class
+	 * @return \Habari\Plugin The instantiated plugin class
 	 */
 	public static function load_from_file( $file, $activate = true )
 	{
@@ -445,7 +443,7 @@ class Plugins
 	 * Return the info XML for a plugin based on a filename
 	 *
 	 * @param string $file The filename of the plugin file
-	 * @return SimpleXMLElement The info structure for the plugin, or null if no info could be loaded
+	 * @return \SimpleXMLElement The info structure for the plugin, or null if no info could be loaded
 	 */
 	public static function load_info( $file )
 	{
@@ -458,7 +456,7 @@ class Plugins
 			$old_error = libxml_use_internal_errors( true );
 			
 			try {
-				$info = new SimpleXMLElement( $xml_content );
+				$info = new \SimpleXMLElement( $xml_content );
 				
 				// if the xml file uses a theme element name instead of pluggable, it's old
 				if ( $info->getName() != 'pluggable' ) {
@@ -466,15 +464,15 @@ class Plugins
 				}
 
 				// Translate the plugin description
-				HabariLocale::translate_xml( $info, $info->description );
+				Locale::translate_xml( $info, $info->description );
 
 				// Translate the plugin help
 				foreach( $info->help as $help ) {
-					HabariLocale::translate_xml( $help, $help->value );
+					Locale::translate_xml( $help, $help->value );
 				}
 				
 			}
-			catch ( Exception $e ) {
+			catch ( \Exception $e ) {
 				
 				EventLog::log( _t( 'Invalid plugin XML file: %1$s', array( $xml_file ) ), 'err', 'plugin' );
 				$info = 'broken';
@@ -598,6 +596,7 @@ class Plugins
 	 * Deactivates a plugin file
 	 * @param string $file the Filename of the plugin to deactivate
 	 * @param boolean $force If true, deactivate this plugin regardless of what filters may say about it.
+	 * @return bool If true, the plugin was deactivated
 	 */
 	public static function deactivate_plugin( $file, $force = false )
 	{
@@ -749,8 +748,9 @@ class Plugins
 	 * Produce the UI for a plugin based on the user's selected config option
 	 *
 	 * @param string $configure The id of the configured plugin
-	 * @param string $configuration The selected configuration option
-	 **/
+	 * @param $configaction
+	 * @internal param string $configuration The selected configuration option
+	 */
 	public static function plugin_ui( $configure, $configaction )
 	{
 		Plugins::act_id( 'plugin_ui_' . $configaction, $configure, $configure, $configaction );
