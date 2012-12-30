@@ -9,7 +9,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 	class="<?php echo is_array($class) ? implode(' ', $class) : $class; ?>"
 	enctype="<?php echo $enctype; ?>"
 	accept-charset="<?php echo $accept_charset; ?>"
-	<?php echo $onsubmit; ?>
+	<?php echo (isset($onsubmit) && $onsubmit != '') ? 'onsubmit="' . $onsubmit . '"' : ''; ?>
 ><div>
 <?php if (isset($message) && $message != ''): ?>
 <div class="form_message"><?php echo $message; ?></div>

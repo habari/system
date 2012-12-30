@@ -1,4 +1,7 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
+<?php
+namespace Habari;
+if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
+?>
 <ul>
 	<?php foreach (Users::get_all() as $user) {
 		if ( $user->username == $currentuser->username ) {
@@ -28,8 +31,8 @@
 
 					$last_login_message = _t( 'was last seen %1$s at %2$s' );
 					$last_login_message = sprintf( $last_login_message,
-						'<strong>' . date( HabariDateTime::get_default_date_format(), strtotime( $user->info->authenticate_time ) ) . '</strong>',
-						'<strong>' . date( HabariDateTime::get_default_time_format(), strtotime( $user->info->authenticate_time ) ) . '</strong>'
+						'<strong>' . date( DateTime::get_default_date_format(), strtotime( $user->info->authenticate_time ) ) . '</strong>',
+						'<strong>' . date( DateTime::get_default_time_format(), strtotime( $user->info->authenticate_time ) ) . '</strong>'
 					);
 
 				}

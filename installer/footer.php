@@ -1,10 +1,13 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
+<?php
+namespace Habari;
+if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
+?>
 	</div><!-- end wrapper -->
 	<script type="text/javascript">
 function _t() {
 	var domain = <?php
 		// retrieve only the translated strings that are used by this page's javascript functions.
-		$messages = array_intersect_key( HabariLocale::get_messages(), array_flip( array( "All selected", "%s selected", "None selected" ) ) );
+		$messages = array_intersect_key( Locale::get_messages(), array_flip( array( "All selected", "%s selected", "None selected" ) ) );
 		echo json_encode( $messages );
 	?>;
 	var s = arguments[0];

@@ -58,7 +58,7 @@ class AdminLogsHandler extends AdminHandler
 		$date = Controller::get_var( 'date', 'any' );
 
 		if ( $date != 'any' ) {
-			$d = HabariDateTime::date_create( $date );	// ! means fill any non-specified pieces with default Unix Epoch ones
+			$d = DateTime::date_create( $date );	// ! means fill any non-specified pieces with default Unix Epoch ones
 			$arguments['year'] = $d->format( 'Y' );
 			$arguments['month'] = $d->format( 'm' );
 		}
@@ -149,7 +149,7 @@ class AdminLogsHandler extends AdminHandler
 		);
 
 		foreach ( $db_dates as $db_date ) {
-			$date = HabariDateTime::date_create( $db_date )->format( 'Y-m' );
+			$date = DateTime::date_create( $db_date )->format( 'Y-m' );
 			$dates[ $date ] = $date;
 		}
 		return $dates;

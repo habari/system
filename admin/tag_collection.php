@@ -1,4 +1,7 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
+<?php
+namespace Habari;
+if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
+?>
 <?php
 $max = intval( $max );
 function tag_weight( $count, $max )

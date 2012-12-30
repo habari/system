@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <div class="container navigator">
 	<span class="older pct10"><a href="#" onclick="timeline.skipLoupeLeft();return false">&laquo; <?php _e('Older'); ?></a></span>
 	<span class="currentposition pct15 minor"><?php _e('no results'); ?></span>

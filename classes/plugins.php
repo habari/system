@@ -388,7 +388,8 @@ class Plugins
 	public static function extends_plugin( $class )
 	{
 		$parents = class_parents( $class, false );
-		return in_array( 'Plugin', $parents );
+		$matches = array_intersect(array('Plugin', 'Habari\Plugin'), $parents);
+		return count($matches) > 0;
 	}
 
 	/**
