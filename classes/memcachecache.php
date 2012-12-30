@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Contains the MemcacheCache class
  *

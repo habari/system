@@ -770,7 +770,7 @@ class Utils
 		);
 		foreach($replacements as $search => $replacement) {
 			if(preg_match($search, $plugin_code)) {
-				$plugin_code = preg_replace($search, $replacement, $plugin_code);
+				$plugin_code = trim(preg_replace($search, $replacement, $plugin_code));
 			}
 		}
 

@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari Cache Class
  *
@@ -20,7 +22,7 @@ abstract class Cache
 	 */
 	public static function __static()
 	{
-		self::$cache_class = Config::get('cache_class', defined('CACHE_CLASS') ? CACHE_CLASS : 'FileCache');
+		self::$cache_class = Config::get('cache_class', defined('CACHE_CLASS') ? CACHE_CLASS : 'Habari\\FileCache');
 		self::$instance = new self::$cache_class();
 	}
 
