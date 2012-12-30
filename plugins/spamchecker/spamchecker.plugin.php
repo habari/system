@@ -1,11 +1,6 @@
 <?php
-use Habari\System\Data\Model\RewriteRule;
-use Habari\System\Core\Controller;
-use Habari\System\Data\Database\DB;
-use Habari\System\Security\InputFilter;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Core\Options;
-use Habari\System\Utils\Utils;
+
+namespace Habari;
 
 if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 

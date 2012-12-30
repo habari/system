@@ -4,9 +4,7 @@
  *
  */
 
-namespace Habari\System\Pluggable;
-
-use Habari\System\Pluggable\Pluggable;
+namespace Habari;
 
 /**
  * Habari Plugin Class

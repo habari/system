@@ -4,7 +4,7 @@
  *
  */
 
-namespace Habari\System\Handler;
+namespace Habari;
 
 /**
  * Habari AdminPluginsHandler Class
@@ -37,6 +37,7 @@ class AdminPluginsHandler extends AdminHandler
 			if ( Utils::php_check_file_syntax( $file, $error ) ) {
 				$plugin['debug'] = false;
 				$plugin['info'] = Plugins::load_info( $file );
+				$plugin['core'] = (strpos($file, 'system' . DIRECTORY_SEPARATOR . 'plugins') !== false);
 				if ( array_key_exists( $plugin_id, $active_plugins ) ) {
 					$plugin['verb'] = _t( 'Deactivate' );
 					$pluginobj = $active_plugins[$plugin_id];

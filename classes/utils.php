@@ -4,16 +4,7 @@
  *
  */
 
-namespace Habari\System\Utils;
-
-use Habari\System\Core\Controller;
-use Habari\System\Core\Options;
-use Habari\System\Data\Model\User;
-use Habari\System\Security\InputFilter;
-use Habari\System\Core\Error;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Core\SuperGlobal;
-use Habari\System\Handler\ActionHandler;
+namespace Habari;
 
 /**
  * Habari Utility Class
@@ -747,10 +738,15 @@ class Utils
 		}
 		else {
 			ob_start(); // Catch potential parse error messages
+			if(function_exists('xdebug_disable')) {
+				xdebug_disable();
+			}
 			$display_errors = ini_set( 'display_errors', 'on' ); // Make sure we have something to catch
+			$html_errors = ini_set( 'html_errors', 'off');
 			$error_reporting = error_reporting( E_ALL ^ E_NOTICE );
 			$code = eval( ' if (0){' . $code . '}' ); // Put $code in a dead code sandbox to prevent its execution
 			ini_set( 'display_errors', $display_errors ); // be a good citizen
+			ini_set( 'html_errors', $html_errors );
 			error_reporting( $error_reporting );
 			$error = ob_get_clean();
 
@@ -766,9 +762,19 @@ class Utils
 	public static function php_check_file_syntax( $file, &$error = null )
 	{
 		// Prepend and append PHP opening tags to prevent eval() failures.
-		$code = ' ?>' . file_get_contents( $file ) . '<?php ';
+		$plugin_code = file_get_contents( $file );
+		$replacements = array(
+			'#^<\?(php)?\s#A' => '',
+			'#\?>$#' => '',
+			'#namespace [^;]+;#' => '',
+		);
+		foreach($replacements as $search => $replacement) {
+			if(preg_match($search, $plugin_code)) {
+				$plugin_code = preg_replace($search, $replacement, $plugin_code);
+			}
+		}
 
-		return self::php_check_syntax( $code, $error );
+		return self::php_check_syntax( $plugin_code, $error );
 	}
 
 	/**
@@ -986,7 +992,7 @@ class Utils
 	 */
 	public static function array_or( $input )
 	{
-		return array_reduce( $input, array( '\Habari\System\Utils\Utils', 'ror' ), 0 );
+		return array_reduce( $input, array( '\Habari\Utils', 'ror' ), 0 );
 	}
 
 	/**

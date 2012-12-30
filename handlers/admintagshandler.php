@@ -4,7 +4,7 @@
  *
  */
 
-namespace Habari\System\Handler;
+namespace Habari;
 
 /**
  * Habari AdminTagsHandler Class

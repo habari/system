@@ -1,8 +1,8 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
+<?php
 
-use Habari\System\Pluggable\Plugin;
-use Habari\System\Data\Model\User;
-use Habari\System\Core\Options;
+namespace Habari;
+
+if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 
 /**
  * Undelete Class

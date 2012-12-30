@@ -4,11 +4,7 @@
  *
  */
 
-namespace Habari\System\Data\Model;
-
-use Habari\System\Utils\Utils;
-use Habari\System\Data\Database\DB;
-use Habari\System\Net\URL;
+namespace Habari;
 
 /**
  * Habari Users Class

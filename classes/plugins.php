@@ -4,16 +4,7 @@
  *
  */
 
-namespace Habari\System\Pluggable;
-
-use Habari\System\Data\Model\EventLog;
-use Habari\System\Utils\MultiByte;
-use Habari\System\Locale\Locale;
-use Habari\System\Core\Session;
-use Habari\System\Core\Options;
-use Habari\System\Utils\Utils;
-use Habari\System\Core\Site;
-use Habari\System\Pluggable\Theme;
+namespace Habari;
 
 /**
  * Habari Plugins Class
@@ -215,7 +206,7 @@ class Plugins
 		if ( !isset( self::$hooks['theme'][$hookname] ) ) {
 			if ( substr( $hookname, -6 ) != '_empty' ) {
 				array_unshift( $filter_args, $hookname . '_empty' );
-				return call_user_func_array( array( '\\Habari\\System\\Pluggable\\Plugins', 'theme' ), $filter_args );
+				return call_user_func_array( array( '\\Habari\\Plugins', 'theme' ), $filter_args );
 			}
 			return array();
 		}
@@ -245,10 +236,10 @@ class Plugins
 		}
 		if ( count( $return ) == 0 && substr( $hookname, -6 ) != '_empty' ) {
 			array_unshift( $filter_args, $hookname . '_empty' );
-			$result = call_user_func_array( array( '\\Habari\\System\\Pluggable\\Plugins', 'theme' ), $filter_args );
+			$result = call_user_func_array( array( '\\Habari\\Plugins', 'theme' ), $filter_args );
 		}
 		array_unshift( $filter_args, 'theme_call_' . $hookname, $return );
-		$result = call_user_func_array( array( '\\Habari\\System\\Pluggable\\Plugins', 'filter' ), $filter_args );
+		$result = call_user_func_array( array( '\\Habari\\Plugins', 'filter' ), $filter_args );
 		return $result;
 	}
 
@@ -432,14 +423,14 @@ class Plugins
 	public static function get_plugin_classes()
 	{
 		$classes = get_declared_classes();
-		return array_filter( $classes, array( 'Plugins', 'extends_plugin' ) );
+		return array_filter( $classes, array( 'Habari\Plugins', 'extends_plugin' ) );
 	}
 
 	/**
 	 * Initialize all loaded plugins by calling their load() method
 	 * @param string $file the class name to load
 	 * @param boolean $activate True if the plugin's load() method should be called
-	 * @return \Habari\System\Pluggable\Plugin The instantiated plugin class
+	 * @return \Habari\Plugin The instantiated plugin class
 	 */
 	public static function load_from_file( $file, $activate = true )
 	{

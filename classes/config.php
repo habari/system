@@ -5,7 +5,7 @@
  */
 // vim: le=unix syntax=php ts=4 noet sw=4
 
-namespace Habari\System\Core;
+namespace Habari;
 
 
 /**

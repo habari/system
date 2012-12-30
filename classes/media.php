@@ -4,9 +4,7 @@
  *
  */
 
-namespace Habari\System\Media;
-
-use Habari\System\Pluggable\Plugins;
+namespace Habari;
 
 /**
  * Media access

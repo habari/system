@@ -1,17 +1,4 @@
-<?php
-use Habari\System\Locale\DateTime;
-use Habari\System\Core\Options;
-use Habari\System\Data\Model\User;
-use Habari\System\Security\ACL;
-use Habari\System\Utils\Utils;
-use Habari\System\View\Format;
-use Habari\System\Net\URL;
-use Habari\System\Data\Model\Post;
-use Habari\System\Data\Model\Comment;
-use Habari\System\Utils\MultiByte;
-use Habari\System\Core\Site;
-
-?>
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php include( 'header.php' ); ?>
 

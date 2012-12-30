@@ -8,17 +8,7 @@
  * @property-read boolean $loggedin Whether or not this user is currently identified
  */
 
-namespace Habari\System\Data\Model;
-
-use Habari\System\View\Form\FormStorage;
-use Habari\System\Data\IsContent;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Security\ACL;
-use Habari\System\Net\URL;
-use Habari\System\Data\Model\Info\UserInfo;
-use Habari\System\Utils\Utils;
-use Habari\System\Core\Session;
-use Habari\System\Data\Database\DB;
+namespace Habari;
 
 /**
  * Habari UserRecord Class

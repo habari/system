@@ -4,12 +4,7 @@
  *
  */
 
-namespace Habari\System\Locale;
-
-use Habari\System\Core\Options;
-use Habari\System\View\Format;
-use Habari\System\Utils\MultiByte;
-use Habari\System\Data\Model\User;
+namespace Habari;
 
 /**
  * HabariDateTime class to wrap dates in.
@@ -120,7 +115,7 @@ class DateTime extends \DateTime
 	 * @param string $time String in a format accepted by
 	 * {@link http://ca.php.net/strtotime strtotime()}, defaults to "now".
 	 * @param string $timezone A timezone name, not an abbreviation.
-	 * @return \Habari\System\Locale\DateTime
+	 * @return \Habari\DateTime
 	 */
 	public static function date_create( $time = null, $timezone = null )
 	{
@@ -154,7 +149,7 @@ class DateTime extends \DateTime
 	 * @param int $year Year of the date
 	 * @param int $month Month of the date
 	 * @param int $day Day of the date
-	 * @return \Habari\System\Locale\DateTime
+	 * @return \Habari\DateTime
 	 */
 	public function set_date( $year, $month, $day )
 	{
@@ -169,7 +164,7 @@ class DateTime extends \DateTime
 	 * @param int $year Year of the date
 	 * @param int $month Month of the date
 	 * @param int $day Day of the date
-	 * @return \Habari\System\Locale\DateTime
+	 * @return \Habari\DateTime
 	 */
 	public function set_isodate( $year, $week, $day = null )
 	{
@@ -184,7 +179,7 @@ class DateTime extends \DateTime
 	 * @param int $hour Hour of the time
 	 * @param int $minute Minute of the time
 	 * @param int $second Second of the time
-	 * @return \Habari\System\Locale\DateTime
+	 * @return \Habari\DateTime
 	 */
 	public function set_time( $hour, $minute, $second = null )
 	{

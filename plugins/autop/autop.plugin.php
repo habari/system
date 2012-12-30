@@ -1,6 +1,8 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
+<?php
 
-use Habari\System\View\Format;
+namespace Habari;
+
+if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 
 class AutoP extends Plugin
 {

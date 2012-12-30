@@ -4,10 +4,7 @@
  *
  */
 
-namespace Habari\System\Data\Database;
-
-use Habari\System\Core\Singleton;
-use Habari\System\Core\Config;
+namespace Habari;
 
 /**
  * Habari DB Class
@@ -247,7 +244,7 @@ class DB extends Singleton
 	 * @return array An array of QueryRecord or the named class each containing the row data
 	 * <code>$ary = DB::get_results( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>
 	 */
-	public static function get_results( $query, $args = array(), $class_name = '\Habari\System\Data\Model\QueryRecord' )
+	public static function get_results( $query, $args = array(), $class_name = '\Habari\QueryRecord' )
 	{
 		return DB::instance()->connection->get_results( $query, $args, $class_name );
 	}
@@ -260,7 +257,7 @@ class DB extends Singleton
 	 * @return object A QueryRecord or an instance of the named class containing the row data
 	 * <code>$obj = DB::get_row( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>
 	 **/
-	public static function get_row( $query, $args = array(), $class_name = '\Habari\System\Data\Model\QueryRecord' )
+	public static function get_row( $query, $args = array(), $class_name = '\Habari\QueryRecord' )
 	{
 		return DB::instance()->connection->get_row( $query, $args, $class_name );
 	}

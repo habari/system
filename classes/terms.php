@@ -4,9 +4,7 @@
  *
  */
 
-namespace Habari\System\Data\Model;
-
-use Habari\System\View\Form\FormStorage;
+namespace Habari;
 
 /**
 * Habari Terms Class

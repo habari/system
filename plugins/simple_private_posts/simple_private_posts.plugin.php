@@ -1,6 +1,6 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 
-class SimplePrivatePosts extends Plugin
+class SimplePrivatePosts extends Habari\Plugin
 {
 
 	public function action_plugin_activation()

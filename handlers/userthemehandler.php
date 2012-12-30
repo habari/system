@@ -4,13 +4,7 @@
  *
  */
 
-namespace Habari\System\Handler;
-
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Utils\Utils;
-use Habari\System\Core\Session;
-use Habari\System\Data\Model\EventLog;
-use Habari\System\Core\Error;
+namespace Habari;
 
 /**
  * Class for handling default user theme actions.

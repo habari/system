@@ -5,9 +5,7 @@
  * @package Habari
  */
 
-namespace Habari\System\Data\Database;
-
-use Habari\System\Core\Site;
+namespace Habari;
 
 class SQLiteConnection extends DatabaseConnection
 {

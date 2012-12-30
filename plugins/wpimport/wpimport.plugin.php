@@ -5,7 +5,7 @@
 		define('IMPORT_BATCH', 100);
 	}
 	
-	class WPImport extends Plugin implements Importer {
+	class WPImport extends Habari\Plugin implements Importer {
 		
 		private $supported_importers = array();
 		

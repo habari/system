@@ -4,13 +4,7 @@
  *
  */
 
-namespace Habari\System\Core;
-use Habari\System\Utils\MultiByte;
-use Habari\System\Security\InputFilter;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Utils\Utils;
-use Habari\System\Pluggable\Themes;
-
+namespace Habari;
 /**
  * Habari Site class
  *

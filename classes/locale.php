@@ -4,11 +4,7 @@
  *
  */
 
-namespace Habari\System\Locale;
-
-use Habari\System\Core\Site;
-use Habari\System\Core\Error;
-use Habari\System\Utils\Utils;
+namespace Habari;
 
 include 'locale.global.php';
 
@@ -303,7 +299,7 @@ class Locale
 	public static function _e()
 	{
 		$args = func_get_args();
-		echo call_user_func_array( array( '\\Habari\\System\\Locale\\Locale', '_t' ), $args );
+		echo call_user_func_array( array( '\\Habari\\Locale', '_t' ), $args );
 	}
 
 	/**

@@ -4,7 +4,7 @@
  *
  */
 
-namespace Habari\System\Core;
+namespace Habari;
 
 /**
 * Habari Version Class

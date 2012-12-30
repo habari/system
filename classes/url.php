@@ -4,16 +4,7 @@
  *
  */
 
-namespace Habari\System\Net;
-
-use Habari\System\Core\Singleton;
-use Habari\System\Utils\Utils;
-use Habari\System\Data\Model\EventLog;
-use Habari\System\Data\Model\RewriteRule;
-use Habari\System\Core\Controller;
-use Habari\System\Data\Model\RewriteRules;
-use Habari\System\Core\Site;
-use Habari\System\Utils\MultiByte;
+namespace Habari;
 
 /**
  * URL class which handles creation of URLs based on the rewrite
@@ -52,7 +43,7 @@ class URL extends Singleton
 	/**
 	 * Get the matched RewriteRule that was matched in parse().
 	 *
-	 * @return \Habari\System\Data\Model\RewriteRule matched rule, or null
+	 * @return \Habari\RewriteRule matched rule, or null
 	 */
 	public static function get_matched_rule()
 	{
@@ -72,7 +63,7 @@ class URL extends Singleton
 	/**
 	 * Cause the matched rule to be unset in the case of a 404
 	 *
-	 * @return \Habari\System\Data\Model\RewriteRule A rewrite rule that represents a 404 error - no match on the URL requested
+	 * @return \Habari\RewriteRule A rewrite rule that represents a 404 error - no match on the URL requested
 	 */
 	public static function set_404()
 	{
@@ -93,7 +84,7 @@ class URL extends Singleton
 	 * Returns the matched RewriteRule object, or false.
 	 *
 	 * @param string $from_url URL string to parse
-	 * @return \Habari\System\Data\Model\RewriteRule matched rule, or false
+	 * @return \Habari\RewriteRule matched rule, or false
 	 */
 	public static function parse( $from_url )
 	{

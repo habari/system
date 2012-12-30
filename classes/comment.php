@@ -4,13 +4,7 @@
  *
  */
 
-namespace Habari\System\Data\Model;
-
-use Habari\System\Data\IsContent;
-use Habari\System\Locale\DateTime;
-use Habari\System\Pluggable\Pluggable;
-use Habari\System\Data\Database\DB;
-use Habari\System\Pluggable\Plugins;
+namespace Habari;
 
 /**
  * Habari CommentRecord Class

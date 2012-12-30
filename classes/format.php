@@ -4,11 +4,7 @@
  *
  */
 
-namespace Habari\System\View;
-
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Data\Model\Terms;
-use Habari\System\Net\URL;
+namespace Habari;
 
 /**
  * Habari Format Class

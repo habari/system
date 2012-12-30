@@ -4,7 +4,7 @@
  *
  */
 
-namespace Habari\System\Data;
+namespace Habari;
 
 /**
  * IsContent Interface for Habari

@@ -4,16 +4,7 @@
  *
  */
 
-namespace Habari\System\Core;
-
-use Habari\System\Data\Model;
-use Habari\System\Locale\DateTime;
-use Habari\System\Pluggable\Themes;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Utils\Utils;
-use Habari\System\Net\RemoteRequest;
-use Habari\System\Data\Model\EventLog;
-use Habari\System\Handler\CronHandler;
+namespace Habari;
 
 /**
  * Habari Update class

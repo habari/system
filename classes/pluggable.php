@@ -4,14 +4,7 @@
  *
  */
 
-namespace Habari\System\Pluggable;
-
-use Habari\System\Data\Database\DB;
-use Habari\System\Core\Options;
-use Habari\System\View\Form\FormUI;
-use Habari\System\Data\Model\RewriteRule;
-use Habari\System\Locale\Locale;
-use Habari\System\Net\Url;
+namespace Habari;
 
 /**
  * Pluggable class

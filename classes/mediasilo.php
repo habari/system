@@ -4,7 +4,7 @@
  *
  */
 
-namespace Habari\System\Media;
+namespace Habari;
 
 /**
  * MediaSilo interface

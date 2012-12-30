@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Class which describes a single Tag object
  *
@@ -29,7 +31,7 @@ class Tag extends Term
 	{
 		$tags = explode( ' ', $rule->named_arg_values['tag'] );
 		$tags = array_map( 'trim', $tags, array_fill( 0, count( $tags ), '-' ) );
-		$tags = array_map( array( 'Tags', 'get_one' ), $tags );
+		$tags = array_map( array( 'Habari\\Tags', 'get_one' ), $tags );
 		$initial_tag_count = count( $tags );
 		$tags = array_filter( $tags );
 		// Are all of the tags we asked for actual tags on this site?
@@ -65,7 +67,7 @@ class Tag extends Term
 	public function __call( $name, $args )
 	{
 		array_unshift( $args, 'tag_call_' . $name, null, $this );
-		return call_user_func_array( array( '\\Habari\\System\\Pluggable\\Plugins', 'filter' ), $args );
+		return call_user_func_array( array( '\\Habari\\Plugins', 'filter' ), $args );
 	}
 
 }

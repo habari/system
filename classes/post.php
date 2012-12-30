@@ -4,30 +4,7 @@
  *
  */
 
-namespace Habari\System\Data\Model;
-
-use Habari\System\View\Form\FormStorage;
-use Habari\System\Data\IsContent;
-use Habari\System\Pluggable\Pluggable;
-use Habari\System\Data\Database\DB;
-use Habari\System\Utils\MultiByte;
-use Habari\System\Locale\DateTime;
-use Habari\System\Data\Database\Query;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Net\URL;
-use Habari\System\Data\Model\Info\PostInfo;
-use Habari\System\Utils\Utils;
-use Habari\System\Security\Acl;
-use Habari\System\Data\Model\Comments;
-use Habari\System\Data\Model\EventLog;
-use Habari\System\Media\Media;
-use Habari\System\Core\Options;
-use Habari\System\Data\Model\Posts;
-use Habari\System\Core\Session;
-use Habari\System\Core\Site;
-use Habari\System\Data\Model\Tags;
-use Habari\System\Data\Model\User;
-use Habari\System\View\Form\FormUI;
+namespace Habari;
 
 /**
  *
@@ -923,7 +900,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	public function __call( $name, $args )
 	{
 		array_unshift( $args, 'post_call_' . $name, null, $this );
-		return call_user_func_array( array( '\\Habari\\System\\Pluggable\\Plugins', 'filter' ), $args );
+		return call_user_func_array( array( '\\Habari\\Plugins', 'filter' ), $args );
 	}
 
 	/**

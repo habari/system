@@ -4,7 +4,7 @@
  *
  */
 
-namespace Habari\System\Utils;
+namespace Habari;
 
 /**
  * Habari MultiByte Class

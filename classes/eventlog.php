@@ -5,14 +5,7 @@
  * @property-read bool $onelogentry True if this object only has one entry
  */
 
-namespace Habari\System\Data\Model;
-
-use Habari\System\Data\Database\DB;
-use Habari\System\Locale\DateTime;
-use Habari\System\Utils\MultiByte;
-use Habari\System\Core\Options;
-use Habari\System\Utils\Utils;
-use Habari\System\Data\Model\LogEntry;
+namespace Habari;
 
 /**
  * Habari EventLog class

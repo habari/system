@@ -4,12 +4,7 @@
  *
  */
 
-namespace Habari\System\Data\Database;
-
-use Habari\System\Core\Config;
-use Habari\System\Utils\Utils;
-use Habari\System\Data\QueryProfile;
-use Habari\System\Pluggable\Plugins;
+namespace Habari;
 
 /**
  * Habari DatabaseConnection Class
@@ -85,8 +80,8 @@ class DatabaseConnection
 	{
 		list( $engine ) = explode( ':', $connect_string, 2 );
 		$engines = array(
-			'sqlite' => '\Habari\System\Data\Database\SQLiteConnection',
-			'mysql' => '\Habari\System\Data\Database\MySQLConnection',
+			'sqlite' => '\Habari\SQLiteConnection',
+			'mysql' => '\Habari\MySQLConnection',
 		);
 
 		require_once( HABARI_PATH . "/system/schema/{$engine}/connection.php" );
@@ -265,7 +260,7 @@ class DatabaseConnection
 					$tmp = $this->fetch_class_name;
 					// @todo This is a GIANT namespace kludge, replacing Model class names with no namespace with a default prefixed class
 					if(strpos($tmp, '\\') == false) {
-						$tmp = '\\Habari\\System\\Data\\Model\\' . $tmp;
+						$tmp = '\\Habari\\' . $tmp;
 						$this->fetch_class_name = $tmp;
 					}
 					new $tmp();
@@ -470,7 +465,7 @@ class DatabaseConnection
 	 * @return array An array of QueryRecord or the named class each containing the row data
 	 * <code>$ary= DB::get_results( 'SELECT * FROM tablename WHERE foo= ?', array( 'fieldvalue' ), 'extendedQueryRecord' );</code>
 	 */
-	public function get_results( $query, $args = array(), $class_name = '\Habari\System\Data\Model\QueryRecord' )
+	public function get_results( $query, $args = array(), $class_name = '\Habari\QueryRecord' )
 	{
 		$this->set_fetch_mode( \PDO::FETCH_CLASS );
 		$this->set_fetch_class( $class_name );
@@ -490,7 +485,7 @@ class DatabaseConnection
 	 * @return object A QueryRecord or an instance of the named class containing the row data
 	 * <code>$obj= DB::get_row( 'SELECT * FROM tablename WHERE foo= ?', array( 'fieldvalue' ), 'extendedQueryRecord' );</code>
 	 */
-	public function get_row( $query, $args = array(), $class_name = '\Habari\System\Data\Model\QueryRecord' )
+	public function get_row( $query, $args = array(), $class_name = '\Habari\QueryRecord' )
 	{
 		$this->set_fetch_mode( \PDO::FETCH_CLASS );
 		$this->set_fetch_class( $class_name );

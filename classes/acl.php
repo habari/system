@@ -4,12 +4,7 @@
  *
  */
 
-namespace Habari\System\Security;
-
-use Habari\System\Utils\Bitmask;
-use Habari\System\Data\Model\User;
-use Habari\System\Data\Database\DB;
-use Habari\System\Pluggable\Plugins;
+namespace Habari;
 
 /**
  * Access Control List class

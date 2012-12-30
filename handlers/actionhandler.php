@@ -4,14 +4,7 @@
  *
  */
 
-namespace Habari\System\Handler;
-
-use Habari\System\Core\SuperGlobal;
-use Habari\System\Pluggable\Theme;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Utils\Utils;
-use Habari\System\Net\URL;
-use Habari\System\Pluggable\Themes;
+namespace Habari;
 
 /**
  * A base class handler for URL-based actions. All ActionHandlers must

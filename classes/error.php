@@ -4,10 +4,7 @@
  *
  */
 
-namespace Habari\System\Core;
-use Habari\System\Data\Model\EventLog;
-use Habari\System\Data\Database\DB;
-
+namespace Habari;
 /**
  * Contains error-related functions and Habari's error handler.
  *
@@ -37,9 +34,9 @@ class Error extends \Exception
 	 */
 	public static function handle_errors()
 	{
-		set_error_handler( array( '\Habari\System\Core\Error', 'error_handler' ) );
-		set_exception_handler( array( '\Habari\System\Core\Error', 'exception_handler' ) );
-		register_shutdown_function( array( '\Habari\System\Core\Error', 'shutdown_handler' ) );
+		set_error_handler( array( '\Habari\Error', 'error_handler' ) );
+		set_exception_handler( array( '\Habari\Error', 'exception_handler' ) );
+		register_shutdown_function( array( '\Habari\Error', 'shutdown_handler' ) );
 	}
 
 	public static function shutdown_handler ( ) {

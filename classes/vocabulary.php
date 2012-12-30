@@ -9,10 +9,7 @@
  *
  */
 
-namespace Habari\System\Data\Model;
-
-use Habari\System\Data\Database\DB;
-use Habari\System\Data\Database\Query;
+namespace Habari;
 
 class Vocabulary extends QueryRecord
 {

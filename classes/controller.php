@@ -4,9 +4,7 @@
  *
  */
 
-namespace Habari\System\Core;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Net\URL;
+namespace Habari;
 
 /**
  * Class which handles incoming requests and drives the
@@ -74,7 +72,7 @@ class Controller extends Singleton
 	/**
 	 * Returns the action handler
 	 *
-	 * @return \Habari\System\Handler\ActionHandler handler object
+	 * @return \Habari\ActionHandler handler object
 	 */
 	public static function get_handler()
 	{
@@ -106,7 +104,7 @@ class Controller extends Singleton
 
 	/**
 	 * A convenience method for returning the rewrite rule that matches the requested URL
-	 * @return \Habari\System\Data\Model\RewriteRule|null The rule that matches the requested URL
+	 * @return \Habari\RewriteRule|null The rule that matches the requested URL
 	 */
 	public static function get_matched_rule()
 	{
@@ -175,7 +173,7 @@ class Controller extends Singleton
 		$handler = $matched_rule->handler;
 		// @todo This is pretty kludgy.  If there's no namespace in the handler class, add one.
 		if(strpos($handler, '\\') === false) {
-			$handler = '\\Habari\\System\\Handler\\' . $handler;
+			$handler = '\\Habari\\' . $handler;
 		}
 		$controller->handler = new $handler();
 		/* Insert the regexed submatches as the named parameters */

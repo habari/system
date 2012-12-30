@@ -4,17 +4,7 @@
  *
  */
 
-namespace Habari\System\Handler;
-
-use Habari\System\Locale\DateTime;
-use Habari\System\Data\Model\CronJob;
-use Habari\System\Data\Model\EventLog;
-use Habari\System\Data\Database\DB;
-use Habari\System\Net\RemoteRequest_Timeout;
-use Habari\System\Net\RemoteRequest;
-use Habari\System\Utils\Utils;
-use Habari\System\Net\URL;
-use Habari\System\Core\Options;
+namespace Habari;
 
 /**
  * Static class to build and read cron entries
@@ -133,15 +123,15 @@ class CronHandler extends ActionHandler
 	 * Get a Cron Job by name or id from the Database.
 	 *
 	 * @param mixed $name The name or id of the cron job to retreive.
-	 * @return \Habari\System\Data\Model\CronJob The cron job retreived from the DB
+	 * @return \Habari\CronJob The cron job retreived from the DB
 	 */
 	static function get_cronjob( $name )
 	{
 		if ( is_int( $name ) ) {
-			$cron = DB::get_row( 'SELECT * FROM {crontab} WHERE cron_id = ?', array( $name ), '\Habari\System\Data\Model\CronJob' );
+			$cron = DB::get_row( 'SELECT * FROM {crontab} WHERE cron_id = ?', array( $name ), '\Habari\CronJob' );
 		}
 		else {
-			$cron = DB::get_row( 'SELECT * FROM {crontab} WHERE name = ?', array( $name ), '\Habari\System\Data\Model\CronJob' );
+			$cron = DB::get_row( 'SELECT * FROM {crontab} WHERE name = ?', array( $name ), '\Habari\CronJob' );
 		}
 		return $cron;
 	}
@@ -166,7 +156,7 @@ class CronHandler extends ActionHandler
 	 *
 	 * @see CronJob
 	 * @param array $paramarray A paramarray of cron job feilds.
-	 * @return \Habari\System\Data\Model\CronJob
+	 * @return \Habari\CronJob
 	 */
 	static function add_cron( $paramarray )
 	{
@@ -188,7 +178,7 @@ class CronHandler extends ActionHandler
 	 * @param mixed $callback The callback function or plugin action for the cron job to execute.
 	 * @param DateTime $run_time The time to execute the cron.
 	 * @param string $description The description of the cron job.
-	 * @return \Habari\System\Data\Model\CronJob
+	 * @return \Habari\CronJob
 	 */
 	static function add_single_cron( $name, $callback, $run_time, $description = '' )
 	{
@@ -208,7 +198,7 @@ class CronHandler extends ActionHandler
 	 * @param string $name The name of the cron job.
 	 * @param mixed $callback The callback function or plugin action for the cron job to execute.
 	 * @param string $description The description of the cron job.
-	 * @return \Habari\System\Data\Model\CronJob
+	 * @return \Habari\CronJob
 	 */
 	static function add_hourly_cron( $name, $callback, $description = '' )
 	{
@@ -227,7 +217,7 @@ class CronHandler extends ActionHandler
 	 * @param string $name The name of the cron job.
 	 * @param mixed $callback The callback function or plugin action for the cron job to execute.
 	 * @param string $description The description of the cron job.
-	 * @return \Habari\System\Data\Model\CronJob
+	 * @return \Habari\CronJob
 	 */
 	static function add_daily_cron( $name, $callback, $description = '' )
 	{
@@ -246,7 +236,7 @@ class CronHandler extends ActionHandler
 	 * @param string $name The name of the cron job.
 	 * @param mixed $callback The callback function or plugin action for the cron job to execute.
 	 * @param string $description The description of the cron job.
-	 * @return \Habari\System\Data\Model\CronJob
+	 * @return \Habari\CronJob
 	 */
 	static function add_weekly_cron( $name, $callback, $description = '' )
 	{
@@ -265,7 +255,7 @@ class CronHandler extends ActionHandler
 	 * @param string $name The name of the cron job.
 	 * @param mixed $callback The callback function or plugin action for the cron job to execute.
 	 * @param string $description The description of the cron job.
-	 * @return \Habari\System\Data\Model\CronJob
+	 * @return \Habari\CronJob
 	 */
 	static function add_monthly_cron( $name, $callback, $description = '' )
 	{

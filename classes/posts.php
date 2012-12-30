@@ -4,19 +4,7 @@
  *
  */
 
-namespace Habari\System\Data\Model;
-
-use Habari\System\View\Form\FormStorage;
-use Habari\System\Data\IsContent;
-use Habari\System\Pluggable\Pluggable;
-use Habari\System\Utils\Utils;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Data\Database\DB;
-use Habari\System\Data\Database\Query;
-use Habari\System\Data\Database\QueryWhere;
-use Habari\System\Core\Options;
-use Habari\System\Core\SuperGlobal;
-use Habari\System\Security\ACL;
+namespace Habari;
 
 /**
  * Habari Posts Class

@@ -4,18 +4,7 @@
  *
  */
 
-namespace Habari\System\Handler;
-
-use Habari\System\Utils\Utils;
-use Habari\System\Pluggable\Themes;
-use Habari\System\Core\Site;
-use Habari\System\Net\URL;
-use Habari\System\Data\Model\User;
-use Habari\System\Core\Options;
-use Habari\System\Core\Session;
-use Habari\System\Locale\DateTime;
-use Habari\System\Utils\MultiByte;
-use Habari\System\Pluggable\Plugins;
+namespace Habari;
 
 /**
  * Habari UserHandler Class

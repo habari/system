@@ -1,19 +1,4 @@
 <?php
-use Habari\System\Core\SuperGlobal;
-use Habari\System\Utils\Stack;
-use Habari\System\Handler\CronHandler;
-use Habari\System\Core\Controller;
-use Habari\System\Core\Session;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Utils\Utils;
-use Habari\System\Core\Version;
-use Habari\System\Core\Options;
-use Habari\System\Data\Database\DB;
-use Habari\System\Core\Config;
-use Habari\System\Core\Site;
-use Habari\System\Core\Error;
-use Habari\System\Locale\Locale;
-
 /**
  * Habari Index
  *
@@ -27,6 +12,8 @@ use Habari\System\Locale\Locale;
  *
  * @package Habari
  */
+
+namespace Habari;
 
 // Fail out if not included from root
 if ( !defined( 'HABARI_PATH' ) ) {
@@ -171,11 +158,8 @@ if ( isset( $_GET['asyncronous'] ) && Utils::crypt( Options::get( 'GUID' ), $_GE
 // @todo Find a better place to put this.
 header( 'Content-Type: text/html;charset=utf-8' );
 
-// @todo remove this placeholder
-class Plugin extends \Habari\System\Pluggable\Plugin {}
-
 // Load and upgrade all the active plugins.
-spl_autoload_register( array( '\Habari\System\Pluggable\Plugins' , '_autoload' ) );
+spl_autoload_register( array( '\Habari\Plugins' , '_autoload' ) );
 Plugins::load_active();
 Plugins::upgrade();
 

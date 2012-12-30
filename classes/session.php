@@ -4,14 +4,7 @@
  *
  */
 
-namespace Habari\System\Core;
-
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Utils\Utils;
-use Habari\System\Data\Database\DB;
-use Habari\System\Locale\DateTime;
-use Habari\System\Utils\MultiByte;
-use Habari\System\View\Format;
+namespace Habari;
 
 /**
  * Habari Session class

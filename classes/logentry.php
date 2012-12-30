@@ -4,13 +4,7 @@
  *
  */
 
-namespace Habari\System\Data\Model;
-
-use Habari\System\Locale\DateTime;
-use Habari\System\Utils\Utils;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Core\Options;
-use Habari\System\Data\Database\DB;
+namespace Habari;
 
 /**
  * Habari LogEntry class

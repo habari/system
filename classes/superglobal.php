@@ -4,10 +4,7 @@
  *
  */
 
-namespace Habari\System\Core;
-
-use Habari\System\Utils\Utils;
-use Habari\System\Security\InputFilter;
+namespace Habari;
 
 /**
  * SuperGlobals class

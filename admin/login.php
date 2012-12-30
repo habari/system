@@ -1,12 +1,4 @@
-<?php
-use Habari\System\Core\Options;
-use Habari\System\Core\Site;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Utils\Stack;
-use Habari\System\Net\URL;
-use Habari\System\Utils\Utils;
-use Habari\System\Core\Session;
-?>
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <!DOCTYPE HTML>
 <html>
@@ -22,8 +14,8 @@ use Habari\System\Core\Session;
 
 	<?php
 		Plugins::act( 'admin_header', $this );
-		Stack::out( 'admin_header_javascript', array('\\Habari\\System\\Utils\\Stack', 'scripts') );
-		Stack::out( 'admin_stylesheet', array('\\Habari\\System\\Utils\\Stack', 'styles') );
+		Stack::out( 'admin_header_javascript', array('\\Habari\\Stack', 'scripts') );
+		Stack::out( 'admin_stylesheet', array('\\Habari\\Stack', 'styles') );
 	?>
 
 </head>

@@ -4,7 +4,7 @@
  * This file puts the global locale functions into the global namespace
  */
 
-use Habari\System\Locale\Locale;
+use Habari\Locale;
 
 /**
  * Echo a version of the string translated into the current locale, alias for HabariLocale::_e()

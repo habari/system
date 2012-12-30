@@ -4,20 +4,7 @@
  *
  */
 
-namespace Habari\System\Pluggable;
-
-use Habari\System\Utils\Utils;
-use Habari\System\Core\Options;
-use Habari\System\Utils\MultiByte;
-use Habari\System\Data\Model\User;
-use Habari\System\Utils\Stack;
-use Habari\System\Core\Controller;
-use Habari\System\Data\Model\Post;
-use Habari\System\Data\Model\Posts;
-use Habari\System\Core\Site;
-use Habari\System\Net\URL;
-use Habari\System\Data\Database\DB;
-
+namespace Habari;
 
 /**
  * Habari Theme Class
@@ -94,7 +81,7 @@ class Theme extends Pluggable
 		$engine = $themedata->template_engine;
 		// @todo Big namespace Kludge. Prefixes the template engine with a namespace if not provided
 		if(strpos($engine, '\\') == false) {
-			$engine = 'Habari\\System\\View\\Engine\\' . $engine;
+			$engine = 'Habari\\' . $engine;
 		}
 		$this->template_engine = new $engine();
 
@@ -623,8 +610,8 @@ class Theme extends Pluggable
 		Plugins::act( 'template_header', $theme );
 
 		$atom = Stack::get( 'template_atom', '<link rel="%1$s" type="%2$s" title="%3$s" href="%4$s">' );
-		$styles = Stack::get( 'template_stylesheet', array( '\\Habari\\System\\Utils\\Stack', 'styles' ) );
-		$scripts = Stack::get( 'template_header_javascript', array( '\\Habari\\System\\Utils\\Stack', 'scripts' ) );
+		$styles = Stack::get( 'template_stylesheet', array( '\\Habari\\Stack', 'styles' ) );
+		$scripts = Stack::get( 'template_header_javascript', array( '\\Habari\\Stack', 'scripts' ) );
 		
 		$output = implode( "\n", array( $atom, $styles, $scripts ) );
 		
@@ -641,8 +628,8 @@ class Theme extends Pluggable
 		Plugins::act( 'template_footer', $theme );
 		Stack::dependent('template_footer_javascript', 'template_header_javascript');
 		Stack::dependent('template_footer_stylesheet', 'template_stylesheet');
-		$output = Stack::get( 'template_footer_stylesheet', array( '\\Habari\\System\\Utils\\Stack', 'styles' ) );
-		$output .= Stack::get( 'template_footer_javascript', array( '\\Habari\\System\\Utils\\Stack', 'scripts' ) );
+		$output = Stack::get( 'template_footer_stylesheet', array( '\\Habari\\Stack', 'styles' ) );
+		$output .= Stack::get( 'template_footer_javascript', array( '\\Habari\\Stack', 'scripts' ) );
 		return $output;
 	}
 
@@ -1081,7 +1068,7 @@ class Theme extends Pluggable
 				$function = $matches[1];
 			}
 			array_unshift( $params, $function, $this );
-			$result = call_user_func_array( array( '\\Habari\\System\\Pluggable\\Plugins', 'theme' ), $params );
+			$result = call_user_func_array( array( '\\Habari\\Plugins', 'theme' ), $params );
 			switch ( $purposed ) {
 				case 'return':
 					return $result;

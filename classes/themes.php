@@ -4,14 +4,7 @@
  *
  */
 
-namespace Habari\System\Pluggable;
-
-use Habari\System\Core\Site;
-use Habari\System\Utils\Utils;
-use Habari\System\Core\Options;
-use Habari\System\Data\Model\EventLog;
-use Habari\System\Data\Model\QueryRecord;
-use Habari\System\Core\Session;
+namespace Habari;
 
 /**
  * Habari Themes class
@@ -372,7 +365,7 @@ class Themes
 
 		// the final fallback, for the admin "theme"
 		if ( $classname == '' ) {
-			$classname = '\\Habari\\System\\Pluggable\\Theme';
+			$classname = '\\Habari\\Theme';
 		}
 
 		$created_theme = new $classname( $themedata );
@@ -427,7 +420,7 @@ class Themes
 		do {
 			$delta = count($theme_classes);
 			foreach($class_parents as $class => $parents) {
-				if(count(array_intersect($theme_classes + array('Habari\\System\\Pluggable\\Theme'), $parents))>0) {
+				if(count(array_intersect($theme_classes + array('Habari\\Theme'), $parents))>0) {
 					$theme_classes[$class] = $class;
 				}
 			}

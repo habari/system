@@ -1,8 +1,6 @@
 <?php
 
-namespace Habari\System\Net;
-
-use Habari\System\Security\InputFilter;
+namespace Habari;
 
 class SocketRequestProcessor extends RequestProcessor
 {

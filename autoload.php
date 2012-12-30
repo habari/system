@@ -1,5 +1,4 @@
 <?php
-use Habari\System\Core\Site;
 
 /**
  * Attempt to load the class before PHP fails with an error.
@@ -46,10 +45,11 @@ function habari_autoload( $class_name )
 		// Load the Site class, a requirement to get files from a multisite directory.
 		if ( isset( $files['site.php'] ) ) {
 			require( $files['site.php'] );
+			unset($files['site.php']);
 		}
 
 		// Verify if this Habari instance is a multisite.
-		if ( ( $site_user_dir = Site::get_dir( 'user' ) ) != HABARI_PATH . '/user' ) {
+		if ( ( $site_user_dir = Habari\Site::get_dir( 'user' ) ) != HABARI_PATH . '/user' ) {
 			// We are dealing with a site defined in /user/sites/x.y.z
 			// Add the available files in that directory in the $files array.
 			$glob_classes = glob( $site_user_dir . '/classes/*.php' );
@@ -72,6 +72,8 @@ function habari_autoload( $class_name )
 		}
 		$success = true;
 	}
+
+	return $success;
 }
 
 ?>

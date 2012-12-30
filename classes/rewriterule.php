@@ -4,10 +4,7 @@
  *
  */
 
-namespace Habari\System\Data\Model;
-
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Data\Database\DB;
+namespace Habari;
 
 /**
  * Habari RewriteRule Class

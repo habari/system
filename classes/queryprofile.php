@@ -5,7 +5,7 @@
  * @property-read integer $totaltime The time it took for the query to run in microseconds
  */
 
-namespace Habari\System\Data;
+namespace Habari;
 
 /**
  * Class to assist in profiling queries

@@ -1,6 +1,6 @@
 <?php
 
-use Habari\System\Pluggable\Theme;
+namespace Habari;
 
 class Monolith extends Theme
 {

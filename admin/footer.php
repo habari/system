@@ -1,12 +1,4 @@
-<?php
-use Habari\System\Core\Version;
-use Habari\System\Data\Model\User;
-use Habari\System\Core\Site;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Utils\Stack;
-use Habari\System\Core\Session;
-
-?>
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <div id="footer">
 	<p>
@@ -37,7 +29,7 @@ use Habari\System\Core\Session;
 
 <?php
 	Plugins::act( 'admin_footer', $this );
-	Stack::out( 'admin_footer_javascript', array('\\Habari\\System\\Utils\\Stack', 'scripts') );
+	Stack::out( 'admin_footer_javascript', array('\\Habari\\Stack', 'scripts') );
 	include ('db_profiling.php');
 ?>
 
@@ -46,7 +38,7 @@ use Habari\System\Core\Session;
 <?php if ( Session::has_messages() ): ?>
 	<script type="text/javascript">
 	jQuery(document).ready(function() {
-		<?php Session::messages_out( true, array( '\\Habari\\System\\View\\Format', 'humane_messages' ) ); ?>
+		<?php Session::messages_out( true, array( '\\Habari\\Format', 'humane_messages' ) ); ?>
 	})
   </script>
 <?php endif; ?>

@@ -4,13 +4,7 @@
  *
  */
 
-namespace Habari\System\Data\Model;
-
-use Habari\System\Core\Options;
-use Habari\System\Utils\Utils;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Security\ACL;
-use Habari\System\Data\Database\DB;
+namespace Habari;
 
 /**
  * Habari Comments Class

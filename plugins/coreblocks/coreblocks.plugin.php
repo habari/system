@@ -4,7 +4,7 @@
  * Create blocks commonly used by site owners.
  *
  */
-class CoreBlocks extends Plugin
+class CoreBlocks extends Habari\Plugin
 {
 	private $allblocks = array();
 

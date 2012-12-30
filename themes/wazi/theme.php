@@ -1,8 +1,6 @@
 <?php
 
-use Habari\System\Pluggable\Theme;
-use Habari\System\Core\Session;
-use Habari\System\Utils\Stack;
+namespace Habari;
 
 class WaziTheme extends Theme
 {

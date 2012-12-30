@@ -1,8 +1,6 @@
 <?php
 
-namespace Habari\System\Data\Database;
-
-use Habari\System\Utils\Utils;
+namespace Habari;
 
 /**
  * Base Query class for building new queries

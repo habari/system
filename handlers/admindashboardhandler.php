@@ -4,21 +4,7 @@
  *
  */
 
-namespace Habari\System\Handler;
-
-use Habari\System\Data\Database\DB;
-use Habari\System\Data\Model\Post;
-use Habari\System\Data\Model\Comments;
-use Habari\System\Data\Model\Users;
-use Habari\System\Data\Model\User;
-use Habari\System\Data\Model\Tags;
-use Habari\System\Locale\DateTime;
-use Habari\System\Core\Options;
-use Habari\System\Data\Model\Posts;
-use Habari\System\Data\Model\Comment;
-use Habari\System\View\Form\FormUI;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Utils\Utils;
+namespace Habari;
 
 /**
  * Habari AdminDashboardHandler Class

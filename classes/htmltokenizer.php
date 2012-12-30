@@ -4,10 +4,7 @@
  *
  */
 
-namespace Habari\System\View;
-
-use Habari\System\View\HTMLTokenSet;
-use Habari\System\Core\Error;
+namespace Habari;
 
 /**
  * Tokenizer for HTML.

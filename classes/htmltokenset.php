@@ -4,9 +4,7 @@
  *
  */
 
-namespace Habari\System\View;
-use Habari\System\Utils\Utils;
-
+namespace Habari;
 /**
  * HTML Token Set (created by @see HTMLTokenizer)
  */

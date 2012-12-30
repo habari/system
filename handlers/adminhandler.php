@@ -4,19 +4,7 @@
  *
  */
 
-namespace Habari\System\Handler;
-
-use Habari\System\Data\Model\User;
-use Habari\System\Core\Session;
-use Habari\System\Net\URL;
-use Habari\System\Utils\Utils;
-use Habari\System\Pluggable\Themes;
-use Habari\System\Core\Update;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Core\Site;
-use Habari\System\Data\Model\Post;
-use Habari\System\Security\ACL;
-use Habari\System\Utils\MultiByte;
+namespace Habari;
 
 /**
  * Habari AdminHandler Class

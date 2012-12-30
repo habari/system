@@ -4,15 +4,7 @@
  *
  */
 
-namespace Habari\System\View\Form;
-
-use Habari\System\Data\IsContent;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Utils\Utils;
-use Habari\System\Core\Site;
-use Habari\System\Pluggable\Themes;
-use Habari\System\Core\Options;
-use Habari\System\Core\Controller;
+namespace Habari;
 
 /**
  * FormUI Library - Create interfaces for plugins
@@ -108,9 +100,9 @@ class FormContainer extends FormComponents
 			$control = $type;
 			$name = $control->name;
 		}
-		elseif ( is_string( $type ) && class_exists( '\\Habari\\System\\View\\Form\\FormControl' . ucwords( $type ) ) ) {
+		elseif ( is_string( $type ) && class_exists( '\\Habari\\FormControl' . ucwords( $type ) ) ) {
 			$name = reset( $args );
-			$type = '\\Habari\\System\\View\\Form\\FormControl' . ucwords( $type );
+			$type = '\\Habari\\FormControl' . ucwords( $type );
 
 			if ( class_exists( $type ) ) {
 				// Instanciate a new object from $type
@@ -812,7 +804,7 @@ class FormUI extends FormContainer implements IsContent
 			}
 			else {
 				array_unshift( $save, $callback, $this );
-				call_user_func_array( array( '\\Habari\\System\\Pluggable\\Plugins', 'act' ), $save );
+				call_user_func_array( array( '\\Habari\\Plugins', 'act' ), $save );
 			}
 		}
 		if ( $this->has_user_options() ) {
@@ -1332,7 +1324,7 @@ class FormControl extends FormComponents
 			}
 			else {
 				$params = array_merge( array( $validator_fn, $valid, $this->value, $this, $this->container ), $validator );
-				$valid = array_merge( $valid, call_user_func_array( array( '\\Habari\\System\\Pluggable\\Plugins', 'filter' ), $params ) );
+				$valid = array_merge( $valid, call_user_func_array( array( '\\Habari\\Plugins', 'filter' ), $params ) );
 			}
 		}
 		$this->errors = $valid;

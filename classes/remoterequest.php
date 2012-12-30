@@ -4,14 +4,7 @@
  *
  */
 
-namespace Habari\System\Net;
-use Habari\System\Core\Config;
-use Habari\System\Utils\MultiByte;
-use Habari\System\Security\InputFilter;
-use Habari\System\Pluggable\Plugins;
-use Habari\System\Utils\Utils;
-use Habari\System\Core\Version;
-
+namespace Habari;
 /**
  * Holds the basic RemoteRequest functionality.
  *
