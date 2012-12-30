@@ -237,6 +237,67 @@ class URL extends Singleton
 	}
 
 	/**
+	 * Helper wrapper function.  Returns the admin ajax URL for a specific context.
+	 * User must be logged in to access this URL.
+	 * @param string $context The ajax context
+	 * @param array $vars Additional variables to build into the URL
+	 * @return string The built URL
+	 */
+	public static function admin_ajax( $context, $vars = array() )
+	{
+		$vars['context'] = $context;
+		return URL::get('admin_ajax', $vars);
+	}
+
+	/**
+	 * Helper wrapper function.  Outputs the admin ajax URL for a specific context.
+	 * User must be logged in to access this URL.
+	 * @param string $context The ajax context
+	 * @param array $vars Additional variables to build into the URL
+	 */
+	public static function admin_ajax_out( $context, $vars = array() )
+	{
+		echo URL::admin_ajax($context, $vars);
+	}
+
+	/**
+	 * Helper wrapper function.  Returns the ajax URL for a specific context
+	 * @param string $context The ajax context
+	 * @param array $vars Additional variables to build into the URL
+	 * @return string The built URL
+	 */
+	public static function ajax( $context, $vars = array() )
+	{
+		$vars['context'] = $context;
+		return URL::get('ajax', $vars);
+	}
+
+	/**
+	 * Helper wrapper function.  Outputs the ajax URL for a specific context
+	 * @param string $context The ajax context
+	 * @param array $vars Additional variables to build into the URL
+	 */
+	public static function ajax_out( $context, $vars = array() )
+	{
+		echo URL::ajax($context, $vars);
+	}
+
+	public static function __callStatic($name, $args)
+	{
+		$out = false;
+		if(preg_match('#^(.+)_out$#', $name, $matches)) {
+			$name = $matches[1];
+			$out = true;
+		}
+		if($out) {
+			URL::out($name, $args);
+		}
+		else {
+			return URL::get($name, $args);
+		}
+	}
+
+	/**
 	 * Get a fully-qualified URL from a filesystem path
 	 *
 	 * @param string $path The filesystem path

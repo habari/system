@@ -11,16 +11,16 @@ header( 'X-Frame-Options: DENY' );
 	var habari = {
 		url: {
 			habari: '<?php Site::out_url( 'habari' ); ?>',
-			ajaxDashboard: '<?php echo URL::get( 'admin_ajax', array( 'context' => 'dashboard' ) ); ?>',
-			ajaxUpdatePosts: '<?php echo URL::get( 'admin_ajax', array( 'context' => 'update_posts' ) ); ?>',
-			ajaxLogDelete: '<?php echo URL::get( 'admin_ajax', array( 'context' => 'delete_logs' ) ); ?>',
-			ajaxUpdateUsers: '<?php echo URL::get( 'admin_ajax', array( 'context' => 'update_users' ) ); ?>',
-			ajaxUpdateGroups: '<?php echo URL::get( 'admin_ajax', array( 'context' => 'update_groups' ) ); ?>',
-			ajaxUpdateComment: '<?php echo URL::get( 'admin_ajax', array( 'context' => 'update_comment' ) ); ?>',
-			ajaxAddBlock: '<?php echo URL::get( 'admin_ajax', array( 'context' => 'add_block' ) ); ?>',
-			ajaxDeleteBlock: '<?php echo URL::get( 'admin_ajax', array( 'context' => 'delete_block' ) ); ?>',
-			ajaxSaveAreas: '<?php echo URL::get( 'admin_ajax', array( 'context' => 'save_areas' ) ); ?>',
-			ajaxConfigModule: '<?php echo URL::get('admin_ajax', array('context' => 'dashboard')); ?>'
+			ajaxDashboard: '<?php URL::admin_ajax_out( 'dashboard' ); ?>',
+			ajaxUpdatePosts: '<?php URL::admin_ajax_out( 'update_posts' ); ?>',
+			ajaxLogDelete: '<?php URL::admin_ajax_out( 'delete_logs' ); ?>',
+			ajaxUpdateUsers: '<?php URL::admin_ajax_out( 'update_users' ); ?>',
+			ajaxUpdateGroups: '<?php URL::admin_ajax_out( 'update_groups' ); ?>',
+			ajaxUpdateComment: '<?php URL::admin_ajax_out( 'update_comment' ); ?>',
+			ajaxAddBlock: '<?php URL::admin_ajax_out( 'add_block' ); ?>',
+			ajaxDeleteBlock: '<?php URL::admin_ajax_out( 'delete_block' ); ?>',
+			ajaxSaveAreas: '<?php URL::admin_ajax_out( 'save_areas' ); ?>',
+			ajaxConfigModule: '<?php URL::admin_ajax_out( 'dashboard' ); ?>'
 		}
 	};
 	// An almost "catch all" for those old browsers that don't support the X-Frame-Options header.  We don't bust out, we just don't show any content
