@@ -426,8 +426,8 @@ WP_IMPORT_AJAX;
 					'title' => MultiByte::convert_encoding( $post->post_title ),
 					'content' => MultiByte::convert_encoding( $post->post_content ),
 					'user_id' => $user_map[ $post->post_author ],
-					'pubdate' => HabariDateTime::date_create( $post->post_date ),
-					'updated' => HabariDateTime::date_create( $post->post_modified ),
+					'pubdate' => DateTime::date_create( $post->post_date ),
+					'updated' => DateTime::date_create( $post->post_modified ),
 					'slug' => MultiByte::convert_encoding( $post->post_name ),
 				) );
 				
@@ -652,7 +652,7 @@ WP_IMPORT_AJAX;
 					'name' => MultiByte::convert_encoding( $comment->comment_author ),
 					'email' => MultiByte::convert_encoding( $comment->comment_author_email ),
 					'url' => MultiByte::convert_encoding( $comment->comment_author_url ),
-					'date' => HabariDateTime::date_create( $comment->comment_date ),
+					'date' => DateTime::date_create( $comment->comment_date ),
 					'post_id' => $post_map[ $comment->comment_post_id ],
 				) );
 				

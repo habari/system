@@ -16,7 +16,7 @@ namespace Habari;
  * @property-read string $module The name of the module creating this entry
  * @property-read string type The name of the type of this entry
  * @property-read string $severity The name of the severity of this entry
- * @property-write mixed $timestamp The time of this entry. Can be a HabariDateTime object or a valid parameter for HabariDateTime::date_create()
+ * @property-write mixed $timestamp The time of this entry. Can be a DateTime object or a valid parameter for DateTime::date_create()
  */
 class LogEntry extends QueryRecord
 {

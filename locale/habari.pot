@@ -1202,262 +1202,262 @@ msgstr ""
 msgid "CURL Error %1$d: %2$s"
 msgstr ""
 
-#: classes/habaridatetime.php:222
+#: classes/DateTime.php:222
 msgid "January"
 msgstr ""
 
-#: classes/habaridatetime.php:223
+#: classes/DateTime.php:223
 msgid "February"
 msgstr ""
 
-#: classes/habaridatetime.php:224
+#: classes/DateTime.php:224
 msgid "March"
 msgstr ""
 
-#: classes/habaridatetime.php:225
+#: classes/DateTime.php:225
 msgid "April"
 msgstr ""
 
-#: classes/habaridatetime.php:226 classes/habaridatetime.php:238
+#: classes/DateTime.php:226 classes/DateTime.php:238
 msgid "May"
 msgstr ""
 
-#: classes/habaridatetime.php:227
+#: classes/DateTime.php:227
 msgid "June"
 msgstr ""
 
-#: classes/habaridatetime.php:228
+#: classes/DateTime.php:228
 msgid "July"
 msgstr ""
 
-#: classes/habaridatetime.php:229
+#: classes/DateTime.php:229
 msgid "August"
 msgstr ""
 
-#: classes/habaridatetime.php:230
+#: classes/DateTime.php:230
 msgid "September"
 msgstr ""
 
-#: classes/habaridatetime.php:231
+#: classes/DateTime.php:231
 msgid "October"
 msgstr ""
 
-#: classes/habaridatetime.php:232
+#: classes/DateTime.php:232
 msgid "November"
 msgstr ""
 
-#: classes/habaridatetime.php:233
+#: classes/DateTime.php:233
 msgid "December"
 msgstr ""
 
-#: classes/habaridatetime.php:234
+#: classes/DateTime.php:234
 msgid "Jan"
 msgstr ""
 
-#: classes/habaridatetime.php:235
+#: classes/DateTime.php:235
 msgid "Feb"
 msgstr ""
 
-#: classes/habaridatetime.php:236
+#: classes/DateTime.php:236
 msgid "Mar"
 msgstr ""
 
-#: classes/habaridatetime.php:237
+#: classes/DateTime.php:237
 msgid "Apr"
 msgstr ""
 
-#: classes/habaridatetime.php:239
+#: classes/DateTime.php:239
 msgid "Jun"
 msgstr ""
 
-#: classes/habaridatetime.php:240
+#: classes/DateTime.php:240
 msgid "Jul"
 msgstr ""
 
-#: classes/habaridatetime.php:241
+#: classes/DateTime.php:241
 msgid "Aug"
 msgstr ""
 
-#: classes/habaridatetime.php:242
+#: classes/DateTime.php:242
 msgid "Sep"
 msgstr ""
 
-#: classes/habaridatetime.php:243
+#: classes/DateTime.php:243
 msgid "Oct"
 msgstr ""
 
-#: classes/habaridatetime.php:244
+#: classes/DateTime.php:244
 msgid "Nov"
 msgstr ""
 
-#: classes/habaridatetime.php:245
+#: classes/DateTime.php:245
 msgid "Dec"
 msgstr ""
 
-#: classes/habaridatetime.php:246
+#: classes/DateTime.php:246
 msgid "Sunday"
 msgstr ""
 
-#: classes/habaridatetime.php:247
+#: classes/DateTime.php:247
 msgid "Monday"
 msgstr ""
 
-#: classes/habaridatetime.php:248
+#: classes/DateTime.php:248
 msgid "Tuesday"
 msgstr ""
 
-#: classes/habaridatetime.php:249
+#: classes/DateTime.php:249
 msgid "Wednesday"
 msgstr ""
 
-#: classes/habaridatetime.php:250
+#: classes/DateTime.php:250
 msgid "Thursday"
 msgstr ""
 
-#: classes/habaridatetime.php:251
+#: classes/DateTime.php:251
 msgid "Friday"
 msgstr ""
 
-#: classes/habaridatetime.php:252
+#: classes/DateTime.php:252
 msgid "Saturday"
 msgstr ""
 
-#: classes/habaridatetime.php:253
+#: classes/DateTime.php:253
 msgid "Sun"
 msgstr ""
 
-#: classes/habaridatetime.php:254
+#: classes/DateTime.php:254
 msgid "Mon"
 msgstr ""
 
-#: classes/habaridatetime.php:255
+#: classes/DateTime.php:255
 msgid "Tue"
 msgstr ""
 
-#: classes/habaridatetime.php:256
+#: classes/DateTime.php:256
 msgid "Wed"
 msgstr ""
 
-#: classes/habaridatetime.php:257
+#: classes/DateTime.php:257
 msgid "Thu"
 msgstr ""
 
-#: classes/habaridatetime.php:258
+#: classes/DateTime.php:258
 msgid "Fri"
 msgstr ""
 
-#: classes/habaridatetime.php:259
+#: classes/DateTime.php:259
 msgid "Sat"
 msgstr ""
 
-#: classes/habaridatetime.php:260
+#: classes/DateTime.php:260
 msgid "am"
 msgstr ""
 
-#: classes/habaridatetime.php:261
+#: classes/DateTime.php:261
 msgid "pm"
 msgstr ""
 
-#: classes/habaridatetime.php:262
+#: classes/DateTime.php:262
 msgid "AM"
 msgstr ""
 
-#: classes/habaridatetime.php:263
+#: classes/DateTime.php:263
 msgid "PM"
 msgstr ""
 
-#: classes/habaridatetime.php:474 admin/dashboard.php:11
+#: classes/DateTime.php:474 admin/dashboard.php:11
 msgid "year"
 msgid_plural "years"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/habaridatetime.php:478
+#: classes/DateTime.php:478
 msgid "month"
 msgid_plural "months"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/habaridatetime.php:482
+#: classes/DateTime.php:482
 msgid "week"
 msgid_plural "weeks"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/habaridatetime.php:486
+#: classes/DateTime.php:486
 msgid "day"
 msgid_plural "days"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/habaridatetime.php:490
+#: classes/DateTime.php:490
 msgid "hour"
 msgid_plural "hours"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/habaridatetime.php:494
+#: classes/DateTime.php:494
 msgid "minute"
 msgid_plural "minutes"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/habaridatetime.php:498
+#: classes/DateTime.php:498
 msgid "second"
 msgid_plural "seconds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/habaridatetime.php:509
+#: classes/DateTime.php:509
 #, php-format
 msgid "%s from now"
 msgstr ""
 
-#: classes/habaridatetime.php:512
+#: classes/DateTime.php:512
 #, php-format
 msgid "%s ago"
 msgstr ""
 
-#: classes/habaridatetime.php:531
+#: classes/DateTime.php:531
 msgid "just now"
 msgstr ""
 
-#: classes/habaridatetime.php:535
+#: classes/DateTime.php:535
 #, php-format
 msgid "%d minute ago"
 msgid_plural "%d minutes ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/habaridatetime.php:539
+#: classes/DateTime.php:539
 #, php-format
 msgid "%d hour ago"
 msgid_plural "%d hours ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/habaridatetime.php:543
+#: classes/DateTime.php:543
 #, php-format
 msgid "yesterday"
 msgid_plural "%d days ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/habaridatetime.php:547
+#: classes/DateTime.php:547
 #, php-format
 msgid "last week"
 msgid_plural "%d weeks ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/habaridatetime.php:551
+#: classes/DateTime.php:551
 #, php-format
 msgid "last month"
 msgid_plural "%d months ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/habaridatetime.php:555
+#: classes/DateTime.php:555
 #, php-format
 msgid "last year"
 msgid_plural "%d years ago"
