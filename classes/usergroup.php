@@ -200,7 +200,7 @@ class UserGroup extends QueryRecord
 		$this->load_member_cache();
 		$users = Utils::single_array( $users );
 		// Use ids internally for all users
-		$user_ids = array_map( array( 'User', 'get_id' ), $users );
+		$user_ids = array_map( array( '\Habari\User', 'get_id' ), $users );
 		// Remove users from group membership
 		$this->member_ids = array_merge( (array) $this->member_ids, (array) $user_ids );
 		// List each group member exactly once
@@ -235,7 +235,7 @@ class UserGroup extends QueryRecord
 	{
 		$tokens = Utils::single_array( $tokens );
 		// Use ids internally for all tokens
-		$tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
+		$tokens = array_map( array( '\Habari\ACL', 'token_id' ), $tokens );
 
 		// grant the new permissions
 		foreach ( $tokens as $token ) {

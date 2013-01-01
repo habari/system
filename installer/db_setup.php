@@ -1,4 +1,7 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
+<?php
+namespace Habari;
+if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
+?>
 <?php include( 'header.php' ); ?>
 <?php if ( !isset( $form_errors ) ) $form_errors = array(); ?>
 <?php function elem_if_set($a, $k) { if (isset($a[$k])) { return $a[$k]; } } ?>
