@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <!-- searchform -->
 <?php Plugins::act( 'theme_searchform_before' ); ?>
