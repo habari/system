@@ -4,6 +4,7 @@
  *
  */
 
+namespace Habari;
 /**
  * MediaAsset represents a file or directory in the media system
  *

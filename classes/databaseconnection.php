@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari DatabaseConnection Class
  *
@@ -11,11 +13,13 @@
  */
 class DatabaseConnection
 {
-	private $fetch_mode = PDO::FETCH_CLASS;          // PDO Fetch mode
+	private $fetch_mode = \PDO::FETCH_CLASS;          // PDO Fetch mode
 	private $fetch_class_name = 'QueryRecord';       // The default class name for fetching classes
 	private $driver;                                 // PDO driver name
 	private $keep_profile = DEBUG;                   // keep profiling and timing information?
+	/** @var \PDO */
 	protected $pdo = null;                           // handle to the PDO interface
+	/** @var \PDOStatement */
 	private $pdo_statement = null;                   // handle for a PDOStatement
 	private $pdo_transaction = false;                // handle for transaction status
 
@@ -69,15 +73,20 @@ class DatabaseConnection
 	/**
 	 * Returns the appropriate type of Connection class for the connect string passed or null on failure
 	 *
-	 * @param connection_string a PDO connection string
+	 * @param string $connect_string a PDO connection string
 	 * @return  mixed returns appropriate DatabaseConnection child class instance or errors out if requiring the db class fails
 	 */
 	public static function ConnectionFactory( $connect_string )
 	{
 		list( $engine ) = explode( ':', $connect_string, 2 );
+		$engines = array(
+			'sqlite' => '\Habari\SQLiteConnection',
+			'mysql' => '\Habari\MySQLConnection',
+		);
+
 		require_once( HABARI_PATH . "/system/schema/{$engine}/connection.php" );
-		$engine .= 'Connection';
-		return new $engine();
+		$engine_class = $engines[$engine];
+		return new $engine_class();
 	}
 
 	/**
@@ -112,8 +121,9 @@ class DatabaseConnection
 	 */
 	public function connect ( $connect_string, $db_user, $db_pass )
 	{
-		$this->pdo = @new PDO( $connect_string, $db_user, $db_pass );
-		$this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
+		// Do not display errors so that they can be handled by the error method
+		$this->pdo = @new \PDO( $connect_string, $db_user, $db_pass );
+		$this->pdo->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING );
 		$this->load_tables();
 		return true;
 	}
@@ -171,7 +181,7 @@ class DatabaseConnection
 	 * by Theme and Plugin classes to inform the DB class about
 	 * custom tables used by the plugin
 	 *
-	 * @param name the table name
+	 * @param string $name the table name
 	 */
 	public function register_table( $name )
 	{
@@ -182,7 +192,7 @@ class DatabaseConnection
 	/**
 	 * Sets the fetch mode for return calls from PDOStatement
 	 *
-	 * @param mode  One of the PDO::FETCH_MODE integers
+	 * @param integer $mode One of the PDO::FETCH_MODE integers
 	 */
 	public function set_fetch_mode( $mode )
 	{
@@ -192,7 +202,7 @@ class DatabaseConnection
 	/**
 	 * Sets the class to fetch, if fetch mode is PDO::FETCH_CLASS
 	 *
-	 * @param class_name  Name of class to create during fetch
+	 * @param string $class_name Name of class to create during fetch
 	 */
 	public function set_fetch_class( $class_name )
 	{
@@ -244,15 +254,20 @@ class DatabaseConnection
 		$query = Plugins::filter( 'query_postprocess', $query, $args );
 
 		if ( $this->pdo_statement = $this->pdo->prepare( $query ) ) {
-			if ( $this->fetch_mode == PDO::FETCH_CLASS ) {
+			if ( $this->fetch_mode == \PDO::FETCH_CLASS ) {
 				/* Try to get the result class autoloaded. */
-				if ( ! class_exists( strtolower( $this->fetch_class_name ) ) ) {
+				if ( ! class_exists( strtolower( $this->fetch_class_name ), true ) ) {
 					$tmp = $this->fetch_class_name;
+					// @todo This is a GIANT namespace kludge, replacing Model class names with no namespace with a default prefixed class
+					if(strpos($tmp, '\\') == false) {
+						$tmp = '\\Habari\\' . $tmp;
+						$this->fetch_class_name = $tmp;
+					}
 					new $tmp();
 				}
 				/* Ensure that the class is actually available now, otherwise segfault happens (if we haven't died earlier anyway). */
 				if ( class_exists( strtolower( $this->fetch_class_name ) ) ) {
-					$this->pdo_statement->setFetchMode( PDO::FETCH_CLASS, $this->fetch_class_name, array() );
+					$this->pdo_statement->setFetchMode( \PDO::FETCH_CLASS, $this->fetch_class_name, array() );
 				}
 				else {
 					/* Die gracefully before the segfault occurs */
@@ -292,9 +307,9 @@ class DatabaseConnection
 	/**
 	 * Execute a stored procedure
 	 *
-	 * @param   procedure   name of the stored procedure
-	 * @param   args        arguments for the procedure
-	 * @return  mixed       whatever the procedure returns...
+	 * @param string $procedure name of the stored procedure
+	 * @param array $args arguments for the procedure
+	 * @return mixed whatever the procedure returns...
 	 * @experimental
 	 * @todo  EVERYTHING... :)
 	 * Implemented in child classes. Most RDBMS use ANSI-92 syntax,
@@ -394,7 +409,7 @@ class DatabaseConnection
 	/**
 	 * Adds an error to the internal collection
 	 *
-	 * @param   error   array( 'query'=>query, 'error'=>errorInfo )
+	 * @param array $error An array with error components
 	 */
 	public function add_error( $error )
 	{
@@ -444,22 +459,15 @@ class DatabaseConnection
 
 	/**
 	 * Execute a query and return the results as an array of objects
-	 * @param query   the query to execute
-	 * @param args    array of arguments to pass for prepared statements
-	 * @param string Optional class name for row result objects
+	 * @param string $query The query to execute
+	 * @param array $args An array of arguments to pass for prepared statements
+	 * @param string $class_name class name for row result objects
 	 * @return array An array of QueryRecord or the named class each containing the row data
 	 * <code>$ary= DB::get_results( 'SELECT * FROM tablename WHERE foo= ?', array( 'fieldvalue' ), 'extendedQueryRecord' );</code>
 	 */
-	public function get_results( $query, $args = array() )
+	public function get_results( $query, $args = array(), $class_name = '\Habari\QueryRecord' )
 	{
-		if ( func_num_args() == 3 ) {
-			/* Called expecting specific class return type */
-			$class_name = func_get_arg( 2 );
-		}
-		else {
-			$class_name = 'QueryRecord';
-		}
-		$this->set_fetch_mode( PDO::FETCH_CLASS );
+		$this->set_fetch_mode( \PDO::FETCH_CLASS );
 		$this->set_fetch_class( $class_name );
 		if ( $this->query( $query, $args ) ) {
 			return $this->pdo_statement->fetchAll();
@@ -471,23 +479,15 @@ class DatabaseConnection
 
 	/**
 	 * Returns a single row (the first in a multi-result set) object for a query
-	 * @param string The query to execute
-	 * @param array Arguments to pass for prepared statements
-	 * @param string Optional class name for row result object
+	 * @param string $query The query to execute
+	 * @param array $args Arguments to pass for prepared statements
+	 * @param string $class_name Optional class name for row result object
 	 * @return object A QueryRecord or an instance of the named class containing the row data
 	 * <code>$obj= DB::get_row( 'SELECT * FROM tablename WHERE foo= ?', array( 'fieldvalue' ), 'extendedQueryRecord' );</code>
 	 */
-	public function get_row( $query, $args = array() )
+	public function get_row( $query, $args = array(), $class_name = '\Habari\QueryRecord' )
 	{
-		if ( func_num_args() == 3 ) {
-			/* Called expecting specific class return type */
-			$class_name = func_get_arg( 2 );
-		}
-		else {
-			$class_name = 'QueryRecord';
-		}
-
-		$this->set_fetch_mode( PDO::FETCH_CLASS );
+		$this->set_fetch_mode( \PDO::FETCH_CLASS );
 		$this->set_fetch_class( $class_name );
 
 		if ( $this->query( $query, $args ) ) {
@@ -501,15 +501,15 @@ class DatabaseConnection
 	/**
 	 * Returns all values for a column for a query
 	 *
-	 * @param string The query to execute
-	 * @param array Arguments to pass for prepared statements
+	 * @param string $query The query to execute
+	 * @param array $args Arguments to pass for prepared statements
 	 * @return array An array containing the column data
 	 * <code>$ary= DB::get_column( 'SELECT col1 FROM tablename WHERE foo= ?', array( 'fieldvalue' ) );</code>
 	 */
 	public function get_column( $query, $args = array() )
 	{
 		if ( $this->query( $query, $args ) ) {
-			return $this->pdo_statement->fetchAll( PDO::FETCH_COLUMN );
+			return $this->pdo_statement->fetchAll( \PDO::FETCH_COLUMN );
 		}
 		else {
 			return false;
@@ -519,14 +519,14 @@ class DatabaseConnection
 	/**
 	 * Return a single value from the database
 	 *
-	 * @param string the query to execute
-	 * @param array Arguments to pass for prepared statements
+	 * @param string $query the query to execute
+	 * @param array $args Arguments to pass for prepared statements
 	 * @return mixed a single value ( int, string )
 	 */
 	public function get_value( $query, $args = array() )
 	{
 		if ( $this->query( $query, $args ) ) {
-			$result = $this->pdo_statement->fetch( PDO::FETCH_NUM );
+			$result = $this->pdo_statement->fetch( \PDO::FETCH_NUM );
 			return $result[0];
 		}
 		else {
@@ -537,15 +537,15 @@ class DatabaseConnection
 	/**
 	 * Returns an associative array using the first returned column as the array key and the second as the array value
 	 *
-	 * @param string The query to execute
-	 * @param array Arguments to pass for prepared statements
+	 * @param string $query The query to execute
+	 * @param array $args Arguments to pass for prepared statements
 	 * @return array An array containing the associative data
 	 * <code>$ary= $dbconnection->get_keyvalue( 'SELECT keyfield, valuefield FROM tablename');</code>
 	 */
 	public function get_keyvalue( $query, $args = array() )
 	{
 		if ( $this->query( $query, $args ) ) {
-			$result = $this->pdo_statement->fetchAll( PDO::FETCH_NUM );
+			$result = $this->pdo_statement->fetchAll( \PDO::FETCH_NUM );
 			$output = array();
 			foreach ( $result as $item ) {
 				$output[$item[0]] = $item[1];
@@ -559,8 +559,8 @@ class DatabaseConnection
 
 	/**
 	 * Inserts into the specified table values associated to the key fields
-	 * @param string The table name
-	 * @param array An associative array of fields and values to insert
+	 * @param string $table The table name
+	 * @param array $fieldvalues An associative array of fields and values to insert
 	 * @return boolean True on success, false if not
 	 * <code>DB::insert( 'mytable', array( 'fieldname' => 'value' ) );</code>
 	 */
@@ -581,8 +581,8 @@ class DatabaseConnection
 
 	/**
 	 * Checks for a record that matches the specific criteria
-	 * @param string Table to check
-	 * @param array Associative array of field values to match
+	 * @param string $table Table to check
+	 * @param array $keyfieldvalues Associative array of field values to match
 	 * @return boolean True if any matching record exists, false if not
 	 * <code>DB::exists( 'mytable', array( 'fieldname' => 'value' ) );</code>
 	 */
@@ -603,9 +603,9 @@ class DatabaseConnection
 	 * function update
 	 * Updates any record that matches the specific criteria
 	 * A new row is inserted if no existing record matches the criteria
-	 * @param string Table to update
-	 * @param array Associative array of field values to set
-	 * @param array Associative array of field values to match
+	 * @param string $table Table to update
+	 * @param array $fieldvalues Associative array of field values to set
+	 * @param array $keyfields Associative array of field values to match
 	 * @return boolean True on success, false if not
 	 * <code>DB::update( 'mytable', array( 'fieldname' => 'newvalue' ), array( 'fieldname' => 'value' ) );</code>
 	 */
@@ -652,8 +652,8 @@ class DatabaseConnection
 
 	/**
 	 * Deletes any record that matches the specific criteria
-	 * @param string Table to delete from
-	 * @param array Associative array of field values to match
+	 * @param string $table Table to delete from
+	 * @param array $keyfields Associative array of field values to match
 	 * @return boolean True on success, false if not
 	 * <code>DB::delete( 'mytable', array( 'fieldname' => 'value' ) );</code>
 	 */
@@ -679,7 +679,7 @@ class DatabaseConnection
 	 */
 	public function last_insert_id()
 	{
-		if ( $this->pdo->getAttribute( PDO::ATTR_DRIVER_NAME ) == 'pgsql' ) {
+		if ( $this->pdo->getAttribute( \PDO::ATTR_DRIVER_NAME ) == 'pgsql' ) {
 			return $this->pdo->lastInsertId( $this->current_table. '_pkey_seq' );
 		}
 		else {
@@ -703,6 +703,8 @@ class DatabaseConnection
 	 * Implemented in child classes.
 	 *
 	 * @param integer $old_version The old Version::DB_VERSION
+	 * @param string $upgrade_path
+	 * @return bool
 	 */
 	public function upgrade( $old_version, $upgrade_path = '' )
 	{
@@ -733,6 +735,7 @@ class DatabaseConnection
 		$result = true;
 		foreach ( $upgrades as $upgrade ) {
 			if ( is_array( $upgrade ) ) {
+				/** @var Callable $upgrade  */
 				$result &= $upgrade();
 			}
 			else {
@@ -776,7 +779,6 @@ class DatabaseConnection
 	 * Translates the query for the current database engine
 	 *
 	 * @param string $query The query to translate for the current database engine
-	 * @param array $args Arguments to the query
 	 * @return string The translated query
 	 */
 	public function sql_t( $query )
@@ -798,14 +800,14 @@ class DatabaseConnection
 	public function get_driver_name()
 	{
 		if ( ! $this->driver ) {
-			$this->driver = $this->pdo->getAttribute( PDO::ATTR_DRIVER_NAME );
+			$this->driver = $this->pdo->getAttribute( \PDO::ATTR_DRIVER_NAME );
 		}
 		return $this->driver;
 	}
 
 	public function get_driver_version()
 	{
-		return $this->pdo->getAttribute( PDO::ATTR_SERVER_VERSION );
+		return $this->pdo->getAttribute( \PDO::ATTR_SERVER_VERSION );
 	}
 
 	/**

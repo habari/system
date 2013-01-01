@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php if ( $plugin['debug'] ): ?>
 
@@ -42,6 +43,10 @@
 		// @locale The string used between the last two items in the list of authors of a plugin on the admin page (one, two, three *and* four).
 		echo Format::and_list( $authors, '<span class="dim">, </span>', '<span class="dim">' . _t( ' and ' ) . '</span>');
 		?>
+
+		<?php if ( $plugin['core'] ): ?>
+			<span class="core">core</span>
+		<?php endif; ?>
 
 		<?php if ( isset($plugin['help']) ): ?>
 		<a class="help" href="<?php echo $plugin['help']['url']; ?>">?</a>

@@ -8,6 +8,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari UserGroup Class
  *

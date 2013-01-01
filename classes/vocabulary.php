@@ -9,6 +9,8 @@
  *
  */
 
+namespace Habari;
+
 class Vocabulary extends QueryRecord
 {
 	/**

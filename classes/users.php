@@ -4,11 +4,13 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari Users Class
  *
  */
-class Users extends ArrayObject
+class Users extends \ArrayObject
 {
 	protected $get_param_cache; // Stores info about the last set of data fetched that was not a single value
 
@@ -194,7 +196,7 @@ class Users extends ArrayObject
 		$query .= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
 		// Utils::debug($paramarray, $fetch_fn, $query, $params);
 
-		DB::set_fetch_mode( PDO::FETCH_CLASS );
+		DB::set_fetch_mode( \PDO::FETCH_CLASS );
 		DB::set_fetch_class( 'User' );
 		$results = DB::$fetch_fn( $query, $params, 'User' );
 

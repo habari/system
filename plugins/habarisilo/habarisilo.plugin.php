@@ -1,4 +1,8 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
+<?php
+
+namespace Habari;
+
+if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 
 /**
  * Simple file access silo
@@ -677,7 +681,7 @@ UPLOAD_FORM;
 	 */
 	private static function create_token( $timestamp )
 	{
-		return substr( md5( $timestamp . Options::get( 'GUID' ) ), 0, 10 );
+		return substr( md5( $timestamp . Options::get( 'public-GUID' ) ), 0, 10 );
 	}
 
 	/**

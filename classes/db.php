@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari DB Class
  *
@@ -82,7 +84,8 @@ class DB extends Singleton
 	/**
 	 * Helper function to naturally return table names
 	 *
-	 * @param table name of the table
+	 * @param string $name table name of the table
+	 * @return string The name of the table
 	 */
 	public static function table( $name )
 	{
@@ -140,9 +143,9 @@ class DB extends Singleton
 	/**
 	 * Executes a stored procedure against the database
 	 *
-	 * @param   procedure   name of the stored procedure
-	 * @param   args        arguments for the procedure
-	 * @return  mixed       whatever the procedure returns...
+	 * @param string $procedure Name of the stored procedure
+	 * @param array $args Arguments for the procedure
+	 * @return mixed whatever the procedure returns...
 	 * @experimental
 	 * @todo  EVERYTHING... :)
 	 */
@@ -191,7 +194,7 @@ class DB extends Singleton
 	/**
 	 * Adds an error to the internal collection
 	 *
-	 * @param   error   array('query'=>query, 'error'=>errorInfo)
+	 * @param array $error array('query'=>query, 'error'=>errorInfo)
 	 */
 	private static function add_error( $error )
 	{
@@ -237,45 +240,33 @@ class DB extends Singleton
 	 * Execute a query and return the results as an array of objects
 	 * @param string $query the query to execute
 	 * @param array $args array of arguments to pass for prepared statements
-	 * @param string $class_name Optional class name for row result objects
+	 * @param null|string $class_name The name of the class name to return results as
 	 * @return array An array of QueryRecord or the named class each containing the row data
 	 * <code>$ary = DB::get_results( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>
-	 **/
-	public static function get_results( $query, $args = array() )
+	 */
+	public static function get_results( $query, $args = array(), $class_name = '\Habari\QueryRecord' )
 	{
-		if ( func_num_args() == 3 ) {
-			$class_name = func_get_arg( 2 );
-			return DB::instance()->connection->get_results( $query, $args, $class_name );
-		}
-		else {
-			return DB::instance()->connection->get_results( $query, $args );
-		}
+		return DB::instance()->connection->get_results( $query, $args, $class_name );
 	}
 
 	/**
 	 * Returns a single row (the first in a multi-result set) object for a query
-	 * @param string The query to execute
-	 * @param array Arguments to pass for prepared statements
-	 * @param string Optional class name for row result object
+	 * @param string $query The query to execute
+	 * @param array $args Arguments to pass for prepared statements
+	 * @param string $class_name Optional class name for row result object
 	 * @return object A QueryRecord or an instance of the named class containing the row data
 	 * <code>$obj = DB::get_row( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>
 	 **/
-	public static function get_row( $query, $args = array() )
+	public static function get_row( $query, $args = array(), $class_name = '\Habari\QueryRecord' )
 	{
-		if ( func_num_args() == 3 ) {
-			$class_name = func_get_arg( 2 );
-			return DB::instance()->connection->get_row( $query, $args, $class_name );
-		}
-		else {
-			return DB::instance()->connection->get_row( $query, $args );
-		}
+		return DB::instance()->connection->get_row( $query, $args, $class_name );
 	}
 
 	/**
 	 * Returns all values for a column for a query
 	 *
-	 * @param string The query to execute
-	 * @param array Arguments to pass for prepared statements
+	 * @param string $query The query to execute
+	 * @param array $args Arguments to pass for prepared statements
 	 * @return array An array containing the column data
 	 * <code>$ary = DB::get_column( 'SELECT col1 FROM tablename WHERE foo = ?', array('fieldvalue') );</code>
 	 **/
@@ -287,8 +278,8 @@ class DB extends Singleton
 	/**
 	 * Return a single value from the database
 	 *
-	 * @param string the query to execute
-	 * @param array Arguments to pass for prepared statements
+	 * @param string $query the query to execute
+	 * @param array $args Arguments to pass for prepared statements
 	 * @return mixed a single value (int, string)
 	**/
 	public static function get_value( $query, $args = array() )
@@ -299,8 +290,8 @@ class DB extends Singleton
 	/**
 	 * Returns an associative array using the first returned column as the array key and the second as the array value
 	 *
-	 * @param string The query to execute
-	 * @param array Arguments to pass for prepared statements
+	 * @param string $query The query to execute
+	 * @param array $args Arguments to pass for prepared statements
 	 * @return array An array containing the associative data
 	 * <code>$ary= DB::get_keyvalue( 'SELECT keyfield, valuefield FROM tablename');</code>
 	 **/
@@ -323,8 +314,8 @@ class DB extends Singleton
 
 	/**
 	 * Checks for a record that matches the specific criteria
-	 * @param string Table to check
-	 * @param array Associative array of field values to match
+	 * @param string $table Table to check
+	 * @param array $keyfieldvalues Associative array of field values to match
 	 * @return boolean True if any matching record exists, false if not
 	 * <code>DB::exists( 'mytable', array( 'fieldname' => 'value' ) );</code>
 	 **/
@@ -350,8 +341,8 @@ class DB extends Singleton
 
 	/**
 	 * Deletes any record that matches the specific criteria
-	 * @param string Table to delete from
-	 * @param array Associative array of field values to match
+	 * @param string $table Table to delete from
+	 * @param array $keyfields Associative array of field values to match
 	 * @return boolean True on success, false if not
 	 * <code>DB::delete( 'mytable', array( 'fieldname' => 'value' ) );</code>
 	 */
@@ -387,10 +378,11 @@ class DB extends Singleton
 	/**
 	 * Automatic database diffing function, used for determining required database upgrades.
 	 *
-	 * @param queries array of create table and insert statements which constitute a fresh install
-	 * @param (optional)  execute should the queries be executed against the database or just simulated. default = true
-	 * @param (optional) silent silent running with no messages printed? default = true
-	 * @return  string			translated SQL string
+	 * @param array $queries array of create table and insert statements which constitute a fresh install
+	 * @param bool $execute (optional) should the queries be executed against the database or just simulated. default = true
+	 * @param bool $silent (optional) silent running with no messages printed? default = true
+	 * @param bool $doinserts
+	 * @return string translated SQL string
 	 */
 	public static function dbdelta( $queries, $execute = true, $silent = true, $doinserts = false )
 	{
@@ -401,27 +393,40 @@ class DB extends Singleton
 	 * Upgrade data in the database between database revisions
 	 *
 	 * @param integer $old_version Optional version to upgrade to
+	 * @return bool
 	 */
 	public static function upgrade( $old_version )
 	{
 		return DB::instance()->connection->upgrade( $old_version );
 	}
 
+	/**
+	 * @param $old_version
+	 */
 	public static function upgrade_pre( $old_version )
 	{
 		return DB::instance()->connection->upgrade_pre( $old_version );
 	}
 
+	/**
+	 * @param $old_version
+	 */
 	public static function upgrade_post( $old_version )
 	{
 		return DB::instance()->connection->upgrade_post( $old_version );
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public static function get_driver_name()
 	{
 		return DB::instance()->connection->get_driver_name();
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public static function get_driver_version()
 	{
 		return DB::instance()->connection->get_driver_version();

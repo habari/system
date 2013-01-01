@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari Utility Class
  *
@@ -21,15 +23,14 @@ class Utils
 	}
 
 	/**
-	 * function get_params
 	 * Returns an associative array of parameters, whether the input value is
 	 * a querystring or an associative array.
-	 * @param mixed An associative array or querystring parameter list
+	 * @param mixed $params An associative array or querystring parameter list
 	 * @return array An associative array of parameters
 	 */
 	public static function get_params( $params )
 	{
-		if ( is_array( $params ) || $params instanceof Traversable ) {
+		if ( is_array( $params ) || $params instanceof \Traversable ) {
 			return $params;
 		}
 		$paramarray = array();
@@ -38,9 +39,8 @@ class Utils
 	}
 
 	/**
-	 * function end_in_slash
 	 * Forces a string to end in a single slash
-	 * @param string A string, usually a path
+	 * @param string $value A string, usually a path
 	 * @return string The string with the slash added or extra slashes removed, but with one slash only
 	 */
 	public static function end_in_slash( $value )
@@ -49,7 +49,6 @@ class Utils
 	}
 
 	/**
-	 * function redirect
 	 * Redirects the request to a new URL
 	 * @param string $url The URL to redirect to, or omit to redirect to the current url
 	 * @param boolean $continue Whether to continue processing the script (default false for security reasons, cf. #749)
@@ -65,9 +64,8 @@ class Utils
 	}
 
 	/**
-	 * function atomtime
 	 * Returns RFC-3339 time from a time string or integer timestamp
-	 * @param mixed A string of time or integer timestamp
+	 * @param mixed $t A string of time or integer timestamp
 	 * @return string An RFC-3339 formatted time
 	 */
 	public static function atomtime( $t )
@@ -84,7 +82,6 @@ class Utils
 	}
 
 	/**
-	 * function nonce
 	 * Returns a random 12-digit hex number
 	 */
 	public static function nonce()
@@ -108,7 +105,7 @@ class Utils
 			$nonce = '';
 		}
 		if ( '' === $nonce ) {
-			$nonce = Utils::crypt( Options::get( 'GUID' ) . Utils::nonce() );
+			$nonce = Utils::crypt( Options::get( 'public-GUID' ) . Utils::nonce() );
 		}
 		if ( '' === $timestamp ) {
 			$timestamp = date( 'c' );
@@ -126,7 +123,6 @@ class Utils
 	}
 
 	/**
-	 * function stripslashes
 	 * Removes slashes from escaped strings, including strings in arrays
 	 */
 	public static function stripslashes( $value )
@@ -141,7 +137,6 @@ class Utils
 	}
 
 	/**
-	 * function addslashes
 	 * Adds slashes to escape strings, including strings in arrays
 	 */
 	public static function addslashes( $value )
@@ -156,9 +151,9 @@ class Utils
 	}
 
 	/**
-	 * function de_amp
-	 * Returns &amp; entities in a URL querystring to their previous & glory, for use in redirects
+	 * Return &amp; entities in a URL querystring to their previous & glory, for use in redirects
 	 * @param string $value A URL, maybe with a querystring
+	 * @return bool|string The valid, de-amped URL
 	 */
 	public static function de_amp( $value )
 	{
@@ -168,7 +163,6 @@ class Utils
 	}
 
 	/**
-	 * function revert_magic_quotes_gpc
 	 * Reverts magicquotes_gpc behavior
 	 */
 	public static function revert_magic_quotes_gpc()
@@ -184,9 +178,8 @@ class Utils
 	}
 
 	/**
-	 * function quote_spaced
 	 * Adds quotes around values that have spaces in them
-	 * @param string A string value that might have spaces
+	 * @param string $value A string value that might have spaces
 	 * @return string The string value, quoted if it has spaces
 	 */
 	public static function quote_spaced( $value )
@@ -195,10 +188,9 @@ class Utils
 	}
 
 	/**
-	 * function implode_quoted
 	 * Behaves like the implode() function, except it quotes values that contain spaces
-	 * @param string A separator between each value
-	 * @param	array An array of values to separate
+	 * @param string $separator A separator between each value
+	 * @param array $values An array of values to separate
 	 * @return string The concatenated string
 	 */
 	public static function implode_quoted( $separator, $values )
@@ -216,8 +208,8 @@ class Utils
 	 *
 	 * Useful when building, for instance, an IN() list for SQL
 	 *
-	 * @param		count		Number of placeholders to put in the string
-	 * @return	string	Placeholder string
+	 * @param integer $count Count of placeholders to put in the string
+	 * @return string Placeholder string
 	 */
 	public static function placeholder_string( $count )
 	{
@@ -228,18 +220,17 @@ class Utils
 	}
 
 	/**
-	 * function archive_pages
 	 * Returns the number of pages in an archive using the number of items per page set in options
-	 * @param integer Number of items in the archive
-	 * @param integer Number of items per page
-	 * @returns integer Number of pages based on pagination option.
+	 * @param int $item_total Number of items in the archive
+	 * @param int $items_per_page Number of items per page
+	 * @return int Number of pages based on pagination option.
 	 */
 	public static function archive_pages( $item_total, $items_per_page = null )
 	{
-		if ( $items_per_page ) {
-			return ceil( $item_total / $items_per_page );
+		if ( ! $items_per_page ) {
+			$items_per_page = Options::get( 'pagination' );
 		}
-		return ceil( $item_total / Options::get( 'pagination' ) );
+		return intval(ceil( $item_total / $items_per_page ));
 	}
 
 	/**
@@ -256,6 +247,10 @@ class Utils
 	{
 		return $prefix . $value . $postfix;
 	}
+
+	/**
+	 * @todo Pull all of these debug functions out into their own class
+	 */
 
 	/**
 	 * Helper function used by debug()
@@ -279,7 +274,6 @@ class Utils
 	public static function debug()
 	{
 		$debugid = md5( microtime() );
-		$tracect = 0;
 
 		$fooargs = func_get_args();
 		echo "<div class=\"utils__debugger\">";
@@ -403,16 +397,14 @@ class Utils
 	/**
 	 * Crypt a given password, or verify a given password against a given hash.
 	 *
-	 * @todo Enable best algo selection after DB schema change.
-	 *
 	 * @param string $password the password to crypt or verify
 	 * @param string $hash (optional) if given, verify $password against $hash
-	 * @return crypted password, or boolean for verification
+	 * @return string|bool Encrypted password, or boolean for verification
 	 */
 	public static function crypt( $password, $hash = null )
 	{
 		if ( $hash == null ) {
-			return self::ssha512( $password, $hash );
+			return self::ssha512( $password, $hash );  // This line should always reflect the best algorithm at the time
 		}
 		elseif ( strlen( $hash ) > 3 ) { // need at least {, } and a char :p
 			// verify
@@ -478,7 +470,7 @@ class Utils
 	 *
 	 * @param string $password the password to crypt or verify
 	 * @param string $hash (optional) if given, verify $password against $hash
-	 * @return crypted password, or boolean for verification
+	 * @return string Encrypted password, or boolean for verification
 	 */
 	public static function ssha( $password, $hash = null )
 	{
@@ -521,7 +513,7 @@ class Utils
 	 *
 	 * @param string $password the password to crypt or verify
 	 * @param string $hash (optional) if given, verify $password against $hash
-	 * @return crypted password, or boolean for verification
+	 * @return string encrypted password, or boolean for verification
 	 */
 	public static function ssha512( $password, $hash = null )
 	{
@@ -604,18 +596,17 @@ class Utils
 
 	/**
 	 * Creates one or more HTML inputs
-	 * @param string The name of the input element.
-	 * @param array An array of input options.  Each element should be
-	 *	an array containing "name", "value" and "type".
+	 * @param array $options An array of input elements.  Each element should be an array containing "name", "value" and "type".
 	 * @return string The HTML of the inputs
 	 */
 	public static function html_inputs( $options )
 	{
 		$output = '';
 		foreach ( $options as $option ) {
-			$output .= '<input type="' . $option['type'] . '" id="' . $option[ 'name' ] . '" name="' . $option[ 'name' ];
-			$output .= '" value="' . $option[ 'value' ] . '"';
-			$output .= '>';
+			if(!isset($option['id']) && isset($option['name'])) {
+				$option['id'] = $option['name'];
+			}
+			$output .= '<input ' . self::html_attr($options) . '>';
 		}
 		
 		return $output;
@@ -651,10 +642,10 @@ class Utils
 
 	/**
 	 * Creates one or more HTML checkboxes
-	 * @param string The name of the checkbox element.  If there are
+	 * @param string $name The name of the checkbox element.  If there are
 	 *	multiple checkboxes for the same name, this method will
 	 *	automatically apply "[]" at the end of the name
-	 * @param array An array of checkbox options.  Each element should be
+	 * @param array $options An array of checkbox options.  Each element should be
 	 *	an array containing "name" and "value".  If the checkbox
 	 *	should be checked, it should have a "checked" element.
 	 * @return string The HTML of the checkboxes
@@ -682,10 +673,9 @@ class Utils
 
 	/**
 	 * Trims longer phrases to shorter ones with elipsis in the middle
-	 * @param string The string to truncate
-	 * @param integer The length of the returned string
-	 * @param bool Whether to place the ellipsis in the middle (true) or
-	 * at the end (false)
+	 * @param string $str The string to truncate
+	 * @param integer $len The length of the returned string
+	 * @param bool $middle Whether to place the ellipsis in the middle (true) or at the end (false)
 	 * @return string The truncated string
 	 */
 	public static function truncate( $str, $len = 10, $middle = true )
@@ -718,6 +708,7 @@ class Utils
 	 * Performs a syntax (lint) check on the specified code testing for scripting errors.
 	 *
 	 * @param string $code The code string to be evaluated. It does not have to contain PHP opening tags.
+	 * @param null|string $error Intenal Memoizing parameter
 	 * @return bool Returns true if the lint check passed, and false if the link check failed.
 	 */
 	public static function php_check_syntax( $code, &$error = null )
@@ -747,10 +738,15 @@ class Utils
 		}
 		else {
 			ob_start(); // Catch potential parse error messages
+			if(function_exists('xdebug_disable')) {
+				xdebug_disable();
+			}
 			$display_errors = ini_set( 'display_errors', 'on' ); // Make sure we have something to catch
+			$html_errors = ini_set( 'html_errors', 'off');
 			$error_reporting = error_reporting( E_ALL ^ E_NOTICE );
 			$code = eval( ' if (0){' . $code . '}' ); // Put $code in a dead code sandbox to prevent its execution
 			ini_set( 'display_errors', $display_errors ); // be a good citizen
+			ini_set( 'html_errors', $html_errors );
 			error_reporting( $error_reporting );
 			$error = ob_get_clean();
 
@@ -766,9 +762,19 @@ class Utils
 	public static function php_check_file_syntax( $file, &$error = null )
 	{
 		// Prepend and append PHP opening tags to prevent eval() failures.
-		$code = ' ?>' . file_get_contents( $file ) . '<?php ';
+		$plugin_code = file_get_contents( $file );
+		$replacements = array(
+			'#^<\?(php)?\s#A' => '',
+			'#\?>$#' => '',
+			'#namespace [^;]+;#' => '',
+		);
+		foreach($replacements as $search => $replacement) {
+			if(preg_match($search, $plugin_code)) {
+				$plugin_code = trim(preg_replace($search, $replacement, $plugin_code));
+			}
+		}
 
-		return self::php_check_syntax( $code, $error );
+		return self::php_check_syntax( $plugin_code, $error );
 	}
 
 	/**
@@ -841,7 +847,7 @@ class Utils
 	 */
 	public static function single_array( $element )
 	{
-		if ( !is_array( $element ) && !$element instanceof Traversable ) {
+		if ( !is_array( $element ) && !$element instanceof \Traversable ) {
 			return array( $element );
 		}
 		return $element;
@@ -986,7 +992,7 @@ class Utils
 	 */
 	public static function array_or( $input )
 	{
-		return array_reduce( $input, array( 'Utils', 'ror' ), 0 );
+		return array_reduce( $input, array( '\Habari\Utils', 'ror' ), 0 );
 	}
 
 	/**
@@ -994,7 +1000,7 @@ class Utils
 	 */
 	public static function ror( $v, $w )
 	{
-		return $v |= $w;
+		return $v | $w;
 	}
 
 	/**
@@ -1019,6 +1025,7 @@ class Utils
 	/**
 	 * Returns a regex pattern equivalent to the given glob pattern
 	 *
+	 * @param string $glob Glob to return
 	 * @return string regex pattern with '/' delimiter
 	 */
 	public static function glob_to_regex( $glob )
@@ -1075,14 +1082,15 @@ class Utils
 	 */
 	public static function is_traversable( $data )
 	{
-		return ( is_array( $data ) || ( $data instanceof Traversable && $data instanceof Countable ) );
+		return ( is_array( $data ) || ( $data instanceof \Traversable && $data instanceof \Countable ) );
 	}
 
 	/**
-	* Get the remote IP address, but try and take into account users who are
-	* behind proxies, whether they know it or not.
-	* @return The client's IP address.
-	*/
+	 * Get the remote IP address, but try and take into account users who are
+	 * behind proxies, whether they know it or not.
+	 * @param string $default a default IP address
+	 * @return string The client's IP address.
+	 */
 	public static function get_ip( $default = '0.0.0.0' )
 	{
 		// @todo in particular HTTP_X_FORWARDED_FOR could be a comma-separated list of IPs that have handled it, the client being the left-most. we should handle that...
@@ -1121,7 +1129,7 @@ class Utils
 	* @param boolean $decode Whether or not to unescape any html entities first
 	* @param boolean $double_encode Whether or not to double escape any html entities
 	*
-	* @return The escaped string
+	* @return string The escaped string
 	*/
 	public static function htmlspecialchars( $string, $quote_flag = ENT_COMPAT, $encoding = 'UTF-8', $decode = true, $double_encode = true )
 	{
@@ -1144,16 +1152,14 @@ class Utils
 	}
 
 	/**
-	* Convenience function to find a usable PCRE regular expression
-	* delimiter for a particular string.  (I.e., some character that
-	* *isn't* found in the string.)
-	*
-	* @param $string. string. The string for which to find a delimiter.
-	* @param $choices. string. Delimiters from which to choose one.
-	* @param $encoding. string. The encoding of the passed string
-	*
-	* @return A valid regex delimiter, or null if none of the choices work.
-	*/
+	 * Convenience function to find a usable PCRE regular expression
+	 * delimiter for a particular string.  (I.e., some character that
+	 * *isn't* found in the string.)
+	 *
+	 * @param string $string The string for which to find a delimiter.
+	 * @param string $choices Delimiters from which to choose one.
+	 * @return string A valid regex delimiter, or null if none of the choices work.
+	 */
 	public static function regexdelim( $string, $choices = null )
 	{
 		/*
@@ -1282,8 +1288,9 @@ class Utils
 	 * );
 	 * $b = Utils::array_map_field($a, 'foo'); // $b = array(1, 3);
 	 *
-	 * @param Traversable $array An array of arrays or objects with similar keys or properties
+	 * @param \Countable $array An array of arrays or objects with similar keys or properties
 	 * @param string $field The name of a common field within each array/object
+	 * @param string $key Optional field to use as the key in the result array
 	 * @return array An array of the values of the specified field within each array/object
 	 */
 	public static function array_map_field($array, $field, $key = null)
@@ -1292,7 +1299,7 @@ class Utils
 			return $array;
 		}
 		if(is_null($key)) {
-			if($array instanceof ArrayObject) {
+			if($array instanceof \ArrayObject) {
 				$array = $array->getArrayCopy();
 			}
 			return array_map( function( $element ) use ($field) {
@@ -1367,6 +1374,9 @@ class Utils
 			elseif(is_array($data)) {
 				$extract = array_intersect_key($data, array( 'nonce' => 1, 'timestamp' => 1, 'digest' => 1 ));
 			}
+			else {
+				$extract = array( 'nonce' => 1, 'timestamp' => 1, 'digest' => 1 );
+			}
 		
 			foreach ( $extract as $key => $value ) {
 				$$key = $value;
@@ -1384,6 +1394,22 @@ class Utils
 			}
 		}
 		return $pass;
+	}
+
+	/**
+	 * Strip the namespace off of the fully-qualified class name
+	 * @param string|object $classname The fully-qualified name of the class, or an object instance
+	 * @return string The class name, with namespace removed
+	 */
+	public static function class_only($classname) {
+		if(is_object($classname)) {
+			$classname = get_class($classname);
+		}
+		$pos = strrpos($classname, '\\');
+		if($pos !== false) {
+			$classname = substr($classname, $pos + 1);
+		}
+		return $classname;
 	}
 }
 ?>

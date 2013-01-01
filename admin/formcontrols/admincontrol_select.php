@@ -1,12 +1,11 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
+<?php 
+namespace Habari;
+if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
+?>
 <div<?php echo ($class) ? ' class="container ' . $class . '"' : ''?><?php echo ($id) ? ' id="' . $id . '"' : ''?>>
+	<p>
 <label for="<?php echo $field; ?>" class="incontent formcontrol abovecontent"><?php echo $this->caption; ?></label>
-<select
-	id="<?php echo $field; ?>"
-	name="<?php echo $field . ( $multiple ? '[]' : '' ); ?>"
-	<?php echo ( $multiple ? ' multiple="multiple" size="' . intval($size) . '"' : '' ); ?>
-	<?php echo ( isset($disabled) && $disabled ? ' disabled="disabled"' : ''); ?>
->
+<select id="<?php echo $field; ?>" name="<?php echo $field . ( $multiple ? '[]' : '' ); ?>"<?php echo ( $multiple ? ' multiple="multiple" size="' . intval($size) . '"' : '' ) ?>>
 <?php foreach($options as $opts_key => $opts_val) : ?>
 	<?php if (is_array($opts_val)) : ?>
 		<optgroup label="<?php echo $opts_key; ?>">
@@ -19,6 +18,7 @@
 	<?php endif; ?>
 <?php endforeach; ?>
 </select>
+	</p>
 <?php if ($message != '') : ?>
 <p class="error"><?php echo $message; ?></p>
 <?php endif; ?>

@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Post metadata
  */

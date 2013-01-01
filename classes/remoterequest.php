@@ -4,6 +4,7 @@
  *
  */
 
+namespace Habari;
 /**
  * Holds the basic RemoteRequest functionality.
  *
@@ -26,7 +27,7 @@ abstract class RequestProcessor
 	public function get_response_body ( ) {
 		
 		if ( !$this->executed ) {
-			throw new Exception( _t( 'Unable to get response body. Request did not yet execute.' ) );
+			throw new \Exception( _t( 'Unable to get response body. Request did not yet execute.' ) );
 		}
 		
 		return $this->response_body;
@@ -35,7 +36,7 @@ abstract class RequestProcessor
 	public function get_response_headers ( ) {
 		
 		if ( !$this->executed ) {
-			throw new Exception( _t( 'Unable to get response headers. Request did not yet execute.' ) );
+			throw new \Exception( _t( 'Unable to get response headers. Request did not yet execute.' ) );
 		}
 		
 		return $this->response_headers;
@@ -100,7 +101,8 @@ class RemoteRequest
 	/**
 	 * @param string $url URL to request
 	 * @param string $method Request method to use (default 'GET')
-	 * @param int $timeuot Timeout in seconds (default 180)
+	 * @param int $timeout
+	 * @internal param int $timeuot Timeout in seconds (default 180)
 	 */
 	public function __construct( $url, $method = 'GET', $timeout = 180 )
 	{
@@ -109,7 +111,7 @@ class RemoteRequest
 		$this->set_timeout( $timeout );
 		
 		// load the proxy configuration, if it exists
-		$default = new stdClass();
+		$default = new \stdClass();
 		$proxy = Config::get( 'proxy', $default );
 		if ( isset( $proxy->server ) ) {
 			$this->set_config( array( 'proxy' => (array)$proxy ) );
@@ -213,11 +215,12 @@ class RemoteRequest
 	 * Set the request body.
 	 * Only used with POST requests, will raise a warning if used with GET.
 	 * @param string $body The request body.
+	 * @throws \Exception
 	 */
 	public function set_body( $body )
 	{
 		if ( $this->method == 'GET' ) {
-			throw new Exception( _t( 'Trying to add a request body to a GET request.' ) );
+			throw new \Exception( _t( 'Trying to add a request body to a GET request.' ) );
 		}
 
 		$this->body = $body;
@@ -230,8 +233,9 @@ class RemoteRequest
 	 */
 	public function set_params( $params )
 	{
-		if ( ! is_array( $params ) )
-			$params = parse_str( $params );
+		if ( ! is_array( $params ) ) {
+			parse_str( $params, $params );
+		}
 
 		$this->params = $params;
 	}
@@ -270,11 +274,13 @@ class RemoteRequest
 	 * @param string $name
 	 * @param string $filename
 	 * @param string $content_type
+	 * @param null $override_filename
+	 * @throws \Exception
 	 */
 	public function set_file( $name, $filename, $content_type = null, $override_filename = null )
 	{
 		if ( !file_exists( $filename ) ) {
-			throw new Exception( _t( 'File %s not found.', array( $filename ) ) );
+			throw new \Exception( _t( 'File %s not found.', array( $filename ) ) );
 		}
 		if ( empty( $content_type ) ) $content_type = 'application/octet-stream';
 		$this->files[$name] = array( 'filename' => $filename, 'content_type' => $content_type, 'override_filename' => $override_filename );
@@ -340,7 +346,7 @@ class RemoteRequest
 	 * On success, returns true and populates the response_body and response_headers fields.
 	 * On failure, throws Exception.
 	 * 
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function execute()
 	{
@@ -374,7 +380,7 @@ class RemoteRequest
 	public function get_response_headers()
 	{
 		if ( !$this->executed ) {
-			throw new Exception( _t( 'Unable to fetch response headers for a pending request.' ) );
+			throw new \Exception( _t( 'Unable to fetch response headers for a pending request.' ) );
 		}
 
 		return $this->response_headers;
@@ -387,7 +393,7 @@ class RemoteRequest
 	public function get_response_body()
 	{
 		if ( !$this->executed ) {
-			throw new Exception( _t( 'Unable to fetch response body for a pending request.' ) );
+			throw new \Exception( _t( 'Unable to fetch response body for a pending request.' ) );
 		}
 
 		return $this->response_body;
@@ -457,7 +463,7 @@ class RemoteRequest
 				return false;
 			}
 		}
-		catch ( Exception $e ) {
+		catch ( \Exception $e ) {
 			// catch any exceptions to try and emulate file_get_contents() as closely as possible.
 			// if you want more control over the errors, instantiate RemoteRequest manually
 			return false;
@@ -466,6 +472,6 @@ class RemoteRequest
 
 }
 
-class RemoteRequest_Timeout extends Exception { }
+class RemoteRequest_Timeout extends \Exception { }
 
 ?>

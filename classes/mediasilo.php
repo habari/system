@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * MediaSilo interface
  *
@@ -39,7 +41,7 @@ interface MediaSilo
 	/**
 	 * Store the specified media at the specified path
 	 * @param string $path The path of the file to retrieve
-	 * @param MediaAsset The asset to store
+	 * @param MediaAsset $filedata The asset to store
 	 **/
 	public function silo_put( $path, $filedata );
 

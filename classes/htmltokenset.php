@@ -4,10 +4,11 @@
  *
  */
 
+namespace Habari;
 /**
  * HTML Token Set (created by @see HTMLTokenizer)
  */
-class HTMLTokenSet implements Iterator, ArrayAccess
+class HTMLTokenSet implements \Iterator, \ArrayAccess
 {
 	protected $tokens = array();
 

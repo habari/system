@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari Theme Class
  *
@@ -76,7 +78,12 @@ class Theme extends Pluggable
 		$this->version = $themedata->version;
 		$theme_dir = Utils::single_array($themedata->theme_dir);
 		// Set up the corresponding engine to handle the templating
-		$this->template_engine = new $themedata->template_engine();
+		$engine = $themedata->template_engine;
+		// @todo Big namespace Kludge. Prefixes the template engine with a namespace if not provided
+		if(strpos($engine, '\\') == false) {
+			$engine = 'Habari\\' . $engine;
+		}
+		$this->template_engine = new $engine();
 
 		$this->theme_dir = $theme_dir;
 		$this->template_engine->set_template_dir( $theme_dir );
@@ -94,7 +101,7 @@ class Theme extends Pluggable
 
 		$xml_file = end($this->theme_dir) . '/theme.xml';
 		if(!file_exists($xml_file)) {
-			return new SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?>
+			return new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?>
 <pluggable type="theme">
 	<name>Unknown Theme</name>
 	<version>1.0</version>
@@ -102,7 +109,7 @@ class Theme extends Pluggable
 ');
 		}
 		if ( $xml_content = file_get_contents( $xml_file ) ) {
-			$theme_data = new SimpleXMLElement( $xml_content );
+			$theme_data = new \SimpleXMLElement( $xml_content );
 			return $theme_data;
 		}
 	}
@@ -603,8 +610,8 @@ class Theme extends Pluggable
 		Plugins::act( 'template_header', $theme );
 
 		$atom = Stack::get( 'template_atom', '<link rel="%1$s" type="%2$s" title="%3$s" href="%4$s">' );
-		$styles = Stack::get( 'template_stylesheet', array( 'Stack', 'styles' ) );
-		$scripts = Stack::get( 'template_header_javascript', array( 'Stack', 'scripts' ) );
+		$styles = Stack::get( 'template_stylesheet', array( '\\Habari\\Stack', 'styles' ) );
+		$scripts = Stack::get( 'template_header_javascript', array( '\\Habari\\Stack', 'scripts' ) );
 		
 		$output = implode( "\n", array( $atom, $styles, $scripts ) );
 		
@@ -621,8 +628,8 @@ class Theme extends Pluggable
 		Plugins::act( 'template_footer', $theme );
 		Stack::dependent('template_footer_javascript', 'template_header_javascript');
 		Stack::dependent('template_footer_stylesheet', 'template_stylesheet');
-		$output = Stack::get( 'template_footer_stylesheet', array( 'Stack', 'styles' ) );
-		$output .= Stack::get( 'template_footer_javascript', array( 'Stack', 'scripts' ) );
+		$output = Stack::get( 'template_footer_stylesheet', array( '\\Habari\\Stack', 'styles' ) );
+		$output .= Stack::get( 'template_footer_javascript', array( '\\Habari\\Stack', 'scripts' ) );
 		return $output;
 	}
 
@@ -643,7 +650,7 @@ class Theme extends Pluggable
 			$content_types = Utils::single_array( $object->content_type() );
 		}
 		if ( is_object( $object ) ) {
-			$content_types[] = strtolower( get_class( $object ) );
+			$content_types[] = strtolower( Utils::class_only( $object ) );
 		}
 		$content_types[] = 'content';
 		$content_types = array_flip( $content_types );
@@ -1061,7 +1068,7 @@ class Theme extends Pluggable
 				$function = $matches[1];
 			}
 			array_unshift( $params, $function, $this );
-			$result = call_user_func_array( array( 'Plugins', 'theme' ), $params );
+			$result = call_user_func_array( array( '\\Habari\\Plugins', 'theme' ), $params );
 			switch ( $purposed ) {
 				case 'return':
 					return $result;

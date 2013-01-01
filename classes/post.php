@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  *
  * Includes an instance of the PostInfo class; for holding inforecords about a Post
@@ -26,9 +28,9 @@
  * @property string $input_formats A comma-separated list of descriptors of the stored format of this post content
  * @property integer $user_id The User id of the author of this post
  * @property integer $status The integer status of this post
- * @property HabariDateTime $pubdate The published date of this post
- * @property HabariDateTime $updated The last publicly-accessible updated date of this post
- * @property HabariDateTime $modified The last modified date of this post
+ * @property DateTime $pubdate The published date of this post
+ * @property DateTime $updated The last publicly-accessible updated date of this post
+ * @property DateTime $modified The last modified date of this post
  * @property integer $content_type The integer representation of the content type of this post
  * @property string $permalink The URL for this single post
  * @property string $statusname The string representation of the status of the post
@@ -370,9 +372,9 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			'input_formats' => '',
 			'user_id' => 0,
 			'status' => Post::status( 'draft' ),
-			'pubdate' => HabariDateTime::date_create(),
-			'updated' => HabariDateTime::date_create(),
-			'modified' => HabariDateTime::date_create(),
+			'pubdate' => DateTime::date_create(),
+			'updated' => DateTime::date_create(),
+			'modified' => DateTime::date_create(),
 			'content_type' => Post::type( 'entry' )
 		);
 	}
@@ -405,7 +407,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 */
 	public static function __static()
 	{
-		Pluggable::load_hooks('Post');
+		Pluggable::load_hooks(__CLASS__);
 	}
 
 	/**
@@ -603,11 +605,11 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function insert()
 	{
-		$this->newfields['updated'] = HabariDateTime::date_create();
+		$this->newfields['updated'] = DateTime::date_create();
 		$this->newfields['modified'] = $this->newfields['updated'];
 		$this->setguid();
 		
-		if ( $this->pubdate->int > HabariDateTime::date_create()->int && $this->status == Post::status( 'published' ) ) {
+		if ( $this->pubdate->int > DateTime::date_create()->int && $this->status == Post::status( 'published' ) ) {
 			$this->status = Post::status( 'scheduled' );
 		}
 
@@ -654,7 +656,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function update( $minor = true )
 	{
-		$this->modified = HabariDateTime::date_create();
+		$this->modified = DateTime::date_create();
 		if ( ! $minor && $this->status != Post::status( 'draft' ) ) {
 			$this->updated = $this->modified;
 		}
@@ -663,7 +665,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			unset( $this->newfields['guid'] );
 		}
 		
-		if ( $this->pubdate->int > HabariDateTime::date_create()->int && $this->status == Post::status( 'published' ) ) {
+		if ( $this->pubdate->int > DateTime::date_create()->int && $this->status == Post::status( 'published' ) ) {
 			$this->status = Post::status( 'scheduled' );
 		}
 
@@ -766,7 +768,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		Plugins::act( 'post_publish_before', $this );
 
 		if ( $this->status != Post::status( 'scheduled' ) ) {
-			$this->pubdate = HabariDateTime::date_create();
+			$this->pubdate = DateTime::date_create();
 		}
 
 		if ( $this->status == Post::status( 'scheduled' ) ) {
@@ -869,8 +871,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			case 'pubdate':
 			case 'updated':
 			case 'modified':
-				if ( !( $value instanceOf HabariDateTime ) ) {
-					$value = HabariDateTime::date_create( $value );
+				if ( !( $value instanceOf DateTime ) ) {
+					$value = DateTime::date_create( $value );
 				}
 				break;
 			case 'tags':
@@ -898,7 +900,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	public function __call( $name, $args )
 	{
 		array_unshift( $args, 'post_call_' . $name, null, $this );
-		return call_user_func_array( array( 'Plugins', 'filter' ), $args );
+		return call_user_func_array( array( '\\Habari\\Plugins', 'filter' ), $args );
 	}
 
 	/**
@@ -1107,15 +1109,15 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		// if not previously published and the user wants to publish now, change the pubdate to the current date/time unless a date has been explicitly set
 		if ( ( $post->status != Post::status( 'published' ) )
 			&& ( $form->status->value == Post::status( 'published' ) )
-			&& ( HabariDateTime::date_create( $form->pubdate->value )->int == $form->updated->value )
+			&& ( DateTime::date_create( $form->pubdate->value )->int == $form->updated->value )
 		) {
-			$post->pubdate = HabariDateTime::date_create();
+			$post->pubdate = DateTime::date_create();
 		}
 		// else let the user change the publication date.
 		//  If previously published and the new date is in the future, the post will be unpublished and scheduled. Any other status, and the post will just get the new pubdate.
 		// This will result in the post being scheduled for future publication if the date/time is in the future and the new status is published.
 		else {
-			$post->pubdate = HabariDateTime::date_create( $form->pubdate->value );
+			$post->pubdate = DateTime::date_create( $form->pubdate->value );
 		}
 
 		// Minor updates are when the user has checked the minor update box and the post isn't in draft or new
@@ -1168,7 +1170,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	public function comment_form( $context = 'public' )
 	{
 		// Handle comment submissions and default commenter id values
-		$cookie = 'comment_' . Options::get( 'GUID' );
+		$cookie = 'comment_' . Options::get( 'public-GUID' );
 		$commenter_name = '';
 		$commenter_email = '';
 		$commenter_url = '';

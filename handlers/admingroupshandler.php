@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari AdminGroupsHandler Class
  * Handles group-related actions in the admin
@@ -70,7 +72,7 @@ class AdminGroupsHandler extends AdminHandler
 			$members = $group->members;
 			$jsusers = array();
 			foreach ( $users as $user ) {
-				$jsuser = new StdClass();
+				$jsuser = new \StdClass();
 				$jsuser->id = $user->id;
 				$jsuser->username = $user->username;
 				$jsuser->member = in_array( $user->id, $members );

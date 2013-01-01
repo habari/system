@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Handles Ajax requests, sending them to plugin sinks.
  *
@@ -65,7 +67,7 @@ class AjaxHandler extends ActionHandler
 		header('Expires: ' . gmdate('D, d M Y H:i:s ', time() + 432000) . 'GMT');
 		header('content-type: text/javascript');
 
-		$domain = HabariLocale::get_messages();
+		$domain = Locale::get_messages();
 		$domain_json = json_encode($domain);
 
 		$js = <<<TEEHEE

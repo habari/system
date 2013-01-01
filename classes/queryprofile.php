@@ -5,6 +5,8 @@
  * @property-read integer $totaltime The time it took for the query to run in microseconds
  */
 
+namespace Habari;
+
 /**
  * Class to assist in profiling queries
  *
@@ -20,7 +22,7 @@ class QueryProfile
 	 * Constructor for the query profile.  Automatically sets the
 	 * start time for the query
 	 *
-	 * @param query SQL being executed
+	 * @param string $query SQL being executed
 	 */
 	public function __construct( $query )
 	{

@@ -4,11 +4,13 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari UserGroups Class
  *
  */
-class UserGroups extends ArrayObject
+class UserGroups extends \ArrayObject
 {
 	protected $get_param_cache; // Stores info about the last set of data fetched that was not a single value
 
@@ -121,7 +123,7 @@ class UserGroups extends ArrayObject
 		}
 		$query .= ( ($orderby == '') ? '' : ' ORDER BY ' . $orderby ) . $limit;
 
-		DB::set_fetch_mode( PDO::FETCH_CLASS );
+		DB::set_fetch_mode( \PDO::FETCH_CLASS );
 
 		$results = DB::$fetch_fn( $query, $params, 'UserGroup' );
 

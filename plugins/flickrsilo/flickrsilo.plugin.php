@@ -427,7 +427,7 @@ class Flickr extends flickrAPI
 * Flickr Silo
 */
 
-class FlickrSilo extends Plugin implements MediaSilo
+class FlickrSilo extends Habari\Plugin implements MediaSilo
 {
 	const SILO_NAME = 'Flickr';
 

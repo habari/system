@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari FeedbackHandler Class
  * Deals with feedback mechnisms: Commenting, Pingbacking, and the like.
@@ -203,7 +205,7 @@ class FeedbackHandler extends ActionHandler
 
 			// if no cookie exists, we should set one
 			// but only if the user provided some details
-			$cookie_name = 'comment_' . Options::get( 'GUID' );
+			$cookie_name = 'comment_' . Options::get( 'public-GUID' );
 			
 			// build the string we store for the cookie
 			$cookie_content = implode( '#', array( $comment->name, $comment->email, $comment->url ) );

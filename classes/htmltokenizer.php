@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Tokenizer for HTML.
  * For use by HTMLParser.

@@ -1,4 +1,7 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
+<?php
+namespace Habari;
+if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
+?>
 <div class="container pagesplitter">
 	<ul id="mediatabs" class="tabs">
 		<?php foreach($silos as $ct => $silodir): ?><li><a href="#silo_<?php echo $ct; ?>"<?php if ($silodir->icon != NULL): ?> style="background-image: url(<?php echo $silodir->icon; ?>)"<?php endif; ?>><?php echo $silodir->path; ?></a></li><?php endforeach; ?>

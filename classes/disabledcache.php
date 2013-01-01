@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  *
  * Contains the DisabledCache class, which disables caching

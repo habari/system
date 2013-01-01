@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari AdminHandler Class
  * Backbone of the admin area, handles requests and functionality.
@@ -191,7 +193,7 @@ class AdminHandler extends ActionHandler
 		$siteinfo[ _t( 'Habari API Version' ) ] = Version::get_apiversion();
 		$siteinfo[ _t( 'Habari DB Version' ) ] = Version::get_dbversion();
 		$siteinfo[ _t( 'Active Theme' ) ] = Options::get( 'theme_name' );
-		$siteinfo[ _t( 'System Locale' ) ] = HabariLocale::get();
+		$siteinfo[ _t( 'System Locale' ) ] = Locale::get();
 		$siteinfo[ _t( 'Cache Class' ) ] = Cache::get_class();
 		$this->theme->siteinfo = $siteinfo;
 

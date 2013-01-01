@@ -8,6 +8,8 @@
  * @property-read boolean $loggedin Whether or not this user is currently identified
  */
 
+namespace Habari;
+
 /**
  * Habari UserRecord Class
  *
@@ -280,7 +282,7 @@ class User extends QueryRecord implements FormStorage, IsContent
 			return false;
 		}
 
-		$user = new StdClass();
+		$user = new \StdClass();
 		$require = false;
 		$user = Plugins::filter( 'user_authenticate', $user, $who, $pw );
 		if ( $user instanceof User ) {
@@ -457,7 +459,7 @@ class User extends QueryRecord implements FormStorage, IsContent
 	 */
 	public static function commenter()
 	{
-		$cookie = 'comment_' . Options::get( 'GUID' );
+		$cookie = 'comment_' . Options::get( 'public-GUID' );
 		$commenter = array();
 		if ( self::identify() ) {
 			$commenter['name'] = self::identify()->username;

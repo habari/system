@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <!DOCTYPE HTML>
 <html>
@@ -13,8 +14,8 @@
 
 	<?php
 		Plugins::act( 'admin_header', $this );
-		Stack::out( 'admin_header_javascript', array('Stack', 'scripts') );
-		Stack::out( 'admin_stylesheet', array('Stack', 'styles') );
+		Stack::out( 'admin_header_javascript', array('\\Habari\\Stack', 'scripts') );
+		Stack::out( 'admin_stylesheet', array('\\Habari\\Stack', 'styles') );
 	?>
 
 </head>

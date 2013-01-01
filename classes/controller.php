@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Class which handles incoming requests and drives the
  * MVC strategy for building the model and assigning to
@@ -70,7 +72,7 @@ class Controller extends Singleton
 	/**
 	 * Returns the action handler
 	 *
-	 * @return  ActionHandler  handler object
+	 * @return \Habari\ActionHandler handler object
 	 */
 	public static function get_handler()
 	{
@@ -102,7 +104,7 @@ class Controller extends Singleton
 
 	/**
 	 * A convenience method for returning the rewrite rule that matches the requested URL
-	 * @return RewriteRule|null The rule that matches the requested URL
+	 * @return \Habari\RewriteRule|null The rule that matches the requested URL
 	 */
 	public static function get_matched_rule()
 	{
@@ -123,8 +125,6 @@ class Controller extends Singleton
 		$controller->base_url = Site::get_path( 'base', true );
 
 		/* Start with the entire URL coming from web server... */
-		$start_url = '';
-		
 		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
 			$start_url = $_SERVER['REQUEST_URI'];
 		}
@@ -170,7 +170,12 @@ class Controller extends Singleton
 
 		/* OK, we have a matching rule.  Set the action and create a handler */
 		$controller->action = $matched_rule->action;
-		$controller->handler = new $matched_rule->handler();
+		$handler = $matched_rule->handler;
+		// @todo This is pretty kludgy.  If there's no namespace in the handler class, add one.
+		if(strpos($handler, '\\') === false) {
+			$handler = '\\Habari\\' . $handler;
+		}
+		$controller->handler = new $handler();
 		/* Insert the regexed submatches as the named parameters */
 		$controller->handler->handler_vars['entire_match'] = $matched_rule->entire_match; // The entire matched string is returned at index 0
 		$controller->handler->handler_vars['matched_rule'] = $matched_rule;

@@ -1,4 +1,7 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); } ?>
+<?php
+namespace Habari;
+if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
+?>
 	<ul class="items">
 		<li class="item clear">
 			<span class="pct70 minor"><?php _e( 'Category' ); ?></span>

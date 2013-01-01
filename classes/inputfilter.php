@@ -4,6 +4,7 @@
  *
  */
 
+namespace Habari;
 /**
  * Input filtering functions.
  *

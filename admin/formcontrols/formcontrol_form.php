@@ -1,4 +1,7 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
+<?php
+namespace Habari;
+if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
+?>
 <form <?php
 	$fixed = array(
 		'method' => 'POST',

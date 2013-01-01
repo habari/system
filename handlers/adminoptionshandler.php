@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari AdminOptionsHandler Class
  * Handles options-related actions in the admin
@@ -25,7 +27,7 @@ class AdminOptionsHandler extends AdminHandler
 	public function post_options()
 	{
 		$option_items = array();
-		$timezones = DateTimeZone::listIdentifiers();
+		$timezones = \DateTimeZone::listIdentifiers();
 		$timezones = array_merge( array( ''=>'' ), array_combine( array_values( $timezones ), array_values( $timezones ) ) );
 
 		$option_items[_t( 'Name & Tagline' )] = array(
@@ -82,17 +84,17 @@ class AdminOptionsHandler extends AdminHandler
 				'label' => _t( 'Time Zone' ),
 				'type' => 'select',
 				'selectarray' => $timezones,
-				'helptext' => _t( 'Current Date Time: %s', array( HabariDateTime::date_create()->format() ) ),
+				'helptext' => _t( 'Current Date Time: %s', array( DateTime::date_create()->format() ) ),
 				),
 			'dateformat' => array(
 				'label' => _t( 'Date Format' ),
 				'type' => 'text',
-				'helptext' => _t( 'Current Date: %s', array( HabariDateTime::date_create()->date ) ),
+				'helptext' => _t( 'Current Date: %s', array( DateTime::date_create()->date ) ),
 				),
 			'timeformat' => array(
 				'label' => _t( 'Time Format' ),
 				'type' => 'text',
-				'helptext' => _t( 'Current Time: %s', array( HabariDateTime::date_create()->time ) ),
+				'helptext' => _t( 'Current Time: %s', array( DateTime::date_create()->time ) ),
 				)
 			);
 
@@ -100,7 +102,7 @@ class AdminOptionsHandler extends AdminHandler
 			'locale' => array(
 				'label' => _t( 'Locale' ),
 				'type' => 'select',
-				'selectarray' => array_merge( array( '' => 'default' ), array_combine( HabariLocale::list_all(), HabariLocale::list_all() ) ),
+				'selectarray' => array_merge( array( '' => 'default' ), array_combine( Locale::list_all(), Locale::list_all() ) ),
 				'helptext' => Config::exists('locale') ? _t('International language code : This value is set in your config.php file, and cannot be changed here.') : _t( 'International language code' ),
 				'disabled' => Config::exists('locale'),
 				'value' => Config::get('locale', Options::get( 'locale', 'en-us' )),

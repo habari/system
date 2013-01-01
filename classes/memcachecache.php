@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Contains the MemcacheCache class
  *
@@ -21,7 +23,7 @@ class MemcacheCache extends Cache
 	 */
 	public function __construct()
 	{
-		$this->prefix = Options::get( 'GUID' );
+		$this->prefix = Options::get( 'private-GUID' );
 		$this->enabled = extension_loaded( 'memcache' );
 		if ( $this->enabled ) {
 			$this->memcache = new Memcache;

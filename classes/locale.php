@@ -4,13 +4,17 @@
  *
  */
 
+namespace Habari;
+
+include 'locale.global.php';
+
 /**
  * Habari Locale Class
  *
  * Provides translation services.
  *
  */
-class HabariLocale
+class Locale
 {
 	private static $uselocale = false;
 	private static $messages = array();
@@ -51,7 +55,7 @@ class HabariLocale
 	 *
 	 * @todo: This setting should probably be stored in the language files.
 	 *
-	 * @param string... $locale The locale(s) to set. They will be tried in order.
+	 * @param string $locale The locale(s) to set. They will be tried in order.
 	 * @return string the locale that was picked, or false if an error occurred
 	 */
 	public static function set_system_locale()
@@ -158,8 +162,6 @@ class HabariLocale
 		fclose( $fp );
 
 		// determine endianness
-		$little_endian = true;
-
 		list(,$magic) = unpack( 'V1', substr( $data, 0, 4 ) );
 		switch ( $magic & 0xFFFFFFFF ) {
 			case (int)0x950412de:
@@ -297,13 +299,14 @@ class HabariLocale
 	public static function _e()
 	{
 		$args = func_get_args();
-		echo call_user_func_array( array( 'HabariLocale', '_t' ), $args );
+		echo call_user_func_array( array( '\\Habari\\Locale', '_t' ), $args );
 	}
 
 	/**
 	 * Return a version of the string translated into the current locale
 	 *
 	 * @param string $text The text to echo translated
+	 * @param array $args
 	 * @param string $domain (optional) The domain to search for the message
 	 * @return string The translated string
 	 */
@@ -398,11 +401,10 @@ class HabariLocale
 	/**
 	 * Return a translated value of a SimpleXml object value based on the locale and namespace
 	 *
-	 * @param SimpleXMLElement $parent The parent node of the node we are translating
-	 * @param SimpleXMLElement $child The child node we're trying to translate
-	 * @param string The namespace to use for the lang attribute of the node to be translated
-	 * @param string $locale The locale we want to translate into
-	 * @return nothing. Translations are done in place
+	 * @param \SimpleXMLElement $parent The parent node of the node we are translating
+	 * @param \SimpleXMLElement $child The child node we're trying to translate
+	 * @param string $ns The namespace to use for the lang attribute of the node to be translated
+	 * @param null|string $locale The locale we want to translate into
 	 * @todo These defaults may need tweaked. It seems there should be a better way to do this whole thing
 	 */
 	public static function translate_xml( $parent, $child, $ns = 'http://www.w3.org/XML/1998/namespace', $locale = null )
@@ -429,66 +431,6 @@ class HabariLocale
 			$parent->addChild( $name, $use );
 		}
 	}
-}
-
-/**
- * Echo a version of the string translated into the current locale, alias for HabariLocale::_e()
- *
- * @param string $text The text to translate
- */
-function _e( $text, $args = array(), $domain = 'habari' )
-{
-	return HabariLocale::_e( $text, $args, $domain );
-}
-
-/**
- * function _ne
- * Echo singular or plural version of the string, translated into the current locale, based on the count provided,
- * alias for HabariLocale::_ne()
- * @param string $singular The singular form
- * @param string $plural The plural form
- * @param string $count The count
- */
-function _ne( $singular, $plural, $count, $domain = 'habari' )
-{
-	return HabariLocale::_ne( $singular, $plural, $count, $domain );
-}
-
-/**
- * Return a version of the string translated into the current locale, alias for HabariLocale::_t()
- *
- * @param string $text The text to translate
- * @return string The translated string
- */
-function _t( $text, $args = array(), $domain = 'habari' )
-{
-	return HabariLocale::_t( $text, $args, $domain );
-}
-
-/**
- * Return a singular or plural string translated into the current locale based on the count provided
- *
- * @param string $singular The singular form
- * @param string $plural The plural form
- * @param string $count The count
- * @return string The appropriately translated string
- */
-function _n( $singular, $plural, $count, $domain = 'habari' )
-{
-	return HabariLocale::_n( $singular, $plural, $count, $domain );
-}
-
-/**
- * Given a string translated into the current locale, return the untranslated version of the string.
- * Alias for HabariLocale::_u()
- *
- * @param string $text The translated string
- * @param string $domain (optional) The domain to search for the message
- * @return string The untranslated string
- */
-function _u( $text, $domain = 'habari' )
-{
-	return HabariLocale::_u( $text, $domain );
 }
 
 ?>

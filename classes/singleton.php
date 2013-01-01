@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * Habari Singleton class
  *
@@ -32,7 +34,7 @@ abstract class Singleton
 		trigger_error( _t( 'Not implemented: instance' ), E_USER_WARNING );
 		return null;
 	}
-	
+
 	/**
 	 * Returns the single shared static instance variable
 	 * which facilitates the Singleton pattern
@@ -40,6 +42,7 @@ abstract class Singleton
 	 * @note  each subclass should implement an instance() method which
 	 * passes the class name to the parent::getInstanceOf() function.
 	 *
+	 * @param string $class Name of the class to return the instance of
 	 * @return object instance
 	 */
 	/*

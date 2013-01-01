@@ -8,6 +8,8 @@
  * @property mixed $data Data to return with the message
  */
 
+namespace Habari;
+
 /**
  * Handles creating ajax responses, creating them in the standard format.
  *
