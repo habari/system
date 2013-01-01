@@ -532,32 +532,71 @@ class DateTime extends \DateTime
 	{
 		$difference = self::date_create()->int - $this->int;
 		
+		if ( $difference < 0 ) {
+			$future = true;
+		}
+		else {
+			$future = false;
+		}
+
+		$difference = abs( $difference );
+
 		if ( $difference < self::MINUTE ) {
 			$result = _t( 'just now' );
 		}
 		else if ( $difference < self::HOUR ) {
 			$minutes = round( $difference / self::MINUTE );
-			$result = sprintf( _n( '%d minute ago', '%d minutes ago', $minutes ), $minutes );
+			if ( $future ) {
+				$result = sprintf( _n( 'in just a minute', 'in %d minutes', $minutes ), $minutes );
+			}
+			else {
+				$result = sprintf( _n( '%d minute ago', '%d minutes ago', $minutes ), $minutes );
+			}
 		}
 		else if ( $difference < self::DAY ) {
 			$hours = round( $difference / self::HOUR );
-			$result = sprintf( _n( '%d hour ago', '%d hours ago', $hours ), $hours );
+			if ( $future ) {
+				$result = sprintf( _n( 'in %d hour', 'in %d hours', $hours ), $hours );
+			}
+			else {
+				$result = sprintf( _n( '%d hour ago', '%d hours ago', $hours ), $hours );
+			}
 		}
 		else if ( $difference < self::WEEK ) {
 			$days = round( $difference / self::DAY );
-			$result = sprintf( _n( 'yesterday', '%d days ago', $days ), $days );
+			if ( $future ) {
+				$result = sprintf( _n( 'tomorrow', 'in %d days', $days ), $days );
+			}
+			else {
+				$result = sprintf( _n( 'yesterday', '%d days ago', $days ), $days );
+			}
 		}
 		else if ( $difference < self::MONTH ) {
 			$weeks = round( $difference / self::WEEK );
-			$result = sprintf( _n( 'last week', '%d weeks ago', $weeks ), $weeks );
+			if ( $future ) {
+				$result = sprintf( _n( 'next week', 'in %d weeks', $weeks ), $weeks );
+			}
+			else {
+				$result = sprintf( _n( 'last week', '%d weeks ago', $weeks ), $weeks );
+			}
 		}
 		else if ( $difference < self::YEAR ) {
 			$months = round( $difference / self::MONTH );
-			$result = sprintf( _n( 'last month', '%d months ago', $months ), $months );
+			if ( $future ) {
+				$result = sprintf( _n( 'next month', 'in %d months', $months ), $months );
+			}
+			else {
+				$result = sprintf( _n( 'last month', '%d months ago', $months ), $months );
+			}
 		}
 		else {
 			$years = round( $difference / self::YEAR );
-			$result = sprintf( _n( 'last year', '%d years ago', $years ), $years );
+			if ( $future ) {
+				$result = sprintf( _n( 'next year', 'in %d years', $years ), $years );
+			}
+			else {
+				$result = sprintf( _n( 'last year', '%d years ago', $years ), $years );
+			}
 		}
 		
 		return $result;
