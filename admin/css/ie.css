@@ -1,0 +1,79 @@
+/*- TIMELINE */
+/* For IE7 we need to replace the table-row and table-cell styling with
+ * blocks and inline-blocks. Since IE7 won't actually allow us to make a <div>
+ * into an inline-block, we mimic this behavior by setting display: inline and
+ * zoom: 1 to trigger 'hasLayout'.
+ *
+ * IE also does not support height: inherit, so we need to explicitly set
+ * several heights.
+ */
+*+html .timeline {
+	position: static;
+}
+
+.timeline .years {
+	display: block;
+}
+
+.timeline .years .year {
+	position: absolute;
+	display: inline;
+	height: 100%;
+	zoom: 1;
+}
+
+.timeline .year > span {
+	filter: alpha(opacity='20');
+	height: 25px;
+	padding-top: 25px;
+}
+
+.timeline .years .months {
+	display: block;
+	height: 100%;
+}
+
+.timeline .years .months div {
+	display: inline;
+	height: 100%;
+	zoom: 1;
+}
+
+.timeline .track {
+	height: 50px;
+}
+
+.timeline .handle .resizehandleleft,
+.timeline .handle .resizehandleright {
+	height: 100%;
+}
+
+.media_row {
+	white-space: nowrap;
+	width: 2000px;
+}
+
+.mediaphotos > ul {
+	display: block;
+}
+
+.mediaphotos > ul li {
+	width: 150px;
+	display: inline-block;
+	float: left;
+}
+
+.mediaphotos li.media .mediatitle {
+	overflow: hidden;
+}
+
+/* setting width in ie to correspond to min-width style other A-grade browsers will receive */
+
+#menu { width: 180px; }
+
+/* Fix delete button spacing */
+
+*+html .comments .button.delete {
+	margin: -22px 0 6px 0; 
+	float: right;
+}
