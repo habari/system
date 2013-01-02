@@ -229,7 +229,7 @@ class Comment extends QueryRecord implements IsContent
 	 */
 	public function __get( $name )
 	{
-		$fieldnames = array_merge( array_keys( $this->fields ), array('post', 'info', 'editlink' ) );
+		$fieldnames = array_merge( array_keys( $this->fields ), $this->extra_fields );
 		$filter = false;
 		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
 			$field_matches = implode('|', $fieldnames);
