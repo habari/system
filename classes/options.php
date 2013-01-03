@@ -46,7 +46,7 @@ class Options extends Singleton
 			return $results;
 		}
 		
-		if ( self::instance()->$name ) {
+		if ( isset( self::instance()->$name ) ) {
 			return self::instance()->$name;
 		}
 		else {
@@ -206,6 +206,16 @@ class Options extends Singleton
 		$option_value = isset( $this->options[$name] ) ? $this->options[$name] : null;
 		$option_value = Plugins::filter( 'option_get_value', $option_value, $name );
 		return $option_value;
+	}
+
+	public function __isset ( $name ) {
+
+		if ( !isset( $this->options ) ) {
+			$this->get_all_options();
+		}
+
+		return isset( $this->options[ $name ] );
+
 	}
 
 	/**
