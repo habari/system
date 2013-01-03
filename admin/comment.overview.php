@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <div class="textual item"><?php
 $view_url = $comment->post->permalink . '#comment-' . $comment->id;

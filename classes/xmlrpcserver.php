@@ -1,4 +1,5 @@
 <?php
+namespace Habari;
 /**
  * @package Habari
  *
@@ -22,7 +23,7 @@ class XMLRPCServer extends ActionHandler
 		}
 		$input = file_get_contents( 'php://input' );
 
-		$xml = new SimpleXMLElement( $input );
+		$xml = new \SimpleXMLElement( $input );
 
 		$function = $xml->methodName;
 		$params = array();
@@ -38,7 +39,7 @@ class XMLRPCServer extends ActionHandler
 		Plugins::register( array( $this, 'system_listMethods' ), 'xmlrpc', 'system.listMethods' );
 		$returnvalue = Plugins::xmlrpc( "{$function}", $returnvalue, $params, $this );
 
-		$response = new SimpleXMLElement( '<?xml version="1.0"?'.'><methodResponse><params><param></param></params></methodResponse>' );
+		$response = new \SimpleXMLElement( '<?xml version="1.0"?'.'><methodResponse><params><param></param></params></methodResponse>' );
 		XMLRPCUtils::encode_arg( $response->params->param, $returnvalue );
 		
 		ob_end_clean();

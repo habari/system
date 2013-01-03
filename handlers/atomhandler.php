@@ -6,6 +6,8 @@
 
 namespace Habari;
 
+use \SimpleXMLElement as SimpleXMLElement;
+
 /**
  * Habari AtomHandler class
  * Produces Atom feeds and accepts Atom Publishing Protocol input

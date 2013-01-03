@@ -47,7 +47,7 @@ class Terms extends \ArrayObject implements FormStorage
 	 * 	 Use existing term object data if found in the specified vocabulary.   	 
 	 * @return Terms An instance of Terms contianing the specified Term objects
 	 **/
-	public static function parse( $terms, $term_class = 'Term', $vocabulary = null )
+	public static function parse( $terms, $term_class = '\Habari\Term', $vocabulary = null )
 	{
 		if ( is_string( $terms ) ) {
 			if ( '' === $terms ) {

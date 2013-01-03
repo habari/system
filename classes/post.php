@@ -393,7 +393,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 		parent::__construct( $paramarray );
 		if ( isset( $this->fields['tags'] ) ) {
-			$this->tags_object = Terms::parse( $this->fields['tags'], 'Tag', Tags::vocabulary() );
+			$this->tags_object = Terms::parse( $this->fields['tags'], '\Habari\Tag', Tags::vocabulary() );
 			unset( $this->fields['tags'] );
 		}
 
@@ -1514,7 +1514,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	{
 		$this->get_tokens();
 		$tokens = Utils::single_array( $tokens );
-		$tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
+		$tokens = array_map( array( '\Habari\ACL', 'token_id' ), $tokens );
 		$tokens = array_filter($tokens);
 		$add_tokens = array_diff( $tokens, $this->tokens );
 		$add_tokens = array_unique( $add_tokens );

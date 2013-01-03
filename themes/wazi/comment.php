@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <article class="comment<?php if ( $content->status != Comment::STATUS_APPROVED ) : ?> moderated<?php endif; ?>" id="comment-<?php echo $content->id; ?>" itemscope itemtype="http://schema.org/UserComments">
 	<header class="comment-meta">
 		<h1 itemprop="description">

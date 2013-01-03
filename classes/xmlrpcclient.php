@@ -1,4 +1,6 @@
 <?php
+namespace Habari;
+
 /**
  * @package Habari
  *
@@ -69,7 +71,7 @@ class XMLRPCClient
 			$rpc_method = $fname;
 		}
 
-		$rpx = new SimpleXMLElement( '<methodCall/>' );
+		$rpx = new \SimpleXMLElement( '<methodCall/>' );
 		$rpx->addChild( 'methodName', $rpc_method );
 		if ( count( $args ) > 0 ) {
 			$params = $rpx->addchild( 'params' );
@@ -94,7 +96,7 @@ class XMLRPCClient
 				// @todo this should use libxml_use_internal_errors() instead of trying to hide the PHP warning see the plugin info parsing code for an example
 				$bit = ini_get( 'error_reporting' );
 				error_reporting( $bit && !E_WARNING );
-				$responsexml = new SimpleXMLElement( $responseutf8 );
+				$responsexml = new \SimpleXMLElement( $responseutf8 );
 				error_reporting( $bit );
 				$tmp = $responsexml->xpath( '//params/param/value' );
 				if ( !$responsestruct = reset( $tmp ) ) {
