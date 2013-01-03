@@ -1454,8 +1454,8 @@ class InstallHandler extends ActionHandler
 	{
 
 		// Auto-truncate the log table
-		if ( ! CronTab::get_cronjob( 'truncate_log' ) ) {
-			CronTab::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), _t( 'Truncate the log table' ) );
+		if ( ! CronHandler::get_cronjob( 'truncate_log' ) ) {
+			CronHandler::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), _t( 'Truncate the log table' ) );
 		}
 
 		return true;
@@ -1707,10 +1707,10 @@ class InstallHandler extends ActionHandler
 	{
 		
 		// remove the old truncate_log cronjob
-		CronTab::delete_cronjob( 'truncate_log' );
+		CronHandler::delete_cronjob( 'truncate_log' );
 		
 		// add the new trim_log cronjob
-		CronTab::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t( 'Trim the log table' ) );
+		CronHandler::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t( 'Trim the log table' ) );
 		
 	}
 	
@@ -1718,7 +1718,7 @@ class InstallHandler extends ActionHandler
 	{
 		
 		// Add the cronjob to check for plugin updates
-		CronTab::add_daily_cron( 'update_check', array( 'Update', 'cron' ), _t( 'Perform a check for plugin updates.' ) );
+		CronHandler::add_daily_cron( 'update_check', array( 'Update', 'cron' ), _t( 'Perform a check for plugin updates.' ) );
 		
 	}
 	

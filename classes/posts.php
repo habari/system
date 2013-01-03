@@ -973,9 +973,9 @@ class Posts extends \ArrayObject implements IsContent
 	{
 		$min_time = DB::get_value( 'SELECT MIN(pubdate) FROM {posts} WHERE status = ?', array( Post::status( 'scheduled' ) ) );
 
-		CronTab::delete_cronjob( 'publish_scheduled_posts' );
+		CronHandler::delete_cronjob( 'publish_scheduled_posts' );
 		if ( $min_time ) {
-			CronTab::add_single_cron( 'publish_scheduled_posts', array( 'Posts', 'publish_scheduled_posts' ), $min_time, 'Next run: ' . DateTime::date_create( $min_time )->get( 'c' ) );
+			CronHandler::add_single_cron( 'publish_scheduled_posts', array( 'Posts', 'publish_scheduled_posts' ), $min_time, 'Next run: ' . DateTime::date_create( $min_time )->get( 'c' ) );
 		}
 	}
 
