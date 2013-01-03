@@ -606,7 +606,8 @@ class Utils
 			if(!isset($option['id']) && isset($option['name'])) {
 				$option['id'] = $option['name'];
 			}
-			$output .= '<input ' . self::html_attr($options) . '>';
+			
+			$output .= '<input ' . self::html_attr($option) . '>';
 		}
 		
 		return $output;
