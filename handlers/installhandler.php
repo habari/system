@@ -1786,6 +1786,21 @@ class InstallHandler extends ActionHandler
 		Options::set( 'public-GUID', $public );
 
 	}
+
+	private function upgrade_db_post_5106 ( ) {
+
+		// get all unserialized options from the db
+		// we do this manually just so things are cleaner
+		$results = DB::get_results( 'SELECT name, value, type FROM {options} where type = :type', array( 'type' => 0 ), 'QueryRecord' );
+
+		foreach ( $results as $result ) {
+			// simply save it again, no need to duplicate the query
+			Options::set( $result->name, $result->value );
+		}
+
+		// @todo i don't feel like seeing if we could properly handle removing the type column at the same time, so that should be done in a later version
+
+	}
 	
 	/**
 	 * Validate database credentials for MySQL

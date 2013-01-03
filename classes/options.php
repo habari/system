@@ -260,12 +260,9 @@ class Options extends Singleton
 		$value = Plugins::filter( 'option_set_value', $value, $name, isset( $this->options[$name] ) ? $this->options[$name] : null );
 		$this->options[$name] = $value;
 
-		if ( is_array( $value ) || is_object( $value ) ) {
-			$result = DB::update( DB::table( 'options' ), array( 'name' => $name, 'value' => serialize( $value ), 'type' => 1 ), array( 'name' => $name ) );
-		}
-		else {
-			$result = DB::update( DB::table( 'options' ), array( 'name' => $name, 'value' => $value, 'type' => 0 ), array( 'name' => $name ) );
-		}
+		// we now serialize everything, not just arrays and objects
+		$result = DB::update( DB::table( 'options' ), array( 'name' => $name, 'value' => serialize( $value ), 'type' => 1 ), array( 'name' => $name ) );
+
 		if ( Error::is_error( $result ) ) {
 			$result->out();
 			die();
