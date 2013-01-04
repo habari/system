@@ -609,8 +609,13 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$this->newfields['modified'] = $this->newfields['updated'];
 		$this->setguid();
 		
+		// if the date is in the future and we are trying to publish the post, actually schedule it for posting later
 		if ( $this->pubdate > DateTime::date_create() && $this->status == Post::status( 'published' ) ) {
 			$this->status = Post::status( 'scheduled' );
+		}
+		// but if it's already scheduled and the date is not in the future, go ahead and publish it instead
+		else if ( $this->pubdate <= DateTime::date_create() && $this->status == Post::status( 'scheduled' ) ) {
+			$this->status = Post::status( 'published' );
 		}
 
 		$allow = true;
@@ -665,8 +670,13 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			unset( $this->newfields['guid'] );
 		}
 		
+		// if the date is in the future and we are trying to publish the post, actually schedule it for posting later
 		if ( $this->pubdate > DateTime::date_create() && $this->status == Post::status( 'published' ) ) {
 			$this->status = Post::status( 'scheduled' );
+		}
+		// but if it's already scheduled and the date is not in the future, go ahead and publish it instead
+		else if ( $this->pubdate <= DateTime::date_create() && $this->status == Post::status( 'scheduled' ) ) {
+			$this->status = Post::status( 'published' );
 		}
 
 		$allow = true;
