@@ -211,14 +211,10 @@ class Comment extends QueryRecord implements IsContent
 		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
 			$field_matches = implode('|', $fieldnames);
 			if(preg_match( '/^(' . $field_matches . ')_(.+)$/', $name, $matches )) {
-				return true;
+				list( $junk, $name )= $matches;
 			}
 		}
-		else {
-			return true;
-		}
-		
-		return false;
+            return parent::__isset($name) || array_search($name, $fieldnames);
 	}
 	
 	/**

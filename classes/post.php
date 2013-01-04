@@ -803,15 +803,11 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$fieldnames = array_merge( array_keys( $this->fields ), $this->extra_fields );
 		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
 			$field_matches = implode('|', $fieldnames);
-			if(preg_match( '/^(' . $field_matches . ')_(.+)$/', $name )) {
-				return true;
+			if(preg_match( '/^(' . $field_matches . ')_(.+)$/', $name, $matches )) {
+				list( $junk, $name )= $matches;
 			}
 		}
-		else {
-			return true;
-		}
-
-		return false;
+            return parent::__isset($name) || array_search($name, $fieldnames);
 	}
 
 	/**
