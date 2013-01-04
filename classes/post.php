@@ -609,7 +609,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$this->newfields['modified'] = $this->newfields['updated'];
 		$this->setguid();
 		
-		if ( $this->pubdate->int > DateTime::date_create()->int && $this->status == Post::status( 'published' ) ) {
+		if ( $this->pubdate > DateTime::date_create() && $this->status == Post::status( 'published' ) ) {
 			$this->status = Post::status( 'scheduled' );
 		}
 
@@ -665,7 +665,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			unset( $this->newfields['guid'] );
 		}
 		
-		if ( $this->pubdate->int > DateTime::date_create()->int && $this->status == Post::status( 'published' ) ) {
+		if ( $this->pubdate > DateTime::date_create() && $this->status == Post::status( 'published' ) ) {
 			$this->status = Post::status( 'scheduled' );
 		}
 
