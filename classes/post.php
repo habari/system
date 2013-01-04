@@ -1106,17 +1106,21 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			}
 		}
 
-		// if the post was not previous published (ie: draft) and is now being published we want to set the published date to now
-		// BUT only if the user has not entered a specific publish date already -- that is, the one on the form that was submitted is different from the post's previous value
+		// sometimes we want to overwrite the published date with the current date, if:
+		//		1) the post was not previously published
+		//		2) the post is now supposed to be published
+		//		3) the user has not entered a specific publish date already -- that is, the one on the form that was submitted is the same as the currently saved one
+		//		AND
+		//		4) the published date is NOT in the future -- if it were, we would reset the date on scheduled posts if we edit them again before they are published
 		if ( ( $post->status != Post::status( 'published' ) )
 			&& ( $form->status->value == Post::status( 'published' ) )
-			&& ( $post->pubdate == DateTime::date_create( $form->pubdate->value ) )
+			&& ( $post->pubdate == DateTime::date_create( $form->pubdate->value )
+			&& ( $post->pubdate <= DateTime::date_create() ) )
 		) {
 			$post->pubdate = DateTime::date_create();
 		}
-		// else let the user change the publication date.
-		//  If previously published and the new date is in the future, the post will be unpublished and scheduled. Any other status, and the post will just get the new pubdate.
-		// This will result in the post being scheduled for future publication if the date/time is in the future and the new status is published.
+		// otherwise, the post may not be changing to a published state, they may have specified something new, or the date may be in the future for a scheduled post. it doesn't matter, we'll use what was submitted
+		// if it's in the future, it will get scheduled later in insert() or update()
 		else {
 			$post->pubdate = DateTime::date_create( $form->pubdate->value );
 		}
