@@ -1106,10 +1106,11 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			}
 		}
 
-		// if not previously published and the user wants to publish now, change the pubdate to the current date/time unless a date has been explicitly set
+		// if the post was not previous published (ie: draft) and is now being published we want to set the published date to now
+		// BUT only if the user has not entered a specific publish date already -- that is, the one on the form that was submitted is different from the post's previous value
 		if ( ( $post->status != Post::status( 'published' ) )
 			&& ( $form->status->value == Post::status( 'published' ) )
-			&& ( DateTime::date_create( $form->pubdate->value )->int == $form->updated->value )
+			&& ( $post->pubdate == DateTime::date_create( $form->pubdate->value ) )
 		) {
 			$post->pubdate = DateTime::date_create();
 		}
