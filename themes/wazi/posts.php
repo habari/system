@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <?php foreach($posts as $post) echo $theme->content($post); ?>
 <div class="pagenav">
 	<?php echo $theme->prev_page_link( _t( '&laquo;&nbsp;Newer&nbsp;Posts' ) ); ?>

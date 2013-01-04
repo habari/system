@@ -352,7 +352,7 @@ class InstallHandler extends ActionHandler
 
 		if ( extension_loaded( 'pdo' ) ) {
 			/* Check for PDO drivers */
-			$pdo_drivers = PDO::getAvailableDrivers();
+			$pdo_drivers = \PDO::getAvailableDrivers();
 			if ( ! empty( $pdo_drivers ) ) {
 				$pdo_drivers = array_combine( $pdo_drivers, $pdo_drivers );
 				// Include only those drivers that we include database support for
@@ -785,10 +785,10 @@ class InstallHandler extends ActionHandler
 		}
 
 		// Add the cronjob to trim the log so that it doesn't get too big
-		CronTab::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t( 'Trim the log table' ) );
+		CronHandler::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t( 'Trim the log table' ) );
 		
 		// Add the cronjob to check for plugin updates
-		CronTab::add_daily_cron( 'update_check', array( 'Update', 'cron' ), _t( 'Perform a check for plugin updates.' ) );
+		CronHandler::add_daily_cron( 'update_check', array( 'Update', 'cron' ), _t( 'Perform a check for plugin updates.' ) );
 
 		return true;
 	}
@@ -1454,8 +1454,8 @@ class InstallHandler extends ActionHandler
 	{
 
 		// Auto-truncate the log table
-		if ( ! CronTab::get_cronjob( 'truncate_log' ) ) {
-			CronTab::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), _t( 'Truncate the log table' ) );
+		if ( ! CronHandler::get_cronjob( 'truncate_log' ) ) {
+			CronHandler::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), _t( 'Truncate the log table' ) );
 		}
 
 		return true;
@@ -1707,10 +1707,10 @@ class InstallHandler extends ActionHandler
 	{
 		
 		// remove the old truncate_log cronjob
-		CronTab::delete_cronjob( 'truncate_log' );
+		CronHandler::delete_cronjob( 'truncate_log' );
 		
 		// add the new trim_log cronjob
-		CronTab::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t( 'Trim the log table' ) );
+		CronHandler::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t( 'Trim the log table' ) );
 		
 	}
 	
@@ -1718,7 +1718,7 @@ class InstallHandler extends ActionHandler
 	{
 		
 		// Add the cronjob to check for plugin updates
-		CronTab::add_daily_cron( 'update_check', array( 'Update', 'cron' ), _t( 'Perform a check for plugin updates.' ) );
+		CronHandler::add_daily_cron( 'update_check', array( 'Update', 'cron' ), _t( 'Perform a check for plugin updates.' ) );
 		
 	}
 	
@@ -1786,6 +1786,21 @@ class InstallHandler extends ActionHandler
 		Options::set( 'public-GUID', $public );
 
 	}
+
+	private function upgrade_db_post_5106 ( ) {
+
+		// get all unserialized options from the db
+		// we do this manually just so things are cleaner
+		$results = DB::get_results( 'SELECT name, value, type FROM {options} where type = :type', array( 'type' => 0 ), 'QueryRecord' );
+
+		foreach ( $results as $result ) {
+			// simply save it again, no need to duplicate the query
+			Options::set( $result->name, $result->value );
+		}
+
+		// @todo i don't feel like seeing if we could properly handle removing the type column at the same time, so that should be done in a later version
+
+	}
 	
 	/**
 	 * Validate database credentials for MySQL
@@ -1793,7 +1808,7 @@ class InstallHandler extends ActionHandler
 	 */
 	public function ajax_check_mysql_credentials()
 	{
-		$xml = new SimpleXMLElement( '<response></response>' );
+		$xml = new \SimpleXMLElement( '<response></response>' );
 		// Missing anything?
 		if ( !isset( $_POST['host'] ) ) {
 			$xml->addChild( 'status', 0 );
@@ -1864,7 +1879,7 @@ class InstallHandler extends ActionHandler
 	 */
 	public function ajax_check_pgsql_credentials()
 	{
-		$xml = new SimpleXMLElement( '<response></response>' );
+		$xml = new \SimpleXMLElement( '<response></response>' );
 		// Missing anything?
 		if ( !isset( $_POST['host'] ) ) {
 			$xml->addChild( 'status', 0 );
@@ -1936,7 +1951,7 @@ class InstallHandler extends ActionHandler
 	public function ajax_check_sqlite_credentials()
 	{
 		$db_file = $_POST['file'];
-		$xml = new SimpleXMLElement( '<response></response>' );
+		$xml = new \SimpleXMLElement( '<response></response>' );
 		// Missing anything?
 		if ( !isset( $db_file ) ) {
 			$xml->addChild( 'status', 0 );
@@ -2023,7 +2038,7 @@ class InstallHandler extends ActionHandler
 
 	/**
 	 * Return a comma-separated list of features, given a SimpleXMLElement
-	 * @param SimpleXMLElement $features An element containing children of <feature>
+	 * @param \SimpleXMLElement $features An element containing children of <feature>
 	 * @return string A comma-separated list of those features
 	 */
 	public static function get_feature_list($features) {

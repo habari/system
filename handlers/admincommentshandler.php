@@ -165,7 +165,7 @@ class AdminCommentsHandler extends AdminHandler
 				$comment->email = $form->author_email;
 				$comment->ip = $form->author_ip;
 
-				$comment->date = HabariDateTime::date_create( $form->comment_date );
+				$comment->date = DateTime::date_create( $form->comment_date );
 				$comment->post_id = $form->comment_post;
 
 				if ( ! isset( $set_status ) ) {

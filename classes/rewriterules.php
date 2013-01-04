@@ -105,7 +105,7 @@ class RewriteRules extends \ArrayObject
 			array( 'name' => 'atompub_servicedocument', 'parse_regex' => '/^atom$/i', 'build_str' => 'atom', 'handler' => 'AtomHandler', 'action' => 'introspection', 'priority' => 1, 'description' => 'Atom introspection' ),
 
 			// Cron handling
-			array( 'name' => 'cron', 'parse_regex' => '#^cron/(?P<time>[0-9.]+)/?$#i', 'build_str' => 'cron/{$time}', 'handler' => 'CronTab', 'action' => 'poll_cron', 'priority' => 1, 'description' => 'Asyncronous cron processing' ),
+			array( 'name' => 'cron', 'parse_regex' => '#^cron/(?P<time>[0-9.]+)/?$#i', 'build_str' => 'cron/{$time}', 'handler' => 'CronHandler', 'action' => 'poll_cron', 'priority' => 1, 'description' => 'Asyncronous cron processing' ),
 
 			// XMLRPC requests
 			array( 'name' => 'xmlrpc', 'parse_regex' => '#^xmlrpc/?$#i', 'build_str' => 'xmlrpc', 'handler' => 'XMLRPCServer', 'action' => 'xmlrpc_call', 'priority' => 8, 'description' => 'Handle incoming XMLRPC requests.' ),

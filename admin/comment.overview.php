@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <div class="textual item"><?php
 $view_url = $comment->post->permalink . '#comment-' . $comment->id;
@@ -13,8 +14,8 @@ if ( $comment->url != '' ):
 		$comment->name,
 		$comment->post->permalink,
 		$comment->post->title,
-		$comment->date->get( HabariDateTime::get_default_time_format() ),
-		$comment->date->get( HabariDateTime::get_default_date_format() )
+		$comment->date->get( DateTime::get_default_time_format() ),
+		$comment->date->get( DateTime::get_default_date_format() )
 	);
 else:
 	printf( _t( '<a href="%1$s">Comment</a> by ' .
@@ -26,8 +27,8 @@ else:
 		$comment->name,
 		$comment->post->permalink,
 		$comment->post->title,
-		$comment->date->get( HabariDateTime::get_default_time_format() ),
-		$comment->date->get( HabariDateTime::get_default_date_format() )
+		$comment->date->get( DateTime::get_default_time_format() ),
+		$comment->date->get( DateTime::get_default_date_format() )
 	);
 endif;
 ?></div>

@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php Plugins::act( 'theme_sidebar_top' ); ?>
 	<!--begin secondary content-->

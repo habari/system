@@ -15,8 +15,8 @@ namespace Habari;
 class StackItem
 {
 	static $items = array();
-	protected $dependencies = array();
-	protected $resource = '';
+	public $dependencies = array();
+	public $resource = '';
 
 	/**
 	 * Constructor for StackItem

@@ -205,10 +205,10 @@ class CoreBlocks extends Habari\Plugin
 
 		foreach ( $results as $result ) {
 			if ( $block->full_names ) {
-				$display_month = HabariDateTime::date_create()->set_date( $result->year, $result->month, 1 )->get( 'F' );
+				$display_month = DateTime::date_create()->set_date( $result->year, $result->month, 1 )->get( 'F' );
 			}
 			else {
-				$display_month = HabariDateTime::date_create()->set_date( $result->year, $result->month, 1 )->get( 'M' );
+				$display_month = DateTime::date_create()->set_date( $result->year, $result->month, 1 )->get( 'M' );
 			}
 
 			$count = '';

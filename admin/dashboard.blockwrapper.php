@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <li class="module <?php echo $block->css_classes; ?>" id="dashboard_block_<?php echo $block->id; ?>" data-module-area-id="<?php echo $block->id; ?>" data-module-id="<?php echo $block->id; ?>">
 	<div class="close">&nbsp;</div>

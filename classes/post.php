@@ -393,7 +393,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 		parent::__construct( $paramarray );
 		if ( isset( $this->fields['tags'] ) ) {
-			$this->tags_object = Terms::parse( $this->fields['tags'], 'Tag', Tags::vocabulary() );
+			$this->tags_object = Terms::parse( $this->fields['tags'], '\Habari\Tag', Tags::vocabulary() );
 			unset( $this->fields['tags'] );
 		}
 
@@ -609,7 +609,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$this->newfields['modified'] = $this->newfields['updated'];
 		$this->setguid();
 		
-		if ( $this->pubdate->int > DateTime::date_create()->int && $this->status == Post::status( 'published' ) ) {
+		if ( $this->pubdate > DateTime::date_create() && $this->status == Post::status( 'published' ) ) {
 			$this->status = Post::status( 'scheduled' );
 		}
 
@@ -665,7 +665,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			unset( $this->newfields['guid'] );
 		}
 		
-		if ( $this->pubdate->int > DateTime::date_create()->int && $this->status == Post::status( 'published' ) ) {
+		if ( $this->pubdate > DateTime::date_create() && $this->status == Post::status( 'published' ) ) {
 			$this->status = Post::status( 'scheduled' );
 		}
 
@@ -1106,10 +1106,11 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			}
 		}
 
-		// if not previously published and the user wants to publish now, change the pubdate to the current date/time unless a date has been explicitly set
+		// if the post was not previous published (ie: draft) and is now being published we want to set the published date to now
+		// BUT only if the user has not entered a specific publish date already -- that is, the one on the form that was submitted is different from the post's previous value
 		if ( ( $post->status != Post::status( 'published' ) )
 			&& ( $form->status->value == Post::status( 'published' ) )
-			&& ( DateTime::date_create( $form->pubdate->value )->int == $form->updated->value )
+			&& ( $post->pubdate == DateTime::date_create( $form->pubdate->value ) )
 		) {
 			$post->pubdate = DateTime::date_create();
 		}
@@ -1514,7 +1515,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	{
 		$this->get_tokens();
 		$tokens = Utils::single_array( $tokens );
-		$tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
+		$tokens = array_map( array( '\Habari\ACL', 'token_id' ), $tokens );
 		$tokens = array_filter($tokens);
 		$add_tokens = array_diff( $tokens, $this->tokens );
 		$add_tokens = array_unique( $add_tokens );

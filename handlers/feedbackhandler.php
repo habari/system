@@ -161,7 +161,7 @@ class FeedbackHandler extends ActionHandler
 			'ip' => Utils::get_ip(),
 			'content' => $content,
 			'status' => Comment::STATUS_UNAPPROVED,
-			'date' => HabariDateTime::date_create(),
+			'date' => DateTime::date_create(),
 			'type' => Comment::COMMENT,
 		) );
 
@@ -214,7 +214,7 @@ class FeedbackHandler extends ActionHandler
 			if ( User::identify()->loggedin == false && ( !isset( $_COOKIE[ $cookie_name ] ) || $_COOKIE[ $cookie_name ] != $cookie_content ) ) {
 				
 				// update the cookie
-				setcookie( $cookie_name, $cookie_content, time() + HabariDateTime::YEAR, Site::get_path( 'base', true ) );
+				setcookie( $cookie_name, $cookie_content, time() + DateTime::YEAR, Site::get_path( 'base', true ) );
 				
 			}
 		}

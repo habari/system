@@ -1,4 +1,6 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
+<?php
+namespace Habari;
+if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 class flickrAPI
 {
 	function __construct()
@@ -427,7 +429,7 @@ class Flickr extends flickrAPI
 * Flickr Silo
 */
 
-class FlickrSilo extends Habari\Plugin implements MediaSilo
+class FlickrSilo extends Plugin implements MediaSilo
 {
 	const SILO_NAME = 'Flickr';
 
