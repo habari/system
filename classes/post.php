@@ -893,7 +893,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 					return $this->tags_object = new Terms($value);
 				}
 				else {
-					return $this->tags_object = Terms::parse( $value, 'Term', Tags::vocabulary() );
+					return $this->tags_object = Terms::parse( $value, '\Habari\Term', Tags::vocabulary() );
 				}
 			case 'status':
 				return $this->setstatus( $value );
