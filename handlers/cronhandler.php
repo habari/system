@@ -39,7 +39,7 @@ class CronHandler extends ActionHandler
 			$cronurl = URL::get( 'cron',
 				array(
 					'time' => $run_time,
-					'asyncronous' => Utils::crypt( Options::get( 'GUID' ) )
+					'asyncronous' => Utils::crypt( Options::get( 'public-GUID' ) )
 				)
 			);
 			$request = new RemoteRequest( $cronurl, 'GET', 1 );
