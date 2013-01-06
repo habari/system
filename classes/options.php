@@ -257,6 +257,13 @@ class Options extends Singleton
 		if ( ! isset( $this->options ) ) {
 			$this->get_all_options();
 		}
+
+		// if the option already exists and has the same value, there is nothing to update and we shouldn't waste a db hit
+		// i can't think of any negative implications of this, but that's no guarantee
+		if ( isset( $this->options[ $name ] ) && $this->options[ $name ] == $value ) {
+			return;
+		}
+
 		$value = Plugins::filter( 'option_set_value', $value, $name, isset( $this->options[$name] ) ? $this->options[$name] : null );
 		$this->options[$name] = $value;
 
