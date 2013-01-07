@@ -219,7 +219,7 @@ class UserGroup extends QueryRecord
 		$this->load_member_cache();
 		$users = Utils::single_array( $users );
 		// Use ids internally for all users
-		$users = array_map( array( 'User', 'get_id' ), $users );
+		$users = array_map( array( '\Habari\User', 'get_id' ), $users );
 		// Remove users from group membership
 		$this->member_ids = array_diff( $this->member_ids, $users );
 		$this->update();
@@ -259,7 +259,7 @@ class UserGroup extends QueryRecord
 	public function revoke( $tokens )
 	{
 		$tokens = Utils::single_array( $tokens );
-		$tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
+		$tokens = array_map( array( '\Habari\ACL', 'token_id' ), $tokens );
 
 		foreach ( $tokens as $token ) {
 			ACL::revoke_group_token( $this->id, $token );
