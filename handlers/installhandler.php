@@ -72,8 +72,8 @@ class InstallHandler extends ActionHandler
 		/**
 		 * Add the AJAX hooks
 		 */
-		Plugins::register( array( 'InstallHandler', 'ajax_check_mysql_credentials' ), 'ajax_', 'check_mysql_credentials' );
-		Plugins::register( array( 'InstallHandler', 'ajax_check_pgsql_credentials' ), 'ajax_', 'check_pgsql_credentials' );
+		Plugins::register( array( '\Habari\InstallHandler', 'ajax_check_mysql_credentials' ), 'ajax_', 'check_mysql_credentials' );
+		Plugins::register( array( '\Habari\InstallHandler', 'ajax_check_pgsql_credentials' ), 'ajax_', 'check_pgsql_credentials' );
 
 		/**
 		 * Let's check the config.php file if no POST data was submitted
@@ -785,10 +785,10 @@ class InstallHandler extends ActionHandler
 		}
 
 		// Add the cronjob to trim the log so that it doesn't get too big
-		CronTab::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t( 'Trim the log table' ) );
+		CronTab::add_daily_cron( 'trim_log', array( '\Habari\EventLog', 'trim' ), _t( 'Trim the log table' ) );
 
 		// Add the cronjob to check for plugin updates
-		CronTab::add_daily_cron( 'update_check', array( 'Update', 'cron' ), _t( 'Perform a check for plugin updates.' ) );
+		CronTab::add_daily_cron( 'update_check', array( '\Habari\Update', 'cron' ), _t( 'Perform a check for plugin updates.' ) );
 
 		return true;
 	}
@@ -1455,7 +1455,7 @@ class InstallHandler extends ActionHandler
 
 		// Auto-truncate the log table
 		if ( ! CronTab::get_cronjob( 'truncate_log' ) ) {
-			CronTab::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), _t( 'Truncate the log table' ) );
+			CronTab::add_daily_cron( 'truncate_log', array( '\Habari\Utils', 'truncate_log' ), _t( 'Truncate the log table' ) );
 		}
 
 		return true;
@@ -1710,7 +1710,7 @@ class InstallHandler extends ActionHandler
 		CronTab::delete_cronjob( 'truncate_log' );
 		
 		// add the new trim_log cronjob
-		CronTab::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t( 'Trim the log table' ) );
+		CronTab::add_daily_cron( 'trim_log', array( '\Habari\EventLog', 'trim' ), _t( 'Trim the log table' ) );
 		
 	}
 	
@@ -1718,7 +1718,7 @@ class InstallHandler extends ActionHandler
 	{
 		
 		// Add the cronjob to check for plugin updates
-		CronTab::add_daily_cron( 'update_check', array( 'Update', 'cron' ), _t( 'Perform a check for plugin updates.' ) );
+		CronTab::add_daily_cron( 'update_check', array( '\Habari\Update', 'cron' ), _t( 'Perform a check for plugin updates.' ) );
 		
 	}
 	
