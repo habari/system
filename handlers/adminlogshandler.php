@@ -238,7 +238,7 @@ class AdminLogsHandler extends AdminHandler
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
 			Session::error( _t( 'WSSE authentication failed.' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
+			echo Session::messages_get( true, array( '\Habari\Format', 'json_messages' ) );
 			return;
 		}
 		foreach ( $_POST as $id => $delete ) {
@@ -251,7 +251,7 @@ class AdminLogsHandler extends AdminHandler
 
 		if ( ( ! isset( $ids ) || empty( $ids ) ) && $handler_vars['action'] != 'purge' ) {
 			Session::notice( _t( 'No logs selected.' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
+			echo Session::messages_get( true, array( '\Habari\Format', 'json_messages' ) );
 			return;
 		}
 
@@ -270,7 +270,7 @@ class AdminLogsHandler extends AdminHandler
 				break;
 		}
 
-		echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
+		echo Session::messages_get( true, array( '\Habari\Format', 'json_messages' ) );
 	}
 
 }

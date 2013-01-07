@@ -128,7 +128,7 @@ class Utils
 	public static function stripslashes( $value )
 	{
 		if ( is_array( $value ) ) {
-			$value = array_map( array( 'Utils', 'stripslashes' ), $value );
+			$value = array_map( array( '\Habari\Utils', 'stripslashes' ), $value );
 		}
 		elseif ( !empty( $value ) && is_string( $value ) ) {
 			$value = stripslashes( $value );
@@ -142,7 +142,7 @@ class Utils
 	public static function addslashes( $value )
 	{
 		if ( is_array( $value ) ) {
-			$value = array_map( array( 'Utils', 'addslashes' ), $value );
+			$value = array_map( array( '\Habari\Utils', 'addslashes' ), $value );
 		}
 		else if ( !empty( $value ) && is_string( $value ) ) {
 			$value = addslashes( $value );
@@ -198,7 +198,7 @@ class Utils
 		if ( ! is_array( $values ) ) {
 			$values = array();
 		}
-		$values = array_map( array( 'Utils', 'quote_spaced' ), $values );
+		$values = array_map( array( '\Habari\Utils', 'quote_spaced' ), $values );
 		return implode( $separator, $values );
 	}
 
@@ -236,7 +236,7 @@ class Utils
 	/**
 	* Used with array_map to create an array of PHP stringvar-style search/replace strings using optional pre/postfixes
 	* <code>
-	* $mapped_values= array_map(array('Utils', 'map_array'), $values);
+	* $mapped_values= array_map(array('\Habari\Utils', 'map_array'), $values);
 	* </code>
 	* @param string $value The value to wrap
 	* @param string $prefix The prefix for the returned value
