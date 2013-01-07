@@ -1801,6 +1801,27 @@ class InstallHandler extends ActionHandler
 		// @todo i don't feel like seeing if we could properly handle removing the type column at the same time, so that should be done in a later version
 
 	}
+
+	private function upgrade_db_post_5107 ( ) {
+
+		// delete the current un-namespaced CronJobs by these names
+		CronTab::delete_cronjob( 'trim_log' );
+		CronTab::delete_cronjob( 'update_check' );
+
+		// we could have a bunch of the single update crons now, and there's no way to handle that using CronTab, so do it manually
+		$crons = DB::get_results( 'SELECT * FROM {crontab} WHERE name = ?', array( 'update_check_single' ), '\Habari\CronJob' );
+
+		foreach ( $crons as $cron ) {
+			$cron->delete();
+		}
+
+		// Add the cronjob to trim the log so that it doesn't get too big
+		CronTab::add_daily_cron( 'trim_log', array( '\Habari\EventLog', 'trim' ), _t( 'Trim the log table' ) );
+
+		// Add the cronjob to check for plugin updates
+		CronTab::add_daily_cron( 'update_check', array( '\Habari\Update', 'cron' ), _t( 'Perform a check for plugin updates.' ) );
+
+	}
 	
 	/**
 	 * Validate database credentials for MySQL
