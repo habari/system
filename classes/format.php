@@ -127,7 +127,7 @@ class Format
 		self::$formatters = array();
 		$classes = get_declared_classes();
 		foreach ( $classes as $class ) {
-			if ( ( get_parent_class( $class ) == 'Format' ) || ( $class == 'Format' ) ) {
+			if ( $class == __CLASS__ || get_parent_class( $class ) == __CLASS__ ) {
 				self::$formatters[] = new $class();
 			}
 		}
