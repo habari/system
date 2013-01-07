@@ -384,6 +384,7 @@ class Themes
 		foreach ( $theme_classes as $theme ) {
 			$class = new ReflectionClass( $theme );
 			$classfile = str_replace( '\\', '/', $class->getFileName() );
+			$file = str_replace( '\\', '/', $file );
 			if ( $classfile == $file ) {
 				return $theme;
 			}
