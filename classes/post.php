@@ -1513,7 +1513,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	{
 		$this->get_tokens();
 		$tokens = Utils::single_array( $tokens );
-		$tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
+		$tokens = array_map( array( '\Habari\ACL', 'token_id' ), $tokens );
 		$tokens = array_intersect( $tokens, $this->tokens );
 		if ( count( $tokens ) == 0 ) {
 			return false;
@@ -1557,7 +1557,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	{
 		$this->get_tokens();
 		$tokens = Utils::single_array( $tokens );
-		$tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
+		$tokens = array_map( array( '\Habari\ACL', 'token_id' ), $tokens );
 		$remove_tokens = array_intersect( $tokens, $this->tokens );
 		foreach ( $remove_tokens as $token_id ) {
 			DB::delete( '{post_tokens}', array( 'post_id' => $this->id, 'token_id' => $token_id ) );
@@ -1572,7 +1572,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	public function set_tokens( $tokens )
 	{
 		$tokens = Utils::single_array( $tokens );
-		$new_tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
+		$new_tokens = array_map( array( '\Habari\ACL', 'token_id' ), $tokens );
 		$new_tokens = array_unique( $new_tokens );
 		DB::delete( '{post_tokens}', array( 'post_id' => $this->id ) );
 		foreach ( $new_tokens as $token_id ) {
