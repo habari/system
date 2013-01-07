@@ -50,6 +50,9 @@ class Comment extends QueryRecord implements IsContent
 	static $comment_status_list = array();
 	static $comment_type_list = array();
 	static $comment_status_actions = array();
+	
+	// Extra fields linked to this object
+	protected $extra_fields = array('post', 'info', 'editlink' );
 
 	/**
 	 * static function default_fields
@@ -198,6 +201,23 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
+	 * Overrides QueryRecord __isset to implement custom object properties
+	 * @param string Name of property to check
+	 * @return boolean true if property exists, false otherwise
+	 */
+	public function __isset( $name )
+	{
+		$fieldnames = array_merge( array_keys( $this->fields ), $this->extra_fields );
+		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
+			$field_matches = implode('|', $fieldnames);
+			if(preg_match( '/^(' . $field_matches . ')_(.+)$/', $name, $matches )) {
+				list( $junk, $name )= $matches;
+			}
+		}
+            return parent::__isset($name) || array_search($name, $fieldnames);
+	}
+	
+	/**
 	 * function __get
 	 * Overrides QueryRecord __get to implement custom object properties
 	 * @param string Name of property to return
@@ -205,7 +225,7 @@ class Comment extends QueryRecord implements IsContent
 	 */
 	public function __get( $name )
 	{
-		$fieldnames = array_merge( array_keys( $this->fields ), array('post', 'info', 'editlink' ) );
+		$fieldnames = array_merge( array_keys( $this->fields ), $this->extra_fields );
 		$filter = false;
 		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
 			$field_matches = implode('|', $fieldnames);

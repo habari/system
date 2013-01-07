@@ -62,6 +62,9 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 	protected $url_args;
 	public $schema;
+	
+	// Extra fields for this object 
+	protected $extra_fields = array( 'permalink', 'tags', 'comments', 'comment_count', 'approved_comment_count', 'comment_feed_link', 'author', 'editlink', 'info' );
 
 	/**
 	 * returns an associative array of active post types
@@ -796,6 +799,26 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		Plugins::act( 'post_publish_after', $this );
 		return $result;
 	}
+	
+	/**
+	 * Overrides QueryRecord __isset to implement custom object properties
+	 * 
+	 * This method will also test if a filter has been applied to property. 
+	 * 
+	 * @param string $name Name of property to test
+	 * @return boolean true if property exists, false otherwise
+	 */
+	public function __isset( $name )
+	{
+		$fieldnames = array_merge( array_keys( $this->fields ), $this->extra_fields );
+		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
+			$field_matches = implode('|', $fieldnames);
+			if(preg_match( '/^(' . $field_matches . ')_(.+)$/', $name, $matches )) {
+				list( $junk, $name )= $matches;
+			}
+		}
+            return parent::__isset($name) || array_search($name, $fieldnames);
+	}
 
 	/**
 	 * Overrides QueryRecord __get to implement custom object properties
@@ -805,7 +828,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	public function __get( $name )
 	{
 		// some properties are considered special and accidentally filtering them would be bad, so we exclude those
-		$fieldnames = array_merge( array_keys( $this->fields ), array( 'permalink', 'tags', 'comments', 'comment_count', 'approved_comment_count', 'comment_feed_link', 'author', 'editlink', 'info' ) );
+		$fieldnames = array_merge( array_keys( $this->fields ), $this->extra_fields );
 		$filter = false;
 		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
 			$field_matches = implode('|', $fieldnames);
