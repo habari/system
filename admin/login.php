@@ -60,7 +60,7 @@
 	<script type="text/javascript">
 	var password_label;
 	$(document).ready( function() {
-		<?php Session::messages_out( true, array( 'Format', 'humane_messages' ) ); ?>
+		<?php Session::messages_out( true, array( '\Habari\Format', 'humane_messages' ) ); ?>
 		password_label = $('label[for=habari_password]');
 		// to fix autofill issues, we need to check the password field on every keyup
 		$('#habari_username').keyup( function() {
