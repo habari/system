@@ -159,7 +159,7 @@ class Update extends Singleton
 			}
 			
 			// return an array of beacons that have updates
-			return array_filter( $instance->beacons, array( 'Update', 'filter_unchanged' ) );
+			return array_filter( $instance->beacons, array( '\Habari\Update', 'filter_unchanged' ) );
 			
 		}
 		catch ( \Exception $e ) {
