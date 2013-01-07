@@ -776,7 +776,7 @@ class FormUI extends FormContainer implements IsContent
 			}
 			else {
 				array_unshift( $params, $this->success_callback, false );
-				$result = call_user_func_array( array( 'Plugins', 'filter' ), $params );
+				$result = call_user_func_array( array( '\Habari\Plugins', 'filter' ), $params );
 			}
 			if ( $result ) {
 				return $result;
