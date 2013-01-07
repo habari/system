@@ -18,7 +18,7 @@ class CronTab extends ActionHandler
 	static function run_cron( $async = false )
 	{
 		// check if it's time to run crons, and if crons are already running.
-		$next_cron = HabariDateTime::date_create( Options::get( 'next_cron' ) );
+		$next_cron = HabariDateTime::date_create( Options::get( 'next_cron', 1 ) );
 		$time = HabariDateTime::date_create();
 		if ( ( $next_cron->int > $time->int )
 			|| ( Options::get( 'cron_running' ) && Options::get( 'cron_running' ) > microtime( true ) )
