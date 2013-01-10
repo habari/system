@@ -621,7 +621,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 		// Invoke plugins for all fields, since they're all "changed" when inserted
 		foreach ( $this->fields as $fieldname => $value ) {
-			Plugins::act( 'post_update_' . $fieldname, $this, ( $this->id == 0 ) ? null : $value, $this->$fieldname );
+			$fieldvalue = isset($this->newfields[$fieldname]) ? $this->newfields[$fieldname] : $this->fields[$fieldname];
+			Plugins::act( 'post_update_' . $fieldname, $this, ( $this->id == 0 ) ? null : $value, $fieldvalue );
 		}
 		// invoke plugins for status changes
 		Plugins::act( 'post_status_' . self::status_name( $this->status ), $this, null );
