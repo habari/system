@@ -1017,77 +1017,69 @@ FLICKR;
 		return $controls;
 	}
 
-	public function filter_post_content_out( $content, $post )
+	public function filter_shortcode_flickr( $code_to_replace, $code_name, $attr_array, $code_contents, $post )
 	{
-		$check = preg_match_all( '/\[flickr:([0-9]+):?(.?)\]/', $content, $matches, PREG_SET_ORDER );
-		if ( ! $check ) {
-			return $content;
-		}
-
-		EventLog::log( var_export( $matches, true ), 'info', 'plugin', 'flickr' );
-		$f = new Flickr ( array( 'user_id' => $post->author->id ) );
-		foreach ( $matches as $match ) {
-			$id = $match[1];
-			$size = ( ! empty( $match[2] ) ) ? '_' . $match[2] : Options::get('flickrsilo__flickr_size');
-			$info = "flickr$id";
-			$flickr = $post->info->$info;
-			if ( ! $flickr ) {
-				// this photo's details aren't cached on this post. Let's grab 'em
-				$xml = $f->photosGetInfo( $id );
-				if ( ! $xml->photo ) {
+		$id = $attr_array['id'];
+		$size = ( isset( $attr_array['size'] ) ) ? '_' . $attr_array['size'] : Options::get('flickrsilo__flickr_size');
+		
+		$info = "flickr$id";
+		$flickr = $post->info->$info;
+		if ( ! $flickr ) {
+			// this photo's details aren't cached on this post. Let's grab 'em
+			$f = new Flickr ( array( 'user_id' => $post->author->id ) );
+			$xml = $f->photosGetInfo( $id );
+			if ( ! $xml->photo ) {
+				continue;
+			}
+			$secret = $xml->photo['secret'];
+			$url = $xml->photo->urls[0]->url[0];
+			$media = $xml->photo['media'];
+			$flickr = "$media|$url|$secret";
+			if ( 'photo' == $media ) {
+				$server = $xml->photo['server'];
+				$farm = $xml->photo['farm'];
+				$flickr .= "|$farm|$server";
+			} elseif ( 'video' == $xml->photo['media'] ) {
+				if ( 0 == $xml->photo->video['ready'] ) {
 					continue;
 				}
-				$secret = $xml->photo['secret'];
-				$url = $xml->photo->urls[0]->url[0];
-				$media = $xml->photo['media'];
-				$flickr = "$media|$url|$secret";
-				if ( 'photo' == $media ) {
-					$server = $xml->photo['server'];
-					$farm = $xml->photo['farm'];
-					$flickr .= "|$farm|$server";
-				} elseif ( 'video' == $xml->photo['media'] ) {
-					if ( 0 == $xml->photo->video['ready'] ) {
-						continue;
-					}
-					$height = $xml->photo->video['height'];
-					$width = $xml->photo->video['width'];
-					$flickr .= "|$width|$height";
-				}
-				// cache the info on this post
-				$post->info->$info = $flickr;
-				$post->update();
-			} else {
-				list( $media, $url, $secret, $other ) = explode( '|', $flickr, 4 );
-				if ( 'photo' == $media ) {
-					list( $farm, $server ) = explode( '|', $other );
-				} else {
-					list ( $height, $width ) = explode( '|', $other );
-				}
+				$height = $xml->photo->video['height'];
+				$width = $xml->photo->video['width'];
+				$flickr .= "|$width|$height";
 			}
+			// cache the info on this post
+			$post->info->$info = $flickr;
+			$post->update();
+		} else {
+			list( $media, $url, $secret, $other ) = explode( '|', $flickr, 4 );
 			if ( 'photo' == $media ) {
-				$markup = '<a href="' . $url . '">';
-				$markup .= '<img src="http://farm';
-				$markup .= $farm;
-				$markup .= '.staticflickr.com/';
-				$markup .= $server;
-				$markup .= '/';
-				$markup .= $id;
-				$markup .= '_';
-				$markup .= $secret;
-				$markup .= $size;
-				$markup .= '.jpg"';
-				if ( $post->author->info->pbem_class ) {
-					$markup .= ' class="' . $post->author->info->pbem_class . '"';
-				}
-				$markup .= '></a>';
+				list( $farm, $server ) = explode( '|', $other );
 			} else {
-				$markup = <<<EOF
+				list ( $height, $width ) = explode( '|', $other );
+			}
+		}
+		if ( 'photo' == $media ) {
+			$markup = '<a href="' . $url . '">';
+			$markup .= '<img src="http://farm';
+			$markup .= $farm;
+			$markup .= '.staticflickr.com/';
+			$markup .= $server;
+			$markup .= '/';
+			$markup .= $id;
+			$markup .= '_';
+			$markup .= $secret;
+			$markup .= $size;
+			$markup .= '.jpg"';
+			if ( $post->author->info->pbem_class ) {
+				$markup .= ' class="' . $post->author->info->pbem_class . '"';
+			}
+			$markup .= '></a>';
+		} else {
+			$markup = <<<EOF
 <object type="application/x-shockwave-flash" width="$width" height="$height" data="http://www.flickr.com/apps/video/stewart.swf?v=109786"  classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"> <param name="flashvars" value=""intl_lang=en-us&photo_secret=$secret&photo_id=$id&flickr_show_info_box=true&hd_default=false"></param> <param name="movie" value="http://www.flickr.com/apps/video/stewart.swf?v=109786"></param><param name="bgcolor" value="#000000"></param><param name="allowFullScreen" value="true"></param><embed type="application/x-shockwave-flash" src="http://www.flickr.com/apps/video/stewart.swf?v=109786" bgcolor="#000000" allowfullscreen="true" flashvars="intl_lang=en-us&photo_secret=$secret&photo_id=$id&flickr_show_info_box=true&hd_default=false" height="$height" width="$width"></embed></object>
 EOF;
-			}
-			$content = preg_replace( "/\[flickr:$id.*\]/U", $markup, $content );
 		}
-		return $content;
+		return $markup;
 	}
 }
 
