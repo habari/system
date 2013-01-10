@@ -1029,7 +1029,7 @@ FLICKR;
 			$f = new Flickr ( array( 'user_id' => $post->author->id ) );
 			$xml = $f->photosGetInfo( $id );
 			if ( ! $xml->photo ) {
-				continue;
+				return $code_to_replace;
 			}
 			$secret = $xml->photo['secret'];
 			$url = $xml->photo->urls[0]->url[0];
@@ -1041,7 +1041,7 @@ FLICKR;
 				$flickr .= "|$farm|$server";
 			} elseif ( 'video' == $xml->photo['media'] ) {
 				if ( 0 == $xml->photo->video['ready'] ) {
-					continue;
+					return $code_to_replace;
 				}
 				$height = $xml->photo->video['height'];
 				$width = $xml->photo->video['width'];
