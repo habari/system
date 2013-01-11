@@ -5,6 +5,7 @@ Config::set( 'db_connection', array(
 	'password'=>'',
 	'prefix'=>'{$table_prefix}'
 ));
+Config::set('cron_async', false);  // SQLite blocks async cron requests, so don't do that
 
 // Config::set('locale', '{$locale}');
 ?>
