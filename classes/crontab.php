@@ -48,7 +48,8 @@ class CronTab extends ActionHandler
 				// the request timed out - we knew that would happen
 			}
 			catch ( Exception $e ) {
-				// some other error occurred. we still don't care
+				// some other error occurred. log it.
+				 EventLog::log( $e->getMessage(), 'err', 'crontab', 'habari', $e );
 			}
 		}
 		else {
