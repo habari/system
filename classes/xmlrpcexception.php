@@ -1,4 +1,5 @@
 <?php
+namespace Habari;
 /**
  * @package Habari
  *
