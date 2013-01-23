@@ -108,17 +108,32 @@ class Flickr extends flickrAPI
 		$this->user_id = ( isset( $params['user_id'] ) ) ? $params['user_id'] : User::identify()->id;
 	}
 
-	// URL building
-	function getPhotoURL( $p, $size = '', $ext = 'jpg' )
+	/**
+	 * get a URL for a photo
+	 * @param mixed $photo object, array, or integer
+	 *	object: a SimpleXMLElement as returned by photosGetInfo()
+	 *	array: the 'photo' element of the XML from photosGetInfo
+	 *	int: a Flickr photo ID
+	 * @param string $size the size of the photo to fetch
+	 * @return string the URL of the requested photo
+	*/
+	function getPhotoURL( $photo, $size = '' )
 	{
+		if ( is_int( $photo ) ) {
+			$photo = $this->photosGetInfo( $photo );
+		} 
+		if ( $photo instanceof SimpleXMLElement ) {
+			$p = (array) $photo->photo->attributes();
+			$photo = $p['@attributes'];
+		}
 		$markup = 'http://farm';
-		$markup .= $p['farm'];
+		$markup .= $photo['farm'];
 		$markup .= '.staticflickr.com/';
-		$markup .= $p['server'];
+		$markup .= $photo['server'];
 		$markup .= '/';
-		$markup .= $p['id'];
+		$markup .= $photo['id'];
 		$markup .= '_';
-		$markup .= $p['secret'];
+		$markup .= $photo['secret'];
 		$markup .= $size;
 		$markup .= '.jpg"';
 		return $markup;
@@ -228,6 +243,13 @@ class Flickr extends flickrAPI
 			throw $xml;
 		}
 		return $xml;
+	}
+
+	function photosetsAddPhoto( $photoset_id, $photo_id )
+	{
+		$params = array( 'photoset_id' => $photoset_id,
+				'photo_id' => $photo_id );
+		return $this->call( 'flickr.photosets.addPhoto', $params );
 	}
 
 	function photosRecentlyUpdated()
@@ -703,13 +725,14 @@ class FlickrSilo extends Plugin implements MediaSilo
 			$props[$name] = (string)$value;
 		}
 		$props = array_merge( $props, self::element_props( $photo, "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}", $size ) );
-		$result = new MediaAsset(
+		$asset = new MediaAsset(
 			self::SILO_NAME . '/photos/' . $photo['id'],
 			false,
 			$props
 		);
+		//$asset->content = 
 
-		return $result;
+		return $asset;
 	}
 
 	/**
@@ -1031,50 +1054,38 @@ FLICKR;
 			if ( ! $xml->photo ) {
 				return $code_to_replace;
 			}
-			$secret = $xml->photo['secret'];
-			$url = $xml->photo->urls[0]->url[0];
-			$media = $xml->photo['media'];
-			$flickr = "$media|$url|$secret";
-			if ( 'photo' == $media ) {
-				$server = $xml->photo['server'];
-				$farm = $xml->photo['farm'];
-				$flickr .= "|$farm|$server";
-			} elseif ( 'video' == $xml->photo['media'] ) {
+			// get an array of the 'photo' element from the XML
+			$p = (array) $xml->photo->attributes();
+			$flickr = $p['@attributes'];
+			// stuff in the URL to the photopage
+			$flickr['photopage'] = (string) $xml->photo->urls[0]->url[0];
+			// and if it's a video, we want its dimensions
+			if ( 'video' == $flickr['media'] ) {
 				if ( 0 == $xml->photo->video['ready'] ) {
 					return $code_to_replace;
 				}
-				$height = $xml->photo->video['height'];
-				$width = $xml->photo->video['width'];
-				$flickr .= "|$width|$height";
+				$flickr['height'] = (string) $xml->photo->video->attributes()->height;
+				$flickr['width'] = (string) $xml->photo->video->attributes()->width;
 			}
-			// cache the info on this post
+			// cache this array on this post
+			EventLog::log( var_export( $flickr, true ) );
 			$post->info->$info = $flickr;
 			$post->update();
-		} else {
-			list( $media, $url, $secret, $other ) = explode( '|', $flickr, 4 );
-			if ( 'photo' == $media ) {
-				list( $farm, $server ) = explode( '|', $other );
-			} else {
-				list ( $height, $width ) = explode( '|', $other );
-			}
 		}
-		if ( 'photo' == $media ) {
-			$markup = '<a href="' . $url . '">';
-			$markup .= '<img src="http://farm';
-			$markup .= $farm;
-			$markup .= '.staticflickr.com/';
-			$markup .= $server;
-			$markup .= '/';
-			$markup .= $id;
-			$markup .= '_';
-			$markup .= $secret;
-			$markup .= $size;
-			$markup .= '.jpg"';
+		if ( 'photo' == $flickr['media'] ) {
+			$markup = '<a href="' . $flickr['photopahe'] . '">';
+			$markup .= '<img src="';
+			$markup .= $f->getPhotoURL( $flickr, $size );
+			$markup .= '"';
 			if ( $post->author->info->pbem_class ) {
 				$markup .= ' class="' . $post->author->info->pbem_class . '"';
 			}
 			$markup .= '></a>';
 		} else {
+			$photo_id = $flickr['id'];
+			$secret = $flickr['secret'];
+			$height = $flickr['height'];
+			$width = $flickr['width'];
 			$markup = <<<EOF
 <object type="application/x-shockwave-flash" width="$width" height="$height" data="http://www.flickr.com/apps/video/stewart.swf?v=109786"  classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"> <param name="flashvars" value=""intl_lang=en-us&photo_secret=$secret&photo_id=$id&flickr_show_info_box=true&hd_default=false"></param> <param name="movie" value="http://www.flickr.com/apps/video/stewart.swf?v=109786"></param><param name="bgcolor" value="#000000"></param><param name="allowFullScreen" value="true"></param><embed type="application/x-shockwave-flash" src="http://www.flickr.com/apps/video/stewart.swf?v=109786" bgcolor="#000000" allowfullscreen="true" flashvars="intl_lang=en-us&photo_secret=$secret&photo_id=$id&flickr_show_info_box=true&hd_default=false" height="$height" width="$width"></embed></object>
 EOF;
