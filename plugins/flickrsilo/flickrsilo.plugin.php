@@ -1081,7 +1081,6 @@ FLICKR;
 				$flickr['width'] = (string) $xml->photo->video->attributes()->width;
 			}
 			// cache this array on this post
-			EventLog::log( var_export( $flickr, true ) );
 			$post->info->$info = $flickr;
 			$post->update();
 		}
