@@ -732,7 +732,6 @@ class FlickrSilo extends Plugin implements MediaSilo
 		);
 		// now get the actual image data
 		$url = $flickr->getPhotoURL( $xml );
-		EventLog::log( $url );
 		$ch = curl_init ( $url );
 		curl_setopt($ch, CURLOPT_URL, $url );
 		curl_setopt($ch, CURLOPT_HEADER, 0);
