@@ -1060,9 +1060,9 @@ FLICKR;
 		
 		$info = "flickr$id";
 		$flickr = $post->info->$info;
+		$f = new Flickr ( array( 'user_id' => $post->author->id ) );
 		if ( ! $flickr ) {
 			// this photo's details aren't cached on this post. Let's grab 'em
-			$f = new Flickr ( array( 'user_id' => $post->author->id ) );
 			$xml = $f->photosGetInfo( $id );
 			if ( ! $xml->photo ) {
 				return $code_to_replace;
