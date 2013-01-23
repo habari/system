@@ -724,14 +724,27 @@ class FlickrSilo extends Plugin implements MediaSilo
 		foreach( $photo->attributes() as $name => $value ) {
 			$props[$name] = (string)$value;
 		}
-		$props = array_merge( $props, self::element_props( $photo, "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}", $size ) );
+		$props = array_merge( $props, self::element_props( $photo, (string) $xml->photo->urls[0]->url[0], $size ) );
 		$asset = new MediaAsset(
 			self::SILO_NAME . '/photos/' . $photo['id'],
 			false,
 			$props
 		);
-		//$asset->content = 
-
+		// now get the actual image data
+		$url = $flickr->getPhotoURL( $xml );
+		$ch = curl_init ( $url );
+		curl_setopt($ch, CURLOPT_URL, $url );
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
+		//curl_setopt($ch, CURLOPT_ENCODING, gzip);
+		$raw=curl_exec($ch);
+		curl_close ($ch);
+		if ( $raw ) {
+			$asset->content = $raw;
+		}
 		return $asset;
 	}
 
