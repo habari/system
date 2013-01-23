@@ -1085,7 +1085,7 @@ FLICKR;
 			$post->update();
 		}
 		if ( 'photo' == $flickr['media'] ) {
-			$markup = '<a href="' . $flickr['photopahe'] . '">';
+			$markup = '<a href="' . $flickr['photopage'] . '">';
 			$markup .= '<img src="';
 			$markup .= $f->getPhotoURL( $flickr, $size );
 			$markup .= '"';
