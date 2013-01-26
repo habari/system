@@ -1439,7 +1439,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			$arr = array( 'content_type_name' => Post::type_name( $this->content_type ) );
 			$author = URL::extract_args( $this->author, 'author_' );
 			$info = URL::extract_args( $this->info, 'info_' );
-			$this->url_args = array_merge( $author, $info, $arr, $this->pubdate->getdate() );
+			$url_args = array_merge( $author, $info, $arr, $this->pubdate->getdate() );
+			$this->url_args = Plugins::filter('post_url_args', $url_args, $this);
 		}
 		return array_merge($this->url_args, parent::get_url_args());
 	}
