@@ -102,15 +102,30 @@ class flickrAPI
 
 class Flickr extends flickrAPI
 {
+	private $user_id;
+
 	function __construct( $params = array() )
 	{
 		parent::__construct( $params );
+		$this->user_id = ( isset( $params['user_id'] ) ) ? $params['user_id'] : User::identify()->id;
 	}
+
 	// URL building
-	function getPhotoURL( $p, $size = 'm', $ext = 'jpg' )
+	function getPhotoURL( $p, $size = '', $ext = 'jpg' )
 	{
-		return "http://static.flickr.com/{$p['server']}/{$p['id']}_{$p['secret']}_{$size}.{$ext}";
+		$markup = 'http://farm';
+		$markup .= $p['farm'];
+		$markup .= '.staticflickr.com/';
+		$markup .= $p['server'];
+		$markup .= '/';
+		$markup .= $p['id'];
+		$markup .= '_';
+		$markup .= $p['secret'];
+		$markup .= $size;
+		$markup .= '.jpg"';
+		return $markup;
 	}
+
 	// authentication and approval
 	public function getFrob()
 	{
@@ -136,9 +151,19 @@ class Flickr extends flickrAPI
 	// grab the token from our db.
 	function cachedToken()
 	{
-		$token = Options::get( 'flickr_token_' . User::identify()->id );
+		$token = Options::get( 'flickr_token_' . $this->user_id );
 		return $token;
 	}
+
+	// get photo sizes
+	function getSizes( $photo_id )
+	{
+		$params = array( 'api_key' => $this->key, 
+				'photo_id' => $photo_id );
+		$xml = $this->call( 'flickr.photos.getSizes', $params );
+		return $xml;
+	}
+
 	// get publicly available photos
 	function getPublicPhotos( $nsid, $extras = '', $per_page = '', $page = '' )
 	{
@@ -319,26 +344,20 @@ class Flickr extends flickrAPI
 		return $xml;
 	}
 
-	function upload( $photo, $title = '', $description = '', $tags = '', $perms = '', $async = 1, &$info = null )
+	/**
+	 * upload an image to Flickr
+	 * @param String path to the file to upload
+	 * @param String title of the file
+	 * @param String description of the file
+	 * @param String a comma-separated list of tags
+	 * @param Array an array of permissions to apply
+	 * @param Boolean whether to perform an asynchronous upload or not
+	 * @return String a Flickr photo ID or a ticket ID
+	**/
+	function upload( $photo, $title = '', $description = '', $tags = '', $perms = '', $async = 1  )
 	{
-		$store = HABARI_PATH . '/' . Site::get_path( 'user' ) . '/cache';
-		if ( !is_dir( $store ) ){
-			mkdir( $store, 0777 );
-		}
 		$params = array( 'auth_token' => $this->cachedToken() );
-		$url = InputFilter::parse_url( 'file://' . $photo );
-		if ( isset( $url['scheme'] ) ){
-			$localphoto = fopen( HABARI_PATH . '/' . $photo, 'r' );
-			$store = tempnam( $store, 'G2F' );
-			file_put_contents( $store, $localphoto );
-			fclose( $localphoto );
-			$params['photo'] = $store;
-		}
-		else{
-			$params['photo'] = $photo;
-		}
-
-		$info = filesize( $params['photo'] );
+		$params['photo'] = $photo;
 
 		if ( $title ){
 			$params['title'] = $title;
@@ -369,10 +388,6 @@ class Flickr extends flickrAPI
 		}
 		// call the upload method.
 		$xml = $this->call( 'upload', $params );
-
-		if ( $store ){
-			unlink( $store );
-		}
 
 		if ( Error::is_error( $xml ) ){
 			throw $xml;
@@ -434,12 +449,19 @@ class FlickrSilo extends Plugin implements MediaSilo
 	const SILO_NAME = 'Flickr';
 
 	static $cache = array();
+	private $params;
 
 	/**
 	* Initialize some internal values when plugin initializes
 	*/
 	public function action_init()
 	{
+		$this->params = array();
+	}
+
+	public function set_user( $user_id )
+	{
+		$this->params['user_id'] = $user_id;
 	}
 
 	/**
@@ -465,7 +487,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 	*/
 	public function silo_dir( $path )
 	{
-		$flickr = new Flickr();
+		$flickr = new Flickr( $this->params );
 		$results = array();
 		$size = Options::get( 'flickrsilo__flickr_size' );
 
@@ -670,7 +692,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 	*/
 	public function silo_get( $path, $qualities = null )
 	{
-		$flickr = new Flickr();
+		$flickr = new Flickr(  $this->params );
 		$results = array();
 		$size = Options::get( 'flickrsilo__flickr_size' );
 		list($unused, $photoid) = explode( '/', $path );
@@ -728,11 +750,13 @@ class FlickrSilo extends Plugin implements MediaSilo
 	/**
 	* Store the specified media at the specified path
 	*
-	* @param string $path The path of the file to retrieve
-	* @param MediaAsset $ The asset to store
+	* @param string $path The path of the file to upload
+	* @param MediaAsset $filedata The asset to upload
 	*/
 	public function silo_put( $path, $filedata )
 	{
+		$flickr = new Flickr( $this->params );
+		return $flickr->upload( $path, $filedata['title'], $filedata['description'], $filedata['tags'], $filedata['perms'], 0 );
 	}
 
 	/**
@@ -772,7 +796,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 	*/
 	public function silo_contents()
 	{
-		$flickr = new Flickr();
+		$flickr = new Flickr(  $this->params );
 		$token = Options::get( 'flickr_token_' . User::identify()->id );
 		$result = $flickr->call( 'flickr.auth.checkToken',
 			array( 'api_key' => $flickr->key,
@@ -819,7 +843,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 			echo '<p>' . _t( 'Do you want to <a href="%1$s">revoke authorization</a>?', array( $deauth_url ) ) . '</p>';
 		}
 		else{
-			$flickr = new Flickr();
+			$flickr = new Flickr(  $this->params );
 			$_SESSION['flickr_frob'] = '' . $flickr->getFrob();
 			$auth_url = $flickr->authLink( $_SESSION['flickr_frob'] );
 			$confirm_url = URL::get( 'admin', array( 'page' => 'plugins', 'configure' => $this->plugin_id(), 'configaction' => 'confirm' ) ) . '#plugin_options';
@@ -835,7 +859,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 	public function action_plugin_ui_confirm()
 	{
 
-		$flickr = new Flickr();
+		$flickr = new Flickr(  $this->params );
 		if ( !isset( $_SESSION['flickr_frob'] ) ){
 			$auth_url = URL::get( 'admin', array( 'page' => 'plugins', 'configure' => $this->plugin_id(), 'configaction' => 'authorize' ) ) . '#plugin_options';
 			echo '<p>' . _t( 'Either you have already authorized Habari to access your flickr account, or you have not yet done so.  Please <a href="%1$s">try again</a>.', array( $auth_url ) ) . '</p>';
@@ -950,7 +974,7 @@ FLICKR;
 		$flickr_ok = false;
 		$token = Options::get( 'flickr_token_' . User::identify()->id );
 		if ( $token != '' ){
-			$flickr = new Flickr();
+			$flickr = new Flickr(  $this->params );
 			$result = $flickr->call( 'flickr.auth.checkToken', array( 'api_key' => $flickr->key, 'auth_token' => $token ) );
 			if ( isset( $result->auth->perms ) ){
 				$flickr_ok = true;
@@ -995,6 +1019,70 @@ FLICKR;
 		return $controls;
 	}
 
+	public function filter_shortcode_flickr( $code_to_replace, $code_name, $attr_array, $code_contents, $post )
+	{
+		$id = $attr_array['id'];
+		$size = ( isset( $attr_array['size'] ) ) ? '_' . $attr_array['size'] : Options::get('flickrsilo__flickr_size');
+		
+		$info = "flickr$id";
+		$flickr = $post->info->$info;
+		if ( ! $flickr ) {
+			// this photo's details aren't cached on this post. Let's grab 'em
+			$f = new Flickr ( array( 'user_id' => $post->author->id ) );
+			$xml = $f->photosGetInfo( $id );
+			if ( ! $xml->photo ) {
+				return $code_to_replace;
+			}
+			$secret = $xml->photo['secret'];
+			$url = $xml->photo->urls[0]->url[0];
+			$media = $xml->photo['media'];
+			$flickr = "$media|$url|$secret";
+			if ( 'photo' == $media ) {
+				$server = $xml->photo['server'];
+				$farm = $xml->photo['farm'];
+				$flickr .= "|$farm|$server";
+			} elseif ( 'video' == $xml->photo['media'] ) {
+				if ( 0 == $xml->photo->video['ready'] ) {
+					return $code_to_replace;
+				}
+				$height = $xml->photo->video['height'];
+				$width = $xml->photo->video['width'];
+				$flickr .= "|$width|$height";
+			}
+			// cache the info on this post
+			$post->info->$info = $flickr;
+			$post->update();
+		} else {
+			list( $media, $url, $secret, $other ) = explode( '|', $flickr, 4 );
+			if ( 'photo' == $media ) {
+				list( $farm, $server ) = explode( '|', $other );
+			} else {
+				list ( $height, $width ) = explode( '|', $other );
+			}
+		}
+		if ( 'photo' == $media ) {
+			$markup = '<a href="' . $url . '">';
+			$markup .= '<img src="http://farm';
+			$markup .= $farm;
+			$markup .= '.staticflickr.com/';
+			$markup .= $server;
+			$markup .= '/';
+			$markup .= $id;
+			$markup .= '_';
+			$markup .= $secret;
+			$markup .= $size;
+			$markup .= '.jpg"';
+			if ( $post->author->info->pbem_class ) {
+				$markup .= ' class="' . $post->author->info->pbem_class . '"';
+			}
+			$markup .= '></a>';
+		} else {
+			$markup = <<<EOF
+<object type="application/x-shockwave-flash" width="$width" height="$height" data="http://www.flickr.com/apps/video/stewart.swf?v=109786"  classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"> <param name="flashvars" value=""intl_lang=en-us&photo_secret=$secret&photo_id=$id&flickr_show_info_box=true&hd_default=false"></param> <param name="movie" value="http://www.flickr.com/apps/video/stewart.swf?v=109786"></param><param name="bgcolor" value="#000000"></param><param name="allowFullScreen" value="true"></param><embed type="application/x-shockwave-flash" src="http://www.flickr.com/apps/video/stewart.swf?v=109786" bgcolor="#000000" allowfullscreen="true" flashvars="intl_lang=en-us&photo_secret=$secret&photo_id=$id&flickr_show_info_box=true&hd_default=false" height="$height" width="$width"></embed></object>
+EOF;
+		}
+		return $markup;
+	}
 }
 
 ?>

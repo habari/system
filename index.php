@@ -186,7 +186,7 @@ if ( defined( 'SUPPRESS_REQUEST' ) ) {
 Controller::parse_request();
 
 // Run the cron jobs asyncronously.
-CronHandler::run_cron( true );
+CronHandler::run_cron( Config::get('cron_async', true) );
 
 // Dispatch the request (action) to the matched handler.
 Controller::dispatch_request();
