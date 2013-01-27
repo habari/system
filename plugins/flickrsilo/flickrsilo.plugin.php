@@ -1,4 +1,5 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
+<?php
+if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 class flickrAPI
 {
 	function __construct()
@@ -41,59 +42,42 @@ class flickrAPI
 		$args = array_merge( $args, array ( 'api_sig' => $this->sign( $args ) ) );
 		ksort( $args );
 
+		$call = new RemoteRequest( $this->endpoint, 'POST' );
+
+		$args['api_key'] = $this->key;
 		if ( $method == 'upload' ){
-			$req = curl_init();
-			$args['api_key'] = $this->key;
-			$photo = $args['photo'];
-			$args['photo'] = '@' . $photo;
-			curl_setopt( $req, CURLOPT_URL, $this->uploadendpoint );
-			curl_setopt( $req, CURLOPT_TIMEOUT, 0 );
-			// curl_setopt($req, CURLOPT_INFILESIZE, filesize($photo));
-			// Sign and build request parameters
-			curl_setopt( $req, CURLOPT_POSTFIELDS, $args );
-			curl_setopt( $req, CURLOPT_CONNECTTIMEOUT, $this->conntimeout );
-			curl_setopt( $req, CURLOPT_FOLLOWLOCATION, 1 );
-			curl_setopt( $req, CURLOPT_HEADER, 0 );
-			curl_setopt( $req, CURLOPT_RETURNTRANSFER, 1 );
-			$this->_http_body = curl_exec( $req );
+			$call = new RemoteRequest( $this->uploadendpoint, 'POST' );
+			if ( is_file( $args['photo'] ) ){
+				// we have a valid file and filename
+				$call->set_file( 'photo', $args['photo'] );
+				unset( $args['photo'] );
+			} 
+		}
 
-			if ( curl_errno( $req ) ){
-				throw new Exception( curl_error( $req ) );
-			}
-
-			curl_close( $req );
-			$xml = simplexml_load_string( $this->_http_body );
-			$this->xml = $xml;
+		$call->set_timeout( 5 );
+		$call->set_postdata( $args );
+		
+		try {
+			$result = $call->execute();
+		}
+		catch ( RemoteRequest_Timeout $t ) {
+			Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
+			return false;
+		}
+		catch ( Exception $e ) {
+			// at the moment we're using the same error message, though this is more catastrophic
+			Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
+			return false;
+		}
+			
+		$response = $call->get_response_body();
+		try{
+			$xml = new SimpleXMLElement( $response );
 			return $xml;
 		}
-		else{
-			$url = $this->endpoint . implode( '&', $this->encode( $args ) );
-
-			$call = new RemoteRequest( $url );
-			$call->set_timeout( 5 );
-			
-			try {
-				$result = $call->execute();
-			}
-			catch ( RemoteRequest_Timeout $t ) {
-				Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
-				return false;
-			}
-			catch ( Exception $e ) {
-				// at the moment we're using the same error message, though this is more catastrophic
-				Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
-				return false;
-			}
-			
-			$response = $call->get_response_body();
-			try{
-				$xml = new SimpleXMLElement( $response );
-				return $xml;
-			}
-			catch( Exception $e ) {
-				Session::error( 'Unable to process Flickr response.', 'flickr API' );
-				return false;
-			}
+		catch( Exception $e ) {
+			Session::error( 'Unable to process Flickr response.', 'flickr API' );
+			return false;
 		}
 	}
 }
@@ -366,7 +350,7 @@ class Flickr extends flickrAPI
 
 	/**
 	 * upload an image to Flickr
-	 * @param String path to the file to upload
+	 * @param mixed path to the file to upload, or the raw data itself
 	 * @param String title of the file
 	 * @param String description of the file
 	 * @param String a comma-separated list of tags
@@ -381,7 +365,11 @@ class Flickr extends flickrAPI
 
 		if ( $title ){
 			$params['title'] = $title;
-		}
+		} elseif( is_file( $photo ) ) {
+			$params['title'] = basename( $photo );
+		} else {
+			$params['title'] = date( 'Y-m-d' );
+		} 
 
 		if ( $description ){
 			$params['description'] = $description;
@@ -732,18 +720,22 @@ class FlickrSilo extends Plugin implements MediaSilo
 		);
 		// now get the actual image data
 		$url = $flickr->getPhotoURL( $xml );
-		$ch = curl_init ( $url );
-		curl_setopt($ch, CURLOPT_URL, $url );
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
-		//curl_setopt($ch, CURLOPT_ENCODING, gzip);
-		$raw=curl_exec($ch);
-		curl_close ($ch);
-		if ( $raw ) {
-			$asset->content = $raw;
+		$call = new RemoteRequest( $url );
+		try {
+			$result = $call->execute();
+		}
+		catch ( RemoteRequest_Timeout $t ) {
+			Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
+			return false;
+		}
+		catch ( Exception $e ) {
+			// at the moment we're using the same error message, though this is more catastrophic
+			Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
+			return false;
+		}
+
+		if ( $result ) {
+			$asset->content = $result;
 		}
 		return $asset;
 	}
