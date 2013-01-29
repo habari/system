@@ -106,6 +106,14 @@ class DateTime extends \DateTime
 	}
 
 	/**
+	 * This function should not be used.  Use ::create() instead
+	 * @deprecated
+	 */
+	public static function date_create( $time = null, $timezone = null ) {
+		return self::create( $time, $timezone );
+	}
+
+	/**
 	 * Helper function to create a DateTime object for the given
 	 * time and timezone. If no time is given, defaults to 'now'. If no
 	 * timezone given defaults to timezone set in {@link set_default_timezone()}
@@ -117,7 +125,7 @@ class DateTime extends \DateTime
 	 * @param string $timezone A timezone name, not an abbreviation.
 	 * @return \Habari\DateTime
 	 */
-	public static function date_create( $time = null, $timezone = null )
+	public static function create( $time = null, $timezone = null )
 	{
 		if ( $time instanceOf DateTime ) {
 			return $time;
