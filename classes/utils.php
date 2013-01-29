@@ -745,7 +745,7 @@ class Utils
 			$display_errors = ini_set( 'display_errors', 'on' ); // Make sure we have something to catch
 			$html_errors = ini_set( 'html_errors', 'off');
 			$error_reporting = error_reporting( E_ALL ^ E_NOTICE );
-			$code = eval( 'namespace Habari\SyntaxCheck; return true; ' . $code ); // Put $code in a dead code sandbox to prevent its execution
+			$code = eval( "namespace HabariSandBox; return true; \n" . $code . "\n"); // Put $code in a dead code sandbox to prevent its execution
 			ini_set( 'display_errors', $display_errors ); // be a good citizen
 			ini_set( 'html_errors', $html_errors );
 			error_reporting( $error_reporting );
@@ -763,11 +763,11 @@ class Utils
 	public static function php_check_file_syntax( $file, &$error = null )
 	{
 		// Prepend and append PHP opening tags to prevent eval() failures.
-		$plugin_code = trim(file_get_contents( $file ));
+		$plugin_code = file_get_contents( $file );
 		$replacements = array(
 			'#^<\?(php)?\s#A' => '',
 			'#\?>$#' => '',
-			'#namespace [^;]+;#' => 'namespace Habari\SyntaxCheck\Plugin;'
+			'#namespace [^;]+;#' => 'namespace HabariSandBox\Plugin;'
 		);
 		foreach($replacements as $search => $replacement) {
 			if(preg_match($search, $plugin_code)) {
