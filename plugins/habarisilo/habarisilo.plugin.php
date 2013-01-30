@@ -239,7 +239,14 @@ class HabariSilo extends Plugin implements MediaSilo
 		}
 
 		// Get information about the image
-		list( $src_width, $src_height, $type, $attr )= getimagesize( $src_filename );
+		$isize = @getimagesize( $src_filename );
+		if(is_array($isize)) {
+			list( $src_width, $src_height, $type, $attr )= $isize;
+		}
+		else {
+			$type = '';
+			$src_img = '';
+		}
 
 		// Load the image based on filetype
 		switch ( $type ) {

@@ -286,6 +286,31 @@ class URL extends Singleton
 		return $args;
 	}
 
+	/**
+	 * Helper method for auth_ajax rule
+	 * @param string $context The context of the ajax rule
+	 * @param array|string|object $args The arguments to pass to the rule's builder
+	 * @return string The resultant URL
+	 */
+	public function auth_ajax($context, $args = array())
+	{
+		$args['context'] = $context;
+		return URL::get('auth_ajax', $args);
+	}
+
+
+	/**
+	 * Helper method for ajax rule
+	 * @param string $context The context of the ajax rule
+	 * @param array|string|object $args The arguments to pass to the rule's builder
+	 * @return string The resultant URL
+	 */
+	public function ajax($context, $args = array())
+	{
+		$args['context'] = $context;
+		return URL::get('ajax', $args);
+	}
+
 }
 
 ?>
