@@ -538,7 +538,7 @@ class AdminCommentsHandler extends AdminHandler
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
 			Session::error( _t( 'WSSE authentication failed.' ) );
-			echo Session::messages_get( true, array( '\Habari\Format', 'json_messages' ) );
+			echo Session::messages_get( true, Method::create( '\Habari\Format', 'json_messages' ) );
 			return;
 		}
 
@@ -553,7 +553,7 @@ class AdminCommentsHandler extends AdminHandler
 
 		if ( ( ! isset( $ids ) || empty( $ids ) ) && $handler_vars['action'] == 'delete' ) {
 			Session::notice( _t( 'No comments selected.' ) );
-			echo Session::messages_get( true, array( '\Habari\Format', 'json_messages' ) );
+			echo Session::messages_get( true, Method::create( '\Habari\Format', 'json_messages' ) );
 			return;
 		}
 

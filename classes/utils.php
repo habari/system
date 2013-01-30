@@ -128,7 +128,7 @@ class Utils
 	public static function stripslashes( $value )
 	{
 		if ( is_array( $value ) ) {
-			$value = array_map( array( '\Habari\Utils', 'stripslashes' ), $value );
+			$value = array_map( Method::create( '\Habari\Utils', 'stripslashes' ), $value );
 		}
 		elseif ( !empty( $value ) && is_string( $value ) ) {
 			$value = stripslashes( $value );
@@ -142,7 +142,7 @@ class Utils
 	public static function addslashes( $value )
 	{
 		if ( is_array( $value ) ) {
-			$value = array_map( array( '\Habari\Utils', 'addslashes' ), $value );
+			$value = array_map( Method::create( '\Habari\Utils', 'addslashes' ), $value );
 		}
 		else if ( !empty( $value ) && is_string( $value ) ) {
 			$value = addslashes( $value );
@@ -198,7 +198,7 @@ class Utils
 		if ( ! is_array( $values ) ) {
 			$values = array();
 		}
-		$values = array_map( array( '\Habari\Utils', 'quote_spaced' ), $values );
+		$values = array_map( Method::create( '\Habari\Utils', 'quote_spaced' ), $values );
 		return implode( $separator, $values );
 	}
 
@@ -993,7 +993,7 @@ class Utils
 	 */
 	public static function array_or( $input )
 	{
-		return array_reduce( $input, array( '\Habari\Utils', 'ror' ), 0 );
+		return array_reduce( $input, Method::create( '\Habari\Utils', 'ror' ), 0 );
 	}
 
 	/**

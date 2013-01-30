@@ -975,7 +975,7 @@ class Posts extends \ArrayObject implements IsContent
 
 		CronTab::delete_cronjob( 'publish_scheduled_posts' );
 		if ( $min_time ) {
-			CronTab::add_single_cron( 'publish_scheduled_posts', array( '\Habari\Posts', 'publish_scheduled_posts' ), $min_time, 'Next run: ' . DateTime::date_create( $min_time )->get( 'c' ) );
+			CronTab::add_single_cron( 'publish_scheduled_posts', Method::create( '\Habari\Posts', 'publish_scheduled_posts' ), $min_time, 'Next run: ' . DateTime::date_create( $min_time )->get( 'c' ) );
 		}
 	}
 
