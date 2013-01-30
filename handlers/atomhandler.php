@@ -95,7 +95,7 @@ class AtomHandler extends ActionHandler
 		}
 
 		if ( $updated == null ) {
-			$feed_updated = $xml->addChild( 'updated', DateTime::date_create()->get( 'c' ) );
+			$feed_updated = $xml->addChild( 'updated', DateTime::create()->get( 'c' ) );
 		}
 		else {
 			$feed_updated = $xml->addChild( 'updated', $updated->get( 'c' ) );
@@ -485,7 +485,7 @@ class AtomHandler extends ActionHandler
 		// Assign alternate link.
 		$alternate = '';
 
-		$updated = DateTime::date_create();
+		$updated = DateTime::create();
 
 		// Check if this is a feed for a single post
 		if ( isset( $params['slug'] ) || isset( $params['id'] ) ) {

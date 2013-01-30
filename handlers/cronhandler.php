@@ -20,8 +20,8 @@ class CronHandler extends ActionHandler
 	static function run_cron( $async = false )
 	{
 		// check if it's time to run crons, and if crons are already running.
-		$next_cron = DateTime::date_create( Options::get( 'next_cron' ) );
-		$time = DateTime::date_create();
+		$next_cron = DateTime::create( Options::get( 'next_cron' ) );
+		$time = DateTime::create();
 		if ( ( $next_cron->int > $time->int )
 			|| ( Options::get( 'cron_running' ) && Options::get( 'cron_running' ) > microtime( true ) )
 		) {
@@ -61,7 +61,7 @@ class CronHandler extends ActionHandler
 				return;
 			}
 
-			$time = DateTime::date_create();
+			$time = DateTime::create();
 			$crons = DB::get_results(
 				'SELECT * FROM {crontab} WHERE start_time <= ? AND next_run <= ? AND active != ?',
 				array( $time->sql, $time->sql, 0 ),
@@ -101,7 +101,7 @@ class CronHandler extends ActionHandler
 		if ( !ini_get( 'safe_mode' ) ) {
 			set_time_limit( 600 );
 		}
-		$time = DateTime::date_create();
+		$time = DateTime::create();
 		$crons = DB::get_results(
 			'SELECT * FROM {crontab} WHERE start_time <= ? AND next_run <= ? AND active != ?',
 			array( $time->sql, $time->sql, 0 ),

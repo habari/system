@@ -242,7 +242,7 @@ class Pingback extends Plugin
 				'ip'		=>	Utils::get_ip(),
 				'content'	=>	$source_excerpt,
 				'status'	=>	Comment::STATUS_UNAPPROVED,
-				'date'		=>	DateTime::date_create(),
+				'date'		=>	DateTime::create(),
 				'type' 		=> 	Comment::PINGBACK,
 				) );
 

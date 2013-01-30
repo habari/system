@@ -372,9 +372,9 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			'input_formats' => '',
 			'user_id' => 0,
 			'status' => Post::status( 'draft' ),
-			'pubdate' => DateTime::date_create(),
-			'updated' => DateTime::date_create(),
-			'modified' => DateTime::date_create(),
+			'pubdate' => DateTime::create(),
+			'updated' => DateTime::create(),
+			'modified' => DateTime::create(),
 			'content_type' => Post::type( 'entry' )
 		);
 	}
@@ -605,16 +605,16 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function insert()
 	{
-		$this->newfields['updated'] = DateTime::date_create();
+		$this->newfields['updated'] = DateTime::create();
 		$this->newfields['modified'] = $this->newfields['updated'];
 		$this->setguid();
 		
 		// if the date is in the future and we are trying to publish the post, actually schedule it for posting later
-		if ( $this->pubdate > DateTime::date_create() && $this->status == Post::status( 'published' ) ) {
+		if ( $this->pubdate > DateTime::create() && $this->status == Post::status( 'published' ) ) {
 			$this->status = Post::status( 'scheduled' );
 		}
 		// but if it's already scheduled and the date is not in the future, go ahead and publish it instead
-		else if ( $this->pubdate <= DateTime::date_create() && $this->status == Post::status( 'scheduled' ) ) {
+		else if ( $this->pubdate <= DateTime::create() && $this->status == Post::status( 'scheduled' ) ) {
 			$this->status = Post::status( 'published' );
 		}
 
@@ -662,7 +662,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function update( $minor = true )
 	{
-		$this->modified = DateTime::date_create();
+		$this->modified = DateTime::create();
 		if ( ! $minor && $this->status != Post::status( 'draft' ) ) {
 			$this->updated = $this->modified;
 		}
@@ -672,11 +672,11 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		}
 		
 		// if the date is in the future and we are trying to publish the post, actually schedule it for posting later
-		if ( $this->pubdate > DateTime::date_create() && $this->status == Post::status( 'published' ) ) {
+		if ( $this->pubdate > DateTime::create() && $this->status == Post::status( 'published' ) ) {
 			$this->status = Post::status( 'scheduled' );
 		}
 		// but if it's already scheduled and the date is not in the future, go ahead and publish it instead
-		else if ( $this->pubdate <= DateTime::date_create() && $this->status == Post::status( 'scheduled' ) ) {
+		else if ( $this->pubdate <= DateTime::create() && $this->status == Post::status( 'scheduled' ) ) {
 			$this->status = Post::status( 'published' );
 		}
 
@@ -779,7 +779,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		Plugins::act( 'post_publish_before', $this );
 
 		if ( $this->status != Post::status( 'scheduled' ) ) {
-			$this->pubdate = DateTime::date_create();
+			$this->pubdate = DateTime::create();
 		}
 
 		if ( $this->status == Post::status( 'scheduled' ) ) {
@@ -883,7 +883,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			case 'updated':
 			case 'modified':
 				if ( !( $value instanceOf DateTime ) ) {
-					$value = DateTime::date_create( $value );
+					$value = DateTime::create( $value );
 				}
 				break;
 			case 'tags':
@@ -1125,15 +1125,15 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		//		4) the published date is NOT in the future -- if it were, we would reset the date on scheduled posts if we edit them again before they are published
 		if ( ( $post->status != Post::status( 'published' ) )
 			&& ( $form->status->value == Post::status( 'published' ) )
-			&& ( $post->pubdate == DateTime::date_create( $form->pubdate->value )
-			&& ( $post->pubdate <= DateTime::date_create() ) )
+			&& ( $post->pubdate == DateTime::create( $form->pubdate->value )
+			&& ( $post->pubdate <= DateTime::create() ) )
 		) {
-			$post->pubdate = DateTime::date_create();
+			$post->pubdate = DateTime::create();
 		}
 		// otherwise, the post may not be changing to a published state, they may have specified something new, or the date may be in the future for a scheduled post. it doesn't matter, we'll use what was submitted
 		// if it's in the future, it will get scheduled later in insert() or update()
 		else {
-			$post->pubdate = DateTime::date_create( $form->pubdate->value );
+			$post->pubdate = DateTime::create( $form->pubdate->value );
 		}
 
 		// Minor updates are when the user has checked the minor update box and the post isn't in draft or new

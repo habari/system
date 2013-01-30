@@ -48,9 +48,9 @@ class CronJob extends QueryRecord
 			'name' => '',
 			'callback' => '',
 			'last_run' => null,
-			'next_run' => DateTime::date_create(),
+			'next_run' => DateTime::create(),
 			'increment' => 86400, // one day
-			'start_time' => DateTime::date_create(),
+			'start_time' => DateTime::create(),
 			'end_time' => null,
 			'result' => '',
 			'cron_class' => self::CRON_CUSTOM,
@@ -69,7 +69,7 @@ class CronJob extends QueryRecord
 	 */
 	public function __construct( $paramarray = array() )
 	{
-		$this->now = DateTime::date_create();
+		$this->now = DateTime::create();
 
 		// Defaults
 		$this->fields = array_merge(
@@ -195,7 +195,7 @@ class CronJob extends QueryRecord
 			case 'start_time':
 			case 'end_time':
 				if ( !( $value instanceOf DateTime ) && ! is_null( $value ) ) {
-					$value = DateTime::date_create( $value );
+					$value = DateTime::create( $value );
 				}
 				break;
 		}

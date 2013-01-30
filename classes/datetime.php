@@ -295,7 +295,7 @@ class DateTime extends \DateTime
 	 * Returns date components inserted into a string
 	 * 
 	 * Example:
-	 * echo DateTime::date_create('2010-01-01')->text_format('The year was {Y}.');
+	 * echo DateTime::create('2010-01-01')->text_format('The year was {Y}.');
 	 * // Expected output:  The year was 2010.	 	  	
 	 *	
 	 * @param string $format A string with single-character date format codes {@link http://php.net/date date()} surrounded by braces
@@ -478,7 +478,7 @@ class DateTime extends \DateTime
 	public function friendly ( $precision = 7, $include_suffix = true )
 	{
 				
-		$difference = self::difference( self::date_create(), $this );
+		$difference = self::difference( self::create(), $this );
 				
 		
 		$result = array();
@@ -538,7 +538,7 @@ class DateTime extends \DateTime
 	 */
 	public function fuzzy ()
 	{
-		$difference = self::date_create()->int - $this->int;
+		$difference = self::create()->int - $this->int;
 		
 		if ( $difference < 0 ) {
 			$future = true;
@@ -627,8 +627,8 @@ class DateTime extends \DateTime
 	 *  
 	 *  @todo Add total_days, total_years, etc. values?
 	 * 
-	 * @param mixed $start_date The start date, as a HDT object or any format accepted by DateTime::date_create().
-	 * @param mixed $end_date The end date, as a HDT object or any format accepted by DateTime::date_create().
+	 * @param mixed $start_date The start date, as a HDT object or any format accepted by DateTime::create().
+	 * @param mixed $end_date The end date, as a HDT object or any format accepted by DateTime::create().
 	 * @return array Array of each interval and whether the interval is inverted or not.
 	 */
 	public static function difference( $start_date, $end_date )
@@ -636,11 +636,11 @@ class DateTime extends \DateTime
 		
 		// if the dates aren't HDT objects, try to convert them to one. this lets you pass in just about any format
 		if ( !$start_date instanceof DateTime ) {
-			$start_date = DateTime::date_create( $start_date );
+			$start_date = DateTime::create( $start_date );
 		}
 		
 		if ( !$end_date instanceof DateTime ) {
-			$end_date = DateTime::date_create( $end_date );
+			$end_date = DateTime::create( $end_date );
 		}
 		
 		$result = array();
