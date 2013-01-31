@@ -1688,6 +1688,20 @@ LIST_REVISIONS;
 	}
 
 	/**
+	 * Set this post to have the same data as the post on the specified date
+	 * @param DateTime|string|int $date The date to fetch the revision of
+	 */
+	public function set_revision($date) {
+		$rev_data = $this->get_revision_data($date);
+		foreach($rev_data as $field) {
+			if(isset($this->fields[$field->change_field])) {
+				$this->newfields[$field->change_field] = $field->old_value;
+			}
+		}
+		Plugins::act('set_revision_field', $this, $rev_data);
+	}
+
+	/**
 	 * How to display the built-in post types.
 	 *
 	 * @param string $type The type of Post
