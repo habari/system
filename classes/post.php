@@ -704,7 +704,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			Plugins::act( 'post_update_' . $fieldname, $this, $this->fields[$fieldname], $value );
 			if($this->fields[$fieldname] != $value) {
 				DB::insert(
-					'revisions',
+					'{revisions}',
 					array(
 						'post_id' => $this->fields['id'],
 						'change_field' => $fieldname,
