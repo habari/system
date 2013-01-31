@@ -1684,7 +1684,7 @@ FROM {revisions}
 WHERE post_id = :post_id;
 LIST_REVISIONS;
 
-		return DB::get_results($sql, array('post_id' => $this->id));
+		return DB::get_keyvalue($sql, array('post_id' => $this->id));
 	}
 
 	/**
