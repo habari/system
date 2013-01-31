@@ -699,8 +699,21 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		// invoke plugins for all fields which have been changed
 		// For example, a plugin action "post_update_status" would be
 		// triggered if the post has a new status value
+		$change_date = DateTime::create()->sql;
 		foreach ( $this->newfields as $fieldname => $value ) {
 			Plugins::act( 'post_update_' . $fieldname, $this, $this->fields[$fieldname], $value );
+			if($this->fields[$fieldname] != $value) {
+				DB::insert(
+					'revisions',
+					array(
+						'post_id' => $this->fields['id'],
+						'change_field' => $fieldname,
+						'old_value' => $this->fields[$fieldname],
+						'user_id' => User::identify()->id,
+						'change_date' => $change_date,
+					)
+				);
+			}
 		}
 
 		// invoke plugins for status changes

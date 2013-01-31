@@ -17,6 +17,16 @@ CREATE TABLE {$prefix}posts (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS slug ON {$prefix}posts(slug);
 
+CREATE TABLE {$prefix}revisions(
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  post_id INTEGER NOT NULL,
+  change_field VARCHAR(255) NOT NULL,
+  old_value TEXT DEFAULT NULL,
+  user_id INTEGER DEFAULT NULL,
+  change_date INTEGER NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS revisions ON {$prefix}revisions(post_id, change_date, change_field);
+
 CREATE TABLE {$prefix}postinfo  (
   post_id INTEGER NOT NULL,
   name VARCHAR(255) NOT NULL,
