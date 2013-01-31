@@ -1653,6 +1653,41 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	}
 
 	/**
+	 * Get the fields of the post that differ from what is stored by date
+	 * @param DateTime|string|int $date The date to fetch the revision of
+	 * @return array An array of field data for the post with the values of those fields at the specified date
+	 */
+	public function get_revision_data($date) {
+		$sql = <<< GET_REVISION_DATA
+SELECT
+id, post_id, change_field, old_value, user_id, min(change_date) as change_date
+FROM {revisions}
+WHERE
+post_id = :post_id
+AND change_date > :rev_date
+GROUP BY change_field
+ORDER BY change_date;
+GET_REVISION_DATA;
+
+		return DB::get_results($sql, array('post_id' => $this->id, 'rev_date' => DateTime::create($date)->sql));
+	}
+
+	/**
+	 * List the stored revisions of this post by date and user id
+	 * @return array
+	 */
+	public function list_revisions() {
+		$sql = <<< LIST_REVISIONS
+SELECT DISTINCT
+change_date, user_id
+FROM {revisions}
+WHERE post_id = :post_id;
+LIST_REVISIONS;
+
+		return DB::get_results($sql, array('post_id' => $this->id));
+	}
+
+	/**
 	 * How to display the built-in post types.
 	 *
 	 * @param string $type The type of Post
