@@ -514,7 +514,7 @@ SQL;
 	public function __call( $name, $args )
 	{
 		array_unshift( $args, 'term_call_' . $name, null, $this );
-		return call_user_func_array( array( '\\Habari\\Plugins', 'filter' ), $args );
+		return call_user_func_array( Method::create( '\\Habari\\Plugins', 'filter' ), $args );
 	}
 
 	/**

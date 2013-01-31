@@ -487,26 +487,26 @@ class Posts extends \ArrayObject implements IsContent
 			 */
 			if ( isset( $paramset['day'] ) && isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
 				$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
-				$start_date = DateTime::date_create( $start_date );
+				$start_date = DateTime::create( $start_date );
 				$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 day -1 second' )->sql));
 			}
 			elseif ( isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
 				$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
-				$start_date = DateTime::date_create( $start_date );
+				$start_date = DateTime::create( $start_date );
 				$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 month -1 second' )->sql));
 			}
 			elseif ( isset( $paramset['year'] ) ) {
 				$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
-				$start_date = DateTime::date_create( $start_date );
+				$start_date = DateTime::create( $start_date );
 				$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 year -1 second' )->sql));
 			}
 
 			if ( isset( $paramset['after'] ) ) {
-				$where->add('pubdate > :after_date', array('after_date' => DateTime::date_create( $paramset['after'] )->sql));
+				$where->add('pubdate > :after_date', array('after_date' => DateTime::create( $paramset['after'] )->sql));
 			}
 
 			if ( isset( $paramset['before'] ) ) {
-				$where->add('pubdate < :before_date', array('before_date' => DateTime::date_create( $paramset['before'] )->sql));
+				$where->add('pubdate < :before_date', array('before_date' => DateTime::create( $paramset['before'] )->sql));
 			}
 
 			// Concatenate the WHERE clauses
@@ -955,7 +955,7 @@ class Posts extends \ArrayObject implements IsContent
 			$select[$field] = "{posts}.$field AS $field";
 		}
 		$select = implode( ',', $select );
-		$posts = DB::get_results( 'SELECT ' . $select . ' FROM {posts} WHERE {posts}.status = ? AND {posts}.pubdate <= ? ORDER BY {posts}.pubdate DESC', array( Post::status( 'scheduled' ), DateTime::date_create() ), 'Post' );
+		$posts = DB::get_results( 'SELECT ' . $select . ' FROM {posts} WHERE {posts}.status = ? AND {posts}.pubdate <= ? ORDER BY {posts}.pubdate DESC', array( Post::status( 'scheduled' ), DateTime::create() ), 'Post' );
 		foreach ( $posts as $post ) {
 			$post->publish();
 		}
@@ -975,7 +975,7 @@ class Posts extends \ArrayObject implements IsContent
 
 		CronTab::delete_cronjob( 'publish_scheduled_posts' );
 		if ( $min_time ) {
-			CronTab::add_single_cron( 'publish_scheduled_posts', array( '\Habari\Posts', 'publish_scheduled_posts' ), $min_time, 'Next run: ' . DateTime::date_create( $min_time )->get( 'c' ) );
+			CronTab::add_single_cron( 'publish_scheduled_posts', Method::create( '\Habari\Posts', 'publish_scheduled_posts' ), $min_time, 'Next run: ' . DateTime::create( $min_time )->get( 'c' ) );
 		}
 	}
 

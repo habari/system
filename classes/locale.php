@@ -299,7 +299,7 @@ class Locale
 	public static function _e()
 	{
 		$args = func_get_args();
-		echo call_user_func_array( array( '\\Habari\\Locale', '_t' ), $args );
+		echo call_user_func_array( Method::create( '\\Habari\\Locale', '_t' ), $args );
 	}
 
 	/**

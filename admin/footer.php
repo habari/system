@@ -29,7 +29,7 @@
 
 <?php
 	Plugins::act( 'admin_footer', $this );
-	Stack::out( 'admin_footer_javascript', array('\\Habari\\Stack', 'scripts') );
+	Stack::out( 'admin_footer_javascript', Method::create('\\Habari\\Stack', 'scripts') );
 	include ('db_profiling.php');
 ?>
 
@@ -38,7 +38,7 @@
 <?php if ( Session::has_messages() ): ?>
 	<script type="text/javascript">
 	jQuery(document).ready(function() {
-		<?php Session::messages_out( true, array( '\\Habari\\Format', 'humane_messages' ) ); ?>
+		<?php Session::messages_out( true, Method::create( '\\Habari\\Format', 'humane_messages' ) ); ?>
 	})
   </script>
 <?php endif; ?>

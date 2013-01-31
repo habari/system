@@ -4,6 +4,8 @@
  *
  */
 
+namespace Habari;
+
 /**
  * This interface should be applied to plugins that implement importing
  * from other blogging tools.

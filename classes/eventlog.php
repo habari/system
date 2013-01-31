@@ -259,7 +259,7 @@ class EventLog extends \ArrayObject
 				if ( isset( $paramset['day'] ) ) {
 					$where[] = 'timestamp BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
-					$start_date = DateTime::date_create( $start_date );
+					$start_date = DateTime::create( $start_date );
 					$params[] = $start_date->sql;
 					$params[] = $start_date->modify( '+1 day' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
@@ -268,7 +268,7 @@ class EventLog extends \ArrayObject
 				elseif ( isset( $paramset['month'] ) ) {
 					$where[] = 'timestamp BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
-					$start_date = DateTime::date_create( $start_date );
+					$start_date = DateTime::create( $start_date );
 					$params[] = $start_date->sql;
 					$params[] = $start_date->modify( '+1 month' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
@@ -277,7 +277,7 @@ class EventLog extends \ArrayObject
 				elseif ( isset( $paramset['year'] ) ) {
 					$where[] = 'timestamp BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
-					$start_date = DateTime::date_create( $start_date );
+					$start_date = DateTime::create( $start_date );
 					$params[] = $start_date->sql;
 					$params[] = $start_date->modify( '+1 year' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
@@ -363,7 +363,7 @@ class EventLog extends \ArrayObject
 		$retention = '-' . intval( $retention ) . ' days';
 
 		// Trim the log table down
-		$date = DateTime::date_create()->modify( $retention );
+		$date = DateTime::create()->modify( $retention );
 
 		return DB::query( 'DELETE FROM {log} WHERE timestamp < ?', array( $date->sql ) );
 

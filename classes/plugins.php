@@ -206,7 +206,7 @@ class Plugins
 		if ( !isset( self::$hooks['theme'][$hookname] ) ) {
 			if ( substr( $hookname, -6 ) != '_empty' ) {
 				array_unshift( $filter_args, $hookname . '_empty' );
-				return call_user_func_array( array( '\\Habari\\Plugins', 'theme' ), $filter_args );
+				return call_user_func_array( Method::create( '\\Habari\\Plugins', 'theme' ), $filter_args );
 			}
 			return array();
 		}
@@ -236,10 +236,10 @@ class Plugins
 		}
 		if ( count( $return ) == 0 && substr( $hookname, -6 ) != '_empty' ) {
 			array_unshift( $filter_args, $hookname . '_empty' );
-			$result = call_user_func_array( array( '\\Habari\\Plugins', 'theme' ), $filter_args );
+			$result = call_user_func_array( Method::create( '\\Habari\\Plugins', 'theme' ), $filter_args );
 		}
 		array_unshift( $filter_args, 'theme_call_' . $hookname, $return );
-		$result = call_user_func_array( array( '\\Habari\\Plugins', 'filter' ), $filter_args );
+		$result = call_user_func_array( Method::create( '\\Habari\\Plugins', 'filter' ), $filter_args );
 		return $result;
 	}
 
@@ -424,7 +424,7 @@ class Plugins
 	public static function get_plugin_classes()
 	{
 		$classes = get_declared_classes();
-		return array_filter( $classes, array( 'Habari\Plugins', 'extends_plugin' ) );
+		return array_filter( $classes, Method::create( 'Habari\Plugins', 'extends_plugin' ) );
 	}
 
 	/**

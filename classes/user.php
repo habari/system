@@ -539,7 +539,7 @@ class User extends QueryRecord implements FormStorage, IsContent
 	{
 		$tokens = Utils::single_array( $tokens );
 		// Use ids internally for all tokens
-		$tokens = array_map( array( '\Habari\ACL', 'token_id' ), $tokens );
+		$tokens = array_map( Method::create( '\Habari\ACL', 'token_id' ), $tokens );
 
 		foreach ( $tokens as $token ) {
 			ACL::grant_user( $this->id, $token, $access );
@@ -564,7 +564,7 @@ class User extends QueryRecord implements FormStorage, IsContent
 	{
 		$tokens = Utils::single_array( $tokens );
 		// get token IDs
-		$tokens = array_map( array( '\Habari\ACL', 'token_id' ), $tokens );
+		$tokens = array_map( Method::create( '\Habari\ACL', 'token_id' ), $tokens );
 		foreach ( $tokens as $token ) {
 			ACL::revoke_user_token( $this->id, $token );
 			EventLog::log( _t( 'User %1$s: Permission to %2$s revoked.', array( $this->username, ACL::token_name( $token ) ) ), 'notice', 'user', 'habari' );

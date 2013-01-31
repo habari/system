@@ -133,7 +133,7 @@ class Session
 		}
 
 		// Verify expiry
-		if ( DateTime::date_create()->int > $session->expires ) {
+		if ( DateTime::create()->int > $session->expires ) {
 			if ( $session->user_id ) {
 				Session::error( _t( 'Your session expired.' ), 'expired_session' );
 			}
@@ -168,7 +168,7 @@ class Session
 		self::$initial_data = $session->data;
 		
 		// but if the expiration is close (less than half the session lifetime away), null it out so the session always gets written so we extend the session
-		if ( ( $session->expires - DateTime::date_create()->int ) < ( self::$lifetime / 2 ) ) {
+		if ( ( $session->expires - DateTime::create()->int ) < ( self::$lifetime / 2 ) ) {
 			self::$initial_data = null;
 		}
 
@@ -203,7 +203,7 @@ class Session
 			// DB::update() checks if the record key exists, and inserts if not
 			$record = array(
 				'ip' => self::get_subnet( $remote_address ),
-				'expires' => DateTime::date_create()->int + self::$lifetime,
+				'expires' => DateTime::create()->int + self::$lifetime,
 				'ua' => MultiByte::substr( $user_agent, 0, 255 ),
 				'data' => $data,
 			);
@@ -238,7 +238,7 @@ class Session
 	public static function gc( $max_lifetime )
 	{
 		$sql = 'DELETE FROM {sessions} WHERE expires < ?';
-		$args = array( DateTime::date_create()->int );
+		$args = array( DateTime::create()->int );
 		$sql = Plugins::filter( 'sessions_clean', $sql, 'gc', $args );
 		DB::query( $sql, $args );
 		return true;

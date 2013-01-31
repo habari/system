@@ -326,7 +326,7 @@ class Format
 	public static function format_date( $date, $format )
 	{
 		if ( !( $date instanceOf DateTime ) ) {
-			$date = DateTime::date_create( $date );
+			$date = DateTime::create( $date );
 		}
 		return $date->text_format( $format );
 	}
@@ -341,7 +341,7 @@ class Format
 	public static function nice_date( $date, $dateformat = 'F j, Y' )
 	{
 		if ( !( $date instanceOf DateTime ) ) {
-			$date = DateTime::date_create( $date );
+			$date = DateTime::create( $date );
 		}
 		return $date->format( $dateformat );
 	}
@@ -356,7 +356,7 @@ class Format
 	public static function nice_time( $date, $dateformat = 'H:i:s' )
 	{
 		if ( !( $date instanceOf DateTime ) ) {
-			$date = DateTime::date_create( $date );
+			$date = DateTime::create( $date );
 		}
 		return $date->format( $dateformat );
 	}
