@@ -140,8 +140,17 @@ class CronJob extends QueryRecord
 		}
 		else {
 			// this is not callable and doesn't look like one - it should simply be a textual plugin filter name
-			$result = true;
-			$result = Plugins::filter( $this->callback, $result, $paramarray );
+
+			// is this plugin filter actually implemented?
+			if ( Plugins::implemented( $this->callback, 'filter' ) ) {
+				// then run it and use that result
+				$result = true;
+				$result = Plugins::filter( $this->callback, $result, $paramarray );
+			}
+			else {
+				// the filter isn't implemented, consider that a failure
+				$result = false;
+			}
 		}
 
 		if ( $result === false ) {
