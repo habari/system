@@ -317,6 +317,7 @@ class Theme extends Pluggable
 		}
 
 		// @todo probably need to make this private if the user is logged in so proxy's don't cache it?
+		// @todo this shouldn't be necessary at all after we sort out starting a session only for logged-in users
 		header('Pragma: public', true);
 		header('Cache-Control: public, max-age=' . HabariDateTime::DAY * 30, true);
 
