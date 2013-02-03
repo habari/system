@@ -373,7 +373,6 @@ class ACL
 
 		// check the cache first for the user's access_mask on the token
 		if ( isset( $_SESSION[ 'user_token_access' ]) && isset( $_SESSION[ 'user_token_access' ][ $user_id ][ $token_id ] ) ) {
-//			Utils::debug($token, $_SESSION['user_token_access'][$token_id]);
 			if ( $_SESSION[ 'user_token_access' ][ $user_id ][ $token_id ] == ACL::CACHE_NULL ) {
 				return null;
 			}
@@ -437,7 +436,12 @@ SQL;
 		$accesses = Plugins::filter( 'user_token_access', $accesses, $user_id, $token_id );
 
 		if ( count( $accesses ) == 0 ) {
-			$_SESSION[ 'user_token_access' ][ $user_id ][ $token_id ] = ACL::CACHE_NULL;
+			if($user_id == 0) {
+				// @todo store this anonymous user token info in Cache
+			}
+			else {
+				$_SESSION[ 'user_token_access' ][ $user_id ][ $token_id ] = ACL::CACHE_NULL;
+			}
 			return null;
 		}
 		else {
@@ -452,7 +456,12 @@ SQL;
 				}
 			}
 
-			$_SESSION[ 'user_token_access' ][ $user_id ][ $token_id ] = $result;
+			if($user_id == 0) {
+				// @todo store this anonymous user token info in Cache
+			}
+			else {
+				$_SESSION[ 'user_token_access' ][ $user_id ][ $token_id ] = $result;
+			}
 			return self::get_bitmask( $result );
 		}
 	}
@@ -534,7 +543,12 @@ SQL;
 			$tokens = array_intersect( $tokens, $post_tokens );
 		}
 
-		$_SESSION[ 'user_tokens' ][ $user_id ][ $access ] = $tokens;
+		if($user_id == 0) {
+			// @todo store access data in Cache
+		}
+		else {
+			$_SESSION[ 'user_tokens' ][ $user_id ][ $access ] = $tokens;
+		}
 		return $tokens;
 	}
 
