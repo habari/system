@@ -26,39 +26,39 @@ class Session
 	 */
 	public static function init()
 	{
-		
+
 		// the default path for the session cookie is /, but let's make that potentially more restrictive so no one steals our cookehs
 		// we also can't use 'null' when we set a secure-only value, because that doesn't mean the same as the default like it should
 		$path = Site::get_path( 'base', true );
-		
+
 		// the default is not to require a secure session
 		$secure = false;
-		
+
 		// if we want to always require secure
 		if ( Config::get( 'force_secure_session' ) == true ) {
 			$secure = true;
 		}
-		
+
 		// if this is an HTTPS connection by default we will
 		// IIS sets HTTPS == 'off', so we have to check the value too
 		if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) {
 			$secure = true;
 		}
-		
+
 		// but if we have explicitly disabled it, don't
 		// note the ===. not setting it (ie: null) should not be the same as setting it to false
 		if ( Config::get( 'force_secure_session' ) === false ) {
 			$secure = false;
 		}
-		
+
 		// now we've got a path and secure, so set the cookie values
 		session_set_cookie_params( null, $path, null, $secure );
-		
+
 		// figure out the session lifetime and let plugins change it
 		$lifetime = ini_get( 'session.gc_maxlifetime' );
-		
+
 		self::$lifetime = Plugins::filter( 'session_lifetime', $lifetime );
-		
+
 
 		$handlers = array(
 			array( __CLASS__, 'open' ),
@@ -77,9 +77,101 @@ class Session
 		register_shutdown_function( 'session_write_close' );
 
 		if ( ! isset( $_SESSION ) ) {
-			session_start();
+			//session_start();
 		}
 		return true;
+	}
+
+	public static function start($force = false)
+	{
+		if(($force || isset($_COOKIE[session_name()])) && ! isset( $_SESSION )) {
+			session_start();
+			return true;
+		}
+		return false;
+	}
+
+	public static function set($key, $value)
+	{
+		Session::start(true);
+
+		$keys = func_get_args();
+
+		$value = array_pop($keys);
+		$last_key = array_pop($keys);
+
+		$session = &$_SESSION;
+		if(count($keys) > 0) {
+			$key = reset($keys);
+			do {
+				if(empty($session[$key])) {
+					$session[$key] = array();
+				}
+				$session = &$session[$key];
+			} while($key = next($keys));
+		}
+		$session[$last_key] = $value;
+	}
+
+	public static function clear($key)
+	{
+		if(!Session::start()) {
+			return null;
+		}
+
+		$keys = func_get_args();
+		$last_key = array_pop($keys);
+
+		$session = &$_SESSION;
+		if(count($keys) > 0) {
+			$key = reset($keys);
+			do {
+				if(empty($session[$key])) {
+					$session[$key] = array();
+				}
+				$session = &$session[$key];
+			} while($key = next($keys));
+		}
+		unset($session[$last_key]);
+	}
+
+	public static function get($key)
+	{
+		if(!Session::start()) {
+			return null;
+		}
+		$keys = func_get_args();
+		$key = reset($keys);
+		$session = $_SESSION;
+		do {
+			if(empty($session[$key])) {
+				return null;
+			}
+			$session = $session[$key];
+		} while($key = next($keys));
+		return $session;
+	}
+
+	public static function exists($key)
+	{
+		if(!Session::start()) {
+			return false;
+		}
+		$keys = func_get_args();
+		$key = reset($keys);
+		$session = $_SESSION;
+		do {
+			if(empty($session[$key])) {
+				return false;
+			}
+			$session = $session[$key];
+		} while($key = next($keys));
+		return true;
+	}
+
+	public static function is_active()
+	{
+		return (isset($_SESSION) || isset($_COOKIE[session_name()]));
 	}
 
 	/**
@@ -111,6 +203,12 @@ class Session
 	 */
 	public static function read( $session_id )
 	{
+		if(isset($_COOKIE[session_name()])) {
+			$session_id = $_COOKIE[session_name()];
+			session_name($session_id);
+			$_COOKIE[session_name()] = $session_id;  // Why does PHP unset this?  Dumb.
+		}
+
 		$remote_address = Utils::get_ip();
 		// not always set, even by real browsers
 		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
@@ -166,7 +264,7 @@ class Session
 
 		// save the initial data we loaded so we can write only if it's changed
 		self::$initial_data = $session->data;
-		
+
 		// but if the expiration is close (less than half the session lifetime away), null it out so the session always gets written so we extend the session
 		if ( ( $session->expires - DateTime::create()->int ) < ( self::$lifetime / 2 ) ) {
 			self::$initial_data = null;
@@ -320,14 +418,14 @@ class Session
 	 */
 	public static function get_set( $set, $clear = true )
 	{
-		if ( !isset( $_SESSION[$set] ) ) {
+		if ( !Session::exists($set) ) {
 			$set_array = array();
 		}
 		else {
-			$set_array = $_SESSION[$set];
+			$set_array = Session::get($set);
 		}
 		if ( $clear ) {
-			unset( $_SESSION[$set] );
+			Session::clear($set);
 		}
 		return $set_array;
 	}
@@ -484,14 +582,14 @@ class Session
 
 	protected static function get_subnet( $remote_address = '' )
 	{
-		
+
 		// if it's an ipv6 address, we just use that and don't try to determine the subnet
 		$is_v6 = filter_var( $remote_address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 );
-		
+
 		if ( $is_v6 !== false ) {
 			return $remote_address;
 		}
-		
+
 		$long_addr = ip2long( $remote_address );
 
 		if ( $long_addr >= ip2long( '0.0.0.0' ) && $long_addr <= ip2long( '127.255.255.255' ) ) {
