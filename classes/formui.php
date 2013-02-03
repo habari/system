@@ -1520,6 +1520,9 @@ class FormControl extends FormComponents
 		if ( is_array( $validator ) ) {
 			$index = ( is_object( $validator[0] ) ? get_class( $validator[0] ) : $validator[0]) . ':' . $validator[1];
 		}
+		elseif( $validator instanceof \Closure ) {
+			$index = microtime(true);
+		}
 		else {
 			$index = $validator;
 		}
