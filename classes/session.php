@@ -18,7 +18,7 @@ class Session extends \ArrayObject
 	 * The initial data. Used to determine whether we should write anything.
 	 */
 	private static $lifetime;
-	protected $changed = false;
+	public $changed = false;
 	public $session_id = null;
 
 	const HABARI_SESSION_COOKIE_NAME = 'habari_session';
