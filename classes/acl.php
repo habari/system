@@ -372,7 +372,7 @@ class ACL
 		}
 
 		// check the cache first for the user's access_mask on the token
-		if ( isset( $_SESSION[ 'user_token_access' ][ $user_id ][ $token_id ] ) ) {
+		if ( isset( $_SESSION[ 'user_token_access' ]) && isset( $_SESSION[ 'user_token_access' ][ $user_id ][ $token_id ] ) ) {
 //			Utils::debug($token, $_SESSION['user_token_access'][$token_id]);
 			if ( $_SESSION[ 'user_token_access' ][ $user_id ][ $token_id ] == ACL::CACHE_NULL ) {
 				return null;
@@ -482,7 +482,7 @@ SQL;
 		}
 
 		// Implement cache RIGHT HERE
-		if ( isset( $_SESSION[ 'user_tokens' ][ $user_id ][ $access ] ) ) {
+		if ( isset( $_SESSION[ 'user_tokens' ] ) && isset( $_SESSION[ 'user_tokens' ][ $user_id ][ $access ] ) ) {
 			return $_SESSION[ 'user_tokens' ][ $user_id ][ $access ];
 		}
 
