@@ -110,7 +110,7 @@ class Session extends \ArrayObject
 
 		$dodelete = false;
 
-		if ( !defined( 'SESSION_SKIP_SUBNET' ) || SESSION_SKIP_SUBNET != true ) {
+		if ( Config::get( 'sessions_skip_subnet' ) != true ) {
 			// Verify on the same subnet
 			$subnet = self::get_subnet( $remote_address );
 			if ( $session->ip != $subnet ) {
