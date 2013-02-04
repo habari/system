@@ -211,6 +211,11 @@ class Session extends \ArrayObject
 		$args = array( $session_id );
 		$sql = Plugins::filter( 'sessions_clean', $sql, 'destroy', $args );
 		DB::query( $sql, $args );
+
+		// get rid of the session cookie, too.
+		$cookie_params = session_get_cookie_params();
+		setcookie( self::HABARI_SESSION_COOKIE_NAME, null, -1, $cookie_params['path'], $cookie_params['domain'], $cookie_params['secure'], $cookie_params['httponly'] );
+
 		return true;
 	}
 
