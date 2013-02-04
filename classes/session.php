@@ -511,8 +511,10 @@ class Session extends \ArrayObject
 		if(is_null($this->session_id)) {
 			$this->session_id = UUID::get();
 
+			$expiration = DateTime::create('+' . self::$lifetime . ' seconds')->int;
+
 			$cookie_params = session_get_cookie_params();
-			setcookie( self::HABARI_SESSION_COOKIE_NAME, $this->session_id, self::$lifetime, $cookie_params['path'], $cookie_params['domain'], $cookie_params['secure'], $cookie_params['httponly'] );
+			setcookie( self::HABARI_SESSION_COOKIE_NAME, $this->session_id, $expiration, $cookie_params['path'], $cookie_params['domain'], $cookie_params['secure'], $cookie_params['httponly'] );
 		}
 	}
 }
