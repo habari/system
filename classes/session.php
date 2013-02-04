@@ -530,6 +530,49 @@ class Session extends \ArrayObject
 			setcookie( self::HABARI_SESSION_COOKIE_NAME, $this->session_id, $expiration, $cookie_params['path'], $cookie_params['domain'], $cookie_params['secure'], $cookie_params['httponly'] );
 		}
 	}
+
+	/**
+	 * Sends HTTP headers that limit the cacheability of the page.
+	 *
+	 * @link http://php.net/session_cache_limiter
+	 * @param string $type The type of caching headers to send. One of: 'public', 'private_no_expire', 'private', 'nocache', or ''.
+	 * @return void
+	 */
+	public static function cache_limiter ( $type = 'nocache' ) {
+
+		$expires = DateTime::create( '+' . session_cache_expire() . ' seconds' )->format( DateTime::RFC1123 );
+		$last_modified = DateTime::create()->format( DateTime::RFC1123 );
+
+		switch ( $type ) {
+			case 'public':
+				header( 'Expires: ' . $expires, true );
+				header( 'Cache-Control: public, max-age=' . $expires, true );
+				header( 'Last-Modified: ' . $last_modified, true );
+				break;
+
+			case 'private_no_expire':
+				header( 'Cache-Control: private, max-age=' . $expires . ', pre-check=' . $expires, true );
+				header( 'Last-Modified: ' . $last_modified, true );
+				break;
+
+			case 'private':
+				header( 'Expires: Thu, 19 Nov 1981 08:52:00 GMT', true );
+				header( 'Cache-Control: private max-age=' . $expires . ', pre-check=' . $expires, true );
+				header( 'Last-Modified: ' . $last_modified, true );
+				break;
+
+			case 'nocache':
+				header( 'Expires: Thu, 19 Nov 1981 08:52:00 GMT', true );
+				header( 'Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0', true );
+				header( 'Pragma: no-cache', true );
+				break;
+
+			case '':
+				return;
+				break;
+		}
+
+	}
 }
 
 ?>
