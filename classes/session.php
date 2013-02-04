@@ -320,7 +320,7 @@ class Session extends \ArrayObject
 	}
 
 	/**
-	 * Get all notice messsages from the user session
+	 * Get all notice messages from the user session
 	 *
 	 * @param boolean $clear true to clear the messages from the session upon receipt
 	 * @return array And array of notice messages
@@ -350,7 +350,7 @@ class Session extends \ArrayObject
 	}
 
 	/**
-	 * Get all error messsages from the user session
+	 * Get all error messages from the user session
 	 *
 	 * @param boolean $clear true to clear the messages from the session upon receipt
 	 * @return array And array of error messages
@@ -407,7 +407,7 @@ class Session extends \ArrayObject
 	 * Return output of notice and error messages
 	 *
 	 * @param boolean $clear true to clear the messages from the session upon receipt
-	 * @param array $callback a reference to a callback function for formatting the the messages
+	 * @param array $callback a reference to a callback function for formatting the the messages or the string 'array' to get a raw array
 	 * @return mixed output of messages
 	 */
 	public static function messages_get( $clear = true, $callback = null )
@@ -434,8 +434,8 @@ class Session extends \ArrayObject
 	/**
 	 * Output notice and error messages
 	 *
-	 * @param boolean $clear true to clear the messages from the session upon receipt
-	 * @param array $callback a reference to a callback function for formatting the the messages
+	 * @param bool $clear true to clear the messages from the session upon receipt
+	 * @param null|callable $callback A reference to a callback function for formatting the messages
 	 */
 	public static function messages_out( $clear = true, $callback = null )
 	{
@@ -469,6 +469,14 @@ class Session extends \ArrayObject
 		}
 	}
 
+	/**
+	 * Helper function to find the Class A, B, or C subnet of the given IP address.
+	 *
+	 * We use this to store subnets for each IPv4 session, rather than distinct IPs, which could be pooled or rotated on large networks.
+	 *
+	 * @param string $remote_address The remote host's IP address.
+	 * @return int|string The numeric subnet, if IPv4. The complete address, as passed, if a valid IPv6.
+	 */
 	protected static function get_subnet( $remote_address = '' )
 	{
 
