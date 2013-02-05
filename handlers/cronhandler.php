@@ -76,7 +76,7 @@ class CronHandler extends ActionHandler
 			EventLog::log( _t( 'CronTab run completed.' ), 'debug', 'crontab', 'habari', $crons );
 
 			// set the next run time to the lowest next_run OR a max of one day.
-			$next_cron = DB::get_value( 'SELECT next_run FROM {crontab} ORDER BY next_run ASC LIMIT 1', array() );
+			$next_cron = DB::get_value( 'SELECT next_run FROM {crontab} WHERE active != ? ORDER BY next_run ASC LIMIT 1', array( 0 ) );
 			Options::set( 'next_cron', min( intval( $next_cron ), $time->modify( '+1 day' )->int ) );
 			Options::set( 'cron_running', false );
 		}
@@ -115,7 +115,7 @@ class CronHandler extends ActionHandler
 		}
 
 		// set the next run time to the lowest next_run OR a max of one day.
-		$next_cron = DB::get_value( 'SELECT next_run FROM {crontab} ORDER BY next_run ASC LIMIT 1', array() );
+		$next_cron = DB::get_value( 'SELECT next_run FROM {crontab} WHERE active != ? ORDER BY next_run ASC LIMIT 1', array( 0 ) );
 		Options::set( 'next_cron', min( intval( $next_cron ), $time->modify( '+1 day' )->int ) );
 		Options::set( 'cron_running', false );
 	}
