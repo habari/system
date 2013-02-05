@@ -1047,6 +1047,24 @@ class FormValidators
 			return array();
 		}
 	}
+	
+	public static function validate_array( $value, $control, $container, $validator_name, $validator_params = array() )
+	{
+		if( !is_array( $value ) ) {
+			throw new Exception( _t( 'This validator only works for array values.' ) );
+		}
+		
+		if( is_array( $validator_name ) ) {
+			throw new Exception( _t( 'validate_array must be called with exactly one validator.' ) );
+		}
+		
+		$errors = array();
+		foreach( $value as $single_value ) {
+			$errors = array_merge( $errors, call_user_func_array( array( __CLASS__, $validator_name ), array_merge( array( $single_value, $control, $container ), $validator_params ) ) );
+		}
+		
+		return $errors;
+	}
 }
 
 /**
