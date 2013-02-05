@@ -946,7 +946,7 @@ class FormValidators
 	 */
 	public static function validate_required( $value, $control, $form, $warning = null )
 	{
-		if ( empty( $value ) || $value == '' ) {
+		if ( empty( $value ) || $value == '' || (is_array( $value ) && implode( '', $value ) == '' ) ) {
 			$warning = empty( $warning ) ? _t( 'A value for this field is required.' ) : $warning;
 			return array( $warning );
 		}
