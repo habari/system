@@ -80,11 +80,27 @@ class Session extends Singleton
 
 		$_SESSION->id = UUID::get();
 
-		// we are actually starting a session, so let's send that cookie.
-		$expiration = DateTime::create('+' . self::$lifetime . ' seconds')->int;
+		self::cookie( $_SESSION->id );
 
+	}
+
+	/**
+	 * Sends the Habari session cookie to the browser with the given payload and expiration.
+	 *
+	 * @param string $data Whatever should be in the body of the cookie. Probably, you know, a Session ID.
+	 * @param null|int $expiration The exact value to put in the expiration field of the cookie. Use null and we'll calculate one based on the session lifetime.
+	 */
+	public static function cookie ( $data, $expiration = null ) {
+
+		// if the expiration is not set, we need to calculate how long based on session lifetime
+		if ( $expiration === null ) {
+			$expiration = DateTime::create( '+' . self::$lifetime . ' seconds' )->int;
+		}
+
+		// get the default session cookie params
 		$cookie_params = session_get_cookie_params();
-		setcookie( self::HABARI_SESSION_COOKIE_NAME, $_SESSION->id, $expiration, $cookie_params['path'], $cookie_params['domain'], $cookie_params['secure'], $cookie_params['httponly'] );
+
+		setcookie( self::HABARI_SESSION_COOKIE_NAME, $data, $expiration, $cookie_params['path'], $cookie_params['domain'], $cookie_params['secure'], $cookie_params['httponly'] );
 
 	}
 
@@ -106,40 +122,42 @@ class Session extends Singleton
 			return false;
 		}
 
-		// @todo i just realized that if i fake someone's session cookie, but my user agent and subnet do not match, i will cause their session to be deleted... remind me to fix that, later
-		// we should probably just not load the session, and let garbage collection clean it up later, if it isn't used
-		$dodelete = false;
-
-		if ( Config::get( 'sessions_skip_subnet' ) != true ) {
-			// Verify on the same subnet
-			$subnet = self::get_subnet( $remote_address );
-			if ( $session->ip != $subnet ) {
-				$dodelete = true;
-			}
-		}
+		// we start off assuming that all sessions we're reading are valid
+		$valid = true;
 
 		// Verify expiry
 		if ( DateTime::create()->int > $session->expires ) {
 			if ( $session->user_id ) {
 				Session::error( _t( 'Your session expired.' ), 'expired_session' );
 			}
-			$dodelete = true;
+			$valid = false;
+		}
+
+		if ( Config::get( 'sessions_skip_subnet' ) != true ) {
+			// Verify on the same subnet
+			$subnet = self::get_subnet( $remote_address );
+			if ( $session->ip != $subnet ) {
+				$valid = false;
+			}
 		}
 
 		// Verify User Agent
 		if ( $user_agent != $session->ua ) {
-			$dodelete = true;
+			$valid = false;
 		}
 
-		// Let plugins ultimately decide
-		$dodelete = Plugins::filter( 'session_read', $dodelete, $session, $_SESSION->id );
+		// if for some reason we don't think this session is valid, let's get this guy out of here!
+		if ( $valid != true ) {
 
-		if ( $dodelete ) {
-			$sql = 'DELETE FROM {sessions} WHERE token = ?';
-			$args = array( $_SESSION->id );
-			$sql = Plugins::filter( 'sessions_clean', $sql, 'read', $args );
-			DB::query( $sql, $args );
+			// get rid of the session ID - it wasn't valid anyway
+			$_SESSION->id = null;
+
+			// expire the session cookie - the ID they sent us was bogus
+			Session::cookie( null, -1 );
+
+			// and don't read anything in
 			return false;
+
 		}
 
 		// but if the expiration is close (less than half the session lifetime away), null it out so the session always gets written so we extend the session
@@ -158,7 +176,12 @@ class Session extends Singleton
 
 	public static function shutdown()
 	{
-		self::write();
+
+		// we only want to write the session to the DB if it is marked as changed
+		if ( $_SESSION->changed ) {
+			self::write();
+		}
+
 	}
 
 	/**
@@ -206,8 +229,7 @@ class Session extends Singleton
 		DB::query( $sql, $args );
 
 		// get rid of the session cookie, too.
-		$cookie_params = session_get_cookie_params();
-		setcookie( self::HABARI_SESSION_COOKIE_NAME, null, -1, $cookie_params['path'], $cookie_params['domain'], $cookie_params['secure'], $cookie_params['httponly'] );
+		self::cookie( null, -1 );
 
 		return true;
 	}
