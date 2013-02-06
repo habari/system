@@ -142,15 +142,6 @@ class Session extends Singleton
 			return false;
 		}
 
-		// Do garbage collection, since PHP is bad at it
-		$probability = ini_get( 'session.gc_probability' );
-
-		// Allow plugins to control the probability of a gc event, return >=100 to always collect garbage
-		$probability = Plugins::filter( 'session_gc_probability', ( is_numeric( $probability ) && $probability > 0 ) ? $probability : 1 );
-		if ( rand( 1, 100 ) <= $probability ) {
-			self::gc();
-		}
-
 		// but if the expiration is close (less than half the session lifetime away), null it out so the session always gets written so we extend the session
 		if ( ( $session->expires - DateTime::create()->int ) < ( self::$lifetime / 2 ) ) {
 			$_SESSION->changed = true;
