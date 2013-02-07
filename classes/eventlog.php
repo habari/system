@@ -357,15 +357,24 @@ class EventLog extends \ArrayObject
 	public static function trim()
 	{
 		// allow an option to be set to override the log retention - in days
-		$retention = Options::get( 'log_retention', 14 );		// default to 14 days
+		$retention_days = Options::get( 'log_retention', 14 );		// default to 14 days
 
 		// make it into the string we'll use
-		$retention = '-' . intval( $retention ) . ' days';
+		$retention = '-' . intval( $retention_days ) . ' days';
 
 		// Trim the log table down
 		$date = DateTime::create()->modify( $retention );
 
-		return DB::query( 'DELETE FROM {log} WHERE timestamp < ?', array( $date->sql ) );
+		$result = DB::query( 'DELETE FROM {log} WHERE timestamp < ?', array( $date->sql ) );
+
+		if ( $result ) {
+			EventLog::log( _t( 'Entries over %d days old were trimmed from the EventLog', array( $retention_days ) ), 'info' );
+		}
+		else {
+			EventLog::log( _t( 'There was an error trimming old entries from the EventLog!' ), 'err' );
+		}
+
+		return $result;
 
 	}
 
