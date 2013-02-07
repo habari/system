@@ -790,6 +790,9 @@ class InstallHandler extends ActionHandler
 		// Add the cronjob to check for plugin updates
 		CronTab::add_daily_cron( 'update_check', Method::create( '\Habari\Update', 'cron' ), _t( 'Perform a check for plugin updates.' ) );
 
+		// Add the cronjob to run garbage collection on expired sessions
+		CronTab::add_hourly_cron( 'session_gc', Method::create( '\Habari\Session', 'gc' ), _t( 'Perform session garbage collection.' ) );
+
 		return true;
 	}
 
@@ -1820,6 +1823,13 @@ class InstallHandler extends ActionHandler
 
 		// Add the cronjob to check for plugin updates
 		CronTab::add_daily_cron( 'update_check', Method::create( '\Habari\Update', 'cron' ), _t( 'Perform a check for plugin updates.' ) );
+
+	}
+
+	public function upgrade_db_post_5111 ( ) {
+
+		// add the cronjob to perform garbage collection on sessions
+		CronTab::add_hourly_cron( 'session_gc', Method::create( '\Habari\Session', 'gc' ), _t( 'Perform session garbage collection.' ) );
 
 	}
 	
