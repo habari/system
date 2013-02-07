@@ -232,6 +232,11 @@ class Session extends Singleton
 		// get rid of the session cookie, too.
 		self::cookie( null, -1 );
 
+		// don't just unset the ID in the current session, wipe it out
+		unset( $_SESSION );
+
+		$_SESSION = new SessionStorage();
+
 		return true;
 	}
 
