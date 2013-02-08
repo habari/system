@@ -74,9 +74,9 @@ class Session extends Singleton
 	}
 
 	/**
-	 * Start a new session - that is, generate an ID and set the session cookie
+	 * Create a new session - that is, generate an ID and set the session cookie
 	 */
-	public static function start ( ) {
+	public static function create ( ) {
 
 		$_SESSION->id = UUID::get();
 

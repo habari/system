@@ -28,7 +28,7 @@
 
 			// if we don't have a session_id already, we are "starting" a session
 			if ( is_null( $this->id ) ) {
-				Session::start();
+				Session::create();
 			}
 		}
 
