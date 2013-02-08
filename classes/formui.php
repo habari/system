@@ -42,6 +42,74 @@ class ControlStorage implements FormStorage
 	}
 
 	/**
+	 * Produce a basic FormStorage implementation from a classic storage string
+	 * @param string $value A classic storage string, such as "option:someoption" or "user:age"
+	 * @return ControlStorage An instance of an object that will save and load to the indicated location
+	 */
+	public static function from_storage_string($value) {
+		$storage = explode( ':', $value, 2 );
+		switch ( count( $storage ) ) {
+			case 2:
+				list( $type, $location ) = $storage;
+				break;
+			case 1:
+				list( $location ) = $storage;
+				$type = 'option';
+				break;
+			default:
+				// @todo Figure this case out
+				$location = '__';
+				$type = '__';
+				break;
+		}
+
+		switch ( $type ) {
+			case 'user':
+				$loader = function($name) {
+					return User::identify()->info->{$name};
+				};
+				$saver = function($name, $value) {
+					User::identify()->info->{$name} = $value;
+				};
+				break;
+			case 'option':
+				$loader = function($name) use ($location) {
+					return Options::get($location);
+				};
+				$saver = function($name, $value) use ($location) {
+					Options::set($location, $value);
+				};
+				break;
+			case 'action':
+				$loader = function($name) use ($location) {
+					return Plugins::filter( $location, '', $name, false );
+				};
+				$saver = function($name, $value) use ($location) {
+					Plugins::act( $location, $value, $name, true );
+				};
+				break;
+			case 'session':
+				$loader = function($name) use ($location) {
+					$session_set = Session::get_set( $location, false );
+					if ( isset( $session_set[$name] ) ) {
+						return $session_set[$name];
+					}
+					return null;
+				};
+				$saver = function($name, $value) use ($location) {
+					Session::add_to_set( $location, $value, $name );
+				};
+				break;
+			default:
+				$loader = function(){};
+				$saver = function(){};
+				break;
+		}
+
+		return new ControlStorage($loader, $saver);
+	}
+
+	/**
 	 * Stores a form value into the object
 	 *
 	 * @param string $key The name of a form component that will be stored
@@ -91,6 +159,9 @@ abstract class FormControl
 	{
 		$this->name = $name;
 		$this->storage = $storage;
+		if(is_string($storage)) {
+			$storage = ControlStorage::from_storage_string($storage);
+		}
 		$this->storage = $storage;
 		$this->caption = $caption;
 		$this->properties = $properties;
@@ -99,9 +170,7 @@ abstract class FormControl
 
 	public function save()
 	{
-		if(isset($settings['save'])) {
-			Method::dispatch($settings['save'], $this);
-		}
+		$this->storage->field_save($this->name, $this->value);
 	}
 }
 
