@@ -17,6 +17,94 @@ namespace Habari;
  *
  */
 
+/**
+ * Use this class to represent control values that aren't safe to store as strings, or are more complex
+ */
+class ControlValue
+{
+}
+
+class ControlStorage implements FormStorage
+{
+	/** @var Callable|string $saver A fucntion that saves this control value */
+	protected $saver;
+	/** @var Callable|string $loader A function that loads this control value */
+	protected $loader;
+
+	/**
+	 * Construct a basic FormStorage object
+	 * @param Callable|string $load A function to call to load the control value, OR a non-callable
+	 * @param $save
+	 */
+	public function __construct($load, $save) {
+		$this->loader = $load;
+		$this->saver = $save;
+	}
+
+	/**
+	 * Stores a form value into the object
+	 *
+	 * @param string $key The name of a form component that will be stored
+	 * @param mixed $value The value of the form component to store
+	 */
+	function field_save($key, $value)
+	{
+		Method::dispatch($this->saver, $key, $value);
+	}
+
+	/**
+	 * Loads form values from an object
+	 *
+	 * @param string $key The name of a form component that will be loaded
+	 * @return mixed The stored value returned
+	 */
+	function field_load($key)
+	{
+		if(is_callable($this->loader)) {
+			return Method::dispatch($this->loader, $key);
+		}
+		return $this->loader;
+	}
+}
+
+abstract class FormControl
+{
+	/** @var string $name The name of the conrol for the purposes of manipulating it from the container object */
+	public $name;
+	/** @var FormStorage|null $storage The storage object for this form */
+	public $storage;
+	/** @var string  */
+	public $caption;
+	/** @var array $properties Contains an array of properties used to assign to the output HTML */
+	public $properties;
+	/** @var array $settings Contains an array of settings that control the behavior of this control */
+	public $settings;
+
+	/**
+	 * Construct a control.
+	 * @param string $name
+	 * @param FormStorage|string|Callable|null $storage
+	 * @param string $caption
+	 * @param array $properties
+	 */
+	final public function __construct($name, $storage, $caption, $properties, $settings)
+	{
+		$this->name = $name;
+		$this->storage = $storage;
+		$this->storage = $storage;
+		$this->caption = $caption;
+		$this->properties = $properties;
+		$this->settings = $settings;
+	}
+
+	public function save()
+	{
+		if(isset($settings['save'])) {
+			Method::dispatch($settings['save'], $this);
+		}
+	}
+}
+
 class FormComponents
 {
 	/**
