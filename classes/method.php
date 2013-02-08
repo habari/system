@@ -37,6 +37,25 @@ class Method
 	}
 
 	/**
+	 * Dispatch a method, whether a filter or function
+	 * @param Callable|string $method The method to call
+	 * @param mixed $args Multiple arguments to dispatch() should be passed as separate arguments
+	 * @return bool|mixed The return value from the dispatched method
+	 */
+	public static function dispatch($method, $args)
+	{
+		$args = func_get_args();
+		if(is_callable($method)) {
+			array_shift($args);  // Take $method off the front, pass only args
+			return call_user_func_array($method, $args);
+		}
+		elseif(is_string($method)) {
+			return call_user_func_array(Method::create('\Habari\Plugins', 'filter'), $args);
+		}
+		return false;
+	}
+
+	/**
 	 * Execute the representative method when this object is called as a function.
 	 * Example:
 	 *   $fn = Method::create('Habari/Utils', 'debug');
@@ -46,6 +65,13 @@ class Method
 	 * @return mixed The return value of the function this Method object represents
 	 */
 	public function __invoke() {
+		// Try the \Habari namespace if the class doesn't exist and the \Habari namespace works
+		if(strpos($this->class, '\\') === false && !class_exists($this->class, true)) {
+			if(class_exists('\\Habari\\' . $this->class)) {
+				$this->class = '\\Habari\\' . $this->class;
+			}
+		}
+
 		$args = func_get_args();
 		return call_user_func_array(array($this->class, $this->method), $args);
 	}
