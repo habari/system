@@ -214,8 +214,6 @@ class Session extends Singleton
 				array( 'token' => $_SESSION->id )
 			);
 
-			// any time we actually write the session, make sure the cookie is set so it does not expire
-			self::cookie( $_SESSION->id );
 		}
 	}
 
