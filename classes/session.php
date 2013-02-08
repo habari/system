@@ -177,9 +177,25 @@ class Session extends Singleton
 	public static function shutdown()
 	{
 
+		static $shutdown;
+
+		if ( $shutdown ) {
+			return;
+		}
+
+		$shutdown = true;
+
+		// if there is a session, we want to send some headers to prevent proxies from caching potentially sensitive pages
+		if ( !is_null( $_SESSION->id ) ) {
+			self::cache_limiter( 'nocache' );
+		}
+
 		// we only want to write the session to the DB if it is marked as changed
 		if ( $_SESSION->changed ) {
 			self::write();
+
+			// any time we actually write the session, make sure the cookie is set so it does not expire
+			self::cookie( $_SESSION->id );
 		}
 
 	}

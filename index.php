@@ -191,6 +191,9 @@ CronHandler::run_cron( Config::get('cron_async', true) );
 // Dispatch the request (action) to the matched handler.
 Controller::dispatch_request();
 
+// Shut down sessions so they can write and send cookies and headers before output, but after everything should be done
+Session::shutdown();
+
 // Flush (send) the output buffer.
 $buffer = ob_get_clean();
 $buffer = Plugins::filter( 'final_output', $buffer );
