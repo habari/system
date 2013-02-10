@@ -60,7 +60,7 @@ class AdminOptionsHandler extends AdminHandler
 				'helptext' => '',
 				),
 			'comments_require_id' => array(
-				'label' => _t( 'Require Comment Author Info' ),
+				'label' => _t( 'Require Comment Author Email' ),
 				'type' => 'checkbox',
 				'helptext' => '',
 				),
