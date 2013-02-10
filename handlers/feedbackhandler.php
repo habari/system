@@ -161,7 +161,7 @@ class FeedbackHandler extends ActionHandler
 			'ip' => Utils::get_ip(),
 			'content' => $content,
 			'status' => Comment::STATUS_UNAPPROVED,
-			'date' => DateTime::date_create(),
+			'date' => DateTime::create(),
 			'type' => Comment::COMMENT,
 		) );
 

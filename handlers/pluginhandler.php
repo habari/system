@@ -38,7 +38,7 @@ class PluginHandler extends ActionHandler
 		$this->action = $action;
 
 		$this->theme->assign( 'matched_rule', URL::get_matched_rule() );
-		$request = new StdClass();
+		$request = new \StdClass();
 		foreach ( URL::get_active_rules() as $rule ) {
 			$request->{$rule->name} = false;
 		}

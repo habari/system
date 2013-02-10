@@ -17,6 +17,18 @@ CREATE TABLE {$prefix}posts (
   UNIQUE (slug)
 );
 
+CREATE SEQUENCE {$prefix}revisions_pkey_seq;
+CREATE TABLE {$prefix}revisions(
+  id BIGINT NOT NULL DEFAULT nextval('{$prefix}revisions_pkey_seq'),
+  post_id BIGINT NOT NULL,
+  change_field VARCHAR(255) NOT NULL,
+  old_value TEXT DEFAULT NULL,
+  user_id INTEGER DEFAULT NULL,
+  change_date INTEGER NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE (post_id, change_date, change_field)
+);
+
 CREATE TABLE {$prefix}postinfo (
   post_id BIGINT NOT NULL,
   name VARCHAR(255) NOT NULL,

@@ -139,10 +139,10 @@ class AdminUsersHandler extends AdminHandler
 		$locale_date_format->class[] = 'item clear';
 		$locale_date_format->value = $edit_user->info->locale_date_format;
 		if ( isset( $edit_user->info->locale_date_format ) && $edit_user->info->locale_date_format != '' ) {
-			$current = DateTime::date_create()->get( $edit_user->info->locale_date_format );
+			$current = DateTime::create()->get( $edit_user->info->locale_date_format );
 		}
 		else {
-			$current = DateTime::date_create()->date;
+			$current = DateTime::create()->date;
 		}
 		$locale_date_format->helptext = _t( 'See <a href="%s">php.net/date</a> for details. Current format: %s', array( 'http://php.net/date', $current ) );
 
@@ -150,10 +150,10 @@ class AdminUsersHandler extends AdminHandler
 		$locale_time_format->class[] = 'item clear';
 		$locale_time_format->value = $edit_user->info->locale_time_format;
 		if ( isset( $edit_user->info->locale_time_format ) && $edit_user->info->locale_time_format != '' ) {
-			$current = DateTime::date_create()->get( $edit_user->info->locale_time_format );
+			$current = DateTime::create()->get( $edit_user->info->locale_time_format );
 		}
 		else {
-			$current = DateTime::date_create()->time;
+			$current = DateTime::create()->time;
 		}
 		$locale_time_format->helptext = _t( 'See <a href="%s">php.net/date</a> for details. Current format: %s', array( 'http://php.net/date', $current ) );
 

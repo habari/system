@@ -776,7 +776,7 @@ class FormUI extends FormContainer implements IsContent
 			}
 			else {
 				array_unshift( $params, $this->success_callback, false );
-				$result = call_user_func_array( array( 'Plugins', 'filter' ), $params );
+				$result = call_user_func_array( Method::create( '\Habari\Plugins', 'filter' ), $params );
 			}
 			if ( $result ) {
 				return $result;
@@ -804,7 +804,7 @@ class FormUI extends FormContainer implements IsContent
 			}
 			else {
 				array_unshift( $save, $callback, $this );
-				call_user_func_array( array( '\\Habari\\Plugins', 'act' ), $save );
+				call_user_func_array( Method::create( '\\Habari\\Plugins', 'act' ), $save );
 			}
 		}
 		if ( $this->has_user_options() ) {
@@ -1324,7 +1324,7 @@ class FormControl extends FormComponents
 			}
 			else {
 				$params = array_merge( array( $validator_fn, $valid, $this->value, $this, $this->container ), $validator );
-				$valid = array_merge( $valid, call_user_func_array( array( '\\Habari\\Plugins', 'filter' ), $params ) );
+				$valid = array_merge( $valid, call_user_func_array( Method::create( '\\Habari\\Plugins', 'filter' ), $params ) );
 			}
 		}
 		$this->errors = $valid;
@@ -1519,6 +1519,9 @@ class FormControl extends FormComponents
 		$validator = reset( $args );
 		if ( is_array( $validator ) ) {
 			$index = ( is_object( $validator[0] ) ? get_class( $validator[0] ) : $validator[0]) . ':' . $validator[1];
+		}
+		elseif( $validator instanceof \Closure ) {
+			$index = microtime(true);
 		}
 		else {
 			$index = $validator;

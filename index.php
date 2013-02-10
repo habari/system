@@ -159,7 +159,7 @@ if ( isset( $_GET['asyncronous'] ) && Utils::crypt( Options::get( 'GUID' ), $_GE
 header( 'Content-Type: text/html;charset=utf-8' );
 
 // Load and upgrade all the active plugins.
-spl_autoload_register( array( '\Habari\Plugins' , '_autoload' ) );
+spl_autoload_register( Method::create( '\Habari\Plugins' , '_autoload' ) );
 Plugins::load_active();
 Plugins::upgrade();
 
@@ -186,10 +186,13 @@ if ( defined( 'SUPPRESS_REQUEST' ) ) {
 Controller::parse_request();
 
 // Run the cron jobs asyncronously.
-CronHandler::run_cron( true );
+CronHandler::run_cron( Config::get('cron_async', true) );
 
 // Dispatch the request (action) to the matched handler.
 Controller::dispatch_request();
+
+// Shut down sessions so they can write and send cookies and headers before output, but after everything should be done
+Session::shutdown();
 
 // Flush (send) the output buffer.
 $buffer = ob_get_clean();

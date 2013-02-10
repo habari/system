@@ -56,7 +56,7 @@ class UserHandler extends ActionHandler
 					
 					/* Successfully authenticated. */
 					// Timestamp last login date and time.
-					$user->info->authenticate_time = DateTime::date_create()->format( 'Y-m-d H:i:s' );
+					$user->info->authenticate_time = DateTime::create()->format( 'Y-m-d H:i:s' );
 					$user->update();
 
 					// Remove left over expired session error message.

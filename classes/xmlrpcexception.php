@@ -1,4 +1,5 @@
 <?php
+namespace Habari;
 /**
  * @package Habari
  *
@@ -7,7 +8,7 @@
 /**
  * A custom exception for XMLRPC failure results
  */
-class XMLRPCException extends Exception
+class XMLRPCException extends \Exception
 {
 	/**
 	 * The exception constructor, called to create this excpetion

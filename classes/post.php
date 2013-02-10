@@ -372,9 +372,9 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			'input_formats' => '',
 			'user_id' => 0,
 			'status' => Post::status( 'draft' ),
-			'pubdate' => DateTime::date_create(),
-			'updated' => DateTime::date_create(),
-			'modified' => DateTime::date_create(),
+			'pubdate' => DateTime::create(),
+			'updated' => DateTime::create(),
+			'modified' => DateTime::create(),
 			'content_type' => Post::type( 'entry' )
 		);
 	}
@@ -605,16 +605,16 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function insert()
 	{
-		$this->newfields['updated'] = DateTime::date_create();
+		$this->newfields['updated'] = DateTime::create();
 		$this->newfields['modified'] = $this->newfields['updated'];
 		$this->setguid();
 		
 		// if the date is in the future and we are trying to publish the post, actually schedule it for posting later
-		if ( $this->pubdate > DateTime::date_create() && $this->status == Post::status( 'published' ) ) {
+		if ( $this->pubdate > DateTime::create() && $this->status == Post::status( 'published' ) ) {
 			$this->status = Post::status( 'scheduled' );
 		}
 		// but if it's already scheduled and the date is not in the future, go ahead and publish it instead
-		else if ( $this->pubdate <= DateTime::date_create() && $this->status == Post::status( 'scheduled' ) ) {
+		else if ( $this->pubdate <= DateTime::create() && $this->status == Post::status( 'scheduled' ) ) {
 			$this->status = Post::status( 'published' );
 		}
 
@@ -628,7 +628,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 		// Invoke plugins for all fields, since they're all "changed" when inserted
 		foreach ( $this->fields as $fieldname => $value ) {
-			Plugins::act( 'post_update_' . $fieldname, $this, ( $this->id == 0 ) ? null : $value, $this->$fieldname );
+			$fieldvalue = isset($this->newfields[$fieldname]) ? $this->newfields[$fieldname] : $this->fields[$fieldname];
+			Plugins::act( 'post_update_' . $fieldname, $this, ( $this->id == 0 ) ? null : $value, $fieldvalue );
 		}
 		// invoke plugins for status changes
 		Plugins::act( 'post_status_' . self::status_name( $this->status ), $this, null );
@@ -661,7 +662,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function update( $minor = true )
 	{
-		$this->modified = DateTime::date_create();
+		$this->modified = DateTime::create();
 		if ( ! $minor && $this->status != Post::status( 'draft' ) ) {
 			$this->updated = $this->modified;
 		}
@@ -671,11 +672,11 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		}
 		
 		// if the date is in the future and we are trying to publish the post, actually schedule it for posting later
-		if ( $this->pubdate > DateTime::date_create() && $this->status == Post::status( 'published' ) ) {
+		if ( $this->pubdate > DateTime::create() && $this->status == Post::status( 'published' ) ) {
 			$this->status = Post::status( 'scheduled' );
 		}
 		// but if it's already scheduled and the date is not in the future, go ahead and publish it instead
-		else if ( $this->pubdate <= DateTime::date_create() && $this->status == Post::status( 'scheduled' ) ) {
+		else if ( $this->pubdate <= DateTime::create() && $this->status == Post::status( 'scheduled' ) ) {
 			$this->status = Post::status( 'published' );
 		}
 
@@ -698,8 +699,21 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		// invoke plugins for all fields which have been changed
 		// For example, a plugin action "post_update_status" would be
 		// triggered if the post has a new status value
+		$change_date = DateTime::create()->sql;
 		foreach ( $this->newfields as $fieldname => $value ) {
 			Plugins::act( 'post_update_' . $fieldname, $this, $this->fields[$fieldname], $value );
+			if($this->fields[$fieldname] != $value) {
+				DB::insert(
+					'{revisions}',
+					array(
+						'post_id' => $this->fields['id'],
+						'change_field' => $fieldname,
+						'old_value' => $this->fields[$fieldname],
+						'user_id' => User::identify()->id,
+						'change_date' => $change_date,
+					)
+				);
+			}
 		}
 
 		// invoke plugins for status changes
@@ -778,7 +792,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		Plugins::act( 'post_publish_before', $this );
 
 		if ( $this->status != Post::status( 'scheduled' ) ) {
-			$this->pubdate = DateTime::date_create();
+			$this->pubdate = DateTime::create();
 		}
 
 		if ( $this->status == Post::status( 'scheduled' ) ) {
@@ -882,7 +896,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			case 'updated':
 			case 'modified':
 				if ( !( $value instanceOf DateTime ) ) {
-					$value = DateTime::date_create( $value );
+					$value = DateTime::create( $value );
 				}
 				break;
 			case 'tags':
@@ -893,7 +907,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 					return $this->tags_object = new Terms($value);
 				}
 				else {
-					return $this->tags_object = Terms::parse( $value, 'Term', Tags::vocabulary() );
+					return $this->tags_object = Terms::parse( $value, '\Habari\Term', Tags::vocabulary() );
 				}
 			case 'status':
 				return $this->setstatus( $value );
@@ -910,7 +924,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	public function __call( $name, $args )
 	{
 		array_unshift( $args, 'post_call_' . $name, null, $this );
-		return call_user_func_array( array( '\\Habari\\Plugins', 'filter' ), $args );
+		return call_user_func_array( Method::create( '\\Habari\\Plugins', 'filter' ), $args );
 	}
 
 	/**
@@ -1124,15 +1138,15 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		//		4) the published date is NOT in the future -- if it were, we would reset the date on scheduled posts if we edit them again before they are published
 		if ( ( $post->status != Post::status( 'published' ) )
 			&& ( $form->status->value == Post::status( 'published' ) )
-			&& ( $post->pubdate == DateTime::date_create( $form->pubdate->value )
-			&& ( $post->pubdate <= DateTime::date_create() ) )
+			&& ( $post->pubdate == DateTime::create( $form->pubdate->value )
+			&& ( $post->pubdate <= DateTime::create() ) )
 		) {
-			$post->pubdate = DateTime::date_create();
+			$post->pubdate = DateTime::create();
 		}
 		// otherwise, the post may not be changing to a published state, they may have specified something new, or the date may be in the future for a scheduled post. it doesn't matter, we'll use what was submitted
 		// if it's in the future, it will get scheduled later in insert() or update()
 		else {
-			$post->pubdate = DateTime::date_create( $form->pubdate->value );
+			$post->pubdate = DateTime::create( $form->pubdate->value );
 		}
 
 		// Minor updates are when the user has checked the minor update box and the post isn't in draft or new
@@ -1513,7 +1527,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	{
 		$this->get_tokens();
 		$tokens = Utils::single_array( $tokens );
-		$tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
+		$tokens = array_map( Method::create( '\Habari\ACL', 'token_id' ), $tokens );
 		$tokens = array_intersect( $tokens, $this->tokens );
 		if ( count( $tokens ) == 0 ) {
 			return false;
@@ -1529,7 +1543,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	{
 		$this->get_tokens();
 		$tokens = Utils::single_array( $tokens );
-		$tokens = array_map( array( '\Habari\ACL', 'token_id' ), $tokens );
+		$tokens = array_map( Method::create( '\Habari\ACL', 'token_id' ), $tokens );
 		$tokens = array_filter($tokens);
 		$add_tokens = array_diff( $tokens, $this->tokens );
 		$add_tokens = array_unique( $add_tokens );
@@ -1557,7 +1571,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	{
 		$this->get_tokens();
 		$tokens = Utils::single_array( $tokens );
-		$tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
+		$tokens = array_map( Method::create( '\Habari\ACL', 'token_id' ), $tokens );
 		$remove_tokens = array_intersect( $tokens, $this->tokens );
 		foreach ( $remove_tokens as $token_id ) {
 			DB::delete( '{post_tokens}', array( 'post_id' => $this->id, 'token_id' => $token_id ) );
@@ -1572,7 +1586,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	public function set_tokens( $tokens )
 	{
 		$tokens = Utils::single_array( $tokens );
-		$new_tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
+		$new_tokens = array_map( Method::create( '\Habari\ACL', 'token_id' ), $tokens );
 		$new_tokens = array_unique( $new_tokens );
 		DB::delete( '{post_tokens}', array( 'post_id' => $this->id ) );
 		foreach ( $new_tokens as $token_id ) {
@@ -1636,6 +1650,55 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			return ACL::get_bitmask( 0 );
 		}
 		return ACL::get_bitmask( Utils::array_or( $token_accesses ) );
+	}
+
+	/**
+	 * Get the fields of the post that differ from what is stored by date
+	 * @param DateTime|string|int $date The date to fetch the revision of
+	 * @return array An array of field data for the post with the values of those fields at the specified date
+	 */
+	public function get_revision_data($date) {
+		$sql = <<< GET_REVISION_DATA
+SELECT
+id, post_id, change_field, old_value, user_id, min(change_date) as change_date
+FROM {revisions}
+WHERE
+post_id = :post_id
+AND change_date > :rev_date
+GROUP BY change_field
+ORDER BY change_date;
+GET_REVISION_DATA;
+
+		return DB::get_results($sql, array('post_id' => $this->id, 'rev_date' => DateTime::create($date)->sql));
+	}
+
+	/**
+	 * List the stored revisions of this post by date and user id
+	 * @return array
+	 */
+	public function list_revisions() {
+		$sql = <<< LIST_REVISIONS
+SELECT DISTINCT
+change_date, user_id
+FROM {revisions}
+WHERE post_id = :post_id;
+LIST_REVISIONS;
+
+		return DB::get_keyvalue($sql, array('post_id' => $this->id));
+	}
+
+	/**
+	 * Set this post to have the same data as the post on the specified date
+	 * @param DateTime|string|int $date The date to fetch the revision of
+	 */
+	public function set_revision($date) {
+		$rev_data = $this->get_revision_data($date);
+		foreach($rev_data as $field) {
+			if(isset($this->fields[$field->change_field])) {
+				$this->newfields[$field->change_field] = $field->old_value;
+			}
+		}
+		Plugins::act('set_revision_field', $this, $rev_data);
 	}
 
 	/**

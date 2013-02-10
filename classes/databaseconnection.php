@@ -44,6 +44,7 @@ class DatabaseConnection
 		'posts',
 		'poststatus',
 		'posttype',
+		'revisions',
 		'rewrite_rules',
 		'scopes',
 		'sessions',

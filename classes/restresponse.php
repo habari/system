@@ -8,6 +8,9 @@
 	 * Allows REST responses to return based on requests accepts headers
 	 *
 	 */
+
+namespace Habari;
+
 class RestResponse
 {
 	protected $response;

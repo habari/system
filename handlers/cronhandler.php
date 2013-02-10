@@ -20,8 +20,8 @@ class CronHandler extends ActionHandler
 	static function run_cron( $async = false )
 	{
 		// check if it's time to run crons, and if crons are already running.
-		$next_cron = DateTime::date_create( Options::get( 'next_cron' ) );
-		$time = DateTime::date_create();
+		$next_cron = DateTime::create( Options::get( 'next_cron' ) );
+		$time = DateTime::create();
 		if ( ( $next_cron->int > $time->int )
 			|| ( Options::get( 'cron_running' ) && Options::get( 'cron_running' ) > microtime( true ) )
 		) {
@@ -61,7 +61,7 @@ class CronHandler extends ActionHandler
 				return;
 			}
 
-			$time = DateTime::date_create();
+			$time = DateTime::create();
 			$crons = DB::get_results(
 				'SELECT * FROM {crontab} WHERE start_time <= ? AND next_run <= ? AND active != ?',
 				array( $time->sql, $time->sql, 0 ),
@@ -76,7 +76,7 @@ class CronHandler extends ActionHandler
 			EventLog::log( _t( 'CronTab run completed.' ), 'debug', 'crontab', 'habari', $crons );
 
 			// set the next run time to the lowest next_run OR a max of one day.
-			$next_cron = DB::get_value( 'SELECT next_run FROM {crontab} ORDER BY next_run ASC LIMIT 1', array() );
+			$next_cron = DB::get_value( 'SELECT next_run FROM {crontab} WHERE active != ? ORDER BY next_run ASC LIMIT 1', array( 0 ) );
 			Options::set( 'next_cron', min( intval( $next_cron ), $time->modify( '+1 day' )->int ) );
 			Options::set( 'cron_running', false );
 		}
@@ -101,7 +101,7 @@ class CronHandler extends ActionHandler
 		if ( !ini_get( 'safe_mode' ) ) {
 			set_time_limit( 600 );
 		}
-		$time = DateTime::date_create();
+		$time = DateTime::create();
 		$crons = DB::get_results(
 			'SELECT * FROM {crontab} WHERE start_time <= ? AND next_run <= ? AND active != ?',
 			array( $time->sql, $time->sql, 0 ),
@@ -115,7 +115,7 @@ class CronHandler extends ActionHandler
 		}
 
 		// set the next run time to the lowest next_run OR a max of one day.
-		$next_cron = DB::get_value( 'SELECT next_run FROM {crontab} ORDER BY next_run ASC LIMIT 1', array() );
+		$next_cron = DB::get_value( 'SELECT next_run FROM {crontab} WHERE active != ? ORDER BY next_run ASC LIMIT 1', array( 0 ) );
 		Options::set( 'next_cron', min( intval( $next_cron ), $time->modify( '+1 day' )->int ) );
 		Options::set( 'cron_running', false );
 	}

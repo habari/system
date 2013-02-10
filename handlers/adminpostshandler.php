@@ -26,6 +26,7 @@ class AdminPostsHandler extends AdminHandler
 		// 0 is what's assigned to new posts
 		if ( isset( $id ) && ( $id != 0 ) ) {
 			$post = Post::get( array( 'id' => $id, 'status' => Post::status( 'any' ) ) );
+			Plugins::act('admin_publish_post', $post);
 			if ( !$post ) {
 				Session::error( _t( "You don't have permission to edit that post" ) );
 				$this->get_blank();
@@ -38,6 +39,7 @@ class AdminPostsHandler extends AdminHandler
 		}
 		else {
 			$post = new Post();
+			Plugins::act('admin_publish_post', $post);
 			$this->theme->post = $post;
 			$post->content_type = Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
 

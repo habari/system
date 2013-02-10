@@ -84,17 +84,17 @@ class AdminOptionsHandler extends AdminHandler
 				'label' => _t( 'Time Zone' ),
 				'type' => 'select',
 				'selectarray' => $timezones,
-				'helptext' => _t( 'Current Date Time: %s', array( DateTime::date_create()->format() ) ),
+				'helptext' => _t( 'Current Date Time: %s', array( DateTime::create()->format() ) ),
 				),
 			'dateformat' => array(
 				'label' => _t( 'Date Format' ),
 				'type' => 'text',
-				'helptext' => _t( 'Current Date: %s', array( DateTime::date_create()->date ) ),
+				'helptext' => _t( 'Current Date: %s', array( DateTime::create()->date ) ),
 				),
 			'timeformat' => array(
 				'label' => _t( 'Time Format' ),
 				'type' => 'text',
-				'helptext' => _t( 'Current Time: %s', array( DateTime::date_create()->time ) ),
+				'helptext' => _t( 'Current Time: %s', array( DateTime::create()->time ) ),
 				)
 			);
 

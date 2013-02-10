@@ -259,7 +259,7 @@ class EventLog extends \ArrayObject
 				if ( isset( $paramset['day'] ) ) {
 					$where[] = 'timestamp BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
-					$start_date = DateTime::date_create( $start_date );
+					$start_date = DateTime::create( $start_date );
 					$params[] = $start_date->sql;
 					$params[] = $start_date->modify( '+1 day' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
@@ -268,7 +268,7 @@ class EventLog extends \ArrayObject
 				elseif ( isset( $paramset['month'] ) ) {
 					$where[] = 'timestamp BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
-					$start_date = DateTime::date_create( $start_date );
+					$start_date = DateTime::create( $start_date );
 					$params[] = $start_date->sql;
 					$params[] = $start_date->modify( '+1 month' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
@@ -277,7 +277,7 @@ class EventLog extends \ArrayObject
 				elseif ( isset( $paramset['year'] ) ) {
 					$where[] = 'timestamp BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
-					$start_date = DateTime::date_create( $start_date );
+					$start_date = DateTime::create( $start_date );
 					$params[] = $start_date->sql;
 					$params[] = $start_date->modify( '+1 year' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
@@ -357,15 +357,24 @@ class EventLog extends \ArrayObject
 	public static function trim()
 	{
 		// allow an option to be set to override the log retention - in days
-		$retention = Options::get( 'log_retention', 14 );		// default to 14 days
+		$retention_days = Options::get( 'log_retention', 14 );		// default to 14 days
 
 		// make it into the string we'll use
-		$retention = '-' . intval( $retention ) . ' days';
+		$retention = '-' . intval( $retention_days ) . ' days';
 
 		// Trim the log table down
-		$date = DateTime::date_create()->modify( $retention );
+		$date = DateTime::create()->modify( $retention );
 
-		return DB::query( 'DELETE FROM {log} WHERE timestamp < ?', array( $date->sql ) );
+		$result = DB::query( 'DELETE FROM {log} WHERE timestamp < ?', array( $date->sql ) );
+
+		if ( $result ) {
+			EventLog::log( _t( 'Entries over %d days old were trimmed from the EventLog', array( $retention_days ) ), 'info' );
+		}
+		else {
+			EventLog::log( _t( 'There was an error trimming old entries from the EventLog!' ), 'err' );
+		}
+
+		return $result;
 
 	}
 

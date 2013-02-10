@@ -66,7 +66,7 @@ class Comment extends QueryRecord implements IsContent
 			'ip' => 0,
 			'content' => '',
 			'status' => self::STATUS_UNAPPROVED,
-			'date' => DateTime::date_create(),
+			'date' => DateTime::create(),
 			'type' => self::COMMENT
 		);
 	}
@@ -258,7 +258,7 @@ class Comment extends QueryRecord implements IsContent
 				return $this->setstatus( $value );
 			case 'date':
 				if ( !( $value instanceOf DateTime ) ) {
-					$value = DateTime::date_create( $value );
+					$value = DateTime::create( $value );
 				}
 				break;
 			case 'post':

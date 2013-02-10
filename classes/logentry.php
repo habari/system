@@ -16,7 +16,7 @@ namespace Habari;
  * @property-read string $module The name of the module creating this entry
  * @property-read string type The name of the type of this entry
  * @property-read string $severity The name of the severity of this entry
- * @property-write mixed $timestamp The time of this entry. Can be a DateTime object or a valid parameter for DateTime::date_create()
+ * @property-write mixed $timestamp The time of this entry. Can be a DateTime object or a valid parameter for DateTime::create()
  */
 class LogEntry extends QueryRecord
 {
@@ -61,7 +61,7 @@ class LogEntry extends QueryRecord
 			'severity_id' => null,
 			'message' => '',
 			'data' => '',
-			'timestamp' => DateTime::date_create(),
+			'timestamp' => DateTime::create(),
 			'ip' => 0,
 		);
 	}
@@ -89,7 +89,7 @@ class LogEntry extends QueryRecord
 			$this->fields['severity'] = 'info';
 		}
 		if ( isset( $this->fields['timestamp'] ) ) {
-			$this->fields['timestamp'] = DateTime::date_create( $this->fields['timestamp'] );
+			$this->fields['timestamp'] = DateTime::create( $this->fields['timestamp'] );
 		}
 		$this->exclude_fields( 'id' );
 	}
@@ -365,7 +365,7 @@ class LogEntry extends QueryRecord
 		switch ( $name ) {
 			case 'timestamp':
 				if ( !( $value instanceOf DateTime ) ) {
-					$value = DateTime::date_create( $value );
+					$value = DateTime::create( $value );
 				}
 				break;
 		}
