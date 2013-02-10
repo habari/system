@@ -54,7 +54,7 @@ class flickrAPI
 			} 
 		}
 
-		$call->set_timeout( 5 );
+		$call->set_timeout( 15 );
 		$call->set_postdata( $args );
 		
 		try {
