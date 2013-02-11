@@ -46,6 +46,7 @@ abstract class FormControl
 	 */
 	public static function from_args($arglist)
 	{
+		$arglist = array_pad($arglist, 6, null);
 		list($type, $name, $storage, $caption, $properties, $settings) = $arglist;
 		if(class_exists('\\Habari\\FormControl' . ucwords($type))) {
 			$type = '\\Habari\\FormControl' . ucwords($type);
