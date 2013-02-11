@@ -66,7 +66,7 @@ class Method
 	 */
 	public function __invoke() {
 		// Try the \Habari namespace if the class doesn't exist and the \Habari namespace works
-		if(strpos($this->class, '\\') === false && !class_exists($this->class, true)) {
+		if(!is_object($this->class) && strpos($this->class, '\\') === false && !class_exists($this->class, true)) {
 			if(class_exists('\\Habari\\' . $this->class)) {
 				$this->class = '\\Habari\\' . $this->class;
 			}
