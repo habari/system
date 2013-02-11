@@ -637,7 +637,7 @@ class Posts extends \ArrayObject implements IsContent
 
 		// Define the LIMIT if it does not exist, unless specific posts are requested or we're getting the monthly counts
 		if ( !isset( $limit ) && !isset( $paramset['id'] ) && !isset( $paramset['slug'] ) && !isset( $paramset['month_cts'] ) ) {
-			$limit = Options::get( 'pagination' ) ? (int) Options::get( 'pagination' ) : 5;
+			$limit = Options::get( 'pagination', 5 );
 		}
 		elseif ( !isset( $limit ) ) {
 			$selected_posts = 0;
