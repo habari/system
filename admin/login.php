@@ -26,29 +26,18 @@
 		<h1><a href="<?php Site::out_url('habari'); ?>" title="<?php _e('Go to Site'); ?>"><?php Options::out('title'); ?></a></h1>
 
 		<div class="container">
-			<?php Plugins::act( 'theme_loginform_before' ); ?>
-				<form method="post" action="<?php URL::out( 'auth', array( 'page' => 'login' ) ); ?>">
-					<?php // TODO: Use Javascript to add this or automatically hide it on load rather than show it ?>
-					<p id="reset_message" style="display:none; margin-bottom:20px;">
-						<?php _e('Please enter the username you wish to reset the password for.  A unique password reset link will be emailed to that user.'); ?>
-					</p>
-
-					<p>
-						<label for="habari_username" class="incontent abovecontent"><?php _e('Name'); ?></label><input type="text" name="habari_username" id="habari_username"<?php if (isset( $habari_username )) { ?> value="<?php echo Utils::htmlspecialchars( $habari_username ); ?>"<?php } ?> placeholder="<?php _e('name'); ?>" class="styledformelement">
-					</p>
-					<p>
-						<label for="habari_password" class="incontent abovecontent"><?php _e('Password'); ?></label><input type="password" name="habari_password" id="habari_password" placeholder="<?php _e('password'); ?>" class="styledformelement">
-					</p>
-					<?php Plugins::act( 'theme_loginform_controls' ); ?>
-					<p>
-						<input class="submit" type="submit" name="submit_button" value="<?php _e('Login'); ?>">
-					</p>
-					<p id="password_utils">
-						<input class="submit" type="submit" name="submit_button" value="<?php _e('Reset password'); ?>">
-					</p>
-
-				</form>
-				<?php Plugins::act( 'theme_loginform_after' ); ?>
+			<?php
+				$form = new FormUI( 'habari_login' );
+				$form->set_option( 'form_action', URL::get( 'auth', array( 'page' => 'login' ) ) );
+				$form->append( 'static', 'reset_message', '<p id="reset_message" style="margin-bottom:20px;">' . _t('Please enter the username you wish to reset the password for.  A unique password reset link will be emailed to that user.') . '</p>' );
+				$form->append( 'text', 'habari_username', 'null:null', _t('Name') );
+				$form->habari_username->template = 'admincontrol_text';
+				$form->append( 'password', 'habari_password', 'null:null', _t('Password') );
+				$form->habari_password->template = 'admincontrol_password';
+				$form->append( 'submit', 'submit_button', _t('Login') );
+				$form->append( 'button', 'passwordreset_button', _t('Reset password') );
+				$form->out();
+			?>
 		</div>
 
 	</div>
@@ -61,6 +50,7 @@
 	var password_label;
 	$(document).ready( function() {
 		<?php Session::messages_out( true, Method::create( '\Habari\Format', 'humane_messages' ) ); ?>
+		$("#reset_message").hide();
 		password_label = $('label[for=habari_password]');
 		// to fix autofill issues, we need to check the password field on every keyup
 		$('#habari_username').keyup( function() {
@@ -73,15 +63,15 @@
 		
 		// Make the login form a bit more intuitive when requesting a password reset
 		// TODO: Stop this submitting the form when we click the Reset Password the first time when the field is populated.
-		$("#password_utils input").click(function() {
-			// Hide password box
-			$("p:has(input[name=habari_password])").hide();
+		$("#passwordreset_button input").click(function() {
+			// Hide password box (and surrounding container)
+			$("#habari_password").parent().hide();
 			// Hide Login button
-			$("p:has(input[name=submit_button])").first().hide();
+			$("#submit_button").hide();
 			// Show message that explains things a bit better
 			$("p#reset_message").fadeIn();
 			// Unbind click function
-			$("#password_utils input").unbind('click');
+			$("#passwordreset_button input").unbind('click');
 			return false;
 		});
 	});
