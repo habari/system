@@ -19,11 +19,17 @@ class UserHandler extends ActionHandler
 	 */
 	public function act_login()
 	{
+		// Display the login form.
+		$this->login_form( $name );
+	}
+	
+	public function login ( $form )
+	{
 		// If we're a reset password request, do that.
-		if ( isset( $_POST['submit_button'] ) && $_POST['submit_button'] === _t( 'Reset password' ) ) {
-			Utils::check_request_method( array( 'POST' ) );
+		if ( isset( $form->passwordreset_button->value ) && !empty( $form->passwordreset_button->value ) ) {
+			//Utils::check_request_method( array( 'POST' ) );
 
-			$name = $this->handler_vars['habari_username'];
+			$name = $form->habari_username->value;
 			if ( $name !== null ) {
 				if ( !is_numeric( $name ) && $user = User::get( $name ) ) {
 					$hash = Utils::random_password();
@@ -40,9 +46,9 @@ class UserHandler extends ActionHandler
 		}
 		// Back to actual login.
 		else {
-			Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
-			$name = $_POST['habari_username'];
-			$pass = $_POST['habari_password'];
+			//Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
+			$name = $form->habari_username->value;
+			$pass = $form->habari_password->value;
 
 			if ( ( null != $name ) || ( null != $pass ) ) {
 				$user = User::authenticate( $name, $pass );
@@ -102,13 +108,10 @@ class UserHandler extends ActionHandler
 
 				/* Authentication failed. */
 				// Remove submitted password, see, we're secure!
-				$_POST['habari_password'] = '';
+				$form->habari_password->value = '';
 				$this->handler_vars['error'] = _t( 'Bad credentials' );
 			}
 		}
-
-		// Display the login form.
-		$this->login_form( $name );
 	}
 
 	/**

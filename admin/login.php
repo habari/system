@@ -28,14 +28,14 @@
 		<div class="container">
 			<?php
 				$form = new FormUI( 'habari_login' );
-				$form->set_option( 'form_action', URL::get( 'auth', array( 'page' => 'login' ) ) );
+				$form->on_success( array( 'Habari\UserHandler', 'login' ) );
 				$form->append( 'static', 'reset_message', '<p id="reset_message" style="margin-bottom:20px;">' . _t('Please enter the username you wish to reset the password for.  A unique password reset link will be emailed to that user.') . '</p>' );
 				$form->append( 'text', 'habari_username', 'null:null', _t('Name') );
 				$form->habari_username->template = 'admincontrol_text';
 				$form->append( 'password', 'habari_password', 'null:null', _t('Password') );
 				$form->habari_password->template = 'admincontrol_password';
 				$form->append( 'submit', 'submit_button', _t('Login') );
-				$form->append( 'button', 'passwordreset_button', _t('Reset password') );
+				$form->append( 'submit', 'passwordreset_button', _t('Reset password') );
 				$form->out();
 			?>
 		</div>
