@@ -187,7 +187,6 @@ class UserHandler extends ActionHandler
 
 		$id = $this->handler_vars['id'];
 		$hash = $this->handler_vars['hash'];
-		$name = '';
 
 		if ( $user = User::get( $id ) ) {
 			if ( is_string( $hash ) && ( $user->info->password_reset == md5( $hash ) ) ) {
@@ -208,15 +207,13 @@ class UserHandler extends ActionHandler
 				// Clear the request - it should only work once
 				unset( $user->info->password_reset );
 				$user->info->commit();
-
-				$name = $user->username;
 			}
 			else {
 				Session::notice( _t( 'The supplied password reset token has expired or is invalid.' ) );
 			}
 		}
 		// Display the login form.
-		$this->login_form( $name );
+		Utils::redirect( Site::get_url( 'admin' ) );
 	}
 
 }
