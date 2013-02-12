@@ -157,6 +157,9 @@ class UserHandler extends ActionHandler
 		$form->append( 'submit', 'submit_button', _t('Login') );
 		$form->append( 'submit', 'passwordreset_button', _t('Reset password') );
 		
+		// Let plugins alter this form
+		Plugins::act( 'form_login', $form );
+		
 		// Assign login form and display the page
 		$this->theme->form = $form->get();
 		$this->display( 'login' );
