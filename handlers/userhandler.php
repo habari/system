@@ -213,7 +213,7 @@ class UserHandler extends ActionHandler
 			}
 		}
 		// Display the login form.
-		Utils::redirect( Site::get_url( 'admin' ) );
+		Utils::redirect( URL::get( 'auth', array( 'page' => 'login' ) ) );
 	}
 
 }
