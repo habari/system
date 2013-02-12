@@ -20,15 +20,13 @@ class UserHandler extends ActionHandler
 	public function act_login()
 	{
 		// Display the login form.
-		$this->login_form( $name );
+		$this->login_form();
 	}
 	
-	public function login ( $form )
+	public function loginform_success ( $form )
 	{
 		// If we're a reset password request, do that.
 		if ( isset( $form->passwordreset_button->value ) && !empty( $form->passwordreset_button->value ) ) {
-			//Utils::check_request_method( array( 'POST' ) );
-
 			$name = $form->habari_username->value;
 			if ( $name !== null ) {
 				if ( !is_numeric( $name ) && $user = User::get( $name ) ) {
@@ -46,7 +44,6 @@ class UserHandler extends ActionHandler
 		}
 		// Back to actual login.
 		else {
-			//Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
 			$name = $form->habari_username->value;
 			$pass = $form->habari_password->value;
 
@@ -140,26 +137,30 @@ class UserHandler extends ActionHandler
 	 *
 	 * @param string $name Pre-fill the name field with this name
 	 */
-	protected function login_form( $name )
+	protected function login_form()
 	{
-		// Display the login form.
+		// Build theme and login page template
 		$this->theme = Themes::create();
 		if ( !$this->theme->template_exists( 'login' ) ) {
 			$this->theme = Themes::create( 'admin', 'RawPHPEngine', Site::get_dir( 'admin_theme', true ) );
 			$this->theme->assign( 'admin_page', 'login' );
 		}
-		$request = new \StdClass();
-		foreach ( URL::get_active_rules() as $rule ) {
-			$request->{$rule->name} = ( $rule->name == URL::get_matched_rule()->name );
-		}
-
-		if ( isset( $this->handler_vars['error'] ) ) {
-			$this->theme->assign( 'error', Utils::htmlspecialchars( $this->handler_vars['error'] ) );
-		}
-
-		$this->theme->assign( 'request', $request );
-		$this->theme->assign( 'habari_username', htmlentities( $name, ENT_QUOTES, 'UTF-8' ) );
+		
+		// Build the login form
+		$form = new FormUI( 'habari_login' );
+		$form->on_success( array( $this, 'loginform_success' ) );
+		$form->append( 'static', 'reset_message', '<p id="reset_message" style="margin-bottom:20px;">' . _t('Please enter the username you wish to reset the password for.  A unique password reset link will be emailed to that user.') . '</p>' );
+		$form->append( 'text', 'habari_username', 'null:null', _t('Name') );
+		$form->habari_username->template = 'admincontrol_text';
+		$form->append( 'password', 'habari_password', 'null:null', _t('Password') );
+		$form->habari_password->template = 'admincontrol_password';
+		$form->append( 'submit', 'submit_button', _t('Login') );
+		$form->append( 'submit', 'passwordreset_button', _t('Reset password') );
+		
+		// Assign login form and display the page
+		$this->theme->form = $form->get();
 		$this->display( 'login' );
+		
 		return true;
 	}
 
