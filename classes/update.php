@@ -67,7 +67,7 @@ class Update extends Singleton
 	 * @param array $beacon the beacon data from the $beacons array
 	 * @return boolean true if there are updates available for this beacon
 	 */
-	private static function filter_unchanged( $beacon )
+	public static function filter_unchanged( $beacon )
 	{
 		return isset( $beacon['latest_version'] );
 	}
