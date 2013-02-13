@@ -497,7 +497,7 @@ class Session extends Singleton
 	public static function has_errors( $key = null )
 	{
 		if ( isset( $key ) ) {
-			return isset( $_SESSION['errors'][$key] );
+			return ( isset( $_SESSION['errors'] ) && isset( $_SESSION['errors'][$key] ) );
 		}
 		else {
 			return count( self::get_errors( false ) ) ? true : false;
