@@ -1275,6 +1275,8 @@ class Posts extends \ArrayObject implements IsContent
 		$presets['tag'] = array( 'preset' => 'page' );
 		$presets['date'] = array( 'preset' => 'page' );
 		$presets['search'] = array( 'preset' => 'page' );
+		// Preset for default admin post lists
+		$presets['admin'] = array( 'limit' => 20, 'user_id' => 0, 'orderby' => 'pubdate DESC' );
 		return $presets;
 	}
 
