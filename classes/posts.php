@@ -759,10 +759,10 @@ class Posts extends \ArrayObject implements IsContent
 			unset($paramarray['preset']);
 			
 			// Process fallbacks (in the simplest case, this will just iterate once - for the requested fallback-less preset)
-			foreach($presetparam as $presetname => $fallbackpreset) {
+			foreach($presetparam as $fallbackpreset) {
 				if(isset($presets[$fallbackpreset])) {
 					// We found one that exists, let plugins filter it and then merge it with our paramarray
-					$preset = Plugins::filter('posts_get_update_preset', $presets[$fallbackpreset], $presetname, $paramarray);
+					$preset = Plugins::filter('posts_get_update_preset', $presets[$fallbackpreset], $fallbackpreset, $paramarray);
 					if(is_array( $preset ) || $preset instanceof \ArrayObject || $preset instanceof \ArrayIterator) {
 						$preset = new SuperGlobal($preset);
 						$paramarray = $preset->merge($paramarray)->getArrayCopy();
