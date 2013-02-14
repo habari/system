@@ -5,6 +5,8 @@
  * @package Habari
  */
 
+namespace Habari;
+
 class PGSQLConnection extends DatabaseConnection
 {
 	/**
