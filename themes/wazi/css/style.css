@@ -81,6 +81,7 @@ a{text-decoration:none;color:#195f91;}a:hover{color:#217bbd;background:#e4e4e4;}
 ul.messages{border-radius:5px;padding:10px;margin:0 10px;}ul.messages.error{border:1px solid #d1a9a9;background-color:rgba(255, 255, 255, 0.8);}
 ul.messages.success{border:1px solid #3496dc;background-color:rgba(226, 240, 250, 0.8);}
 ul.messages li{margin-left:20px;}
+form ul.error li{color:#bf8888;clear:both;font-size:smaller;text-shadow:1px 1px 0px #666;}
 #header hgroup{text-align:right;border-bottom:1px solid #ddd;margin:0 0 5px;}#header hgroup h1{padding:0;margin:0;}
 #header hgroup h2{font-size:1.0em;padding:0;margin:0;color:#999;}
 #header nav{margin:0 0 20px;padding:0 0 5px;border-bottom:1px solid #ddd;}#header nav ol{margin:0px;padding:0px;}
