@@ -752,26 +752,37 @@ class Posts extends \ArrayObject implements IsContent
 		}
 	}
 	
-	protected static function merge_presets($paramarray, $presets) {
+	protected static function merge_presets($paramarray, $presets, $processed_presets = array()) {
 		if(isset($paramarray['preset'])) {
+			// Get the preset from the paramarray and then remove it. That way, if the preset we merge contains a preset, it can be processed in the next recursive call.
 			$presetparam = Utils::single_array($paramarray['preset']);
-			// Remove the preset from the paramarray now that we got it. That way, if the preset we merge contains a preset, it can be processed in the next recursive call.
 			unset($paramarray['preset']);
 			
 			// Process fallbacks (in the simplest case, this will just iterate once - for the requested fallback-less preset)
 			foreach($presetparam as $fallbackpreset) {
+				if(in_array($fallbackpreset, $processed_presets)) {
+					// Ooh, circular references. Stop it!
+					break;
+				}
 				if(isset($presets[$fallbackpreset])) {
 					// We found one that exists, let plugins filter it and then merge it with our paramarray
 					$preset = Plugins::filter('posts_get_update_preset', $presets[$fallbackpreset], $fallbackpreset, $paramarray);
-					if(is_array( $preset ) || $preset instanceof \ArrayObject || $preset instanceof \ArrayIterator) {
+					if(is_array($preset) || $preset instanceof \ArrayObject || $preset instanceof \ArrayIterator) {
 						$preset = new SuperGlobal($preset);
 						$paramarray = $preset->merge($paramarray)->getArrayCopy();
+						// Save the processed preset
+						$processed_presets[] = $fallbackpreset;
 						// We might have retrieved new presets to use. Do it again!
-						$paramarray = Posts::merge_presets($paramarray, $presets);
+						$paramarray = Posts::merge_presets($paramarray, $presets, $processed_presets);
 						break;
 					}
 				}
 			}
+		}
+		
+		// When we reach this point, the processing is over. Add the processed presets back to the paramarray if that did not happen yet.
+		if(!isset($paramarray['preset'])) {
+			$paramarray['preset'] = $processed_presets;
 		}
 		return $paramarray;
 	}
