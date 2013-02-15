@@ -1,4 +1,7 @@
 <?php
+
+namespace Habari;
+
 echo Format::term_tree(
 	$content->tree,
 	$content->vocabulary->name,

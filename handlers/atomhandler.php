@@ -802,7 +802,7 @@ class AtomHandler extends ActionHandler
 				'wrap' => 200,
 			);
 
-			$tidy = new tidy();
+			$tidy = new \tidy();
 			$tidy->parseString( $xml, $config, 'utf8' );
 			$tidy->cleanRepair();
 			$xml = $tidy;

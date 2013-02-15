@@ -475,10 +475,10 @@ class DateTime extends \DateTime
 	 * @param boolean $include_suffix Include the 'ago' or 'from now' suffix?
 	 * @return string Time passed in the specified units.
 	 */
-	public function friendly ( $precision = 7, $include_suffix = true )
+	public function friendly ( $precision = 7, $include_suffix = true, $comparison_date = 'now' )
 	{
 				
-		$difference = self::difference( self::create(), $this );
+		$difference = self::difference( $comparison_date, $this );
 				
 		
 		$result = array();
@@ -536,9 +536,15 @@ class DateTime extends \DateTime
 	 * 
 	 * Returns a very short version of the difference in time between now and the current HDT object.
 	 */
-	public function fuzzy ()
+	public function fuzzy ( $comparison_date = 'now' )
 	{
-		$difference = self::create()->int - $this->int;
+
+		// make sure the comparison date is something we can use
+		if ( !$comparison_date instanceof DateTime ) {
+			$comparison_date = DateTime::create( $comparison_date );
+		}
+
+		$difference = $comparison_date->int - $this->int;
 		
 		if ( $difference < 0 ) {
 			$future = true;

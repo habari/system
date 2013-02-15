@@ -83,6 +83,7 @@ class DatabaseConnection
 		$engines = array(
 			'sqlite' => '\Habari\SQLiteConnection',
 			'mysql' => '\Habari\MySQLConnection',
+			'pgsql' => '\Habari\PGSQLConnection',
 		);
 
 		require_once( HABARI_PATH . "/system/schema/{$engine}/connection.php" );
