@@ -155,7 +155,9 @@ class UserHandler extends ActionHandler
 		$form->append( 'password', 'habari_password', 'null:null', _t('Password') );
 		$form->habari_password->template = 'admincontrol_password';
 		$form->append( 'submit', 'submit_button', _t('Login') );
+		$form->submit_button->template = 'admincontrol_submit';
 		$form->append( 'submit', 'passwordreset_button', _t('Reset password') );
+		$form->passwordreset_button->template = 'admincontrol_submit';
 		
 		// Let plugins alter this form
 		Plugins::act( 'form_login', $form );
