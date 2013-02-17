@@ -161,7 +161,6 @@ header( 'Content-Type: text/html;charset=utf-8' );
 // Load and upgrade all the active plugins.
 spl_autoload_register( Method::create( '\Habari\Plugins' , '_autoload' ) );
 Plugins::load_active();
-Plugins::upgrade();
 
 // All plugins loaded, tell the plugins.
 Plugins::act( 'plugins_loaded' );
