@@ -330,6 +330,7 @@ class Plugins
 	*/
 	public static function get_by_interface( $interface )
 	{
+		$interface = "Habari\\" . $interface;
 		return array_filter( self::$plugins, function( $plugin_obj ) use ($interface) { return $plugin_obj instanceof $interface; } );
 	}
 
