@@ -212,7 +212,7 @@ class Posts extends \ArrayObject implements IsContent
 				$where->in('{posts}.status', $paramset['not:status'], 'posts_not_status', function($a) {return Post::status( $a );}, null, false );
 			}
 
-			if ( isset( $paramset['content_type'] ) && ( $paramset['content_type'] != 'any' ) && ( 0 !== $paramset['content_type'] ) && !( in_array( 0, Utils::single_array( $paramset['content_type'] ) ) ) ) {
+			if ( isset( $paramset['content_type'] ) && ( $paramset['content_type'] != 'any' ) && ( 0 !== $paramset['content_type'] ) ) {
 				$where->in('{posts}.content_type', $paramset['content_type'], 'posts_content_type', function($a) {return Post::type( $a );} );
 			}
 			if ( isset( $paramset['not:content_type'] ) ) {
