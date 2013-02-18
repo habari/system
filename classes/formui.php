@@ -1317,8 +1317,8 @@ class FormControl extends FormComponents
 				$params = array_merge( array( $this->value, $this, $this->container ), $validator );
 				$valid = array_merge( $valid, call_user_func_array( $validator_fn, $params ) );
 			}
-			elseif ( method_exists( 'FormValidators', $validator_fn ) ) {
-				$validator_fn = array( 'FormValidators', $validator_fn );
+			elseif ( method_exists( 'Habari\FormValidators', $validator_fn ) ) {
+				$validator_fn = array( 'Habari\FormValidators', $validator_fn );
 				$params = array_merge( array( $this->value, $this, $this->container ), $validator );
 				$valid = array_merge( $valid, call_user_func_array( $validator_fn, $params ) );
 			}
