@@ -6,8 +6,6 @@
 			<?php echo $theme->content($posts); ?>
 		</div>
 
-		<aside id="sidebar">
-			<?php echo $theme->area('sidebar'); ?>
-		</aside>
+		<?php echo $theme->area('sidebar'); ?>
 
 <?php $theme->display('footer'); ?>
