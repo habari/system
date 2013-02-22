@@ -969,9 +969,15 @@ class FlickrSilo extends Plugin implements MediaSilo
 
 			echo <<< FLICKR
 			<script type="text/javascript">
+				if(habari.media.output.flickr === undefined) {
+					habari.media.output.flickr = {};
+				}
+				if(habari.media.output.flickrvideo === undefined) {
+					habari.media.output.flickrvideo = {};
+				}
 				$.extend(habari.media.output.flickr, {
 					{$embed_photo}: function(fileindex, fileobj) {
-						habari.editor.insertSelection('<a href="' + fileobj.flickr_url + '"><img alt="' + fileobj.title + '" src="' + fileobj.url + '"></a>');
+						habari.editor.insertSelection('<figure><img alt="' + fileobj.title + '" src="' + fileobj.url + '"><figcaption><a href="' + fileobj.flickr_url + '">' + fileobj.title + '</a></figcaption></figure>');
 					}
 				});
 				$.extend(habari.media.output.flickrvideo, {
