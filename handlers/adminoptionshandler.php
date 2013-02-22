@@ -174,7 +174,10 @@ class AdminOptionsHandler extends AdminHandler
 		 * the form controls, or we could create something different
 		 */
 
-		$submit = $form->append( 'submit', 'apply', _t( 'Apply' ), 'admincontrol_submit' );
+		$buttons = $form->append(new FormControlWrapper('buttons', 'buttons'));
+		$buttons->class = 'container';
+
+		$submit = $buttons->append( 'submit', 'apply', _t( 'Apply' ), 'admincontrol_submit' );
 		$submit->tabindex = $tab_index;
 		$form->on_success( array( $this, 'form_options_success' ) );
 

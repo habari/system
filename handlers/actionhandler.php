@@ -116,6 +116,13 @@ class ActionHandler
 			$request->{$rule->name} = false;
 		}
 		$request->{$this->theme->matched_rule->name} = true;
+		// Does the rule have any supplemental request types?
+		if(isset($this->theme->matched_rule->named_arg_values['request_types'])) {
+			foreach($this->theme->matched_rule->named_arg_values['request_types'] as $type) {
+				$request->$type = true;
+			}
+		}
+		$request = Plugins::filter('request_object', $request, $this->theme->matched_rule);
 		$this->theme->assign( 'request', $request );
 	}
 }
