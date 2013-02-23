@@ -50,7 +50,7 @@ if ( !defined( 'GLOB_BRACE' ) ) {
 ob_start();
 
 require( dirname( __FILE__ ) . '/autoload.php' );
-spl_autoload_register( 'habari_autoload' );
+spl_autoload_register( array('Autoload', 'habari_autoload') );
 
 // Replace all of the $_GET, $_POST and $_SERVER superglobals with object
 // representations of each.  Unset $_REQUEST, which is evil.
@@ -161,6 +161,10 @@ header( 'Content-Type: text/html;charset=utf-8' );
 // Load and upgrade all the active plugins.
 spl_autoload_register( Method::create( '\Habari\Plugins' , '_autoload' ) );
 Plugins::load_active();
+Plugins::upgrade();
+
+// Load any classes that plugins have added.
+spl_autoload_register( Method::create( 'Autoload', '_user_autoload' ) );
 
 // All plugins loaded, tell the plugins.
 Plugins::act( 'plugins_loaded' );
@@ -189,9 +193,6 @@ CronHandler::run_cron( Config::get('cron_async', true) );
 
 // Dispatch the request (action) to the matched handler.
 Controller::dispatch_request();
-
-// Shut down sessions so they can write and send cookies and headers before output, but after everything should be done
-Session::shutdown();
 
 // Flush (send) the output buffer.
 $buffer = ob_get_clean();
