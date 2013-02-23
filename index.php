@@ -162,6 +162,9 @@ header( 'Content-Type: text/html;charset=utf-8' );
 spl_autoload_register( Method::create( '\Habari\Plugins' , '_autoload' ) );
 Plugins::load_active();
 
+// Load any classes that plugins have added.
+spl_autoload_register( Method::create( 'Autoload', '_user_autoload' ) );
+
 // All plugins loaded, tell the plugins.
 Plugins::act( 'plugins_loaded' );
 
