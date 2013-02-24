@@ -121,4 +121,9 @@ abstract class FormControl
 			$this->name
 		);
 	}
+
+	public function pre_out()
+	{
+		return '';
+	}
 }
