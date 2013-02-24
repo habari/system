@@ -415,13 +415,21 @@ class Format
 				}
 			}
 			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) {
-				do {
-					$end = array_pop( $stack );
+				if(count($stack) > 0 && in_array($token['name'], Utils::array_map_field($stack, 'name'))) {
+					do {
+						$end = array_pop( $stack );
+						$end['type'] = HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE;
+						$end['attrs'] = null;
+						$end['value'] = null;
+						$summary[] = $end;
+					} while ( ( $bail || $end['name'] != $token['name'] ) && count( $stack ) > 0 );
+				}
+				else {
+					$end['name'] = $token['name'];
 					$end['type'] = HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE;
 					$end['attrs'] = null;
 					$end['value'] = null;
-					$summary[] = $end;
-				} while ( ( $bail || $end['name'] != $token['name'] ) && count( $stack ) > 0 );
+				}
 				if ( count( $stack ) == 0 ) {
 					$para++;
 				}
