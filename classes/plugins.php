@@ -533,6 +533,7 @@ class Plugins
 				self::load( $class );
 			}
 		}
+		Autoload::queue_dirs(Plugins::filter('autoload_dirs', array()));
 	}
 
 

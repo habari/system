@@ -50,7 +50,7 @@ if ( !defined( 'GLOB_BRACE' ) ) {
 ob_start();
 
 require( dirname( __FILE__ ) . '/autoload.php' );
-spl_autoload_register( 'habari_autoload' );
+spl_autoload_register( array('\Habari\Autoload', 'habari_autoload') );
 
 // Replace all of the $_GET, $_POST and $_SERVER superglobals with object
 // representations of each.  Unset $_REQUEST, which is evil.
