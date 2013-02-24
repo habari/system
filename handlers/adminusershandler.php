@@ -413,6 +413,8 @@ class AdminUsersHandler extends AdminHandler
 	{
 		$this->fetch_users();
 
+		$this->theme->currentuser = User::identify();
+
 		$this->theme->display( 'users' );
 	}
 
