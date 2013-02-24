@@ -1738,22 +1738,3 @@ $(document).ready(function(){
 		themeinfo.toggle();
 	});
 });
-
-function resetTags() {
-	var current = $('#tags').val();
-
-	$('#tag-list li').each(function(){
-		replstr = new RegExp('\\s*"?' + $( this ).text() + '"?\\s*', "gi");
-		if (current.match(replstr)) {
-			$(this).addClass('clicked');
-		}
-		else {
-			$(this).removeClass('clicked');
-		}
-	});
-
-	if (current.length === 0 && !$('#tags').hasClass('focus')) {
-		$('label[for=tags]').addClass('overcontent').removeClass('abovecontent').show();
-	}
-
-}
