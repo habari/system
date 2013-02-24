@@ -48,7 +48,7 @@ class Autoload
  		}
  	}
 	
-	function habari_autoload( $class_name )
+	public static function habari_autoload( $class_name )
 	{
 		static $files = null;
 
