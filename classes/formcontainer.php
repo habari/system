@@ -31,11 +31,10 @@ class FormContainer extends FormControl
 	public function insert($before, $control)
 	{
 		if(!$control instanceof FormControl) {
-			$control = FormControl::from_args(func_get_args());
+			$args = func_get_args();
+			$before = array_shift($args);
+			$control = FormControl::from_args($args);
 		}
-		$args = func_get_args();
-		$before = array_shift( $args );
-
 		$this->append($control);
 		$this->move_before( $control, $before );
 		return $control;
