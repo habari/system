@@ -17,7 +17,7 @@ class Comments extends \ArrayObject
 	/**
 	 * function get
 	 * Returns requested comments
-	 * @param array An associated array of parameters, or a querystring
+	 * @param array $paramarray An associated array of parameters, or a querystring
 	 * @return array An array of Comment objects, one for each query result
 	 *
 	 * <code>
