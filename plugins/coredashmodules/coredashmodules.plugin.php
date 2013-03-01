@@ -59,7 +59,7 @@ class CoreDashModules extends Plugin
 	 */
 	public function action_block_content_latest_entries($block, $theme)
 	{
-		$block->recent_posts = Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
+		$block->recent_posts = Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry'), 'orderby' => 'pubdate DESC' ) );
 		$block->link = URL::get('admin', array('page'=>'posts', 'type'=>Post::type('entry')));
 	}
 

@@ -132,17 +132,7 @@ class Posts extends \ArrayObject implements IsContent
 			if(!isset($presets)) {
 				$presets = Plugins::filter('posts_get_all_presets', $presets, $paramarray['preset']);
 			}
-			$paramarray['preset'] = Utils::single_array($paramarray['preset']);
-			foreach($paramarray['preset'] as $presetname => $fallbackpreset) {
-				if(isset($presets[$fallbackpreset])) {
-					$preset = Plugins::filter('posts_get_update_preset', $presets[$fallbackpreset], $presetname, $paramarray);
-					if(is_array( $preset ) || $preset instanceof \ArrayObject || $preset instanceof \ArrayIterator) {
-						$preset = new SuperGlobal($preset);
-						$paramarray = $preset->merge($paramarray)->getArrayCopy();
-						break;
-					}
-				}
-			}
+			$paramarray = Posts::merge_presets($paramarray, $presets);
 		}
 
 		// let plugins alter the param array before we use it. could be useful for modifying search results, etc.
@@ -171,9 +161,6 @@ class Posts extends \ArrayObject implements IsContent
 			$select_ary[$fielddata['alias']] = "{$fielddata['table']}.{$fielddata['field']} AS {$fielddata['alias']}";
 			$select_distinct[$fielddata['alias']] = "{$fielddata['table']}.{$fielddata['field']}";
 		}
-
-		// Default parameters
-		$orderby = 'pubdate DESC';
 
 		// Define the WHERE sets to process and OR in the final SQL statement
 		if ( isset( $paramarray['where'] ) && is_array( $paramarray['where'] ) ) {
@@ -635,23 +622,8 @@ class Posts extends \ArrayObject implements IsContent
 			$$key = $value;
 		}
 
-		// Define the LIMIT if it does not exist, unless specific posts are requested or we're getting the monthly counts
-		if ( !isset( $limit ) && !isset( $paramset['id'] ) && !isset( $paramset['slug'] ) && !isset( $paramset['month_cts'] ) ) {
-			$limit = Options::get( 'pagination' ) ? (int) Options::get( 'pagination' ) : 5;
-		}
-		elseif ( !isset( $limit ) ) {
-			$selected_posts = 0;
-			if ( isset( $paramset['id'] ) ) {
-				$selected_posts += count( Utils::single_array( $paramset['id'] ) );
-			}
-			if ( isset( $paramset['slug'] ) ) {
-				$selected_posts += count( Utils::single_array( $paramset['slug'] ) );
-			}
-			$limit = $selected_posts > 0 ? $selected_posts : '';
-		}
-
-		// Calculate the OFFSET based on the page number
-		if ( isset( $page ) && is_numeric( $page ) && !isset( $paramset['offset'] ) ) {
+		// Calculate the OFFSET based on the page number. Requires a limit.
+		if ( isset( $page ) && is_numeric( $page ) && !isset( $paramset['offset'] ) && isset( $limit ) ) {
 			$offset = ( intval( $page ) - 1 ) * intval( $limit );
 		}
 
@@ -778,6 +750,41 @@ class Posts extends \ArrayObject implements IsContent
 			$return_value->get_param_cache = $paramarray;
 			return $return_value;
 		}
+	}
+	
+	protected static function merge_presets($paramarray, $presets, $processed_presets = array()) {
+		if(isset($paramarray['preset'])) {
+			// Get the preset from the paramarray and then remove it. That way, if the preset we merge contains a preset, it can be processed in the next recursive call.
+			$presetparam = Utils::single_array($paramarray['preset']);
+			unset($paramarray['preset']);
+			
+			// Process fallbacks (in the simplest case, this will just iterate once - for the requested fallback-less preset)
+			foreach($presetparam as $fallbackpreset) {
+				if(in_array($fallbackpreset, $processed_presets)) {
+					// Ooh, circular references. Stop it!
+					break;
+				}
+				if(isset($presets[$fallbackpreset])) {
+					// We found one that exists, let plugins filter it and then merge it with our paramarray
+					$preset = Plugins::filter('posts_get_update_preset', $presets[$fallbackpreset], $fallbackpreset, $paramarray);
+					if(is_array($preset) || $preset instanceof \ArrayObject || $preset instanceof \ArrayIterator) {
+						$preset = new SuperGlobal($preset);
+						$paramarray = $preset->merge($paramarray)->getArrayCopy();
+						// Save the processed preset
+						$processed_presets[] = $fallbackpreset;
+						// We might have retrieved new presets to use. Do it again!
+						$paramarray = Posts::merge_presets($paramarray, $presets, $processed_presets);
+						break;
+					}
+				}
+			}
+		}
+		
+		// When we reach this point, the processing is over. Add the processed presets back to the paramarray if that did not happen yet.
+		if(!isset($paramarray['preset'])) {
+			$paramarray['preset'] = $processed_presets;
+		}
+		return $paramarray;
 	}
 
 	/**
@@ -1266,10 +1273,21 @@ class Posts extends \ArrayObject implements IsContent
 	 */
 	public static function filter_posts_get_all_presets($presets)
 	{
+		// Presets used for navigation.
 		$presets['page_list'] = array( 'content_type' => 'page', 'status' => 'published', 'nolimit' => true );
 		$presets['asides'] = array( 'vocabulary' => array( 'tags:term' => 'aside' ), 'limit' => 5 );
-		$presets['home'] = array( 'content_type' => Post::type( 'entry' ), 'status' => Post::status( 'published' ), 'limit' => Options::get('pagination', 5) );
-
+		// Flow is the base preset all other presets should build on top of.
+		$presets['flow'] = array( 'content_type' => Post::type( 'entry' ), 'status' => Post::status( 'published' ), 'limit' => Options::get( 'pagination', 5), 'orderby' => 'pubdate DESC' );
+		// This is used only for a site's home page.
+		$presets['home'] = array( 'preset' => 'flow' );
+		// All pages that follow use this one:
+		$presets['page'] = array( 'preset' => 'flow' );
+		// Provide presets for all other pages, just to allow plugins to play with them.
+		$presets['tag'] = array( 'preset' => 'page' );
+		$presets['date'] = array( 'preset' => 'page' );
+		$presets['search'] = array( 'preset' => 'page' );
+		// Preset for default admin post lists
+		$presets['admin'] = array( 'limit' => 20, 'user_id' => 0, 'orderby' => 'pubdate DESC' );
 		return $presets;
 	}
 

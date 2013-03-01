@@ -336,7 +336,7 @@ class Theme extends Pluggable
 			'multiple',
 		);
 
-		// Makes sure home displays only entries
+		// Use the according preset defined in the Posts class
 		$default_filters = array(
 			'preset' => 'home',
 		);
@@ -357,9 +357,9 @@ class Theme extends Pluggable
 			'multiple',
 		);
 
-		// Makes sure home displays only entries
+		// Use the according preset defined in the Posts class
 		$default_filters = array(
-			'content_type' => Post::type( 'entry' ),
+			'preset' => 'page',
 		);
 
 		$paramarray['user_filters'] = array_merge( $default_filters, $user_filters );
@@ -410,9 +410,9 @@ class Theme extends Pluggable
 			'multiple',
 		);
 
-		// Makes sure home displays only entries
+		// Use the according preset defined in the Posts class
 		$default_filters = array(
-			'content_type' => Post::type( 'entry' ),
+			'preset' => 'tag',
 		);
 
 		$this->assign( 'tag', Controller::get_var( 'tag' ) );
@@ -482,11 +482,13 @@ class Theme extends Pluggable
 		$paramarray['fallback'][] = 'date';
 		$paramarray['fallback'][] = 'multiple';
 		$paramarray['fallback'][] = 'home';
-
-		$paramarray['user_filters'] = $user_filters;
-		if ( !isset( $paramarray['user_filters']['content_type'] ) ) {
-			$paramarray['user_filters']['content_type'] = Post::type( 'entry' );
-		}
+	
+		// Use the according preset defined in the Posts class
+		$default_filters = array(
+			'preset' => 'date',
+		);
+		
+		$paramarray['user_filters'] = array_merge( $default_filters, $user_filters );
 
 		$this->assign( 'year', $y ? (int)Controller::get_var( 'year' ) : null );
 		$this->assign( 'month', $m ? (int)Controller::get_var( 'month' ) : null );
@@ -506,7 +508,12 @@ class Theme extends Pluggable
 			'multiple',
 		);
 
-		$paramarray['user_filters'] = $user_filters;
+		// Use the according preset defined in the Posts class
+		$default_filters = array(
+			'preset' => 'search',
+		);
+		
+		$paramarray['user_filters'] = array_merge( $default_filters, $user_filters );
 
 		$this->assign( 'criteria', Controller::get_var( 'criteria' ) );
 		return $this->act_display( $paramarray );
