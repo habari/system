@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-25 16:21+0000\n"
+"POT-Creation-Date: 2013-03-03 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -766,28 +766,28 @@ msgstr ""
 msgid "Whoops! 404. The page you were trying to access is not really there. Please try again."
 msgstr ""
 
-#: classes/theme.php:680
+#: classes/theme.php:687
 #, php-format
 msgid "Content could not be displayed. One of the following templates - %s - has to be present in the active theme."
 msgstr ""
 
-#: classes/theme.php:838
+#: classes/theme.php:845
 msgid "Previous"
 msgstr ""
 
-#: classes/theme.php:865
+#: classes/theme.php:872
 msgid "Next"
 msgstr ""
 
-#: classes/theme.php:891
+#: classes/theme.php:898
 msgid "Read Comments"
 msgstr ""
 
-#: classes/theme.php:912 themes/charcoal/theme.php:161
+#: classes/theme.php:919 themes/charcoal/theme.php:161
 msgid "No Comments"
 msgstr ""
 
-#: classes/theme.php:917
+#: classes/theme.php:924
 #, php-format
 msgid "%s Comment"
 msgid_plural "%s Comments"
@@ -2611,7 +2611,7 @@ msgstr ""
 #: handlers/admintagshandler.php:41 handlers/admintagshandler.php:67
 #: handlers/admingroupshandler.php:117 handlers/admingroupshandler.php:224
 #: handlers/adminlogshandler.php:240 handlers/admincommentshandler.php:540
-#: handlers/adminpostshandler.php:445
+#: handlers/adminpostshandler.php:455
 msgid "WSSE authentication failed."
 msgstr ""
 
@@ -3305,7 +3305,7 @@ msgstr ""
 msgid "No comments selected."
 msgstr ""
 
-#: handlers/admincommentshandler.php:562 handlers/adminpostshandler.php:465
+#: handlers/admincommentshandler.php:562 handlers/adminpostshandler.php:475
 #, php-format
 msgid "Unknown action \"%s\""
 msgstr ""
@@ -3492,23 +3492,23 @@ msgstr ""
 msgid "Deleted the %1$s titled \"%2$s\"."
 msgstr ""
 
-#: handlers/adminpostshandler.php:277
+#: handlers/adminpostshandler.php:287
 msgid "My Posts"
 msgstr ""
 
-#: handlers/adminpostshandler.php:279 handlers/adminpostshandler.php:280
+#: handlers/adminpostshandler.php:289 handlers/adminpostshandler.php:290
 msgid "Manage Posts"
 msgstr ""
 
-#: handlers/adminpostshandler.php:311
+#: handlers/adminpostshandler.php:321
 msgid "Root"
 msgstr ""
 
-#: handlers/adminpostshandler.php:476
+#: handlers/adminpostshandler.php:486
 msgid "You did not have permission to delete some posts."
 msgstr ""
 
-#: handlers/adminpostshandler.php:479
+#: handlers/adminpostshandler.php:489
 #, php-format
 msgid "Deleted %d post"
 msgid_plural "Deleted %d posts"
