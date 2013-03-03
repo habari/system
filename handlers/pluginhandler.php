@@ -55,7 +55,8 @@ class PluginHandler extends ActionHandler
 		Plugins::act( $action_hook, $this );
 		if(Plugins::implemented($theme_hook, 'theme')) {
 			$theme = Themes::create();
-			Plugins::theme( $theme_hook, $theme, $this );
+			$rule = URL::get_matched_rule();
+			Plugins::theme( $theme_hook, $theme, $rule->named_arg_values, $this );
 		}
 		Plugins::act( $after_action_hook );
 	}
