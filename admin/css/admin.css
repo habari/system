@@ -762,26 +762,6 @@ body.page-publish .buttons input {
 	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEYAAAADCAYAAAAuu3lbAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACRJREFUeNpivHLlyn+GUYABGP//Hw0XbIDl6tWroyGDBQAEGADRQAn91uPxnQAAAABJRU5ErkJggg==') center center no-repeat; /* Double line 'grip' */
 }
 
-#tags_list ul {
-	text-align: left;
-	margin-right: 50px;
-	margin-left: 10px;
-}
-
-#tags_list ul li {
-	font-family: "Arial", sans-serif;
-	font-size: 0.8em;
-	display: inline;
-	line-height: 2.0em;
-	padding: 3px;
-	color: #ccc;
-	cursor: pointer;
-}
-
-#tags_list ul li.clicked {
-	background: #000;
-}
-
 .viewpost {
 	float: right;
 }
