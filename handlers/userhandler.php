@@ -26,7 +26,7 @@ class UserHandler extends ActionHandler
 	public function loginform_success ( $form )
 	{
 		// If we're a reset password request, do that.
-		if ( isset( $form->passwordreset_button->value ) && !empty( $form->passwordreset_button->value ) ) {
+		if ( isset( $form->reset_button->value ) && !empty( $form->reset_button->value ) ) {
 			$name = $form->habari_username->value;
 			if ( $name !== null ) {
 				if ( !is_numeric( $name ) && $user = User::get( $name ) ) {
@@ -156,8 +156,9 @@ class UserHandler extends ActionHandler
 		$form->habari_password->template = 'admincontrol_password';
 		$form->append( 'submit', 'submit_button', _t('Login') );
 		$form->submit_button->template = 'admincontrol_submit';
-		$form->append( 'submit', 'passwordreset_button', _t('Reset password') );
-		$form->passwordreset_button->template = 'admincontrol_submit';
+		$form->append( 'static', 'reset_link', '<a href="#" id="reset_link">' . _t('Reset password') . '</a>' );
+		$form->append( 'submit', 'reset_button', _t('Reset password') );
+		$form->reset_button->template = 'admincontrol_submit';
 		
 		// Let plugins alter this form
 		Plugins::act( 'form_login', $form );
