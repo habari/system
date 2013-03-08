@@ -1,16 +1,12 @@
 <?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php
-if ( isset( $error ) ) {
-?>
-<p><?php _e('That login is incorrect.'); ?></p>
-<?php
-}
-if ( isset( $loggedin ) && $loggedin ) {
-?>
-<p><?php _e('You are logged in as'); ?> <?php echo $user->username; ?>.</p>
-<p><?php _e('Want to'); ?> <a href="<?php Site::out_url( 'habari' ); ?>/auth/logout"><?php _e('log out'); ?></a>?</p>
-<?php
+$user = User::identify();
+if ( $user->id ) {
+	?>
+	<p><?php _e('You are logged in as %s.', array($user->username)); ?></p>
+	<p><?php _e('Want to <a href="%s">log out</a>?', array(Site::get_url('habari') . '/auth/logout')); ?></p>
+	<?php
 }
 else {
 ?>
