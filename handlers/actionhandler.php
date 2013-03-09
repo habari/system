@@ -111,18 +111,7 @@ class ActionHandler
 	{
 		$this->theme = Themes::create();
 		$this->theme->assign( 'matched_rule', URL::get_matched_rule() );
-		$request = new StdClass();
-		foreach ( URL::get_active_rules() as $rule ) {
-			$request->{$rule->name} = false;
-		}
-		$request->{$this->theme->matched_rule->name} = true;
-		// Does the rule have any supplemental request types?
-		if(isset($this->theme->matched_rule->named_arg_values['request_types'])) {
-			foreach($this->theme->matched_rule->named_arg_values['request_types'] as $type) {
-				$request->$type = true;
-			}
-		}
-		$request = Plugins::filter('request_object', $request, $this->theme->matched_rule);
+		$request = Controller::get_request_obj();
 		$this->theme->assign( 'request', $request );
 	}
 }

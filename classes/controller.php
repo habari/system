@@ -196,6 +196,28 @@ class Controller extends Singleton
 			Controller::instance()->handler->act( Controller::instance()->action );
 		}
 	}
+
+	/**
+	 * Get an object that represents the request made
+	 * @return stdClass An object with properties named after rewrite rules, which are true if those rules were used to handle the current request
+	 */
+	public static function get_request_obj()
+	{
+		$request = new StdClass();
+		foreach ( URL::get_active_rules() as $rule ) {
+			$request->{$rule->name} = false;
+		}
+		$matched_rule = URL::get_matched_rule();
+		$request->{$matched_rule->name} = true;
+		// Does the rule have any supplemental request types?
+		if(isset($matched_rule->named_arg_values['request_types'])) {
+			foreach($matched_rule->named_arg_values['request_types'] as $type) {
+				$request->$type = true;
+			}
+		}
+		$request = Plugins::filter('request_object', $request, $matched_rule);
+		return $request;
+	}
 }
 
 ?>
