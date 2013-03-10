@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-03 00:00+0000\n"
+"POT-Creation-Date: 2013-03-10 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3365,11 +3365,11 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
-#: handlers/userhandler.php:159 themes/mzingi/loginform.php:32
+#: handlers/userhandler.php:159 handlers/userhandler.php:160
 msgid "Reset password"
 msgstr ""
 
-#: handlers/userhandler.php:200
+#: handlers/userhandler.php:201
 #, php-format
 msgid ""
 "Your password for %1$s has been reset.  Your credentials are as follows---\n"
@@ -3377,20 +3377,20 @@ msgid ""
 "Password: %3$s"
 msgstr ""
 
-#: handlers/userhandler.php:202
+#: handlers/userhandler.php:203
 #, php-format
 msgid "[%1$s] Password has been reset for %2$s"
 msgstr ""
 
-#: handlers/userhandler.php:203
+#: handlers/userhandler.php:204
 msgid "A new password has been sent to the user."
 msgstr ""
 
-#: handlers/userhandler.php:206
+#: handlers/userhandler.php:207
 msgid "There was a problem resetting the password.  It was not reset."
 msgstr ""
 
-#: handlers/userhandler.php:214
+#: handlers/userhandler.php:215
 msgid "The supplied password reset token has expired or is invalid."
 msgstr ""
 
@@ -3563,7 +3563,7 @@ msgstr ""
 
 #. @locale Date formats according to http://php.net/manual/en/function.date.php
 #: themes/mzingi/tag.php:15 themes/mzingi/search.php:15
-#: themes/mzingi/sidebar.php:24
+#: themes/mzingi/sidebar.php:27
 msgid "F j, Y"
 msgstr ""
 
@@ -3608,8 +3608,7 @@ msgstr ""
 msgid "About You"
 msgstr ""
 
-#: themes/mzingi/theme.php:95 themes/mzingi/loginform.php:20
-#: admin/block_instances.php:8
+#: themes/mzingi/theme.php:95 admin/block_instances.php:8
 msgid "Name:"
 msgstr ""
 
@@ -3673,7 +3672,7 @@ msgstr ""
 msgid "Home"
 msgstr ""
 
-#: themes/mzingi/sidebar.php:18
+#: themes/mzingi/sidebar.php:20
 msgid "Asides"
 msgstr ""
 
@@ -3681,28 +3680,14 @@ msgstr ""
 msgid "is powered by"
 msgstr ""
 
-#: themes/mzingi/loginform.php:6
-msgid "That login is incorrect."
+#: themes/mzingi/loginform.php:7
+#, php-format
+msgid "You are logged in as %s."
 msgstr ""
 
-#: themes/mzingi/loginform.php:11
-msgid "You are logged in as"
-msgstr ""
-
-#: themes/mzingi/loginform.php:12
-msgid "Want to"
-msgstr ""
-
-#: themes/mzingi/loginform.php:12
-msgid "log out"
-msgstr ""
-
-#: themes/mzingi/loginform.php:24
-msgid "Password:"
-msgstr ""
-
-#: themes/mzingi/loginform.php:29
-msgid "GO!"
+#: themes/mzingi/loginform.php:8
+#, php-format
+msgid "Want to <a href=\"%s\">log out</a>?"
 msgstr ""
 
 #: themes/wazi/comment.php:17
