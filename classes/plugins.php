@@ -557,13 +557,14 @@ class Plugins
 	public static function activate_plugin( $file )
 	{
 		$ok = true;
-		// Keep stream handler and strip base path from stored path
-		$stream = '';
+
+		// check for a URL-looking filename, which probably indicates a PHAR-format plugin
 		if(preg_match('#^([^:]+://)#i', $file, $matches)) {
-			$stream = $matches[1];
-			$short_file = $file; //$stream . MultiByte::substr( preg_replace('#^([^:]+://)#i', '', $file), strlen( HABARI_PATH ) );
+			// we need the entire path to the file
+			$short_file = $file;
 		}
 		else {
+			// trim off the leading habari path from the filename
 			$short_file = MultiByte::substr( $file, strlen( HABARI_PATH ) );
 		}
 
