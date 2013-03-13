@@ -16,7 +16,7 @@ CREATE TABLE {$prefix}posts (
   UNIQUE KEY slug (slug(80))
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
-CREATE TABLE {$prefix}revisions(
+CREATE TABLE {$prefix}revisions (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   post_id INT UNSIGNED NOT NULL,
   change_field VARCHAR(255) NOT NULL,

@@ -18,7 +18,7 @@ CREATE TABLE {$prefix}posts (
 );
 
 CREATE SEQUENCE {$prefix}revisions_pkey_seq;
-CREATE TABLE {$prefix}revisions(
+CREATE TABLE {$prefix}revisions (
   id BIGINT NOT NULL DEFAULT nextval('{$prefix}revisions_pkey_seq'),
   post_id BIGINT NOT NULL,
   change_field VARCHAR(255) NOT NULL,
