@@ -140,7 +140,7 @@ class UserHandler extends ActionHandler
 	protected function login_form()
 	{
 		// Build theme and login page template
-		$this->theme = Themes::create();
+		$this->setup_theme();
 		if ( !$this->theme->template_exists( 'login' ) ) {
 			$this->theme = Themes::create( 'admin', 'RawPHPEngine', Site::get_dir( 'admin_theme', true ) );
 			$this->theme->assign( 'admin_page', 'login' );
