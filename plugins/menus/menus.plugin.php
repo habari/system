@@ -822,7 +822,7 @@ LINKS;
 			$config[ 'wrapper' ] = sprintf($config[ 'linkwrapper' ], $title);
 		}
 		else {
-			$config[ 'wrapper' ] = sprintf( $config[ 'linkwrapper' ], "<a href=\"{$link}\">{$title}</a>" );
+			$config[ 'wrapper' ] = str_replace('%', '%%', sprintf( $config[ 'linkwrapper' ], "<a href=\"{$link}\">{$title}</a>" ));
 		}
 		if ( $active ) {
 			$config[ 'itemattr' ][ 'class' ] = 'active';
