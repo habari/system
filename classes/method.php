@@ -29,7 +29,8 @@ class Method
 	/**
 	 * Constructor
 	 * @param string $class The name of the class
-	 * @param string $method The method of the class
+	 * @param string $method The method of the class to execute
+	 * @return \Habari\Method The method of the class
 	 */
 	public function __construct($class, $method) {
 		$this->class = $class;
