@@ -21,12 +21,13 @@ abstract class FormControl
 
 	/**
 	 * Construct a control.
-	 * @param string $name
-	 * @param FormStorage|string|Callable|null $storage
-	 * @param string $caption
-	 * @param array $properties
+	 * @param string $name The name of the control
+	 * @param FormStorage|string|Callable|null $storage A storage location for the data collected by the control
+	 * @param string $caption The caption of the control
+	 * @param array $properties An array of properties that apply to the output HTML
+	 * @param array $settings An array of settings that apply to this control object
 	 */
-	public function __construct($name, $storage, $caption, $properties, $settings)
+	public function __construct($name, $storage = 'null:null', $caption = '', $properties = array(), $settings = array())
 	{
 		$this->name = $name;
 		$this->storage = $storage;
@@ -37,7 +38,15 @@ abstract class FormControl
 		$this->caption = $caption;
 		$this->properties = $properties;
 		$this->settings = $settings;
+
+		$this->_extend();
 	}
+
+	/**
+	 * This function is called after __construct().  It does nothing, but its descendants might do something.
+	 */
+	public function _extend()
+	{}
 
 	/**
 	 * Take an array of parameters, use the first as the FormControl class/type, and run the constructor with the rest

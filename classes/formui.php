@@ -101,6 +101,8 @@ class FormUI extends FormContainer implements IsContent
 		'accept_charset' => 'UTF-8',
 	);
 
+	public static $registered_forms = array();
+
 	/**
 	 * FormUI's constructor, called on instantiation.
 	 *
@@ -116,6 +118,20 @@ class FormUI extends FormContainer implements IsContent
 		else {
 			$this->formtype = $name;
 		}
+		if(isset(self::$registered_forms[$formtype])) {
+			$callback = self::$registered_forms[$formtype];
+			$callback($this, $name, $formtype);
+		}
+	}
+
+	/**
+	 * Register a function to use to create a new form
+	 * @param string $name The name of the form to register
+	 * @param Callable $build_callback The method to call to customize a form instance
+	 */
+	public static function register($name, $build_callback)
+	{
+		self::$registered_forms[$name] = $build_callback;
 	}
 
 	/**
@@ -324,19 +340,14 @@ class FormUI extends FormContainer implements IsContent
 	 */
 	public function save()
 	{
+		/** @var FormControl $control */
 		foreach ( $this->controls as $control ) {
 			$control->save();
 		}
 		foreach ( $this->on_save as $save ) {
 			$callback = array_shift( $save );
-			if ( is_callable( $callback ) ) {
-				array_unshift( $save, $this );
-				call_user_func_array( $callback, $save );
-			}
-			else {
-				array_unshift( $save, $callback, $this );
-				call_user_func_array( Method::create( '\\Habari\\Plugins', 'act' ), $save );
-			}
+			array_unshift($save, $this);
+			Method::dispatch_array($callback, $save);
 		}
 		if ( $this->has_user_options() ) {
 			User::identify()->info->commit();
@@ -631,17 +642,10 @@ class FormControlNoSave extends FormControl
 class FormControlText extends FormControl
 {
 	/**
-	 * FormControlText constructor - set initial settings of the control
-	 *
-	 * @param string $storage The storage location for this control
-	 * @param string $default The default value of the control
-	 * @param string $caption The caption used as the label when displaying a control
+	 * Called upon construct.  Sets control properties
 	 */
-	public function __construct()
+	public function _extend()
 	{
-		$args = func_get_args();
-		list( $name, $storage, $caption, $template ) = array_merge( $args, array_fill( 0, 4, null ) );
-		parent::__construct($name, $storage, $caption, $template);
 		$this->properties['type'] = 'text';
 	}
 

@@ -354,10 +354,11 @@ class FormContainer extends FormControl
 	 */
 	function validate()
 	{
+		/** @var FormControl $control */
 		$results = array();
 		foreach ( $this->controls as $control ) {
 			if ( $result = $control->validate() ) {
-				$results[] = $result;
+				$results = array_merge($results, $result);
 			}
 		}
 		return $results;
@@ -370,6 +371,7 @@ class FormContainer extends FormControl
 	 */
 	function save()
 	{
+		/** @var FormControl $control */
 		foreach ( $this->controls as $control ) {
 			$control->save();
 		}
@@ -401,8 +403,8 @@ class FormContainer extends FormControl
 	 * Return any validation errors on any controls in this container using the supplied format
 	 * $this->validate must be called first!
 	 *
-	 * @params string $format A sprintf()-style format string to format the validation error
-	 * @params string $format A sprintf()-style format string to wrap the returned error, only if at least one error exists
+	 * @param string $format A sprintf()-style format string to format the validation error
+	 * @param string $wrap A sprintf()-style format string to wrap the returned error, only if at least one error exists
 	 * @return string The errors in the supplied format
 	 */
 	public function errors_get( $format, $wrap = '%s' )
