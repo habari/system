@@ -69,8 +69,10 @@ class Autoload
 		if ( empty( self::$files ) ) {
 			$dirs = array(
 				HABARI_PATH . '/system/classes',
+				HABARI_PATH . '/system/controls',
 				HABARI_PATH . '/system/handlers',
 				HABARI_PATH . '/user/classes',
+				HABARI_PATH . '/user/controls',
 				HABARI_PATH . '/user/handlers',
 			);
 
@@ -88,6 +90,7 @@ class Autoload
 				// We are dealing with a site defined in /user/sites/x.y.z
 				// Add those directories to the end of the $dirs array so they can override previous entries
 				$dirs[] = $site_user_dir . '/classes';
+				$dirs[] = $site_user_dir . '/controls';
 				$dirs[] = $site_user_dir . '/handlers';
 			}
 

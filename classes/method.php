@@ -38,13 +38,11 @@ class Method
 	}
 
 	/**
-<<<<<<< HEAD
-=======
- * Dispatch a method, whether a filter or function
- * @param Callable|string $method The method to call
- * @param mixed $multiple_optional_args Multiple arguments to dispatch() should be passed as separate arguments
- * @return bool|mixed The return value from the dispatched method
- */
+	* Dispatch a method, whether a filter or function
+	* @param Callable|string $method The method to call
+	* @param mixed $multiple_optional_args Multiple arguments to dispatch() should be passed as separate arguments
+	* @return bool|mixed The return value from the dispatched method
+	*/
 	public static function dispatch($method, $multiple_optional_args = null)
 	{
 		$args = func_get_args();
@@ -70,7 +68,6 @@ class Method
 	}
 
 	/**
->>>>>>> 24b10d5... Add dispatch/dispatch_array methods to Method
 	 * Execute the representative method when this object is called as a function.
 	 * Example:
 	 *   $fn = Method::create('Habari/Utils', 'debug');
