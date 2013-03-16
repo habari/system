@@ -157,8 +157,8 @@ class Pingback extends Plugin
 			// Is the charset in the headers?
 			if ( isset( $headers['Content-Type'] ) && strpos( $headers['Content-Type'], 'charset' ) !== false ) {
 				// This regex should be changed to meet the HTTP spec at some point
-				if ( preg_match("/charset[\x09\x0A\x0C\x0D\x20]*=[\x09\x0A\x0C\x0D\x20]*('?)([A-Za-z0-9\-\_]+)\1/i", $headers['Content-Type'], $matches ) ) {
-					$source_encoding = strtoupper( $matches[2] );
+				if ( preg_match("/charset[\x09\x0A\x0C\x0D\x20]*=[\x09\x0A\x0C\x0D\x20]*'?([A-Za-z0-9_-]+)'?/i", $headers['Content-Type'], $matches ) ) {
+					$source_encoding = strtoupper( $matches[1] );
 				}
 			}
 			// Can we tell the charset from the stream itself?

@@ -330,6 +330,7 @@ class Plugins
 	*/
 	public static function get_by_interface( $interface )
 	{
+		$interface = "Habari\\" . $interface;
 		return array_filter( self::$plugins, function( $plugin_obj ) use ($interface) { return $plugin_obj instanceof $interface; } );
 	}
 
@@ -532,6 +533,7 @@ class Plugins
 				self::load( $class );
 			}
 		}
+		Autoload::queue_dirs(Plugins::filter('autoload_dirs', array()));
 	}
 
 
@@ -555,13 +557,14 @@ class Plugins
 	public static function activate_plugin( $file )
 	{
 		$ok = true;
-		// Keep stream handler and strip base path from stored path
-		$stream = '';
+
+		// check for a URL-looking filename, which probably indicates a PHAR-format plugin
 		if(preg_match('#^([^:]+://)#i', $file, $matches)) {
-			$stream = $matches[1];
-			$short_file = $file; //$stream . MultiByte::substr( preg_replace('#^([^:]+://)#i', '', $file), strlen( HABARI_PATH ) );
+			// we need the entire path to the file
+			$short_file = $file;
 		}
 		else {
+			// trim off the leading habari path from the filename
 			$short_file = MultiByte::substr( $file, strlen( HABARI_PATH ) );
 		}
 
@@ -572,7 +575,7 @@ class Plugins
 			$plugin = Plugins::load( $class );
 			$ok = Plugins::filter( 'activate_plugin', $ok, $file ); // Allow plugins to reject activation
 		}
-		else if ( is_array( $activated) && in_array( $short_file, $activated ) ) {
+		else if ( is_array( $activated ) && in_array( $short_file, $activated ) ) {
 			$ok = false;
 		}
 		if ( $ok ) {

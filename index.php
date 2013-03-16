@@ -50,7 +50,7 @@ if ( !defined( 'GLOB_BRACE' ) ) {
 ob_start();
 
 require( dirname( __FILE__ ) . '/autoload.php' );
-spl_autoload_register( 'habari_autoload' );
+spl_autoload_register( array('\Habari\Autoload', 'habari_autoload') );
 
 // Replace all of the $_GET, $_POST and $_SERVER superglobals with object
 // representations of each.  Unset $_REQUEST, which is evil.
@@ -100,7 +100,7 @@ if ( Config::exists('db_connection') ) {
 			$installer->begin_install();
 		}
 	}
-	catch( PDOException $e ) {
+	catch( \PDOException $e ) {
 		// Error template.
 		$error_template = '<html><head><title>%s</title><link rel="stylesheet" type="text/css" href="' . Site::get_url( 'system' ) . '/admin/css/admin.css" media="screen"></head><body><div id="page"><div class="container"><h2>%s</h2><p>%s</p></div></div></body></html>';
 

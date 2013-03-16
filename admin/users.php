@@ -4,27 +4,11 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 ?>
 <?php include('header.php');?>
 
-<?php
-	// @todo this should be done in adminhandler, not here
-	$theme->currentuser = User::identify();
-?>
-
-
 <div class="container navigation">
 	<div class="pct40">
 
 		<form>
 		<select class="navigationdropdown" onChange="navigationDropdown.changePage(this.form.navigationdropdown)" name="navigationdropdown">
-			<?php /*
-			foreach ( Users::get_all() as $user ) {
-				if ( $user->username == $currentuser->username ) {
-					$url = Url::get( 'admin', 'page=user' );
-				}
-				else {
-					$url = Url::get( 'user_profile', array( 'page' => 'user', 'user' => $user->username ) );
-				}
-				echo '<option id="' . $user->id . '" value="' . $url . '">' . $user->displayname . '</option>';
-			} */ ?>
 			<option value=""><?php _e('Complete User List'); ?></option>
 		</select>
 		</form>
