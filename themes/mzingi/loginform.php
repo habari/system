@@ -1,8 +1,7 @@
 <?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php
-$user = User::identify();
-if ( $user->id ) {
+if ( $loggedin ) {
 	?>
 	<p><?php _e('You are logged in as %s.', array($user->username)); ?></p>
 	<p><?php _e('Want to <a href="%s">log out</a>?', array(Site::get_url('habari') . '/auth/logout')); ?></p>

@@ -164,7 +164,7 @@ class UserHandler extends ActionHandler
 		Plugins::act( 'form_login', $form );
 		
 		// Assign login form and display the page
-		$this->theme->form = $form->get();
+		$this->theme->form = $form;
 		$this->display( 'login' );
 		
 		return true;
