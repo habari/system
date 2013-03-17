@@ -16,6 +16,6 @@ class FormControlLabel extends FormContainer
 		$label_control = new FormControlLabel('label_for_' . $control->name);
 		$label_control->append($control);
 		$label_control->label = $label;
-		return $control;
+		return $label_control;
 	}
 }

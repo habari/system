@@ -1260,14 +1260,17 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			// Create the Name field
 			$form->append(
 				FormControlLabel::wrap(_t( 'Name <span class="required">*Required</span>' ), FormControlText::create(
-					'cf_commenter', 'null:null', array(
-						'id' => 'comment_name',
-						'tabindex' => 1,
-				)))->add_validator( 'validate_required', _t( 'The Name field value is required' ) )
+						'cf_commenter', 'null:null',
+						array(
+							'id' => 'comment_name',
+							'tabindex' => 1,
+						)
+					)->add_validator( 'validate_required', _t( 'The Name field value is required' ) )
+				)
 			);
 
 			// Create the Email field
-			$form->append(
+			$cf_email = $form->append(
 				FormControlLabel::wrap(_t('Email'), FormControlText::create('cf_email', 'null:null', array(
 						'id' => 'comment_email',
 						'type' => 'email',
@@ -1275,10 +1278,10 @@ class Post extends QueryRecord implements IsContent, FormStorage
 				)))->add_validator('validate_email', _t('The Email field value must be a valid email address'))
 			);
 			if ( Options::get( 'comments_require_id' ) == 1 ) {
-				$form->cf_email->add_validator(  'validate_required', _t( 'The Email field value must be a valid email address' ) );
-				$form->cf_email->caption = _t( 'Email <span class="required">*Required</span>' );
+				$cf_email->add_validator(  'validate_required', _t( 'The Email field value must be a valid email address' ) );
+				$cf_email->container->label = _t( 'Email <span class="required">*Required</span>' );
 			}
-			$form->cf_email->value = $commenter_email;
+			$cf_email->value = $commenter_email;
 
 			// Create the URL field
 			$form->append(
@@ -1300,7 +1303,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			$form->cf_content->value = $commenter_content;
 
 			// Create the Submit button
-			$form->append( 'submit', FormControlSubmit::create('cf_submit')->set_properties(array('value' => _t('Submit'), 'tabindex' => 5)));
+			$form->append( FormControlSubmit::create('cf_submit')->set_properties(array('value' => _t('Submit'), 'tabindex' => 5)));
 		}
 
 		// Let plugins alter this form

@@ -31,6 +31,13 @@ abstract class TemplateEngine
 	abstract function display( $template ); // virtual - implement in derived class
 
 	/**
+	 * Queue directories to be scanned for template files
+	 *
+	 * @param array $dirs An array of directories to scan for templates
+	 */
+	abstract function queue_dirs( $dirs ); // virtual - implement in derived class
+
+	/**
 	 * Returns the existance of the specified template name
 	 *
 	 * @param template $template Name of template to detect
@@ -119,16 +126,6 @@ abstract class TemplateEngine
 	 * @param boolean $replace If true, replace any existing template with this name
 	 */
 	abstract function add_template( $name, $file, $replace = false ); // virtual - implement in derived class
-
-	/**
-	 * Sets the directory for the engine to find templates
-	 *
-	 * @param mixed Directory path as string or array.  Earlier elements override later elements.
-	 */
-	public function set_template_dir( $dir )
-	{
-		$this->template_dir = $dir;
-	}
 }
 
 ?>

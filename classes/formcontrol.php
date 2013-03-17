@@ -138,6 +138,38 @@ abstract class FormControl
 		$this->value = $_POST[$this->input_name()];
 	}
 
+	public function get()
+	{
+		$template = $this->get_setting(
+			'template',
+			array(
+				'control.' . $this->control_type(),
+			)
+		);
+
+		return implode(', ', $template);
+	}
+
+	/**
+	 * Get the type of control this is (without the "FormControl" and in lower case)
+	 * Usually used for template selection
+	 * @return string The type of the control in lower case
+	 */
+	public function control_type()
+	{
+		static $type = null;
+
+		if(is_null($type)) {
+			$class = get_called_class();
+			$type = 'unknown';
+			if(preg_match('#FormControl(.+)$#i', $class, $matches)) {
+				$type = strtolower($matches[1]);
+			}
+		}
+
+		return $type;
+	}
+
 	/**
 	 * Set the container for this control
 	 * @param FormContainer $container A container that this control is inside
@@ -146,6 +178,12 @@ abstract class FormControl
 	public function set_container($container)
 	{
 		$this->container = $container;
+		return $this;
+	}
+
+	public function set_template($template)
+	{
+		$this->settings['template'] = Utils::single_array($template);
 		return $this;
 	}
 
