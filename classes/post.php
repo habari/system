@@ -1259,27 +1259,21 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 			// Create the Name field
 			$form->append(
-				'text',
-				'cf_commenter',
-				'null:null',
-				_t( 'Name <span class="required">*Required</span>' ),
-				'formcontrol_text'
-			)->add_validator( 'validate_required', _t( 'The Name field value is required' ) )
-			->id = 'comment_name';
-			$form->cf_commenter->tabindex = 1;
-			$form->cf_commenter->value = $commenter_name;
+				FormControlLabel::wrap(_t( 'Name <span class="required">*Required</span>' ), FormControlText::create(
+					'cf_commenter', 'null:null', array(
+						'id' => 'comment_name',
+						'tabindex' => 1,
+				)))->add_validator( 'validate_required', _t( 'The Name field value is required' ) )
+			);
 
 			// Create the Email field
 			$form->append(
-				'text',
-				'cf_email',
-				'null:null',
-				_t( 'Email' ),
-				'formcontrol_text'
-			)->add_validator( 'validate_email', _t( 'The Email field value must be a valid email address' ) )
-			->id = 'comment_email';
-			$form->cf_email->type = 'email';
-			$form->cf_email->tabindex = 2;
+				FormControlLabel::wrap(_t('Email'), FormControlText::create('cf_email', 'null:null', array(
+						'id' => 'comment_email',
+						'type' => 'email',
+						'tabindex' => 2
+				)))->add_validator('validate_email', _t('The Email field value must be a valid email address'))
+			);
 			if ( Options::get( 'comments_require_id' ) == 1 ) {
 				$form->cf_email->add_validator(  'validate_required', _t( 'The Email field value must be a valid email address' ) );
 				$form->cf_email->caption = _t( 'Email <span class="required">*Required</span>' );
@@ -1288,32 +1282,25 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 			// Create the URL field
 			$form->append(
-				'text',
-				'cf_url',
-				'null:null',
-				_t( 'Website' ),
-				'formcontrol_text'
-			)->add_validator( 'validate_url', _t( 'The Website field value must be a valid URL' ) )
-			->id = 'comment_url';
-			$form->cf_url->type = 'url';
-			$form->cf_url->tabindex = 3;
+				FormControlLabel::wrap(_t('Website'), FormControlText::create('cf_url', 'null:null', array(
+					'id' => 'comment_url',
+					'tabindex' => 3,
+				)))->add_validator( 'validate_url', _t( 'The Website field value must be a valid URL' ) )
+
+			);
 			$form->cf_url->value = $commenter_url;
 
 			// Create the Comment field
 			$form->append(
-				'text',
-				'cf_content',
-				'null:null',
-				_t( 'Comment' ),
-				'formcontrol_textarea'
-			)->add_validator( 'validate_required', _t( 'The Comment field value is required' ) )
-			->id = 'comment_content';
-			$form->cf_content->tabindex = 4;
+				FormControlLabel::wrap(_t('Content'), FormControlText::create('cf_content', 'null:null', array(
+					'id' => 'comment_content',
+					'tabindex' => 4,
+				)))->add_validator( 'validate_required', _t( 'The Comment field value is required' ) )
+			);
 			$form->cf_content->value = $commenter_content;
 
 			// Create the Submit button
-			$form->append( 'submit', 'cf_submit', _t( 'Submit' ), 'formcontrol_submit' );
-			$form->cf_submit->tabindex = 5;
+			$form->append( 'submit', FormControlSubmit::create('cf_submit')->set_properties(array('value' => _t('Submit'), 'tabindex' => 5)));
 		}
 
 		// Let plugins alter this form

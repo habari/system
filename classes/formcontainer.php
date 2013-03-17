@@ -6,6 +6,7 @@ class FormContainer extends FormControl
 {
 	public $controls = array();
 
+
 	/**
 	 * Append a control to the end of this container
 	 *

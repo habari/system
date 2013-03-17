@@ -16,28 +16,23 @@ abstract class FormControl
 	public $settings;
 	/** @var mixed $value This is the value of the control, which will differ depending on at what time you access it */
 	public $value;
-	/** @var FormContainer The container that contains this control */
+	/** @var FormContainer $container The container that contains this control */
 	public $container;
+	/** @var array $validators An array of validators to execute on this control */
 
 	/**
 	 * Construct a control.
 	 * @param string $name The name of the control
-	 * @param FormStorage|string|Callable|null $storage A storage location for the data collected by the control
-	 * @param string $caption The caption of the control
+	 * @param FormStorage|string|null $storage A storage location for the data collected by the control
 	 * @param array $properties An array of properties that apply to the output HTML
 	 * @param array $settings An array of settings that apply to this control object
 	 */
-	public function __construct($name, $storage = 'null:null', $caption = '', $properties = array(), $settings = array())
+	public function __construct($name, $storage = 'null:null', array $properties = array(), array $settings = array())
 	{
 		$this->name = $name;
-		$this->storage = $storage;
-		if(is_string($storage)) {
-			$storage = ControlStorage::from_storage_string($storage);
-		}
-		$this->storage = $storage;
-		$this->caption = $caption;
-		$this->properties = $properties;
-		$this->settings = $settings;
+		$this->set_storage($storage);
+		$this->set_properties($properties);
+		$this->set_settings($settings);
 
 		$this->_extend();
 	}
@@ -47,6 +42,21 @@ abstract class FormControl
 	 */
 	public function _extend()
 	{}
+
+	/**
+	 * Create a new instance of this class and return it, use the fluent interface
+	 * @param string $name The name of the control
+	 * @param FormStorage|string|null $storage A storage location for the data collected by the control
+	 * @param array $properties An array of properties that apply to the output HTML
+	 * @param array $settings An array of settings that apply to this control object
+	 * @return FormControl An instance of the referenced FormControl with the supplied parameters
+	 */
+	public static function create($name, $storage = 'null:null', array $properties = array(), array $settings = array())
+	{
+		$class = get_called_class();
+		$r_class = new \ReflectionClass($class);
+		return $r_class->newInstanceArgs( compact('name', 'storage', 'properties', 'settings') );
+	}
 
 	/**
 	 * Take an array of parameters, use the first as the FormControl class/type, and run the constructor with the rest
@@ -63,8 +73,45 @@ abstract class FormControl
 		if(!class_exists($type)) {
 			throw new \Exception(_t('The FormControl type "%s" is invalid.', array($type)));
 		}
+		if(is_null($properties)) {
+			$properties = array();
+		}
+		if(is_null($settings)) {
+			$settings = array();
+		}
 
 		return new $type($name, $storage, $caption, $properties, $settings);
+	}
+
+	/**
+	 * Set the storage for this control
+	 * @param FormStorage|string|null $storage A storage location for the data collected by the control
+	 * @return $this
+	 */
+	public function set_storage($storage)
+	{
+		if(is_string($storage)) {
+			$storage = ControlStorage::from_storage_string($storage);
+		}
+		$this->storage = $storage;
+		return $this;
+	}
+
+	/**
+	 * Set the HTML-related properties of this control
+	 * @param array $properties An array of properties that will be associated to this control's HTML output
+	 * @return $this
+	 */
+	public function set_properties($properties)
+	{
+		$this->properties = $properties;
+		return $this;
+	}
+
+	public function set_settings($settings)
+	{
+		$this->settings = $settings;
+		return $this;
 	}
 
 	/**
@@ -94,10 +141,12 @@ abstract class FormControl
 	/**
 	 * Set the container for this control
 	 * @param FormContainer $container A container that this control is inside
+	 * @return $this
 	 */
 	public function set_container($container)
 	{
 		$this->container = $container;
+		return $this;
 	}
 
 	/**
@@ -134,5 +183,14 @@ abstract class FormControl
 	public function pre_out()
 	{
 		return '';
+	}
+
+	/**
+	 * @param string|Closure $validator
+	 * @return FormControl $this
+	 * @todo Implement this
+	 */
+	public function add_validator($validator) {
+		return $this;
 	}
 }
