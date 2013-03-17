@@ -29,11 +29,42 @@ class Method
 	/**
 	 * Constructor
 	 * @param string $class The name of the class
-	 * @param string $method The method of the class
+	 * @param string $method The method of the class to execute
+	 * @return \Habari\Method The method of the class
 	 */
 	public function __construct($class, $method) {
 		$this->class = $class;
 		$this->method = $method;
+	}
+
+	/**
+	* Dispatch a method, whether a filter or function
+	* @param Callable|string $method The method to call
+	* @param mixed $multiple_optional_args Multiple arguments to dispatch() should be passed as separate arguments
+	* @return bool|mixed The return value from the dispatched method
+	*/
+	public static function dispatch($method, $multiple_optional_args = null)
+	{
+		$args = func_get_args();
+		array_shift($args);  // Take $method off the front, pass only args
+		return self::dispatch_array($method, $args);
+	}
+
+	/**
+	 * Dispatch a method, whether a filter or function
+	 * @param Callable|string $method The method to call
+	 * @param array $args An array of arguments to be passed to the method
+	 * @return bool|mixed The return value from the dispatched method
+	 */
+	public static function dispatch_array($method, $args = array())
+	{
+		if(is_callable($method)) {
+			return call_user_func_array($method, $args);
+		}
+		elseif(is_string($method)) {
+			return call_user_func_array(Method::create('\Habari\Plugins', 'filter'), $args);
+		}
+		return false;
 	}
 
 	/**

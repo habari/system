@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-10 00:00+0000\n"
+"POT-Creation-Date: 2013-03-17 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -88,17 +88,17 @@ msgstr ""
 msgid "The class \"%s\" is not a Plugin, but was queued to load as a plugin. It may not currently be active."
 msgstr ""
 
-#: classes/plugins.php:593
+#: classes/plugins.php:594
 #, php-format
 msgid "Activated Plugin: %s"
 msgstr ""
 
-#: classes/plugins.php:632
+#: classes/plugins.php:633
 #, php-format
 msgid "Deactivated Plugin: %s"
 msgstr ""
 
-#: classes/plugins.php:739
+#: classes/plugins.php:740
 #, php-format
 msgid "Attempted to load the plugin file \"%s\", but it failed with syntax errors. <div class=\"reveal\">%s</div>"
 msgstr ""
@@ -2563,7 +2563,7 @@ msgstr ""
 msgid "Groups"
 msgstr ""
 
-#: handlers/adminusershandler.php:179 handlers/adminoptionshandler.php:179
+#: handlers/adminusershandler.php:179 handlers/adminoptionshandler.php:182
 #: admin/group.php:133
 msgid "Apply"
 msgstr ""
@@ -3168,7 +3168,7 @@ msgstr ""
 msgid "Logs error backtraces to the log table's data column. Can drastically increase log size!"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:195
+#: handlers/adminoptionshandler.php:198
 msgid "Successfully updated options"
 msgstr ""
 
