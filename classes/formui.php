@@ -892,14 +892,19 @@ class FormValidators
 	 * @param FormControl $control The control that defines the value
 	 * @param FormContainer $form The container that holds the control
 	 * @param string $warning An optional error message
+	 * @param boolean $guess Guess if they meant to use an absolute link (automatically try to prepend http://)
 	 * @return array An empty array if the string is a valid URL, or an array with strings describing the errors
 	 */
-	public static function validate_url( $text, $control, $form, $warning = null, $schemes = array( 'http', 'https' ) )
+	public static function validate_url( $text, $control, $form, $warning = null, $schemes = array( 'http', 'https' ), $guess )
 	{
 		if ( ! empty( $text ) ) {
 			$parsed = InputFilter::parse_url( $text );
 			if ( $parsed['is_relative'] ) {
-				// guess if they meant to use an absolute link
+				// guess if they meant to use an absolute link (optional)
+				if( !$guess ) {
+					$warning = empty( $warning ) ? _t( 'Relative urls are not allowed' ) : $warning;
+					return array( $warning );
+				}
 				$parsed = InputFilter::parse_url( 'http://' . $text );
 				if ( $parsed['is_error'] ) {
 					// disallow relative URLs
