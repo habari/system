@@ -17,6 +17,7 @@ class Theme extends Pluggable
 {
 	public $name = null;
 	public $version = null;
+	/** @var TemplateEngine $template_engine */
 	public $template_engine = null;
 	public $theme_dir = null;
 	public $config_vars = array();

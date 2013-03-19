@@ -65,6 +65,18 @@ class FormContainer extends FormControl
 	}
 
 	/**
+	 * Set a sprintf-style string that will wrap each control within this container with markup
+	 * Use to create, for example, <div>%s</div> for each control in the container
+	 * @param string $wrap The sprintf-style formatting string
+	 * @return FormContainer $this
+	 */
+	public function set_wrap_each($wrap = '%s')
+	{
+		$this->settings['wrap_each'] = $wrap;
+		return $this;
+	}
+
+	/**
 	 * Returns an associative array of the controls' values
 	 *
 	 * @return array Associative array where key is control's name and value is the control's value
@@ -108,76 +120,17 @@ class FormContainer extends FormControl
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	function get( $forvalidation = true )
+	function get( Theme $theme )
 	{
-		$theme = $this->get_theme( $forvalidation, $this );
-		$contents = '';
+		$content = '';
+		/** @var FormControl $control */
 		foreach ( $this->controls as $control ) {
-			$contents .= $control->get( $forvalidation );
+			$wrap = $this->get_setting('wrap_each', '%s');
+			$content .= sprintf($wrap, $control->get( $theme ));
 		}
-		$theme->contents = $contents;
-		// Do not move before $contents
-		// Else, these variables will contain the last control's values
-		$theme->class = $this->class;
-		$theme->id = $this->name;
-		$theme->caption = $this->caption;
-		$theme->control = $this;
+		$this->vars['content'] = $content;
 
-		return $this->prefix . $theme->fetch( $this->template, true ) . $this->postfix;
-	}
-
-	/**
-	 * Retreive the Theme used to display the form component
-	 *
-	 * @param boolean $forvalidation If true, perform validation on control and add error messages to output
-	 * @param FormControl $control The control to output using a template
-	 * @return Theme The theme object to display the template for the control
-	 */
-	function get_theme( $forvalidation = false, $control = null )
-	{
-		if ( !isset( $this->theme_obj ) ) {
-			$theme_dir = Plugins::filter( 'control_theme_dir', Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) ) . 'formcontrols/', $control );
-			$this->theme_obj = Themes::create( ); // Create the current theme instead of: 'admin', 'RawPHPEngine', $theme_dir
-			// Add the templates for the form controls tothe current theme,
-			// and allow any matching templates from the current theme to override
-			$formcontrol_templates = Utils::glob($theme_dir . '*.php');
-			foreach($formcontrol_templates as $template) {
-				$template_name = basename($template, '.php');
-				$this->theme_obj->add_template($template_name, $template);
-			}
-			$list = array();
-			$list = Plugins::filter('available_templates', $list);
-			foreach($list as $template_name) {
-				if($template = Plugins::filter('include_template_file', null, $template_name)) {
-					$this->theme_obj->add_template($template_name, $template);
-				}
-			}
-		}
-		$this->theme_obj->start_buffer();
-		if ( $control instanceof FormControl ) {
-			// PHP doesn't allow __get() to return pointers, and passing this array to foreach directly generates an error.
-			$properties = $control->properties;
-			foreach ( $properties as $name => $value ) {
-				$this->theme_obj->$name = $value;
-			}
-			$this->theme_obj->field = $control->field;
-			$this->theme_obj->value = $control->value;
-			$this->theme_obj->caption = $control->caption;
-			$this->theme_obj->id = (string) $control->id;
-			$class = (array) $control->class;
-
-			$message = '';
-			if ( $forvalidation ) {
-				$validate = $control->validate();
-				if ( count( $validate ) != 0 ) {
-					$class[] = 'invalid';
-					$message = implode( '<br>', (array) $validate );
-				}
-			}
-			$this->theme_obj->class = implode( ' ', (array) $class );
-			$this->theme_obj->message = $message;
-		}
-		return $this->theme_obj;
+		return parent::get($theme);
 	}
 
 	/**

@@ -114,7 +114,7 @@ class RawPHPEngine extends TemplateEngine
 		// If multiple directories are passed, the earlier ones should override the later ones
 		$dirs = array_reverse( $dirs );
 		foreach ( $dirs as $dir ) {
-			$templates = Utils::glob( $dir . '*.*' );
+			$templates = Utils::glob( Utils::end_in_slash($dir) . '*.*' );
 			$alltemplates = array_merge( $alltemplates, $templates );
 		}
 		// Convert the template files into template names and produce a map from name => file

@@ -11,7 +11,7 @@ abstract class FormControl
 	/** @var string  */
 	public $caption;
 	/** @var array $properties Contains an array of properties used to assign to the output HTML */
-	public $properties;
+	public $properties = array();
 	/** @var array $settings Contains an array of settings that control the behavior of this control */
 	public $settings;
 	/** @var mixed $value This is the value of the control, which will differ depending on at what time you access it */
@@ -19,6 +19,10 @@ abstract class FormControl
 	/** @var FormContainer $container The container that contains this control */
 	public $container;
 	/** @var array $validators An array of validators to execute on this control */
+	public $validators;
+	/** @var array $vars These vars are added internally to the theme for output by the template */
+	public $vars = array();
+
 
 	/**
 	 * Construct a control.
@@ -86,7 +90,7 @@ abstract class FormControl
 	/**
 	 * Set the storage for this control
 	 * @param FormStorage|string|null $storage A storage location for the data collected by the control
-	 * @return $this
+	 * @return FormControl $this
 	 */
 	public function set_storage($storage)
 	{
@@ -100,7 +104,7 @@ abstract class FormControl
 	/**
 	 * Set the HTML-related properties of this control
 	 * @param array $properties An array of properties that will be associated to this control's HTML output
-	 * @return $this
+	 * @return FormControl $this
 	 */
 	public function set_properties($properties)
 	{
@@ -108,10 +112,50 @@ abstract class FormControl
 		return $this;
 	}
 
+	/**
+	 * @param array $settings An array of settings that affect the behavior of this control object
+	 * @return FormControl $this
+	 */
 	public function set_settings($settings)
 	{
 		$this->settings = $settings;
 		return $this;
+	}
+
+
+	/**
+	 * Retreive the Theme used to display this form component and its descendants
+	 *
+	 * @return Theme The theme object to display the template for the control
+	 */
+	public function get_theme()
+	{
+		static $theme_obj = null;
+
+		if ( is_null( $theme_obj ) ) {
+			$theme_obj = Themes::create( ); // Create the current theme instead of: 'admin', 'RawPHPEngine', $theme_dir
+			// Add the templates for the form controls to the current theme,
+			// and allow any matching templates from the current theme to override
+			$control_templates_dir = Plugins::filter( 'control_templates_dir', HABARI_PATH . '/system/controls/templates', $this );
+			$theme_obj->template_engine->queue_dirs($control_templates_dir);
+		}
+		return $theme_obj;
+	}
+
+	/**
+	 * Get a list of potential templates that can render this control
+	 * @return array An array of template names in fallback order
+	 */
+	public function get_template()
+	{
+		$template = $this->get_setting(
+			'template',
+			array(
+				'control.' . $this->control_type(),
+				'control',
+			)
+		);
+		return $template;
 	}
 
 	/**
@@ -138,16 +182,54 @@ abstract class FormControl
 		$this->value = $_POST[$this->input_name()];
 	}
 
-	public function get()
+	/**
+	 * Produce the control for display
+	 * @param Theme $theme The theme that will be used to render the template
+	 * @return string The output of the template
+	 */
+	public function get(Theme $theme)
 	{
-		$template = $this->get_setting(
-			'template',
-			array(
-				'control.' . $this->control_type(),
-			)
-		);
+		// Start a var stack so that we can roll back to prior theme var values
+		$theme->start_buffer();
 
-		return implode(', ', $template);
+		// Assign all of the vars to the theme
+		foreach($this->vars as $k => $v) {
+			$theme->assign($k, $v);
+		}
+
+
+		// Assign the control and its attributes into the theme
+		$theme->_control = $this;
+		$properties = $this->properties;
+		if(!isset($this->settings['ignore_name'])) {
+			$properties = array_merge($properties, array('name' => $this->name));
+		}
+		$theme->_attributes = Utils::html_attr($properties);
+
+		// Do rendering
+		$output = $this->get_setting('prefix_html', '');
+		if(isset($this->settings['content'])) {  // Allow descendants to override the content produced
+			$output .= $this->settings['content'];
+		}
+		if(!isset($this->settings['norender'])) {  // Allow descendants to skip rendering the template for this control
+			if(isset($this->settings['template_html'])) {
+				if(is_callable($this->settings['template_html'])) {
+					$output .= $this->settings['template_html']($theme, $this);
+				}
+				else {
+					$output .= $this->settings['template_html'];
+				}
+			}
+			else {
+				$output .= $theme->display_fallback( $this->get_template(), 'fetch' );
+			}
+		}
+		$output .= $this->get_setting('postfix_html', '');
+
+		// Roll back the var stack we've been using for this control
+		$theme->end_buffer();
+
+		return $output;
 	}
 
 	/**
@@ -181,9 +263,32 @@ abstract class FormControl
 		return $this;
 	}
 
+	/**
+	 * Set a template for use with this control
+	 * @param string|array $template A template fallback list to search for this template
+	 * @return $this
+	 */
 	public function set_template($template)
 	{
-		$this->settings['template'] = Utils::single_array($template);
+		$templates = array_merge(
+			Utils::single_array($template),
+			array(
+				'control.' . $this->control_type(),
+				'control',
+			)
+		);
+		$this->settings['template'] = $templates;
+		return $this;
+	}
+
+	/**
+	 * Set an HTML value directly for the output of a control
+	 * @param Callable|string $template The template to use for output of this control
+	 * @return FormControl $this
+	 */
+	public function set_template_html($template)
+	{
+		$this->settings['template_html'] = $template;
 		return $this;
 	}
 
@@ -204,6 +309,18 @@ abstract class FormControl
 		else {
 			return $default;
 		}
+	}
+
+	/**
+	 * Produce a unique id (not name) for this control for use with labels and such, only if one is not provided in the control properties
+	 * @return string The id of this control
+	 */
+	public function get_id()
+	{
+		if(!isset($this->properties['id'])) {
+			$this->properties['id'] = $this->name;
+		}
+		return $this->properties['id'];
 	}
 
 	/**

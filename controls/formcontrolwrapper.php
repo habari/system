@@ -8,20 +8,11 @@ namespace Habari;
 class FormControlWrapper extends FormContainer
 {
 	/**
-	 * Override the FormControl constructor to support more parameters
-	 *
-	 * @param string $name Name of this control
-	 * @param string $classes The classes to use in the div wrapper markup
+	 * Apply additional settings for this control
 	 */
-	public function __construct()
+	public function _extend()
 	{
-		$args = func_get_args();
-		list( $name, $class, $template ) = array_merge( $args, array_fill( 0, 3, null ) );
-
-		$this->name = $name;
-		$this->class = $class;
-		$this->caption = '';
-		$this->template = isset( $template ) ? $template : 'formcontrol_wrapper';
+		$this->settings['ignore_name'] = true;
 	}
 }
 

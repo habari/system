@@ -83,6 +83,19 @@ class FormUI extends FormContainer implements IsContent
 	}
 
 	/**
+	 * Create a new instance of this class and return it, use the fluent interface
+	 * @param string $name
+	 * @param string $formtype
+	 * @return FormUI
+	 */
+	public static function build($name, $formtype = null)
+	{
+		$class = get_called_class();
+		$r_class = new \ReflectionClass($class);
+		return $r_class->newInstanceArgs( compact('name', 'formtype') );
+	}
+
+	/**
 	 * Generate a unique MD5 hash based on the form's name or the control's name.
 	 *
 	 * @return string Unique string composed of 35 hexadecimal digits representing the victim.
@@ -95,22 +108,22 @@ class FormUI extends FormContainer implements IsContent
 	/**
 	 * Produce a form with the contained fields.
 	 *
-	 * @param boolean $process_for_success Set to true to display the form as it would look if the submission succeeded, but do not execute success methods.
+	 * @param Theme $theme The theme to render the controls into
 	 * @return string HTML form generated from all controls assigned to this form
 	 */
-	public function get( $use_theme = null, $process_for_success = true )
+	public function get( Theme $theme = null )
 	{
 		$forvalidation = false;
 
+		// Allow plugins to modify the form
 		Plugins::act( 'modify_form_' . Utils::slugify( $this->formtype, '_' ), $this );
 		Plugins::act( 'modify_form', $this );
 
-		if ( isset( $use_theme ) ) {
-			$theme = $use_theme;
+		// Get the theme used to render the form
+		if ( is_null( $theme ) ) {
+			$theme = $this->get_theme();
 		}
-		else {
-			$theme = $this->get_theme( $forvalidation, $this );
-		}
+
 		$theme->start_buffer();
 		$theme->success = false;
 		$this->success = false;
@@ -153,7 +166,7 @@ class FormUI extends FormContainer implements IsContent
 
 		$out = '';
 
-		$theme->controls = $this->output_controls( $forvalidation );
+		$theme->controls = $this->output_controls( $theme );
 		$theme->form = $this;
 
 		foreach ( $this->properties as $prop => $value ) {
@@ -188,14 +201,13 @@ class FormUI extends FormContainer implements IsContent
 	 * @param boolean $forvalidation True if the controls should output additional information based on validation.
 	 * @return string The output of controls' HTML.
 	 */
-	public function output_controls( $forvalidation = false )
+	public function output_controls( Theme $theme )
 	{
+		/** @var FormControl $control */
 		$out = '';
-		$theme = $this->get_theme( $forvalidation );
 		foreach ( $this->controls as $control ) {
-			$out .= $control->get( $forvalidation );
+			$out .= $control->get( $theme );
 		}
-		$theme->end_buffer();
 		return $out;
 	}
 
