@@ -60,11 +60,13 @@ class Session extends Singleton
 
 		self::$lifetime = Plugins::filter( 'session_lifetime', $lifetime );
 
-		$_SESSION = new SessionStorage();
+		if(!isset($_SESSION) || !$_SESSION instanceof SessionStorage) {
+			$_SESSION = new SessionStorage();
 
-		if ( isset( $_COOKIE[ self::HABARI_SESSION_COOKIE_NAME ] ) ) {
-			$_SESSION->id = $_COOKIE[ self::HABARI_SESSION_COOKIE_NAME ];
-			self::read();
+			if ( isset( $_COOKIE[ self::HABARI_SESSION_COOKIE_NAME ] ) ) {
+				$_SESSION->id = $_COOKIE[ self::HABARI_SESSION_COOKIE_NAME ];
+				self::read();
+			}
 		}
 
 		// make sure we check whether or not we should write the session after the page is rendered
