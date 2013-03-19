@@ -183,6 +183,18 @@ abstract class FormControl
 	}
 
 	/**
+	 * Obtain a unique identifier for this control that is the same every time the form is generated
+	 * @return string
+	 */
+	public function control_id()
+	{
+		return $this->get_setting(
+			'control_id',
+			md5(get_class($this) . '-' . $this->name)
+		);
+	}
+
+	/**
 	 * Produce the control for display
 	 * @param Theme $theme The theme that will be used to render the template
 	 * @return string The output of the template
@@ -196,13 +208,18 @@ abstract class FormControl
 		foreach($this->vars as $k => $v) {
 			$theme->assign($k, $v);
 		}
+		// Put the value of the control into the theme
+		$theme->value = $this->value;
 
 
 		// Assign the control and its attributes into the theme
 		$theme->_control = $this;
 		$properties = $this->properties;
 		if(!isset($this->settings['ignore_name'])) {
-			$properties = array_merge($properties, array('name' => $this->name));
+			$properties = array_merge(array('name' => $this->name), $properties);
+		}
+		if(!isset($this->settings['internal_value'])) {
+			$properties = array_merge(array('value' => $this->value), $properties);
 		}
 		$theme->_attributes = Utils::html_attr($properties);
 
@@ -304,7 +321,7 @@ abstract class FormControl
 			return $this->settings[$name];
 		}
 		elseif(is_callable($default)) {
-			return $default($name);
+			return $default($name, $this);
 		}
 		else {
 			return $default;

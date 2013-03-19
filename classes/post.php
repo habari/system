@@ -1231,6 +1231,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$form = new FormUI( 'comment-' . $context, 'comment' );
 		$form->class[] = $context;
 		$form->class[] = 'commentform';
+		$form->set_wrap_each('<div>%s</div>');
 
 		// Enforce commenting rules
 		if(Options::get('comments_disabled')) {
@@ -1295,7 +1296,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 			// Create the Comment field
 			$form->append(
-				FormControlLabel::wrap(_t('Content'), FormControlText::create('cf_content', 'null:null', array(
+				FormControlLabel::wrap(_t('Content'), FormControlTextArea::create('cf_content', 'null:null', array(
 					'id' => 'comment_content',
 					'tabindex' => 4,
 				)))->add_validator( 'validate_required', _t( 'The Comment field value is required' ) )

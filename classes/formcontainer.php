@@ -42,26 +42,24 @@ class FormContainer extends FormControl
 	}
 
 	/**
-	 * Generate a hash for this container
+	 * Obtain a unique identifier for this control that is the same every time the form is generated
 	 *
 	 * @return string An md5 hash built using the controls contained within this container
 	 */
-	public function checksum()
+	public function control_id()
 	{
-		if ( !isset( $this->checksum ) ) {
-			$checksum = '';
-			foreach ( $this->controls as $control ) {
-				if ( method_exists( $control, 'checksum' ) ) {
-					$checksum .= get_class( $control ) . ':' . $control->checksum();
+		return $this->get_setting(
+			'control_id',
+			function($setting_name, $control) {
+				$control_id = array($control->name);
+				/** @var FormControl $control */
+				foreach ( $this->controls as $control ) {
+					$control_id[]= $control->control_id();
 				}
-				else {
-					$checksum .= get_class( $control ) . ':' . $control->name;
-				}
-				$checksum .= '::';
+				$control_id = md5(implode(',', $control_id));
+				return $control_id;
 			}
-			$this->checksum = md5( $checksum .= $this->name );
-		}
-		return $this->checksum;
+		);
 	}
 
 	/**

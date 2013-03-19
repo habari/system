@@ -1,1 +1,1 @@
-<input <?= $_attributes ?>>
+<textarea <?= $_attributes ?>><?= $value ?></textarea>

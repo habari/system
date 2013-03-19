@@ -96,16 +96,6 @@ class FormUI extends FormContainer implements IsContent
 	}
 
 	/**
-	 * Generate a unique MD5 hash based on the form's name or the control's name.
-	 *
-	 * @return string Unique string composed of 35 hexadecimal digits representing the victim.
-	 */
-	public function salted_name()
-	{
-		return md5( Options::get( 'secret' ) . 'added salt, for taste' . $this->checksum() );
-	}
-
-	/**
 	 * Produce a form with the contained fields.
 	 *
 	 * @param Theme $theme The theme to render the controls into
@@ -113,8 +103,6 @@ class FormUI extends FormContainer implements IsContent
 	 */
 	public function get( Theme $theme = null )
 	{
-		$forvalidation = false;
-
 		// Allow plugins to modify the form
 		Plugins::act( 'modify_form_' . Utils::slugify( $this->formtype, '_' ), $this );
 		Plugins::act( 'modify_form', $this );
@@ -129,10 +117,21 @@ class FormUI extends FormContainer implements IsContent
 		$this->success = false;
 		$this->submitted = false;
 
-		$this->properties['id'] = isset($this->properties['id']) ? $this->properties['id'] : Utils::slugify( $this->name );
+		// Set the ID of the control explicitly if it's not already set
+		$this->get_id();
+
+		// If the form template wasn't explicitly set, set it, because this class' name can't be used to determine its template
+		if(!isset($this->settings['template'])) {
+			$this->set_template('control.form');
+		}
+
+		// Add the control ID to the template output for the form
+		$this->vars['_control_id'] = $this->control_id();
+
+		return parent::get($theme);
 
 		// Should we be validating?
-		if ( isset( $_POST['FormUI'] ) && $_POST['FormUI'] == $this->salted_name() ) {
+		if ( isset( $_POST['FormUI'] ) && $_POST['FormUI'] == $this->control_id() ) {
 			$this->submitted = true;
 			$validate = $this->validate();
 			if ( count( $validate ) == 0 ) {
@@ -148,19 +147,19 @@ class FormUI extends FormContainer implements IsContent
 			}
 			else {
 				$forvalidation = true;
-				if ( !isset( $_SESSION['forms'][$this->salted_name()]['url'] ) ) {
-					$_SESSION['forms'][$this->salted_name()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . '#' . $this->properties['id'];
+				if ( !isset( $_SESSION['forms'][$this->control_id()]['url'] ) ) {
+					$_SESSION['forms'][$this->control_id()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . '#' . $this->properties['id'];
 				}
 			}
 		}
 		else {
-			$_SESSION['forms'][$this->salted_name()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . '#' . $this->properties['id'];
+			$_SESSION['forms'][$this->control_id()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . '#' . $this->properties['id'];
 		}
-		if ( isset( $_SESSION['forms'][$this->salted_name()]['error_data'] ) ) {
-			foreach ( $_SESSION['forms'][$this->salted_name()]['error_data'] as $key => $value ) {
+		if ( isset( $_SESSION['forms'][$this->control_id()]['error_data'] ) ) {
+			foreach ( $_SESSION['forms'][$this->control_id()]['error_data'] as $key => $value ) {
 				$_POST[$key] = $value;
 			}
-			unset( $_SESSION['forms'][$this->salted_name()]['error_data'] );
+			unset( $_SESSION['forms'][$this->control_id()]['error_data'] );
 			$forvalidation = true;
 		}
 
@@ -173,13 +172,15 @@ class FormUI extends FormContainer implements IsContent
 			$theme->$prop = $value;
 		}
 
+		$theme->_control = $this;
+
 		$theme->class = Utils::single_array( $this->class );
 		$this->action = $this->options['form_action'];
-		$theme->salted_name = $this->salted_name();
+		$theme->salted_name = $this->control_id();
 		$theme->pre_out = $this->pre_out_controls();
 
-		//$out = $this->prefix . $theme->display_fallback( $this->options['template'], 'fetch' ) . $this->postfix;
-		$out = $this->prefix . $theme->controls . $this->postfix;
+		$out = $this->prefix . $theme->display_fallback( $this->get_template(), 'fetch' ) . $this->postfix;
+		//$out = $this->prefix . $theme->controls . $this->postfix;
 		$theme->end_buffer();
 
 		return $out;
@@ -357,8 +358,8 @@ class FormUI extends FormContainer implements IsContent
 	 */
 	public function bounce()
 	{
-		$_SESSION['forms'][$this->salted_name()]['error_data'] = $_POST;
-		Utils::redirect( $_SESSION['forms'][$this->salted_name()]['url'] );
+		$_SESSION['forms'][$this->control_id()]['error_data'] = $_POST;
+		Utils::redirect( $_SESSION['forms'][$this->control_id()]['url'] );
 	}
 
 	/**
