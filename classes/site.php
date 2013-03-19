@@ -309,6 +309,8 @@ class Site
 				$config_dirs = preg_replace( '/^' . preg_quote( HABARI_PATH, '/' ) . '\/user\/sites\/(.*)/', '$1', Utils::glob( HABARI_PATH . '/user/sites/*', GLOB_ONLYDIR ) );
 
 				if ( empty( $config_dirs ) ) {
+					// @todo this should be updated to force the config path into a specific directory for a domain
+					self::$config_path = HABARI_PATH . '/user/';
 					return self::$config_path;
 				}
 

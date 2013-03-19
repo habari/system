@@ -20,6 +20,11 @@ class AdminHandler extends ActionHandler
 	 */
 	public function __construct()
 	{
+		// @todo This is incomplete, and should use a random cookie value, not the hash of a directory name (which could be the same in many places)
+		if ( isset( $_COOKIE['fresh_install'] ) && ( $_COOKIE['fresh_install'] == md5( Site::get_dir( 'config' ) ) ) ) {
+			die ( 'Hey there.' );
+		}
+
 		$user = User::identify();
 		if ( !$user->loggedin ) {
 			Session::add_to_set( 'login', $_SERVER['REQUEST_URI'], 'original' );

@@ -78,10 +78,10 @@ class InstallHandler extends ActionHandler
 		/**
 		 * Let's check the config.php file if no POST data was submitted
 		 */
-		if ( ( ! file_exists( Site::get_dir( 'config_file' ) ) ) && ( ! isset( $_POST['admin_username'] ) ) ) {
+/*		if ( ( ! file_exists( Site::get_dir( 'config_file' ) ) ) && ( ! isset( $_POST['admin_username'] ) ) ) {
 			// no config file, and no HTTP POST
 			$this->display( 'db_setup' );
-		}
+		}*/
 
 		// try to load any values that might be defined in config.php
 		if ( file_exists( Site::get_dir( 'config_file' ) ) ) {
@@ -123,14 +123,14 @@ class InstallHandler extends ActionHandler
 		$this->handler_vars = $this->handler_vars->merge( $_POST );
 
 		// we need details for the admin user to install
-		if ( ( '' == $this->handler_vars['admin_username'] )
+/*		if ( ( '' == $this->handler_vars['admin_username'] )
 			|| ( '' == $this->handler_vars['admin_pass1'] )
 			|| ( '' == $this->handler_vars['admin_pass2'] )
 			|| ( '' == $this->handler_vars['admin_email'] )
 		) {
 			// if none of the above are set, display the form
 			$this->display( 'db_setup' );
-		}
+		}*/
 
 		$db_type = $this->handler_vars['db_type'];
 		if ( (!Config::exists('db_connection') || Config::get( 'db_connection' )->connection_string == '') && ($db_type == 'mysql' || $db_type == 'pgsql') ) {
@@ -143,16 +143,16 @@ class InstallHandler extends ActionHandler
 		// we got here, so we have all the info we need to install
 
 		// make sure the admin password is correct
-		if ( $this->handler_vars['admin_pass1'] !== $this->handler_vars['admin_pass2'] ) {
+/*		if ( $this->handler_vars['admin_pass1'] !== $this->handler_vars['admin_pass2'] ) {
 			$this->theme->assign( 'form_errors', array( 'password_mismatch' => _t( 'Password mis-match.' ) ) );
 			$this->display( 'db_setup' );
-		}
+		}*/
 
 		// don't accept emails with control characters
-		if ( !ctype_print($this->handler_vars['admin_email']) ) {
+/*		if ( !ctype_print($this->handler_vars['admin_email']) ) {
 			$this->theme->assign( 'form_errors', array( 'admin_email' => _t( 'Only printable characters are allowed.' ) ) );
 			$this->display( 'db_setup' );
-		}
+		}*/
 
 		// check whether prefix is valid
 		if ( isset( $this->handler_vars['table_prefix'] ) && ( preg_replace( '/[^a-zA-Z_]/', '', $this->handler_vars['table_prefix'] ) !== $this->handler_vars['table_prefix'] ) ) {
@@ -179,7 +179,7 @@ class InstallHandler extends ActionHandler
 		}
 
 		// activate plugins on POST
-		if ( count( $_POST ) > 0 ) {
+		if ( true || count( $_POST ) > 0 ) {
 			$this->activate_theme();
 			$this->activate_plugins();
 		}
@@ -187,12 +187,12 @@ class InstallHandler extends ActionHandler
 
 
 		// Installation complete. Secure sqlite if it was chosen as the database type to use
-		if ( $db_type == 'sqlite' ) {
+/*		if ( $db_type == 'sqlite' ) {
 			if ( !$this->secure_sqlite() ) {
 				$this->theme->sqlite_contents = implode( "\n", $this->sqlite_contents() );
 				$this->display( 'sqlite' );
 			}
-		}
+		}*/
 
 		EventLog::log( _t( 'Habari successfully installed.' ), 'info', 'default', 'habari' );
 		Utils::redirect( Site::get_url( 'habari' ) );
@@ -280,7 +280,7 @@ class InstallHandler extends ActionHandler
 	 */
 	public function form_defaults()
 	{
-		$formdefaults['db_type'] = 'mysql';
+		$formdefaults['db_type'] = 'sqlite';
 		$formdefaults['db_host'] = 'localhost';
 		$formdefaults['db_user'] = '';
 		$formdefaults['db_pass'] = '';
@@ -292,6 +292,7 @@ class InstallHandler extends ActionHandler
 		$formdefaults['admin_pass2'] = '';
 		$formdefaults['blog_title'] = 'My Habari';
 		$formdefaults['admin_email'] = '';
+		$formdefaults['theme'] = 'wazi';
 
 		foreach ( $formdefaults as $key => $value ) {
 			if ( !isset( $this->handler_vars[$key] ) ) {
@@ -1195,7 +1196,7 @@ class InstallHandler extends ActionHandler
 	/**
 	 * returns an array of Files declarations used by Habari
 	 */
-	public function sqlite_contents()
+/*	public function sqlite_contents()
 	{
 		$db_file = basename( $this->handler_vars['db_file'] );
 		$contents = array(
@@ -1208,14 +1209,14 @@ class InstallHandler extends ActionHandler
 		);
 
 		return $contents;
-	}
+	}*/
 
 	/**
 	 * attempts to write the Files clause to the .htaccess file
 	 * if the clause for this sqlite doesn't exist.
 	 * @return bool success or failure
 	 */
-	public function secure_sqlite()
+/*	public function secure_sqlite()
 	{
 		if ( false === strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) ) {
 			// .htaccess is only needed on Apache
@@ -1253,7 +1254,7 @@ class InstallHandler extends ActionHandler
 		}
 		// Success!
 		return true;
-	}
+	}*/
 
 	private function upgrade_db_pre ( $current_version )
 	{
