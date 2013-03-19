@@ -252,7 +252,13 @@ class AdminUsersHandler extends AdminHandler
 
 		// Change password
 		if ( isset( $form->password1 ) && !( Utils::crypt( $form->password1->value, $edit_user->password ) ) && ( $form->password1->value != '' ) ) {
-			Session::notice( _t( 'Password changed.' ) );
+			if(isset($_SESSION['fresh_install'])) {
+				Session::notice( _t( 'You have successfully set the password for your first user.' ), 'fresh_install' );
+				unset($_SESSION['fresh_install']);
+			}
+			else {
+				Session::notice( _t( 'Password changed.' ) );
+			}
 			$edit_user->password = Utils::crypt( $form->password1->value );
 			$edit_user->update();
 		}

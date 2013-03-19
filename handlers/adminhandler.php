@@ -20,12 +20,17 @@ class AdminHandler extends ActionHandler
 	 */
 	public function __construct()
 	{
-		// @todo This is incomplete, and should use a random cookie value, not the hash of a directory name (which could be the same in many places)
-		if ( isset( $_COOKIE['fresh_install'] ) && ( $_COOKIE['fresh_install'] == md5( Site::get_dir( 'config' ) ) ) ) {
-			die ( 'Hey there.' );
+		/** @var User $user */
+		if ( isset($_SESSION['fresh_install']) && Users::get_all()->count() == 1 ) {
+			$all_users = Users::get_all();
+			$user = reset($all_users);
+			$user->remember();
+			Session::notice(_t('You must <a href="%s">set a password</a> for your administrative user.', array(URL::get('admin', 'page=user'))), 'fresh_install');
+		}
+		else {
+			$user = User::identify();
 		}
 
-		$user = User::identify();
 		if ( !$user->loggedin ) {
 			Session::add_to_set( 'login', $_SERVER['REQUEST_URI'], 'original' );
 			if ( URL::get_matched_rule()->action == 'admin_ajax' && isset( $_SERVER['HTTP_REFERER'] ) ) {

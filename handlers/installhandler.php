@@ -99,7 +99,11 @@ class InstallHandler extends ActionHandler
 
 				// write new config file
 				if ( $this->write_config_file( true ) ) {
-					// successful, so redirect:
+					// successful, so set the "you installed it" cookie and redirect:
+					setcookie('fresh_install', md5( Site::get_dir( 'config' )));
+					//Session::init();
+					$_SESSION['fresh_install'] = true;
+
 					Utils::redirect( Site::get_url( 'habari' ) );
 				}
 			}
@@ -194,17 +198,22 @@ class InstallHandler extends ActionHandler
 			}
 		}*/
 
+		// successful, so set the "you installed it" cookie and redirect:
+		setcookie('fresh_install', md5( Site::get_dir( 'config' )));
+		Session::init();
+		$_SESSION['fresh_install'] = true;
+
 		EventLog::log( _t( 'Habari successfully installed.' ), 'info', 'default', 'habari' );
 		Utils::redirect( Site::get_url( 'habari' ) );
 	}
 
 	/**
-	 * Helper function to grab list of plugins
+	 * Produce the list of recommended plugins
+	 * @return array A list of the filenames of recommended plugins
 	 */
-	public function get_plugins()
+	public function recommended_plugins()
 	{
-		$all_plugins = Plugins::list_all();
-		$recommended_list = array(
+		return array(
 			'coredashmodules.plugin.php',
 			'coreblocks.plugin.php',
 			'habarisilo.plugin.php',
@@ -213,6 +222,15 @@ class InstallHandler extends ActionHandler
 			'undelete.plugin.php',
 			'autop.plugin.php'
 		);
+	}
+
+	/**
+	 * Helper function to grab list of plugins
+	 */
+	public function get_plugins()
+	{
+		$all_plugins = Plugins::list_all();
+		$recommended_list = $this->recommended_plugins();
 
 		foreach ( $all_plugins as $file ) {
 			$plugin = array();
@@ -288,11 +306,15 @@ class InstallHandler extends ActionHandler
 		$formdefaults['db_schema'] = 'habari';
 		$formdefaults['table_prefix'] = isset( Config::get( 'db_connection' )->prefix ) ? Config::get( 'db_connection' )->prefix : 'habari__';
 		$formdefaults['admin_username'] = 'admin';
-		$formdefaults['admin_pass1'] = '';
-		$formdefaults['admin_pass2'] = '';
+		$formdefaults['admin_pass1'] = UUID::get();
+		$formdefaults['admin_pass2'] = $formdefaults['admin_pass1'];
 		$formdefaults['blog_title'] = 'My Habari';
 		$formdefaults['admin_email'] = '';
 		$formdefaults['theme'] = 'wazi';
+
+		foreach($this->recommended_plugins() as $plugin) {
+			$formdefaults['plugin_' . $plugin] = 1;
+		}
 
 		foreach ( $formdefaults as $key => $value ) {
 			if ( !isset( $this->handler_vars[$key] ) ) {
