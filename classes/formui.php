@@ -951,7 +951,7 @@ class FormValidators
 	 */
 	public static function validate_required( $value, $control, $form, $warning = null )
 	{
-		if ( empty( $value ) || $value == '' ) {
+		if ( preg_match( '/^\p{Z}*$/u', $value ) ) {
 			$warning = empty( $warning ) ? _t( 'A value for this field is required.' ) : $warning;
 			return array( $warning );
 		}
