@@ -1243,12 +1243,12 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			$form->class[] = 'comments_disabled';
 			$form->set_option( 'form_action', '/' );
 		}
-		elseif(Options::get('comments_require_logon') && !User::identify()->loggedin) {
+		elseif(Options::get('comments_require_logon') && !$user->loggedin) {
 			$form->append(new FormControlStatic('message', _t('Commenting on this site requires authentication.')));
 			$form->class[] = 'comments_require_logon';
 			$form->set_option( 'form_action', '/' );
 		}
-		elseif(User::identify()->cannot('comment')) {
+		elseif(!$user->can('comment')) {
 			$form->append(new FormControlStatic('message', _t('You do not have permission to comment on this site.')));
 			$form->class[] = 'comments_require_permission';
 			$form->set_option( 'form_action', '/' );
@@ -1314,10 +1314,10 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			// Create the Submit button
 			$form->append( 'submit', 'cf_submit', _t( 'Submit' ), 'formcontrol_submit' );
 			$form->cf_submit->tabindex = 5;
-		}
 
-		// Let plugins alter this form
-		Plugins::act( 'form_comment', $form, $this, $context );
+			// Let plugins alter this form
+			Plugins::act( 'form_comment', $form, $this, $context );
+		}
 
 		// Return the form object
 		return $form;
