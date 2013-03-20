@@ -242,6 +242,7 @@ abstract class FormControl
 			}
 		}
 		$output .= $this->get_setting('postfix_html', '');
+		$output = sprintf($this->get_setting('wrap', '%s'), $output);
 
 		// Roll back the var stack we've been using for this control
 		$theme->end_buffer();
@@ -283,7 +284,7 @@ abstract class FormControl
 	/**
 	 * Set a template for use with this control
 	 * @param string|array $template A template fallback list to search for this template
-	 * @return $this
+	 * @return FormControl $this
 	 */
 	public function set_template($template)
 	{

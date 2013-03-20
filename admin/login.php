@@ -37,6 +37,7 @@
 ?>
 <script type="text/javascript">
 	var password_label;
+/*
 	$(document).ready( function() {
 		<?php Session::messages_out( true, Method::create( '\\Habari\\Format', 'humane_messages' ) ); ?>
 		$("#reset_message").hide();
@@ -65,6 +66,7 @@
 			return false;
 		});
 	});
+*/
 </script>
 <?php
 	include ('db_profiling.php');

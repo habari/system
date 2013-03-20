@@ -20,4 +20,14 @@ class FormControlLabel extends FormContainer
 		$label_control->settings['ignore_name'] = true;
 		return $label_control;
 	}
+
+	/**
+	 * Set the label text
+	 * @param string $label The text of the label
+	 * @return FormControlLabel $this
+	 */
+	public function set_label($label) {
+		$this->label = $label;
+		return $this;
+	}
 }

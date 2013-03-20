@@ -128,7 +128,13 @@ class FormUI extends FormContainer implements IsContent
 		// Add the control ID to the template output for the form
 		$this->vars['_control_id'] = $this->control_id();
 
-		return parent::get($theme);
+		$output = parent::get($theme);
+		if(class_exists('\tidy')) {
+			$t = new \tidy();
+			$t->parseString($output, array('indent' => true, 'wrap' => 80, 'show-body-only' => true));
+			$output = (string) $t;
+		}
+		return $output;
 
 		// Should we be validating?
 		if ( isset( $_POST['FormUI'] ) && $_POST['FormUI'] == $this->control_id() ) {
