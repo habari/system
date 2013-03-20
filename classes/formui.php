@@ -652,7 +652,10 @@ class FormUI extends FormContainer implements IsContent
 			foreach ( $_SESSION['forms'][$this->salted_name()]['error_data'] as $key => $value ) {
 				$_POST[$key] = $value;
 			}
-			unset( $_SESSION['forms'][$this->salted_name()]['error_data'] );
+			$forms = $_SESSION->offsetGet('forms');
+			unset( $forms[$this->salted_name()]['error_data'] );
+			$_SESSION->offsetSet( 'forms', $forms );
+
 			$forvalidation = true;
 		}
 
