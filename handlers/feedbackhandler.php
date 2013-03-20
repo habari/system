@@ -58,9 +58,6 @@ class FeedbackHandler extends ActionHandler
 			}
 			else {
 				Session::error( _t( 'There was a problem submitting your comment.' ) );
-				foreach ( $form->validate() as $error ) {
-					Session::error( $error );
-				}
 				$form->bounce();
 				//Utils::redirect( $post->permalink . '#respond' );
 			}
