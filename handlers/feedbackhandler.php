@@ -86,32 +86,6 @@ class FeedbackHandler extends ActionHandler
 			die();
 		}
 
-		// let's do some basic sanity checking on the submission
-		if ( ( Options::get( 'comments_require_id' ) == true ) && ( empty( $name ) || empty( $email ) ) ) {
-			Session::error( _t( 'Both name and e-mail address must be provided.' ) );
-		}
-
-		if ( empty( $content ) ) {
-			Session::error( _t( 'You did not provide any content for your comment!' ) );
-		}
-
-		if ( Session::has_errors() ) {
-			// save whatever was provided in session data
-			Session::add_to_set( 'comment', $name, 'name' );
-			Session::add_to_set( 'comment', $email, 'email' );
-			Session::add_to_set( 'comment', $url, 'url' );
-			Session::add_to_set( 'comment', $content, 'content' );
-			// now send them back to the form
-			Utils::redirect( $post->permalink . '#respond' );
-		}
-
-		if ( $post->info->comments_disabled ) {
-			// comments are disabled, so let's just send
-			// them back to the post's permalink
-			Session::error( _t( 'Comments on this post are disabled!' ) );
-			Utils::redirect( $post->permalink );
-		}
-
 		/* Sanitize data */
 		foreach ( array( 'name', 'url', 'email', 'content' ) as $k ) {
 			$$k = InputFilter::filter( $$k );
@@ -144,10 +118,6 @@ class FeedbackHandler extends ActionHandler
 				$url = InputFilter::glue_url( $parsed );
 			}
 		}
-		if ( preg_match( '/^\p{Z}*$/u', $content ) ) {
-			Session::error( _t( 'Comment contains only whitespace/empty comment' ) );
-			Utils::redirect( $post->permalink );
-		}
 
 		/* Create comment object*/
 		$comment = new Comment( array(
@@ -169,12 +139,6 @@ class FeedbackHandler extends ActionHandler
 			$comment->status = Comment::STATUS_APPROVED;
 		}
 		
-		// Users need to have permission to add comments
-		if ( !$user->can( 'comment' ) ) {
-			Session::error( _t( 'You do not have permission to create comments.' ) );
-			Utils::redirect( $post->permalink );
-		}
-
 		// Allow themes to work with comment hooks
 		Themes::create();
 

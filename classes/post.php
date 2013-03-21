@@ -1205,14 +1205,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$commenter_url = '';
 		$commenter_content = '';
 		$user = User::identify();
-		if ( isset( $_SESSION['comment'] ) ) {
-			$details = Session::get_set( 'comment' );
-			$commenter_name = $details['name'];
-			$commenter_email = $details['email'];
-			$commenter_url = $details['url'];
-			$commenter_content = $details['content'];
-		}
-		elseif ( $user->loggedin ) {
+
+		if ( $user->loggedin ) {
 			$commenter_name = $user->displayname;
 			$commenter_email = $user->email;
 			$commenter_url = Site::get_url( 'habari' );
