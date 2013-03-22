@@ -313,7 +313,20 @@ class FormContainer extends FormControl
 				$results = array_merge($results, $result);
 			}
 		}
+		$results = array_merge($results, parent::validate());
 		return $results;
+	}
+
+	/**
+	 * Obtain the value of this control as supplied by the incoming $_POST values
+	 */
+	public function process()
+	{
+		$this->value = $_POST[$this->input_name()];
+		/** @var FormControl $control */
+		foreach($this->controls as $control) {
+			$control->process();
+		}
 	}
 
 	/**

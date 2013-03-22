@@ -19,9 +19,11 @@ abstract class FormControl
 	/** @var FormContainer $container The container that contains this control */
 	public $container;
 	/** @var array $validators An array of validators to execute on this control */
-	public $validators;
+	public $validators = array();
 	/** @var array $vars These vars are added internally to the theme for output by the template */
 	public $vars = array();
+	/** @var array $errors An array of errors that is filled when the control is passed for validation */
+	public $errors = array();
 
 
 	/**
@@ -225,11 +227,12 @@ abstract class FormControl
 
 		// Do rendering
 		$output = $this->get_setting('prefix_html', '');
-		if(isset($this->settings['content'])) {  // Allow descendants to override the content produced
+		if(isset($this->settings['content'])) {  // Allow descendants to override the content produced entirely
 			$output .= $this->settings['content'];
 		}
 		if(!isset($this->settings['norender'])) {  // Allow descendants to skip rendering the template for this control
 			if(isset($this->settings['template_html'])) {
+				// template_html can be a closure, and if so, it is called here and its value is used as the output
 				if(is_callable($this->settings['template_html'])) {
 					$output .= $this->settings['template_html']($theme, $this);
 				}
@@ -242,12 +245,45 @@ abstract class FormControl
 			}
 		}
 		$output .= $this->get_setting('postfix_html', '');
-		$output = sprintf($this->get_setting('wrap', '%s'), $output);
+		// If there are errors, wrap this control in an error div to display the errors.
+		if(count($this->errors) > 0) {
+			$output = $this->wrap_by(
+				$this->get_setting(
+					'error_wrap',
+					function($output, $errors) {
+						return sprintf('<div class="_control_error">%1$s<ol class="_control_error_list"><li>%2$s</li></ol></div>', $output, implode('</li><li>', $errors), $this);
+					}
+				),
+				$output,
+				$this->errors
+			);
+		}
+		else {
+			$output = $this->wrap_by($this->get_setting('wrap', '%s'), $output, $this);
+		}
 
 		// Roll back the var stack we've been using for this control
 		$theme->end_buffer();
 
 		return $output;
+	}
+
+	/**
+	 * Process a thing either using an sprintf-style string, or a closure
+	 * @param Callable|string $wrapper An sprintf-style wrapper or a function that accepts the same arguments as the call to this
+	 * @param mixed $thing One or more things to use as parameters to the sprintf/closure
+	 * @return string The resultant string produced by applying the closure or sprintf template
+	 */
+	public function wrap_by($wrapper, $thing)
+	{
+		$args = func_get_args();
+		if(is_callable($wrapper)) {
+			array_shift($args);
+			return call_user_func_array($wrapper, $args);
+		}
+		else {
+			return call_user_func_array('sprintf', $args);
+		}
 	}
 
 	/**
@@ -353,17 +389,81 @@ abstract class FormControl
 		);
 	}
 
+	/**
+	 * Output this once when the control is first output to the page
+	 *
+	 * @return string
+	 */
 	public function pre_out()
 	{
 		return '';
 	}
 
 	/**
-	 * @param string|Closure $validator
-	 * @return FormControl $this
-	 * @todo Implement this
+	 * Add a validation function to this control
+	 * Multiple parameters are passed as parameters to the validation function
+	 * @param mixed $validator A callback function
+	 * @param mixed $option... Multiple parameters added to those used to call the validator callback
+	 * @return FormControl Returns the control for chained execution
 	 */
-	public function add_validator($validator) {
+	public function add_validator()
+	{
+		$args = func_get_args();
+		$validator = reset( $args );
+		if ( is_array( $validator ) ) {
+			$index = ( is_object( $validator[0] ) ? get_class( $validator[0] ) : $validator[0]) . ':' . $validator[1];
+		}
+		elseif( $validator instanceof \Closure ) {
+			$index = microtime(true);
+		}
+		else {
+			$index = $validator;
+		}
+		$this->validators[$index] = $args;
 		return $this;
+	}
+
+	/**
+	 * Removes a validation function from this control
+	 *
+	 * @param string $name The name of the validator to remove
+	 */
+	public function remove_validator( $name )
+	{
+		if ( is_array( $name ) ) {
+			$index = ( is_object( $name[0] ) ? get_class( $name[0] ) : $name[0] ) . ':' . $name[1];
+		}
+		else {
+			$index = $name;
+		}
+		unset( $this->validators[$index] );
+	}
+
+	/**
+	 * Runs any attached validation functions to check validation of this control.
+	 *
+	 * @return array An array of string validation error descriptions or an empty array if no errors were found.
+	 */
+	public function validate()
+	{
+		$valid = array();
+		foreach ( $this->validators as $validator ) {
+			$validator_fn = array_shift( $validator );
+			if ( is_callable( $validator_fn ) ) {
+				$params = array_merge( array( $this->value, $this, $this->container ), $validator );
+				$valid = array_merge( $valid, call_user_func_array( $validator_fn, $params ) );
+			}
+			elseif ( method_exists( 'Habari\FormValidators', $validator_fn ) ) {
+				$validator_fn = array( 'Habari\FormValidators', $validator_fn );
+				$params = array_merge( array( $this->value, $this, $this->container ), $validator );
+				$valid = array_merge( $valid, call_user_func_array( $validator_fn, $params ) );
+			}
+			else {
+				$params = array_merge( array( $validator_fn, $valid, $this->value, $this, $this->container ), $validator );
+				$valid = array_merge( $valid, call_user_func_array( Method::create( '\\Habari\\Plugins', 'filter' ), $params ) );
+			}
+		}
+		$this->errors = $valid;
+		return $valid;
 	}
 }

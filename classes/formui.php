@@ -25,9 +25,9 @@ namespace Habari;
  */
 class FormUI extends FormContainer implements IsContent
 {
-	private $success_callback;
-	private $success_callback_params = array();
-	private $on_save = array();
+	protected $on_success = array();
+	protected $on_save = array();
+
 	public $success = false;
 	public $submitted = false;
 	private static $outpre = false;
@@ -47,7 +47,11 @@ class FormUI extends FormContainer implements IsContent
 		'onsubmit' => '',
 		'enctype' => 'application/x-www-form-urlencoded',
 		'accept_charset' => 'UTF-8',
+		'method' => 'POST',
 	);
+
+	/** @var bool|string If this is not false, this value should be rendered instead of the form as a success response */
+	public $success_render = false;
 
 	public static $registered_forms = array();
 
@@ -116,6 +120,7 @@ class FormUI extends FormContainer implements IsContent
 		$theme->success = false;
 		$this->success = false;
 		$this->submitted = false;
+		$this->success_render = false;
 
 		// Set the ID of the control explicitly if it's not already set
 		$this->get_id();
@@ -128,68 +133,39 @@ class FormUI extends FormContainer implements IsContent
 		// Add the control ID to the template output for the form
 		$this->vars['_control_id'] = $this->control_id();
 
-		$output = parent::get($theme);
+		// Was the form submitted?
+		if( isset( $_POST['_form_id'] ) && $_POST['_form_id'] == $this->control_id() ) {
+			$this->submitted = true;
+
+			// Process all of the submitted values into the controls
+			$this->process();
+
+			// Do any of the controls fail validation?  This call alters the wrap
+			$validation_errors = $this->validate();
+			if(count($validation_errors) == 0) {
+				// All of the controls validate
+				$this->success = true;
+				// If do_success() returns anything, it should be output instead of the form.
+				$this->success_render = $this->do_success();
+			}
+		}
+		// Save the values submitted into this form
+		// $this->store_submission();
+
+		if($this->success_render) {
+			$output = $this->success_render;
+		}
+		else {
+			$output = parent::get($theme);
+		}
+
+
 		if(class_exists('\tidy')) {
 			$t = new \tidy();
 			$t->parseString($output, array('indent' => true, 'wrap' => 80, 'show-body-only' => true));
 			$output = (string) $t;
 		}
 		return $output;
-
-		// Should we be validating?
-		if ( isset( $_POST['FormUI'] ) && $_POST['FormUI'] == $this->control_id() ) {
-			$this->submitted = true;
-			$validate = $this->validate();
-			if ( count( $validate ) == 0 ) {
-				if ( $process_for_success ) {
-					$result = $this->success();
-					if ( $result ) {
-						return $result;
-					}
-				}
-				$theme->success = true;
-				$this->success = true;
-				$theme->message = $this->options['success_message'];
-			}
-			else {
-				$forvalidation = true;
-				if ( !isset( $_SESSION['forms'][$this->control_id()]['url'] ) ) {
-					$_SESSION['forms'][$this->control_id()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . '#' . $this->properties['id'];
-				}
-			}
-		}
-		else {
-			$_SESSION['forms'][$this->control_id()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . '#' . $this->properties['id'];
-		}
-		if ( isset( $_SESSION['forms'][$this->control_id()]['error_data'] ) ) {
-			foreach ( $_SESSION['forms'][$this->control_id()]['error_data'] as $key => $value ) {
-				$_POST[$key] = $value;
-			}
-			unset( $_SESSION['forms'][$this->control_id()]['error_data'] );
-			$forvalidation = true;
-		}
-
-		$out = '';
-
-		$theme->controls = $this->output_controls( $theme );
-		$theme->form = $this;
-
-		foreach ( $this->properties as $prop => $value ) {
-			$theme->$prop = $value;
-		}
-
-		$theme->_control = $this;
-
-		$theme->class = Utils::single_array( $this->class );
-		$this->action = $this->options['form_action'];
-		$theme->salted_name = $this->control_id();
-		$theme->pre_out = $this->pre_out_controls();
-
-		$out = $this->prefix . $theme->display_fallback( $this->get_template(), 'fetch' ) . $this->postfix;
-		//$out = $this->prefix . $theme->controls . $this->postfix;
-		$theme->end_buffer();
-
-		return $out;
 	}
 
 	/**
@@ -240,30 +216,13 @@ class FormUI extends FormContainer implements IsContent
 	}
 
 	/**
-	 * Process validation on all controls of this form.
-	 *
-	 * @return array An array of strings describing validation issues, or an empty array if no issues.
-	 */
-	public function validate()
-	{
-		$validate = array();
-		foreach ( $this->controls as $control ) {
-			$validate = array_merge( $validate, $control->validate() );
-		}
-		return $validate;
-	}
-
-	/**
 	 * Set a function to call on form submission success
 	 *
 	 * @param mixed $callback A callback function or a plugin filter name.
 	 */
 	public function on_success( $callback )
 	{
-		$params = func_get_args();
-		$callback = array_shift( $params );
-		$this->success_callback = $callback;
-		$this->success_callback_params = $params;
+		$this->on_success[] = func_get_args();
 	}
 
 	/**
@@ -279,28 +238,21 @@ class FormUI extends FormContainer implements IsContent
 	/**
 	 * Calls the success callback for the form, and optionally saves the form values
 	 * to the options table.
+	 * @return boolean|string A string to replace the rendering of the form with, or false
 	 */
-	public function success()
+	public function do_success()
 	{
-		$result = true;
-		if ( isset( $this->success_callback ) ) {
-			$params = $this->success_callback_params;
-			array_unshift( $params, $this );
-			if ( is_callable( $this->success_callback ) ) {
-				$result = call_user_func_array( $this->success_callback, $params );
-			}
-			else {
-				array_unshift( $params, $this->success_callback, false );
-				$result = call_user_func_array( Method::create( '\Habari\Plugins', 'filter' ), $params );
-			}
-			if ( $result ) {
-				return $result;
+		$output = false;
+		foreach ( $this->on_success as $success ) {
+			$callback = array_shift( $success );
+			array_unshift($success, $this);
+			$result = Method::dispatch_array($callback, $success);
+			if(is_string($result)) {
+				$output = $result;
 			}
 		}
-		else {
-			$this->save();
-			return false;
-		}
+		$this->save();
+		return $output;
 	}
 
 	/**
