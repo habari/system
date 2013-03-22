@@ -269,9 +269,6 @@ class FormUI extends FormContainer implements IsContent
 			array_unshift($save, $this);
 			Method::dispatch_array($callback, $save);
 		}
-		if ( $this->has_user_options() ) {
-			User::identify()->info->commit();
-		}
 	}
 
 

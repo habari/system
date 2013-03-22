@@ -7,23 +7,13 @@ namespace Habari;
  */
 class FormControlHidden extends FormControl
 {
-
 	/**
-	 * Produce HTML output for this hidden control.
-	 *
-	 * @param boolean $forvalidation True if this control should render error information based on validation.
-	 * @return string HTML that will render this control in the form
+	 * Called upon construct.  Sets control properties
 	 */
-	public function get( $forvalidation = true )
+	public function _extend()
 	{
-		$output = '<input type="hidden" name="' . $this->field . '" value="' . $this->value . '"';
-		if(isset($this->id)) {
-			$output .= ' id="' . $this->id . '"';
-		}
-		$output .= '>';
-		return $output;
+		$this->properties['type'] = 'hidden';
 	}
-
 }
 
 ?>

@@ -7,32 +7,21 @@ namespace Habari;
  */
 class FormControlTabs extends FormContainer
 {
-	/**
-	 * Override the FormControl constructor to support more parameters
-	 *
-	 * @param string $name Name of this control
-	 * @param string $caption The legend to display in the fieldset markup
-	 */
-	public function __construct()
+	public function _extend()
 	{
-		$args = func_get_args();
-		list( $name, $caption, $template ) = array_merge( $args, array_fill( 0, 3, null ) );
-
-		$this->name = $name;
-		$this->caption = $caption;
-		$this->template = isset( $template ) ? $template : 'formcontrol_tabs';
+		$this->properties['class'][] = 'container';
+		$this->properties['class'][] = 'pagesplitter';
 	}
+
 
 	/**
 	 * Produce HTML output for all this fieldset and all contained controls
 	 *
-	 * @param boolean $forvalidation True if this control should render error information based on validation.
+	 * @param Theme $theme
 	 * @return string HTML that will render this control in the form
 	 */
-	function get( $forvalidation = true )
+	function get( Theme $theme )
 	{
-		$theme = $this->get_theme( $forvalidation, $this );
-
 		foreach ( $this->controls as $control ) {
 			if ( $control instanceof FormContainer ) {
 				$content = '';
@@ -42,19 +31,14 @@ class FormControlTabs extends FormContainer
 					if ( $content != '' && !( $subcontrol instanceof FormControlHidden ) ) {
 						$content .= '<hr>';
 					}
-					$content .= $subcontrol->get( $forvalidation );
+					$content .= $subcontrol->get( $theme );
 				}
 				$controls[$control->caption] = $content;
 			}
 		}
-		$theme->controls = $controls;
-		// Do not move before $contents
-		// Else, these variables will contain the last control's values
-		$theme->class = $this->class;
-		$theme->id = $this->name;
-		$theme->caption = $this->caption;
+		$this->vars['controls'] = $controls;
 
-		return $theme->fetch( $this->template, true );
+		return parent::get($theme);
 	}
 
 }

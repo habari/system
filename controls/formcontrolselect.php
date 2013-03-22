@@ -8,29 +8,16 @@ namespace Habari;
 class FormControlSelect extends FormControl
 {
 	public $options = array();
-	public $multiple = false;
-	public $size = 5;
 
 	/**
-	 * Override the FormControl constructor to support more parameters
-	 *
-	 * @param string $name
-	 * @param string $caption
-	 * @param array $options
-	 * @param string $template
+	 * Set the options used in the output of this select
+	 * @param array $options An array of options. By default, a nested array will create an optgroup using the key as the optgroup label.
+	 * @return FormControlSelect $this
 	 */
-	public function __construct()
+	public function set_options($options)
 	{
-		$args = func_get_args();
-		list( $name, $storage, $caption, $options, $template ) = array_merge( $args, array_fill( 0, 5, null ) );
-
-		$this->name = $name;
-		$this->storage = $storage;
-		$this->caption = $caption;
 		$this->options = $options;
-		$this->template = $template;
-
-		$this->default = null;
+		return $this;
 	}
 
 	/**
@@ -39,21 +26,10 @@ class FormControlSelect extends FormControl
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	public function get( $forvalidation = true )
+	public function get( Theme $theme )
 	{
-		$theme = $this->get_theme( $forvalidation );
-
-		foreach ( $this->properties as $prop => $value ) {
-			$theme->$prop = $value;
-		}
-
-		$theme->options = $this->options;
-		$theme->multiple = $this->multiple;
-		$theme->size = $this->size;
-		$theme->id = $this->name;
-		$theme->control = $this;
-
-		return $theme->fetch( $this->get_template(), true );
+		$this->vars['options'] = $this->options;
+		return parent::get($theme);
 	}
 }
 

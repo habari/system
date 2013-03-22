@@ -944,57 +944,48 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function get_form( $context )
 	{
-		$form = new FormUI( 'create-content' );
-		$form->class[] = 'create';
+		/** @var FormUI $form  */
+		$form = FormUI::create( 'create-content', 'null:null', array('class' => array('create')) );
 
 		$newpost = ( 0 === $this->id );
 
 		// If the post has already been saved, add a link to its permalink
 		if ( !$newpost ) {
-			$post_links = $form->append( 'wrapper', 'post_links' );
+			/** @var FormControlWrapper $post_links  */
+			$post_links = $form->append( FormControlWrapper::create('post_links', null, array('class' => 'container')) );
 			$permalink = ( $this->status != Post::status( 'published' ) ) ? $this->permalink . '?preview=1' : $this->permalink;
-			$post_links->append( 'static', 'post_permalink', '<a href="'. $permalink .'" class="viewpost" >'.( $this->status != Post::status( 'published' ) ? _t( 'Preview Post' ) : _t( 'View Post' ) ).'</a>' );
-			$post_links->class ='container';
+			$post_links->append( FormControlStatic::create('post_permalink')->set_static('<a href="'. $permalink .'" class="viewpost" >'.( $this->status != Post::status( 'published' ) ? _t( 'Preview Post' ) : _t( 'View Post' ) ).'</a>') );
 		}
 
 		// Store this post instance into a hidden field for later use when saving data
-		$form->append( 'hidden', 'post', $this, _t( 'Title' ), 'admincontrol_text' );
+		$form->append( FormControlData::create('post', $this) );
 
 		// Create the Title field
-		$form->append( 'text', 'title', 'null:null', _t( 'Title' ), 'admincontrol_text' );
-		$form->title->class[] = 'important';
-		$form->title->class[] = 'check-change';
-		$form->title->tabindex = 1;
-		$form->title->value = $this->title_internal;
+		$form->append( FormControlLabel::wrap(_t('Title'), FormControlText::create('title', null, array('class' => array('important', 'check-change'), 'tabindex' => 1))->set_value($this->title_internal)) );
 
 		// Create the silos
 		if ( count( Plugins::get_by_interface( 'MediaSilo' ) ) ) {
-			$form->append( 'silos', 'silos' );
+			$form->append( FormControlSilos::create('silos') );
 			$form->silos->silos = Media::dir();
 		}
 
 		// Create the Content field
-		$form->append( 'textarea', 'content', 'null:null', _t( 'Content' ), 'admincontrol_textarea' );
-		$form->content->class[] = 'resizable';
-		$form->content->class[] = 'check-change';
-		$form->content->tabindex = 2;
-		$form->content->value = $this->content_internal;
-		$form->content->raw = true;
+		$form->append( FormControlLabel::wrap( _t('Content'), FormControlTextArea::create('content', null, array('class' => array('resizable', 'check-change'), 'tabindex' => 2))->set_value($this->content_internal)) );
+		$form->content->raw = true;  // What does this do?
 
 		// Create the tags field
-		$form->append( 'text', 'tags', 'null:null', _t( 'Tags, separated by, commas' ), 'admincontrol_text' );
-		$form->tags->class = 'check-change';
-		$form->tags->tabindex = 3;
+		$form->append( FormControlLabel::wrap( _t( 'Tags, separated by, commas' ), $tags_control = FormControlText::create('tags', null, array('class' => 'check-change', 'tabindex' => 3))));
 
 		$tags = (array)$this->get_tags();
 		array_walk($tags, function(&$element, $key) {
 			$element->term_display = MultiByte::strpos( $element->term_display, ',' ) === false ? $element->term_display : $element->tag_text_searchable;
 		});
 
-		$form->tags->value = implode( ', ', $tags );
+		$tags_control->set_value(implode( ', ', $tags ));
 
 		// Create the splitter
-		$publish_controls = $form->append( 'tabs', 'publish_controls' );
+		/** @var FormControlTabs $publish_controls  */
+		$publish_controls = $form->append( FormControlTabs::create('publish_controls') );
 
 		// Create the publishing controls
 		// pass "false" to list_post_statuses() so that we don't include internal post statuses
@@ -1002,60 +993,42 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		unset( $statuses[array_search( 'any', $statuses )] );
 		$statuses = Plugins::filter( 'admin_publish_list_post_statuses', $statuses );
 
-		$settings = $publish_controls->append( 'fieldset', 'settings', _t( 'Settings' ) );
+		/** @var FormControlFieldset $settings */
+		$settings = $publish_controls->append( FormControlFieldset::create('settings')->set_caption(_t( 'Settings' )) );
 
-		$settings->append( 'select', 'status', 'null:null', _t( 'Content State' ), array_flip( $statuses ), 'tabcontrol_select' );
-		$settings->status->value = $this->status;
+		$settings->append( FormControlLabel::wrap(_t( 'Content State' ), FormControlSelect::create('status')->set_options(array_flip( $statuses ))->set_value($this->status)));
 
 		// hide the minor edit checkbox if the post is new
 		if ( $newpost ) {
-			$settings->append( 'hidden', 'minor_edit', 'null:null' );
-			$settings->minor_edit->value = false;
+			$settings->append( FormControlHidden::create('minor_edit')->set_value(false));
 		}
 		else {
-			$settings->append( 'checkbox', 'minor_edit', 'null:null', _t( 'Minor Edit' ), 'tabcontrol_checkbox' );
-			$settings->minor_edit->value = true;
-			$form->append( 'hidden', 'modified', 'null:null' )->value = $this->modified;
+			$settings->append( FormControlLabel::wrap( _t( 'Minor Edit' ), FormControlCheckbox::create('minor_edit')->set_value(true)));
+			$form->append( FormControlHidden::create('modified')->set_value($this->modified));
 		}
 
-		$settings->append( 'checkbox', 'comments_enabled', 'null:null', _t( 'Comments Allowed' ), 'tabcontrol_checkbox' );
-		$settings->comments_enabled->value = $this->info->comments_disabled ? false : true;
+		$settings->append( FormControlLabel::wrap(_t( 'Comments Allowed' ), FormControlCheckbox::create('comments_enabled')->set_value($this->info->comments_disabled ? false : true)));
 
-		$settings->append( 'text', 'pubdate', 'null:null', _t( 'Publication Time' ), 'tabcontrol_text' );
-		$settings->pubdate->value = $this->pubdate->format( 'Y-m-d H:i:s' );
-		$settings->pubdate->helptext = _t( 'YYYY-MM-DD HH:MM:SS' );
+		$settings->append( FormControlLabel::wrap(_t( 'Publication Time' ), FormControlText::create('pubdate')->set_value($this->pubdate->format( 'Y-m-d H:i:s' ))));
+		//$settings->pubdate->helptext = _t( 'YYYY-MM-DD HH:MM:SS' );  // @todo figure out a clean way to do help text on a control -- a new FormControlLabel-like wrapper?
 
-		$settings->append( 'hidden', 'updated', 'null:null' );
-		$settings->updated->value = $this->updated->int;
+		$settings->append( FormControlHidden::create('updated')->set_value($this->updated->int) );
 
-		$settings->append( 'text', 'newslug', 'null:null', _t( 'Content Address' ), 'tabcontrol_text' );
-		$settings->newslug->id = 'newslug';
-		$settings->newslug->value = $this->slug;
+		$settings->append( FormControlLabel::wrap(_t( 'Content Address' ), FormControlText::create('newslug')->set_value($this->slug) ));
 
 		// Create the button area
-		$buttons = $form->append( 'fieldset', 'buttons' );
-		$buttons->template = 'admincontrol_buttons';
-		$buttons->class[] = 'container';
-		$buttons->class[] = 'buttons';
-		$buttons->class[] = 'publish';
+		$buttons = $form->append( FormControlFieldset::create('buttons', null, array('class' => array('container', 'buttons', 'publish'))) );
 
 		// Create the Save button
 		$require_any = array( 'own_posts' => 'create', 'post_any' => 'create', 'post_' . Post::type_name( $this->content_type ) => 'create' );
 		if ( ( $newpost && User::identify()->can_any( $require_any ) ) || ( !$newpost && ACL::access_check( $this->get_access(), 'edit' ) ) ) {
-			$buttons->append( 'submit', 'save', _t( 'Save' ), 'admincontrol_submit' );
-			$buttons->save->tabindex = 4;
+			$buttons->append( FormControlSubmit::create('save', null, array('tabindex' => 4))->set_caption( _t( 'Save' ) ) );
 		}
 
 		// Add required hidden controls
-		$form->append( 'hidden', 'content_type', 'null:null' );
-		$form->content_type->id = 'content_type';
-		$form->content_type->value = $this->content_type;
-		$form->append( 'hidden', 'post_id', 'null:null' );
-		$form->post_id->id = 'id';
-		$form->post_id->value = $this->id;
-		$form->append( 'hidden', 'slug', 'null:null' );
-		$form->slug->value = $this->slug;
-		$form->slug->id = 'originalslug';
+		$form->append( FormControlHidden::create('content_type', null, array('id' => 'content_type'))->set_value($this->content_type) );
+		$form->append( FormControlHidden::create('post_id', null, array('id' => 'id'))->set_value($this->id) );
+		$form->append( FormControlHidden::create('slug', null, array('id' => 'originalslug'))->set_value($this->slug) );
 
 		$form->on_success(array($this, 'form_publish_success'));
 

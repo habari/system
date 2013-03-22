@@ -7,6 +7,14 @@ class FormControlLabel extends FormContainer
 	public $label;
 
 	/**
+	 * Be sure that the name of the label isn't added as an attribute of the label tag
+	 */
+	public function _extend()
+	{
+		$this->settings['ignore_name'] = true;
+	}
+
+	/**
 	 * Create a label for a control
 	 * @param string $label The label of the control
 	 * @param FormControl $control The control to label
@@ -17,7 +25,6 @@ class FormControlLabel extends FormContainer
 		$label_control->append($control);
 		$label_control->vars['label'] = $label;
 		$label_control->properties['for'] = $control->get_id();
-		$label_control->settings['ignore_name'] = true;
 		return $label_control;
 	}
 

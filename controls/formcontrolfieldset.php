@@ -8,20 +8,28 @@ namespace Habari;
 class FormControlFieldset extends FormContainer
 {
 
-	/**
-	 * Override the FormControl constructor to support more parameters
-	 *
-	 * @param string $name Name of this control
-	 * @param string $caption The legend to display in the fieldset markup
-	 */
-	public function __construct()
-	{
-		$args = func_get_args();
-		list( $name, $caption, $template ) = array_merge( $args, array_fill( 0, 3, null ) );
+	public $caption = '';
 
-		$this->name = $name;
+	/**
+	 * Set the caption for this fieldset
+	 * @param $caption
+	 * @return FormControlFieldset $this
+	 */
+	public function set_caption($caption)
+	{
 		$this->caption = $caption;
-		$this->template = isset( $template ) ? $template : 'formcontrol_fieldset';
+		return $this;
+	}
+
+	/**
+	 * Produce the HTML for this control
+	 * @param Theme $theme The theme used for rendering
+	 * @return string The rendered control in HTML
+	 */
+	function get(Theme $theme)
+	{
+		$this->vars['caption'] = $this->caption;
+		return parent::get($theme);
 	}
 }
 

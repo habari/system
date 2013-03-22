@@ -106,11 +106,17 @@ abstract class FormControl
 	/**
 	 * Set the HTML-related properties of this control
 	 * @param array $properties An array of properties that will be associated to this control's HTML output
+	 * @param bool $override If true, the supplied properties completely replace the existing ones
 	 * @return FormControl $this
 	 */
-	public function set_properties($properties)
+	public function set_properties($properties, $override = false)
 	{
-		$this->properties = $properties;
+		if($override) {
+			$this->properties = $properties;
+		}
+		else {
+			$this->properties = array_merge($this->properties, $properties);
+		}
 		return $this;
 	}
 
@@ -165,7 +171,9 @@ abstract class FormControl
 	 */
 	public function save()
 	{
-		$this->storage->field_save($this->name, $this->value);
+		if($this->storage instanceof FormStorage) {
+			$this->storage->field_save($this->name, $this->value);
+		}
 	}
 
 	/**
@@ -173,7 +181,9 @@ abstract class FormControl
 	 */
 	public function load()
 	{
-		$this->value = $this->storage->field_load($this->name);
+		if($this->storage instanceof FormStorage) {
+			$this->value = $this->storage->field_load($this->name);
+		}
 	}
 
 	/**
@@ -216,7 +226,7 @@ abstract class FormControl
 
 		// Assign the control and its attributes into the theme
 		$theme->_control = $this;
-		$properties = $this->properties;
+		$properties = is_array($this->properties) ? $this->properties: array();
 		if(!isset($this->settings['ignore_name'])) {
 			$properties = array_merge(array('name' => $this->name), $properties);
 		}
@@ -332,6 +342,17 @@ abstract class FormControl
 			)
 		);
 		$this->settings['template'] = $templates;
+		return $this;
+	}
+
+	/**
+	 * Set the value of the control
+	 * @param mixed $value The initial value of the control
+	 * @return FormControl $this
+	 */
+	public function set_value($value)
+	{
+		$this->value = $value;
 		return $this;
 	}
 

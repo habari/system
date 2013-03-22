@@ -8,30 +8,46 @@ namespace Habari;
 class FormControlCheckbox extends FormControl
 {
 	/**
-	 * Magic __get method for returning property values
-	 * Override the handling of the value property to properly return the setting of the checkbox.
-	 *
-	 * @param string $name The name of the property
-	 * @return mixed The value of the requested property
+	 * Called upon construct.  Sets control properties
 	 */
-	public function __get( $name )
+	public function _extend()
 	{
-		switch ( $name ) {
-			case 'value':
-				if ( isset( $_POST[$this->field . '_submitted'] ) ) {
-					if ( isset( $_POST[$this->field] ) ) {
-						return true;
-					}
-					else {
-						return false;
-					}
-				}
-				else {
-					return $this->get_default();
-				}
-		}
-		return parent::__get( $name );
+		$this->properties['type'] = 'checkbox';
+		$this->settings['internal_value'] = true;
 	}
+
+	/**
+	 * Produce the control for display
+	 * @param Theme $theme The theme that will be used to render the template
+	 * @return string The output of the template
+	 */
+	public function get(Theme $theme)
+	{
+		// Because this is a checkbox, the value isn't directly output in the control
+		$this->properties['value'] = 'checked';
+		if($this->value == true) {
+			$this->properties['checked'] = 'checked';
+		}
+		else {
+			unset($this->properties['checked']);
+		}
+		return parent::get($theme);
+	}
+
+	/**
+	 * Obtain the value of this control as supplied by the incoming $_POST values
+	 */
+	public function process()
+	{
+		if(isset($_POST[$this->input_name()]) && $_POST[$this->input_name()] == 'checked') {
+			$this->value = true;
+		}
+		else {
+			$this->value = false;
+		}
+	}
+
+
 }
 
 ?>
