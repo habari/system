@@ -337,10 +337,13 @@ abstract class FormControl
 
 		if(is_null($type)) {
 			$class = get_called_class();
-			$type = 'unknown';
-			if(preg_match('#FormControl(.+)$#i', $class, $matches)) {
-				$type = strtolower($matches[1]);
-			}
+			$type = $this->get_setting('control_type', function() use($class) {
+				$type = 'unknown';
+				if(preg_match('#FormControl(.+)$#i', $class, $matches)) {
+					$type = strtolower($matches[1]);
+				}
+				return $type;
+			});
 		}
 
 		return $type;
