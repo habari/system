@@ -23,9 +23,21 @@ class FormControlLabel extends FormContainer
 	public static function wrap($label, FormControl $control) {
 		$label_control = new FormControlLabel('label_for_' . $control->name);
 		$label_control->append($control);
-		$label_control->vars['label'] = $label;
+		$label_control->label = $label;
 		$label_control->properties['for'] = $control->get_id();
 		return $label_control;
+	}
+
+	/**
+	 * Produce HTML output for all this fieldset and all contained controls
+	 *
+	 * @param boolean $forvalidation True if this control should render error information based on validation.
+	 * @return string HTML that will render this control in the form
+	 */
+	function get(Theme $theme)
+	{
+		$this->vars['label'] = $this->label;
+		return parent::get($theme);
 	}
 
 	/**
@@ -35,6 +47,16 @@ class FormControlLabel extends FormContainer
 	 */
 	public function set_label($label) {
 		$this->label = $label;
+		return $this;
+	}
+
+	/**
+	 * Apply this label to a control
+	 * @param FormControl $for The control that this label is for
+	 * @return FormControlLabel $this
+	 */
+	public function set_for($for) {
+		$this->properties['for'] = $for->get_id();
 		return $this;
 	}
 }

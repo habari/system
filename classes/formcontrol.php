@@ -24,6 +24,12 @@ abstract class FormControl
 	public $vars = array();
 	/** @var array $errors An array of errors that is filled when the control is passed for validation */
 	public $errors = array();
+	/** @var bool $has_errors True when this control has errors, can be true with $errors isn't when the errors propagate to the container */
+	public $has_errors = false;
+	/** @var bool $value_set_manually If the value of this control was set manually, this should be true */
+	public $value_set_manually = false;
+	/** @var bool|string $helptext This is help text for the control, if it is set */
+	public $helptext = false;
 
 
 	/**
@@ -72,7 +78,7 @@ abstract class FormControl
 	public static function from_args($arglist)
 	{
 		$arglist = array_pad($arglist, 6, null);
-		list($type, $name, $storage, $caption, $properties, $settings) = $arglist;
+		list($type, $name, $storage, $properties, $settings) = $arglist;
 		if(class_exists('\\Habari\\FormControl' . ucwords($type))) {
 			$type = '\\Habari\\FormControl' . ucwords($type);
 		}
@@ -86,7 +92,10 @@ abstract class FormControl
 			$settings = array();
 		}
 
-		return new $type($name, $storage, $caption, $properties, $settings);
+		if(is_string($properties)) {
+			Utils::debug($arglist); die();
+		}
+		return new $type($name, $storage, $properties, $settings);
 	}
 
 	/**
@@ -127,6 +136,16 @@ abstract class FormControl
 	public function set_settings($settings)
 	{
 		$this->settings = $settings;
+		return $this;
+	}
+
+	/**
+	 * @param string $helptext Help text to appear for the control
+	 * @return FormControl $this
+	 */
+	public function set_helptext($helptext)
+	{
+		$this->helptext = $helptext;
 		return $this;
 	}
 
@@ -181,7 +200,7 @@ abstract class FormControl
 	 */
 	public function load()
 	{
-		if($this->storage instanceof FormStorage) {
+		if(!$this->value_set_manually && $this->storage instanceof FormStorage) {
 			$this->value = $this->storage->field_load($this->name);
 		}
 	}
@@ -191,7 +210,7 @@ abstract class FormControl
 	 */
 	public function process()
 	{
-		$this->value = $_POST[$this->input_name()];
+		$this->set_value($_POST[$this->input_name()], false);
 	}
 
 	/**
@@ -223,6 +242,10 @@ abstract class FormControl
 		// Put the value of the control into the theme
 		$theme->value = $this->value;
 
+		// If there are errors, add an error class to the control
+		if($this->has_errors > 0) {
+			$this->add_class('_has_error');
+		}
 
 		// Assign the control and its attributes into the theme
 		$theme->_control = $this;
@@ -254,14 +277,21 @@ abstract class FormControl
 				$output .= $theme->display_fallback( $this->get_template(), 'fetch' );
 			}
 		}
+		// Is there htlp text?  Output it, if so.
+		if($this->helptext) {
+			$output .= $this->wrap_by($this->get_setting('wrap_help', '<div class="helptext">%s</div>'), $this->helptext);
+		}
 		$output .= $this->get_setting('postfix_html', '');
 		// If there are errors, wrap this control in an error div to display the errors.
 		if(count($this->errors) > 0) {
 			$output = $this->wrap_by(
 				$this->get_setting(
 					'error_wrap',
-					function($output, $errors) {
-						return sprintf('<div class="_control_error">%1$s<ol class="_control_error_list"><li>%2$s</li></ol></div>', $output, implode('</li><li>', $errors), $this);
+					function() {
+
+						return function($output, $errors) {
+							return sprintf('<div class="_control_error">%1$s<ol class="_control_error_list"><li>%2$s</li></ol></div>', $output, implode('</li><li>', $errors));
+						};
 					}
 				),
 				$output,
@@ -348,10 +378,12 @@ abstract class FormControl
 	/**
 	 * Set the value of the control
 	 * @param mixed $value The initial value of the control
+	 * @param bool $manually True if the value was set manually in code rather than being submitted
 	 * @return FormControl $this
 	 */
-	public function set_value($value)
+	public function set_value($value, $manually = true)
 	{
+		$this->value_set_manually = $manually;
 		$this->value = $value;
 		return $this;
 	}
@@ -484,7 +516,44 @@ abstract class FormControl
 				$valid = array_merge( $valid, call_user_func_array( Method::create( '\\Habari\\Plugins', 'filter' ), $params ) );
 			}
 		}
-		$this->errors = $valid;
+		// If there are errors, propagate them to the container control if the container is a label, by default
+		if($this->container instanceof FormControl) {
+			$apply_errors_to = $this->get_setting('propagate_errors_to', $this->container instanceof FormControlLabel ? $this->container : $this);
+			$apply_errors_to->errors = array_merge($apply_errors_to->errors, $valid);
+		}
+		else {
+			$this->errors = array_merge($this->errors, $valid);
+		}
+		$this->has_errors = true;
 		return $valid;
 	}
+
+	/**
+	 * Add one or more CSS classes to this control
+	 * @param array|string $classes An array or a string of classes to add to this control
+	 * @return FormControl $this
+	 */
+	public function add_class($classes)
+	{
+		if(!isset($this->properties['class'])) {
+			$this->properties['class'] = array();
+		}
+		$this->properties['class'] = array_merge($this->properties['class'], explode(' ', $classes));
+		return $this;
+	}
+
+	/**
+	 * Remove one or more CSS classes from this control
+	 * @param array|string $classes An array or a string of classes to remove from this control
+	 * @return FormControl $this
+	 */
+	public function remove_class($classes)
+	{
+		if(!isset($this->properties['class'])) {
+			$this->properties['class'] = array();
+		}
+		$this->properties['class'] = array_diff($this->properties['class'], explode(' ', $classes));
+		return $this;
+	}
+
 }

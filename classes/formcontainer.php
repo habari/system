@@ -63,6 +63,18 @@ class FormContainer extends FormControl
 	}
 
 	/**
+	 * Set the unique identifier for this control.
+	 * This DOES NOT set the id attribute of the output HTML for this control!
+	 * @param string $control_id A unique value identifying this control internally
+	 * @return FormControl $this
+	 */
+	public function set_control_id($control_id)
+	{
+		$this->settings['control_id'] = $control_id;
+		return $this;
+	}
+
+	/**
 	 * Set a sprintf-style string that will wrap each control within this container with markup
 	 * Use to create, for example, <div>%s</div> for each control in the container
 	 * @param string $wrap The sprintf-style formatting string
@@ -124,7 +136,12 @@ class FormContainer extends FormControl
 		/** @var FormControl $control */
 		foreach ( $this->controls as $control ) {
 			$wrap = $this->get_setting('wrap_each', '%s');
-			$content .= sprintf($wrap, $control->get( $theme ));
+			if(isset($control->setting['wrap'])) {
+				$content .= $control->get( $theme );
+			}
+			else {
+				$content .= sprintf($wrap, $control->get( $theme ));
+			}
 		}
 		$this->vars['content'] = $content;
 
@@ -315,6 +332,21 @@ class FormContainer extends FormControl
 		}
 		$results = array_merge($results, parent::validate());
 		return $results;
+	}
+
+	/**
+	 * Load this control and its children's initial data from the initialized storage location
+	 */
+	public function load()
+	{
+		if(!$this->value_set_manually && $this->storage instanceof FormStorage) {
+			$this->value = $this->storage->field_load($this->name);
+		}
+
+		/** @var FormControl $control */
+		foreach($this->controls as $control) {
+			$control->load();
+		}
 	}
 
 	/**

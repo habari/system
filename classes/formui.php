@@ -60,8 +60,9 @@ class FormUI extends FormContainer implements IsContent
 	 *
 	 * @param string $name The name of the form, used to differentiate multiple forms.
 	 * @param string $formtype The type of the form, used to classify form types for plugin modification
+	 * @param array $extra_data An array of extra data that can be passed into the form
 	 */
-	public function __construct( $name, $formtype = null )
+	public function __construct( $name, $formtype = null, $extra_data = array() )
 	{
 		$this->name = $name;
 		if ( isset( $formtype ) ) {
@@ -148,9 +149,15 @@ class FormUI extends FormContainer implements IsContent
 				// If do_success() returns anything, it should be output instead of the form.
 				$this->success_render = $this->do_success();
 			}
+
+			// Save the values submitted into this form
+			// $this->store_submission();
+
 		}
-		// Save the values submitted into this form
-		// $this->store_submission();
+		else {
+			// Load all of the values of controls from their storage locations
+			$this->load();
+		}
 
 		if($this->success_render) {
 			$output = $this->success_render;
@@ -163,7 +170,7 @@ class FormUI extends FormContainer implements IsContent
 		if(class_exists('\tidy')) {
 			$t = new \tidy();
 			$t->parseString($output, array('indent' => true, 'wrap' => 80, 'show-body-only' => true));
-			$output = (string) $t;
+			//$output = (string) $t;
 		}
 		return $output;
 	}
@@ -333,6 +340,24 @@ class FormUI extends FormContainer implements IsContent
 	public function __toString()
 	{
 		return $this->get();
+	}
+
+	public static function from_html($name, $html)
+	{
+		$dom = new HTMLDom($html);
+		$form = new FormUI($name);
+
+		foreach($dom->find('input') as $input) {
+			$form->append(FormControlSynthetic::create($input->name)->set_selector('input[name=' . $input->name .']'));
+		}
+		foreach($dom->find('textarea') as $input) {
+			$form->append(FormControlSynthetic::create($input->name)->set_selector('textarea[name=' . $input->name .']'));
+		}
+		foreach($dom->find('div[data-control-error]') as $e) {
+			$e->outertext = '';
+		}
+		$form->append(FormControlStatic::create('_form_html')->set_static($dom));
+		return $form;
 	}
 }
 

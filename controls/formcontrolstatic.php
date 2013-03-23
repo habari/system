@@ -8,7 +8,7 @@ namespace Habari;
 class FormControlStatic extends FormControl
 {
 	/** @var string $static The internal representation of the static HTML content */
-	protected $static = '';
+	public $static = '';
 
 
 	/**
