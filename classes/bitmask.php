@@ -41,7 +41,11 @@ class Bitmask
 		$this->flags = $flags;
 		$this->full = ( 1 << ( count( $this->flags ) ) ) - 1;
 		if ( ! is_null( $value ) ) {
-			if ( $value === 'full' ) {
+			if( !is_string( $value ) && !is_int( $value ) ) {
+				// @locale Habari tried to create a new Bitmask object with invalid values in the second argument
+				throw new \InvalidArgumentException( _t( 'Bitmask constructor second argument must either be an integer within the valid range, the name of a flag, or full' ) );
+			}
+			elseif ( $value === 'full' ) {
 				$this->value = $this->full;
 			}
 			elseif ( (string) (int) $value === (string) $value && $value >= 0 && $value <= $this->full ) {
