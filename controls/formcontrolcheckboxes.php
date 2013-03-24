@@ -7,46 +7,40 @@ namespace Habari;
  */
 class FormControlCheckboxes extends FormControlSelect
 {
-	/**
-	 * Produce HTML output for this text control.
-	 *
-	 * @param boolean $forvalidation True if this control should render error information based on validation.
-	 * @return string HTML that will render this control in the form
-	 */
-	public function get( $forvalidation = true )
+	public function get(Theme $theme)
 	{
-		$theme = $this->get_theme( $forvalidation );
-		$theme->options = $this->options;
-		$theme->id = $this->name;
-		$theme->control = $this;
+		$checkboxes = $this->options;
+		$control = $this;
 
-		return $theme->fetch( $this->get_template(), true );
+		if(!is_array($control->value)) {
+			$control->value = array();
+		}
+		array_walk(
+			$checkboxes,
+			function(&$item, $key) use($control) {
+				$item = array(
+					'label' => Utils::htmlspecialchars($item),
+					'id' => Utils::slugify( $this->name . '-' . $key ),
+					'checked' => in_array($key, $control->value) ? 'checked="checked"' : '',
+				);
+			}
+		);
+		$this->vars['checkboxes'] = $checkboxes;
+		return parent::get($theme);
 	}
 
+
 	/**
-	 * Magic __get method for returning property values
-	 * Override the handling of the value property to properly return the setting of the checkbox.
-	 *
-	 * @param string $name The name of the property
-	 * @return mixed The value of the requested property
+	 * Obtain the value of this control as supplied by the incoming $_POST values
 	 */
-	public function __get( $name )
+	public function process()
 	{
-		switch ( $name ) {
-			case 'value':
-				if ( isset( $_POST[$this->field . '_submitted'] ) ) {
-					if ( isset( $_POST[$this->field] ) ) {
-						return $_POST[$this->field];
-					}
-					else {
-						return array();
-					}
-				}
-				else {
-					return $this->get_default();
-				}
+		if(isset($_POST[$this->input_name()])) {
+			$this->value = $_POST[$this->input_name()];
 		}
-		return parent::__get( $name );
+		else {
+			$this->value = false;
+		}
 	}
 
 }

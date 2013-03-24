@@ -5,7 +5,7 @@ namespace Habari;
 /**
  * A control to display media silo contents based on FormControl for output via a FormUI.
  */
-class FormControlSilos extends FormControlNoSave
+class FormControlSilos extends FormControl
 {
 // Placeholder class
 }

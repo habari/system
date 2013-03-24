@@ -13,7 +13,7 @@ abstract class FormControl
 	/** @var array $properties Contains an array of properties used to assign to the output HTML */
 	public $properties = array();
 	/** @var array $settings Contains an array of settings that control the behavior of this control */
-	public $settings;
+	public $settings = array();
 	/** @var mixed $value This is the value of the control, which will differ depending on at what time you access it */
 	public $value;
 	/** @var FormContainer $container The container that contains this control */
