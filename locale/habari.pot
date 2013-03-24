@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-17 00:00+0000\n"
+"POT-Creation-Date: 2013-03-24 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -219,45 +219,45 @@ msgid "Bitmask can have a maximum of PHP_INT_MAX >> 1 flags"
 msgstr ""
 
 #. @locale Habari tried to create a new Bitmask object with invalid values in the second argument
-#: classes/bitmask.php:58
+#: classes/bitmask.php:46 classes/bitmask.php:62
 msgid "Bitmask constructor second argument must either be an integer within the valid range, the name of a flag, or full"
 msgstr ""
 
 #. @locale Habari tried to set the wrong type of value
-#: classes/bitmask.php:78
+#: classes/bitmask.php:82
 msgid "Bitmask full toggle must be boolean"
 msgstr ""
 
 #. @locale Habari tried to set the wrong kind of value
-#: classes/bitmask.php:92
+#: classes/bitmask.php:96
 msgid "Setting bitmask value by array must use array with same length as number of flags"
 msgstr ""
 
 #. @locale Habari tried to set the wrong kind of value
-#: classes/bitmask.php:98 classes/bitmask.php:118
+#: classes/bitmask.php:102 classes/bitmask.php:122
 msgid "Bitmask values must be boolean"
 msgstr ""
 
 #. @locale Habari tried to set the wrong kind of value
-#: classes/bitmask.php:112
+#: classes/bitmask.php:116
 msgid "Bitmask value must either be an integer within the valid range or an array of booleans"
 msgstr ""
 
 #. @locale Habari tried to set a value that doesn't exist
-#: classes/bitmask.php:125
+#: classes/bitmask.php:129
 msgid "Bitmask cannot set non-existent flag"
 msgstr ""
 
 #. @locale Habari tried to get a flag that doesn't exist
-#: classes/bitmask.php:159
+#: classes/bitmask.php:163
 msgid "Bitmask cannot get non-existent flag"
 msgstr ""
 
-#: classes/bitmask.php:181
+#: classes/bitmask.php:185
 msgid "full"
 msgstr ""
 
-#: classes/bitmask.php:190 classes/logentry.php:33
+#: classes/bitmask.php:194 classes/logentry.php:33
 msgid "none"
 msgstr ""
 
@@ -979,92 +979,92 @@ msgstr ""
 msgid "The post %1$s has been saved as %2$s."
 msgstr ""
 
-#: classes/post.php:1237
+#: classes/post.php:1231
 msgid "Comments are disabled site-wide."
 msgstr ""
 
-#: classes/post.php:1242
+#: classes/post.php:1236
 msgid "Comments for this post are disabled."
 msgstr ""
 
-#: classes/post.php:1247
+#: classes/post.php:1241
 msgid "Commenting on this site requires authentication."
 msgstr ""
 
-#: classes/post.php:1252
+#: classes/post.php:1246
 msgid "You do not have permission to comment on this site."
 msgstr ""
 
-#: classes/post.php:1265
+#: classes/post.php:1259
 msgid "Name <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: classes/post.php:1267
+#: classes/post.php:1261
 msgid "The Name field value is required"
 msgstr ""
 
-#: classes/post.php:1277 handlers/adminusershandler.php:100
+#: classes/post.php:1271 handlers/adminusershandler.php:100
 msgid "Email"
 msgstr ""
 
-#: classes/post.php:1279 classes/post.php:1284
+#: classes/post.php:1273 classes/post.php:1278
 msgid "The Email field value must be a valid email address"
 msgstr ""
 
-#: classes/post.php:1285
+#: classes/post.php:1279
 msgid "Email <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: classes/post.php:1294 themes/charcoal/theme.php:232
+#: classes/post.php:1288 themes/charcoal/theme.php:232
 msgid "Website"
 msgstr ""
 
-#: classes/post.php:1296
+#: classes/post.php:1290
 msgid "The Website field value must be a valid URL"
 msgstr ""
 
-#: classes/post.php:1307 handlers/admincommentshandler.php:51
+#: classes/post.php:1301 handlers/admincommentshandler.php:51
 #: themes/mzingi/commentform.php:29
 msgid "Comment"
 msgid_plural "Comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/post.php:1309
+#: classes/post.php:1303
 msgid "The Comment field value is required"
 msgstr ""
 
-#: classes/post.php:1315 plugins/coredashmodules/coredashmodules.plugin.php:93
+#: classes/post.php:1309 plugins/coredashmodules/coredashmodules.plugin.php:93
 #: plugins/habarisilo/habarisilo.plugin.php:471 themes/mzingi/theme.php:115
 #: themes/charcoal/theme.php:235
 msgid "Submit"
 msgstr ""
 
-#: classes/post.php:1715
+#: classes/post.php:1709
 msgid "Entry"
 msgstr ""
 
-#: classes/post.php:1716
+#: classes/post.php:1710
 msgid "Entries"
 msgstr ""
 
-#: classes/post.php:1719
+#: classes/post.php:1713
 msgid "Page"
 msgstr ""
 
-#: classes/post.php:1720
+#: classes/post.php:1714
 msgid "Pages"
 msgstr ""
 
-#: classes/post.php:1735
+#: classes/post.php:1729
 msgid "draft"
 msgstr ""
 
-#: classes/post.php:1736
+#: classes/post.php:1730
 msgid "published"
 msgstr ""
 
-#: classes/post.php:1737
+#: classes/post.php:1731
 msgid "scheduled"
 msgstr ""
 
@@ -1199,55 +1199,55 @@ msgstr ""
 msgid "Theme not installed."
 msgstr ""
 
-#: classes/formui.php:906
+#: classes/formui.php:909
 msgid "Relative urls are not allowed"
 msgstr ""
 
-#: classes/formui.php:912
+#: classes/formui.php:915
 #, php-format
 msgid "Only %s urls are allowed"
 msgstr ""
 
-#: classes/formui.php:933
+#: classes/formui.php:936
 msgid "Value must be a valid Email Address."
 msgstr ""
 
-#: classes/formui.php:952
+#: classes/formui.php:955
 msgid "A value for this field is required."
 msgstr ""
 
-#: classes/formui.php:974
+#: classes/formui.php:977
 msgid "That username is already in use!"
 msgstr ""
 
-#: classes/formui.php:994
+#: classes/formui.php:997
 #, php-format
 msgid "The value of this field must match the value of %s."
 msgstr ""
 
-#: classes/formui.php:1017
+#: classes/formui.php:1020
 msgid "The value does not meet submission requirements"
 msgstr ""
 
-#: classes/formui.php:1038
+#: classes/formui.php:1041
 #, php-format
 msgid "The value entered is lesser than the minimum of %d."
 msgstr ""
 
-#: classes/formui.php:1044
+#: classes/formui.php:1047
 #, php-format
 msgid "The value entered is greater than the maximum of %d."
 msgstr ""
 
-#: classes/formui.php:1874
+#: classes/formui.php:1877
 msgid "Remove item"
 msgstr ""
 
-#: classes/formui.php:1874 admin/formcontrols/formcontrol_textmulti.php:33
+#: classes/formui.php:1877 admin/formcontrols/formcontrol_textmulti.php:33
 msgid "remove"
 msgstr ""
 
-#: classes/formui.php:1878
+#: classes/formui.php:1881
 msgid "Remove this item?"
 msgstr ""
 
@@ -2610,7 +2610,7 @@ msgstr ""
 #: handlers/adminusershandler.php:318 handlers/adminusershandler.php:428
 #: handlers/admintagshandler.php:41 handlers/admintagshandler.php:67
 #: handlers/admingroupshandler.php:117 handlers/admingroupshandler.php:224
-#: handlers/adminlogshandler.php:240 handlers/admincommentshandler.php:540
+#: handlers/adminlogshandler.php:240 handlers/admincommentshandler.php:541
 #: handlers/adminpostshandler.php:455
 msgid "WSSE authentication failed."
 msgstr ""
@@ -2674,27 +2674,7 @@ msgstr ""
 msgid "There was a problem submitting your comment."
 msgstr ""
 
-#: handlers/feedbackhandler.php:94
-msgid "Both name and e-mail address must be provided."
-msgstr ""
-
-#: handlers/feedbackhandler.php:98
-msgid "You did not provide any content for your comment!"
-msgstr ""
-
-#: handlers/feedbackhandler.php:114
-msgid "Comments on this post are disabled!"
-msgstr ""
-
-#: handlers/feedbackhandler.php:151
-msgid "Comment contains only whitespace/empty comment"
-msgstr ""
-
-#: handlers/feedbackhandler.php:177
-msgid "You do not have permission to create comments."
-msgstr ""
-
-#: handlers/feedbackhandler.php:203
+#: handlers/feedbackhandler.php:164
 msgid "Your comment is pending moderation."
 msgstr ""
 
@@ -3240,12 +3220,12 @@ msgid "Status"
 msgstr ""
 
 #: handlers/admincommentshandler.php:279 handlers/admincommentshandler.php:280
-#: handlers/admincommentshandler.php:567
+#: handlers/admincommentshandler.php:568
 msgid "Deleted all spam comments"
 msgstr ""
 
 #: handlers/admincommentshandler.php:286 handlers/admincommentshandler.php:287
-#: handlers/admincommentshandler.php:571
+#: handlers/admincommentshandler.php:572
 msgid "Deleted all unapproved comments"
 msgstr ""
 
@@ -3301,37 +3281,37 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: handlers/admincommentshandler.php:555
+#: handlers/admincommentshandler.php:556
 msgid "No comments selected."
 msgstr ""
 
-#: handlers/admincommentshandler.php:562 handlers/adminpostshandler.php:475
+#: handlers/admincommentshandler.php:563 handlers/adminpostshandler.php:475
 #, php-format
 msgid "Unknown action \"%s\""
 msgstr ""
 
-#: handlers/admincommentshandler.php:576
+#: handlers/admincommentshandler.php:577
 #, php-format
 msgid "Deleted %d comment"
 msgid_plural "Deleted %d comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: handlers/admincommentshandler.php:581
+#: handlers/admincommentshandler.php:582
 #, php-format
 msgid "Marked %d comment as spam"
 msgid_plural "Marked %d comments as spam"
 msgstr[0] ""
 msgstr[1] ""
 
-#: handlers/admincommentshandler.php:587
+#: handlers/admincommentshandler.php:588
 #, php-format
 msgid "Approved %d comment"
 msgid_plural "Approved %d comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: handlers/admincommentshandler.php:593
+#: handlers/admincommentshandler.php:594
 #, php-format
 msgid "Unapproved %d comment"
 msgid_plural "Unapproved %d comments"
@@ -3680,12 +3660,12 @@ msgstr ""
 msgid "is powered by"
 msgstr ""
 
-#: themes/mzingi/loginform.php:7
+#: themes/mzingi/loginform.php:6
 #, php-format
 msgid "You are logged in as %s."
 msgstr ""
 
-#: themes/mzingi/loginform.php:8
+#: themes/mzingi/loginform.php:7
 #, php-format
 msgid "Want to <a href=\"%s\">log out</a>?"
 msgstr ""
