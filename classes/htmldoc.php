@@ -14,6 +14,10 @@ class HTMLDoc
 	/** @var \DomDocument $dom */
 	public $dom;
 
+	/**
+	 * Create a HTMLDoc object
+	 * @param string $html The HTML to parse
+	 */
 	public function __construct($html)
 	{
 		$this->dom = new \DOMDocument();
@@ -22,11 +26,21 @@ class HTMLDoc
 		$this->xp = new \DOMXPath($this->dom);
 	}
 
+	/**
+	 * Fluent constructor for HTMLDoc objects
+	 * @param string $html The HTML to parse
+	 * @return HTMLDoc An instance of the HTMLDoc object created
+	 */
 	public static function create($html)
 	{
 		return new HTMLDoc($html);
 	}
 
+	/**
+	 * Find elements in the DOM based on CSS selector
+	 * @param string $find A CSS selector
+	 * @return HTMLNodes A list of qualifying nodes
+	 */
 	public function find($find)
 	{
 		$expression = new HTMLSelector($find);
@@ -34,6 +48,11 @@ class HTMLDoc
 		return $this->query($expression->toXPath());
 	}
 
+	/**
+	 * Find the first element in the DOM based on a CSS selector
+	 * @param string $find A CSS selector
+	 * @return HTMLNode A qualifying node
+	 */
 	public function find_one($find)
 	{
 		$expression = new HTMLSelector($find);
@@ -54,6 +73,10 @@ class HTMLDoc
 		return new HTMLNodes($this->xp->query($expression, $contextnode, $registerNodeNS));
 	}
 
+	/**
+	 * Return the HTML represented by the DOM
+	 * @return string The requested HTML
+	 */
 	public function get()
 	{
 		$body_content = $this->query('//body/*');
@@ -65,8 +88,20 @@ class HTMLDoc
 	}
 }
 
+/**
+ * Contain a list of DOM nodes and provide access to them
+ * @package Habari
+ */
 class HTMLNodes extends \ArrayObject
 {
+
+	/**
+	 * Overridden constructor for \ArrayObject
+	 * Converts regular \DomNodes in this array to HTMLNodes so that they have new methods
+	 * @param null|array|DomNodeList $input A list of objects to initialize this \ArrayObject with
+	 * @param int $flags
+	 * @param string $iterator_class
+	 */
 	public function __construct($input = null, $flags = 0, $iterator_class = "ArrayIterator")
 	{
 		$altered_input = array();
@@ -83,13 +118,25 @@ class HTMLNodes extends \ArrayObject
 		parent::__construct($altered_input, $flags, $iterator_class);
 	}
 
+	/**
+	 * Make calls against this list to execute that method on all of the items within it
+	 * @param string $method The method called on this list
+	 * @param array $args Arguments to this call
+	 * @return HTMLNodes $this
+	 */
 	public function __call($method, $args)
 	{
 		foreach($this as $htmlnode) {
 			call_user_func_array(array($htmlnode, $method), $args);
 		}
+		return $this;
 	}
 
+	/**
+	 * Set the value of a parameter on every item of this array
+	 * @param string $name The name of the parameters
+	 * @param mixed $value The value to assign to that parameter
+	 */
 	public function __set($name, $value)
 	{
 		foreach($this as $htmlnode) {
@@ -98,16 +145,29 @@ class HTMLNodes extends \ArrayObject
 	}
 }
 
+/**
+ * A representation of the node on which we can call custom methods
+ * @package Habari
+ */
 class HTMLNode
 {
 	/** @var \DomNode $node */
 	public $node;
 
+	/**
+	 * Constructor for this node
+	 * @param \DOMNode $node The actual node we're trying to access
+	 */
 	function __construct($node)
 	{
 		$this->node = $node;
 	}
 
+	/**
+	 * Get the value of an attribute of this node
+	 * @param string $name The name of the attribute value to obtain
+	 * @return mixed The value of the attribute
+	 */
 	function __get($name)
 	{
 		switch($name) {
@@ -122,6 +182,11 @@ class HTMLNode
 		}
 	}
 
+	/**
+	 * Set the value of an attribute on this node
+	 * @param string $name The name of the attribute to set
+	 * @param mixed $value The value of the parameter
+	 */
 	function __set($name, $value)
 	{
 		switch($name) {
@@ -136,6 +201,10 @@ class HTMLNode
 		}
 	}
 
+	/**
+	 * Add a class to the class attribute of this node
+	 * @param string|array $newclass The class or classes to add to this node
+	 */
 	function add_class($newclass)
 	{
 		$class = $this->class;
@@ -146,6 +215,10 @@ class HTMLNode
 		$this->class = trim(implode(' ', $classes));
 	}
 
+	/**
+	 * Remove a class from this node
+	 * @param string|array $removeclass The class or classes to remove from this node
+	 */
 	function remove_class($removeclass)
 	{
 		$class = $this->class;
@@ -156,11 +229,18 @@ class HTMLNode
 		$this->class = trim(implode(' ', $classes));
 	}
 
+	/**
+	 * Remove this node from the DOM
+	 */
 	function remove()
 	{
 		$this->node->parentNode->removeChild($this->node);
 	}
 
+	/**
+	 * Append HTML as a child of this node
+	 * @param string $html The HTML to add, which is subsequently parsed into DOMNodes
+	 */
 	function append_html($html)
 	{
 		$frag = $this->node->ownerDocument->createDocumentFragment();
@@ -168,6 +248,9 @@ class HTMLNode
 		$this->node->appendChild($frag);
 	}
 
+	/**
+	 * Move the children of this node into this node's parent, just before this node in the DOM tree
+	 */
 	function promote_children()
 	{
 		while($this->node->hasChildNodes()) {
@@ -179,15 +262,28 @@ class HTMLNode
 
 }
 
+/**
+ * A representation of a CSS selector, with methods to convert CSS to XPath
+ * @package Habari
+ */
 class HTMLSelector
 {
+	/** @var string $selector the CSS selector */
 	public $selector;
 
+	/**
+	 * Constructor for setting the CSS selector in this class
+	 * @param string $selector A CSS selector
+	 */
 	public function __construct($selector)
 	{
 		$this->selector = $selector;
 	}
 
+	/**
+	 * Convert the CSS selector to an XPath selector
+	 * @return string
+	 */
 	public function toXPath()
 	{
 		$parts = preg_split('#\s+#', $this->selector);
@@ -200,6 +296,10 @@ class HTMLSelector
 					break;
 				case '+': // Sibling of, not sure how to handle that yet
 					break;
+				case ',': // OR...
+					$xpath .= '|';
+					$rooting = '//';
+					break;
 				default:
 					$xpath .= $rooting . $this->get_part_xpath($part);
 					$rooting = '//';
@@ -209,6 +309,11 @@ class HTMLSelector
 		return $xpath;
 	}
 
+	/**
+	 * Interal method for parsing the CSS parts into XPath parts
+	 * @param string $part Some atomic part of a CSS selector
+	 * @return string The equivalent XPath part
+	 */
 	private function get_part_xpath($part)
 	{
 		// For "[name=value]" $2 = "name", $3 = "=", $5 = "value"
@@ -240,19 +345,5 @@ class HTMLSelector
 		return $tag . implode('', $props);
 	}
 }
-
-/*
-$h = HTMLDoc::create('<input type="text" name="foo"><div data-control-error="foo">Remove Me</div>');
-
-$h->find('[name="foo"]')->value = 7;
-foreach($h->find('div[data-control-error]') as $err) {
-	$control = $err->data_control_error;
-	if($h->find_one('[name="' . $control . '"]')->value == 8) {
-		$err->remove();
-	}
-}
-
-echo $h->get();
-//*/
 
 ?>
