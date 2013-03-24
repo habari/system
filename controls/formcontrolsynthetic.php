@@ -7,7 +7,17 @@ namespace Habari;
  */
 class FormControlSynthetic extends FormControl
 {
-	public $selector = '';
+	/** @var HTMLNode $node */
+	public $node = null;
+
+	public function __construct($name, $storage = 'null:null', array $properties = array(), array $settings = array())
+	{
+		$this->settings['error_wrap'] = function($output, $errors) {
+			return sprintf('<ol class="_control_error_list"><li>%2$s</li></ol>', $output, implode('</li><li>', $errors));
+		};
+		parent::__construct($name, $storage, $properties, $settings);
+	}
+
 
 	/**
 	 * This control shouldn't output anything
@@ -16,33 +26,44 @@ class FormControlSynthetic extends FormControl
 	 */
 	public function get(Theme $theme)
 	{
+		$form = $this->get_form();
+		if($this->has_errors) {
+			$this->node->add_class('_has_error');
+			$error_output = $this->error_wrap('', $this->errors);
+			$form->dom->find('[data-control-errors="' . $this->name . '"]')->append_html($error_output);
+			$form->dom->find('[data-form-success]')->remove();
+		}
+		else {
+			$form->dom->find('[data-control-errors="' . $this->name . '"]')->remove();
+			$form->dom->find('[data-show-on-error="' . $this->name . '"]')->promote_children();
+			$form->dom->find('[data-show-on-error="' . $this->name . '"]')->remove();
+		}
+		if(!$form->submitted) {
+			$form->dom->find('[data-form-success]')->remove();
+		}
 		return '';
 	}
 
-	protected function get_form_static()
+	/**
+	 * Set the HTMLNode that this control associates with
+	 * @param HTMLNode $node The node that this control is associated with
+	 * @return FormControlSynthetic $this
+	 */
+	public function set_node($node)
 	{
-		$parent = $this;
-		while(!$parent instanceof FormUI) {
-			$parent = $parent->container;
-		}
-		return $parent->_form_html;
-	}
-
-	public function set_selector($selector)
-	{
-		$this->selector = $selector;
+		$this->node = $node;
 		return $this;
 	}
 
+	/**
+	 * Set the value of this control
+	 * @param mixed $value The value to set
+	 * @param bool $manually True if this value is set internally rather than being POSTed in the form
+	 * @return FormControl $this
+	 */
 	public function set_value($value, $manually = true)
 	{
-		$static = $this->get_form_static();
-		$html = new HTMLDom($static->static);
-		$es = $html->find($this->selector);
-		$e = reset($es);
-		//Utils::debug($e, $e->value);
-		$e->value = $value;
-		$static->static = $html->save();
+		$this->node->value = $value;
 		return parent::set_value($value, $manually);
 	}
 

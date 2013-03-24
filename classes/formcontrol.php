@@ -133,9 +133,14 @@ abstract class FormControl
 	 * @param array $settings An array of settings that affect the behavior of this control object
 	 * @return FormControl $this
 	 */
-	public function set_settings($settings)
+	public function set_settings($settings, $override = false)
 	{
-		$this->settings = $settings;
+		if($override) {
+			$this->settings = $settings;
+		}
+		else {
+			$this->settings = array_merge($this->settings, $settings);
+		}
 		return $this;
 	}
 
@@ -243,7 +248,7 @@ abstract class FormControl
 		$theme->value = $this->value;
 
 		// If there are errors, add an error class to the control
-		if($this->has_errors > 0) {
+		if($this->has_errors) {
 			$this->add_class('_has_error');
 		}
 
@@ -261,7 +266,13 @@ abstract class FormControl
 		// Do rendering
 		$output = $this->get_setting('prefix_html', '');
 		if(isset($this->settings['content'])) {  // Allow descendants to override the content produced entirely
-			$output .= $this->settings['content'];
+			if(is_callable($this->settings['content'])) {
+				$content_fn = $this->settings['content'];
+				$output .= $content_fn($this);
+			}
+			else {
+				$output .= $this->settings['content'];
+			}
 		}
 		if(!isset($this->settings['norender'])) {  // Allow descendants to skip rendering the template for this control
 			if(isset($this->settings['template_html'])) {
@@ -284,19 +295,7 @@ abstract class FormControl
 		$output .= $this->get_setting('postfix_html', '');
 		// If there are errors, wrap this control in an error div to display the errors.
 		if(count($this->errors) > 0) {
-			$output = $this->wrap_by(
-				$this->get_setting(
-					'error_wrap',
-					function() {
-
-						return function($output, $errors) {
-							return sprintf('<div class="_control_error">%1$s<ol class="_control_error_list"><li>%2$s</li></ol></div>', $output, implode('</li><li>', $errors));
-						};
-					}
-				),
-				$output,
-				$this->errors
-			);
+			$output = $this->error_wrap($output, $this->errors);
 		}
 		else {
 			$output = $this->wrap_by($this->get_setting('wrap', '%s'), $output, $this);
@@ -509,8 +508,8 @@ abstract class FormControl
 				$params = array_merge( array( $this->value, $this, $this->container ), $validator );
 				$valid = array_merge( $valid, call_user_func_array( $validator_fn, $params ) );
 			}
-			elseif ( method_exists( 'Habari\FormValidators', $validator_fn ) ) {
-				$validator_fn = array( 'Habari\FormValidators', $validator_fn );
+			elseif ( FormValidators::have($validator_fn ) ) {
+				$validator_fn = Method::create( 'Habari\FormValidators', $validator_fn );
 				$params = array_merge( array( $this->value, $this, $this->container ), $validator );
 				$valid = array_merge( $valid, call_user_func_array( $validator_fn, $params ) );
 			}
@@ -527,7 +526,9 @@ abstract class FormControl
 		else {
 			$this->errors = array_merge($this->errors, $valid);
 		}
-		$this->has_errors = true;
+		if(count($valid) > 0) {
+			$this->has_errors = true;
+		}
 		return $valid;
 	}
 
@@ -557,6 +558,42 @@ abstract class FormControl
 		}
 		$this->properties['class'] = array_diff($this->properties['class'], explode(' ', $classes));
 		return $this;
+	}
+
+	/**
+	 * Find the form that holds this control
+	 * @return FormUI The form that this control is in
+	 */
+	public function get_form()
+	{
+		$control = $this;
+		while(!$control instanceof FormUI) {
+			$control = $control->container;
+		}
+		return $control;
+	}
+
+	/**
+	 * Wrap the output of a control (or some text content) with error content
+	 * @param string $output The HTML to wrap
+	 * @param array $errors An array of error strings
+	 * @return string The returned output
+	 */
+	public function error_wrap($output, $errors)
+	{
+		$output = $this->wrap_by(
+			$this->get_setting(
+				'error_wrap',
+				function() {
+					return function($output, $errors) {
+						return sprintf('<div class="_control_error">%1$s<ol class="_control_error_list"><li>%2$s</li></ol></div>', $output, implode('</li><li>', $errors));
+					};
+				}
+			),
+			$output,
+			$errors
+		);
+		return $output;
 	}
 
 }

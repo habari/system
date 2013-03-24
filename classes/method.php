@@ -38,6 +38,14 @@ class Method
 	}
 
 	/**
+	 * Determine if the method exists and can be called
+	 * @return bool true if the method exists
+	 */
+	public function exists() {
+		return function_exists($this->method_array());
+	}
+
+	/**
 	* Dispatch a method, whether a filter or function
 	* @param Callable|string $method The method to call
 	* @param mixed $multiple_optional_args Multiple arguments to dispatch() should be passed as separate arguments
@@ -68,6 +76,21 @@ class Method
 	}
 
 	/**
+	 * Get the array that represents this method
+	 * @return callable An array that can be used as a function (O_o)
+	 */
+	public function method_array()
+	{
+		// Try the \Habari namespace if the class doesn't exist and the \Habari namespace works
+		if(!is_object($this->class) && strpos($this->class, '\\') === false && !class_exists($this->class, true)) {
+			if(class_exists('\\Habari\\' . $this->class)) {
+				$this->class = '\\Habari\\' . $this->class;
+			}
+		}
+		return array($this->class, $this->method);
+	}
+
+	/**
 	 * Execute the representative method when this object is called as a function.
 	 * Example:
 	 *   $fn = Method::create('Habari/Utils', 'debug');
@@ -77,14 +100,8 @@ class Method
 	 * @return mixed The return value of the function this Method object represents
 	 */
 	public function __invoke() {
-		// Try the \Habari namespace if the class doesn't exist and the \Habari namespace works
-		if(!is_object($this->class) && strpos($this->class, '\\') === false && !class_exists($this->class, true)) {
-			if(class_exists('\\Habari\\' . $this->class)) {
-				$this->class = '\\Habari\\' . $this->class;
-			}
-		}
 
 		$args = func_get_args();
-		return call_user_func_array(array($this->class, $this->method), $args);
+		return call_user_func_array($this->method_array(), $args);
 	}
 }

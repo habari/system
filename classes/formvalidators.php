@@ -11,6 +11,17 @@ class FormValidators
 {
 
 	/**
+	 * Determine if a validator is implemented in this class
+	 * @param string $validator The name of a validator to find
+	 * @return bool True if this class implements the specified validator
+	 */
+	public static function have($validator)
+	{
+		$methods = get_class_methods(__CLASS__);
+		return in_array($validator, $methods);
+	}
+
+	/**
 	 * A validation function that returns an error if the value passed in is not a valid URL.
 	 *
 	 * @param string $text A string to test if it is a valid URL

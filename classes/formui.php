@@ -344,19 +344,44 @@ class FormUI extends FormContainer implements IsContent
 
 	public static function from_html($name, $html)
 	{
-		$dom = new HTMLDom($html);
+		$dom = new HTMLDoc($html);
 		$form = new FormUI($name);
 
+		// Set the form to render using the output of the HTMLDoc
+		$form->settings['norender'] = true;
+		$form->settings['content'] = function($form) use($dom) {
+			return $dom->get();
+		};
+		$form->dom = $dom;
+		// This form's id is an MD5 hash of the original HTML
+		$form->settings['control_id'] = md5($html);
+
+		// Add the _form_id and WSSE elements to the form
+		// Note that these additional fields must be XML-safe, or they won't be added
+		$dom->find('form')->append_html(Utils::setup_wsse());
+
+		$dom->find('form')->append_html('<input type="hidden" name="_form_id" value="' . $form->control_id() . '" />');
+
+		// Add synthetic controls for any found inputs
 		foreach($dom->find('input') as $input) {
-			$form->append(FormControlSynthetic::create($input->name)->set_selector('input[name=' . $input->name .']'));
+			/** @var FormControl $control */
+			$form->append($control = FormControlSynthetic::create($input->name)->set_node($input));
+			if($input->data_validators) {
+				foreach(explode(' ', $input->data_validators) as $validator) {
+					$control->add_validator($validator);
+				}
+			}
 		}
 		foreach($dom->find('textarea') as $input) {
-			$form->append(FormControlSynthetic::create($input->name)->set_selector('textarea[name=' . $input->name .']'));
+			/** @var FormControl $control */
+			$form->append($control = FormControlSynthetic::create($input->name)->set_node($input));
+			if(!empty($input->data_validators)) {
+				foreach(explode(' ', $input->data_validators) as $validator) {
+					$control->add_validator($validator);
+				}
+			}
 		}
-		foreach($dom->find('div[data-control-error]') as $e) {
-			$e->outertext = '';
-		}
-		$form->append(FormControlStatic::create('_form_html')->set_static($dom));
+
 		return $form;
 	}
 }
