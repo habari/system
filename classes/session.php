@@ -485,7 +485,7 @@ class Session extends Singleton
 	 */
 	public static function has_messages()
 	{
-		return ( count( self::get_notices( false ) + self::get_errors( false ) ) ) ? true : false;
+		return ( count( self::get_notices( false ) ) + count (self::get_errors( false ) ) ) ? true : false;
 	}
 
 	/**

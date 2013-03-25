@@ -7,29 +7,7 @@ namespace Habari;
  */
 class FormControlTree extends FormControlSelect
 {
-	public $options = array();
 	public static $outpre = false;
-
-	/**
-	 * Override the FormControl constructor to support more parameters
-	 *
-	 * @param string $name
-	 * @param string $caption
-	 * @param array $options
-	 * @param string $template
-	 * @param array $config
-	 */
-	public function __construct()
-	{
-		$args = func_get_args();
-		list( $name, $storage, $caption, $template, $config ) = array_merge( $args, array_fill( 0, 5, null ) );
-
-		$this->name = $name;
-		$this->storage = $storage;
-		$this->caption = $caption;
-		$this->template = $template;
-		$this->config = empty($config) ? array() : $config;
-	}
 
 	/**
 	 * Return the HTML/script required for this control.  Do it only once.
@@ -77,20 +55,38 @@ CUSTOM_TREE_JS;
 	}
 
 	/**
-	 * Produce HTML output for this text control.
-	 *
-	 * @param boolean $forvalidation True if this control should render error information based on validation.
-	 * @return string HTML that will render this control in the form
+	 * Produce the control for display
+	 * @param Theme $theme The theme that will be used to render the template
+	 * @return string The output of the template
 	 */
-	public function get( $forvalidation = true )
+	public function get(Theme $theme)
 	{
-		$theme = $this->get_theme( $forvalidation );
-		$theme->options = $this->value;
-		$theme->id = $this->name;
-		$theme->control = $this;
-
-		return $theme->fetch( $this->get_template(), true );
+		$this->vars['terms'] = $this->value;
+		$this->settings['ignore_name'] = true;
+		$this->settings['internal_value'] = true;
+		$this->get_id();
+		return parent::get($theme);
 	}
+
+	public function process()
+	{
+		$values = json_decode($_POST->raw( $this->field . '_submitted'));
+		$terms = array();
+		foreach($this->value as $term) {
+			$terms[$term->id] = $term;
+		}
+		foreach($values as $value) {
+			$terms[$value->id]->mptt_left = $value->left;
+			$terms[$value->id]->mptt_right = $value->right;
+		}
+		$terms = new Terms($terms);
+		$posted = $terms->tree_sort();
+
+
+		$this->set_value($_POST[$this->input_name()], false);
+		parent::process();
+	}
+
 
 	/**
 	 * Magic __get method for returning property values

@@ -270,7 +270,7 @@ class FormUI extends FormContainer implements IsContent
 		$output = false;
 		foreach ( $this->on_success as $success ) {
 			$callback = array_shift( $success );
-			array_unshift($success, false, $this);
+			array_unshift($success, $this);
 			$result = Method::dispatch_array($callback, $success);
 			if(is_string($result)) {
 				$output = $result;

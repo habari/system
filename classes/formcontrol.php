@@ -254,6 +254,9 @@ abstract class FormControl
 
 		// Assign the control and its attributes into the theme
 		$theme->_control = $this;
+		$theme->_name = $this->name;
+		$theme->_settings = $this->settings;
+		$theme->_properties = $this->properties;
 		$properties = is_array($this->properties) ? $this->properties: array();
 		if(!isset($this->settings['ignore_name'])) {
 			$properties = array_merge(array('name' => $this->name), $properties);
