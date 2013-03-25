@@ -186,6 +186,24 @@ class FormUI extends FormContainer implements IsContent
 	}
 
 	/**
+	 * Simulate posting data to this form
+	 * @param array $data An associative array of data to simultae adding to the $_POST array
+	 * @param bool $do_wsse_and_id Default is false.  If true, add this form's id and correct WSSE values to the $_POST array
+	 */
+	public function simulate($data, $do_wsse_and_id = false)
+	{
+		if($do_wsse_and_id) {
+			$_POST['_form_id'] = $this->control_id();
+			foreach(Utils::WSSE() as $key => $value) {
+				$_POST[$key] = $value;
+			}
+		}
+		foreach($data as $key => $value) {
+			$_POST[$key] = $value;
+		}
+	}
+
+	/**
 	 * Return the form control HTML.
 	 *
 	 * @param boolean $forvalidation True if the controls should output additional information based on validation.
@@ -252,7 +270,7 @@ class FormUI extends FormContainer implements IsContent
 		$output = false;
 		foreach ( $this->on_success as $success ) {
 			$callback = array_shift( $success );
-			array_unshift($success, $this);
+			array_unshift($success, false, $this);
 			$result = Method::dispatch_array($callback, $success);
 			if(is_string($result)) {
 				$output = $result;

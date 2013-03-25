@@ -70,6 +70,7 @@ class Method
 			return call_user_func_array($method, $args);
 		}
 		elseif(is_string($method)) {
+			array_unshift($args, $method);
 			return call_user_func_array(Method::create('\Habari\Plugins', 'filter'), $args);
 		}
 		return false;
