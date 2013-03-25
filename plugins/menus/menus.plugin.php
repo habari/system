@@ -132,8 +132,8 @@ class Menus extends Plugin
 			$menulist[$menu->id] = $menu->name;
 		}
 
-		$settings = $form->publish_controls->append( 'fieldset', 'menu_set', _t( 'Menus' ) );
-		$settings->append( 'checkboxes', 'menus', 'null:null', _t( 'Menus' ), $menulist );
+		$settings = $form->publish_controls->append( FormControlFieldset::create('menu_set')->set_caption(_t( 'Menus' ) ) );
+		$settings->append( FormControlLabel::wrap(_t( 'Menus' ), FormControlCheckboxes::create('menus')->set_options($menulist) ) );
 
 		// If this is an existing post, see if it has categories already
 		if ( 0 != $post->id ) {

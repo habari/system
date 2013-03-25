@@ -7,7 +7,20 @@ namespace Habari;
  */
 class FormControlSilos extends FormControl
 {
-// Placeholder class
+	public function get(Theme $theme)
+	{
+		$silos = Media::dir();
+
+		foreach($silos as &$silo) {
+			$silo->path_slug = Utils::slugify($silo->path);
+		}
+
+		$this->vars['silos'] = $silos;
+
+		return parent::get($theme);
+	}
+
+
 }
 
 ?>

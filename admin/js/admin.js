@@ -1637,7 +1637,7 @@ $(window).load( function() {
 
 	// Icons only for thin-width clients -- Must be run here to work properly in Safari
 	if ($('#title').width() < ($('#mediatabs li').length * $('#mediatabs li').width())) {
-		$('#mediatabs').addClass('iconify');
+		//$('#mediatabs').addClass('iconify');
 	}
 });
 

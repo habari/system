@@ -966,7 +966,6 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		// Create the silos
 		if ( count( Plugins::get_by_interface( 'MediaSilo' ) ) ) {
 			$form->append( FormControlSilos::create('silos') );
-			$form->silos->silos = Media::dir();
 		}
 
 		// Create the Content field
