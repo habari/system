@@ -1727,8 +1727,15 @@ LIST_REVISIONS;
 	 */
 	public function field_save( $key, $value )
 	{
-		$this->info->$key = Plugins::filter('post_field_save', $value, $key);
-		$this->info->commit();
+		$field_value = Plugins::filter('post_field_save', $value, $key);
+		$default_fields = self::default_fields();
+		if(isset($default_fields[$key])) {
+			$this->$key = $field_value;
+		}
+		else {
+			$this->info->$key = $field_value;
+			$this->info->commit();
+		}
 	}
 
 
@@ -1739,7 +1746,15 @@ LIST_REVISIONS;
 	 * @return mixed The stored value returned
 	 */
 	function field_load( $key ) {
-		return Plugins::filter('post_field_load', $this->info->$key, $key);
+		$default_fields = self::default_fields();
+		if(isset($default_fields[$key])) {
+			$field_value = $this->$key;
+		}
+		else {
+			$field_value = $this->info->$key;
+		}
+
+		return Plugins::filter('post_field_load', $field_value, $key);
 	}
 }
 ?>
