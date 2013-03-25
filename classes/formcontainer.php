@@ -48,9 +48,10 @@ class FormContainer extends FormControl
 	 */
 	public function control_id()
 	{
+		$control = $this;
 		return $this->get_setting(
 			'control_id',
-			function($setting_name, $control) {
+			function($setting_name, $control) use ($control) {
 				$control_id = array($control->name);
 				/** @var FormControl $control */
 				foreach ( $this->controls as $control ) {
