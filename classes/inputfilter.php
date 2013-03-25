@@ -228,7 +228,7 @@ class InputFilter
 
 			// numeric character references may only have values in the range 0-65535 (16 bit)
 			// we strip null, though, just for kicks
-			$is_valid = ( intval( $e ) > 0 && intval( $e ) <= 65535 );
+			$is_valid = ( intval( $e ) > 8 && intval( $e ) <= 65535 );
 
 			if ( $is_valid ) {
 				// normalize to decimal form
