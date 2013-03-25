@@ -88,6 +88,25 @@ class ControlStorage implements FormStorage
 	}
 
 	/**
+	 * Create a new ControlStorage instance to save/load a control value from the parameter of a particular object
+	 * @param Object $obj The object that will be saved to or loaded from
+	 * @param string $parameter The name of a parameter on the object that will be used for storage
+	 * @return ControlStorage An instance of a ControlStorage object that will load/save to the specified location
+	 */
+	function from_object_parameter($obj, $parameter)
+	{
+		$cs = new ControlStorage(
+			function($name) {
+				return $obj->$parameter;
+			},
+			function($name, $value) {
+				return $obj->$parameter = $value;
+			}
+		);
+		return $cs;
+	}
+
+	/**
 	 * Stores a form value into the object
 	 *
 	 * @param string $key The name of a form component that will be stored
