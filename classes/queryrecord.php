@@ -192,7 +192,7 @@ class QueryRecord implements URLProperties
 	public function jsonSerialize()
 	{
 		$array = array_merge( $this->fields, $this->newfields );
-		$array = Plugins::filter('queryrecord_to_json', $array);
+		$array = Plugins::filter('queryrecord_to_json', $array, $this);
 		return json_encode($array);
 	}
 
