@@ -30,16 +30,8 @@ class FormUI extends FormContainer implements IsContent
 
 	public $success = false;
 	public $submitted = false;
+
 	private static $outpre = false;
-	private $options = array(
-		'save_button' => true,
-		'ajax' => false,
-		'form_action' => '',
-		'template' => 'formcontrol_form',
-		'theme' => '',
-		'success_message' => '',
-	);
-	public $class = array( 'formui' );
 	public $formtype = '';
 
 	public $properties = array(
