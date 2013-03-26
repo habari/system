@@ -137,7 +137,7 @@ class FormContainer extends FormControl
 		/** @var FormControl $control */
 		foreach ( $this->controls as $control ) {
 			$wrap = $this->get_setting('wrap_each', '%s');
-			if(isset($control->setting['wrap'])) {
+			if(isset($control->settings['wrap'])) {
 				$content .= $control->get( $theme );
 			}
 			else {
