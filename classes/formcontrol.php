@@ -599,4 +599,14 @@ abstract class FormControl
 		return $output;
 	}
 
+	/**
+	 * Shortcut to wrap this control in a label
+	 * @param string $label The caption of the label
+	 * @return FormControlLabel The label control is returned.  FYI, THIS BREAKS THE FLUENT INTERFACE.
+	 */
+	public function label($label)
+	{
+		return FormControlLabel::wrap($label, $this);
+	}
+
 }
