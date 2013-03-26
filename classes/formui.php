@@ -151,11 +151,12 @@ class FormUI extends FormContainer implements IsContent
 			$this->load();
 		}
 
+		$output = $this->pre_out_controls();
 		if($this->success_render) {
-			$output = $this->success_render;
+			$output .= $this->success_render;
 		}
 		else {
-			$output = parent::get($theme);
+			$output .= parent::get($theme);
 		}
 
 
