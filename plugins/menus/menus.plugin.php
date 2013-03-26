@@ -97,9 +97,9 @@ class Menus extends Plugin
 	 */
 	public function action_block_form_menu( $form, $block )
 	{
-		$form->append('select', 'menu_taxonomy', $block, _t( 'Menu Taxonomy' ), $this->get_menus( true ) );
-		$form->append('checkbox', 'div_wrap', $block, _t( 'Wrap each menu link in a div' ) );
-		$form->append('text', 'list_class', $block, _t( 'Custom class for the tree\'s ordered list element' ) );
+		$form->append(FormControlLabel::wrap(_t( 'Menu Taxonomy' ), FormControlSelect::create('menu_taxonomy', $block)->set_options($this->get_menus( true ))));
+		$form->append(FormControlLabel::wrap(_t( 'Wrap each menu link in a div' ), FormControlCheckbox::create('div_wrap', $block)));
+		$form->append(FormControlLabel::wrap(_t( 'Custom class for the tree\'s ordered list element' ), FormControlText::create('list_class', $block)));
 	}
 
 	/**
@@ -294,18 +294,18 @@ class Menus extends Plugin
 		$menu_type_data['menu_link'] = array(
 			'label' => _t( 'Link' ),
 			'form' => function($form, $term) {
-				$link_name = new FormControlText( 'link_name', 'null:null', _t( 'Link Title' ) );
-				$link_name->add_validator( 'validate_required', _t( 'A name is required.' ) );
-				$link_url = new FormControlText( 'link_url', 'null:null', _t( 'Link URL' ) );
-				$link_url->add_validator( 'validate_required' )
+				$link_name = FormControlText::create( 'link_name' )
+					->add_validator( 'validate_required', _t( 'A name is required.' ) );
+				$link_url = FormControlText::create( 'link_url' )
+					->add_validator( 'validate_required' )
 					->add_validator( 'validate_url', _t( 'You must supply a valid URL.' ) );
 				if ( $term ) {
 					$link_name->value = $term->term_display;
 					$link_url->value = $term->info->url;
-					$form->append( 'hidden', 'term' )->value = $term->id;
+					$form->append( FormControlHidden::create('term') )->set_value($term->id);
 				}
-				$form->append( $link_name );
-				$form->append( $link_url );
+				$form->append( $link_name->label( _t( 'Link Title' ) ) );
+				$form->append( $link_url->label( _t( 'Link URL' ) ) );
 			},
 			'save' => function($menu, $form) {
 				if ( ! isset( $form->term->value ) ) {
@@ -472,27 +472,31 @@ class Menus extends Plugin
 		} else {
 			$form_action = URL::get( 'admin', array( 'page' => 'menu_iframe', 'menu' => $handler->handler_vars[ 'menu' ], 'action' => "$action" ) );
 		}
-		$form = new FormUI( 'menu_item_edit', $action );
-		$form->class[] = 'tm_db_action';
-		$form->set_option( 'form_action', $form_action );
-		$form->append( 'hidden', 'menu' )->value = $handler->handler_vars[ 'menu' ];
+		$form = new FormUI(
+			'menu_item_edit',
+			$action
+		);
+		$form->set_properties(array(
+			'class' => 'tm_db_action',
+			'action' => $form_action,
+			'onsubmit' => "return habari.menu_admin.submit_menu_item_edit(this)",
+		));
 		$form->on_success( array( $this, 'term_form_save' ) );
+		$form->append( FormControlHidden::create('menu') )->set_value($handler->handler_vars[ 'menu' ]);
 
 		$menu_types = $this->get_menu_type_data();
 
 		if ( isset($menu_types[$action]) ) {
 			$menu_types[$action]['form']($form, $term);
-			$form->append( 'hidden', 'menu_type' )->value = $action;
+			$form->append( FormControlHidden::create('menu_type' )->set_value($action));
 			if($term) {
 				$label = _t( 'Update %s', array( $menu_types[$action]['label'] ));
 			}
 			else {
 				$label = _t( 'Add %s', array( $menu_types[$action]['label'] ));
 			}
-			$form->append( 'submit', 'submit', $label );
+			$form->append( FormControlSubmit::create('submit')->set_caption($label) );
 		}
-
-		$form->properties['onsubmit'] = "return habari.menu_admin.submit_menu_item_edit(this)";
 
 		$theme->page_content = $form->get();
 
@@ -544,14 +548,16 @@ JAVSCRIPT_RESPONSE;
 
 				$form = new FormUI( 'edit_menu' );
 
-				$form->append( new FormControlText( 'menuname', 'null:null', _t( 'Name' ), 'transparent_text' ) )
+				$form->append( FormControlText::create( 'menuname' )
 					->add_validator( 'validate_required', _t( 'You must supply a valid menu name' ) )
 					->add_validator( array( $this, 'validate_newvocab' ) )
-					->value = $vocabulary->name;
-				$form->append( new FormControlHidden( 'oldname', 'null:null' ) )->value = $vocabulary->name;
+					->set_value( $vocabulary->name)
+					->label( _t( 'Name' ) ) );
+				$form->append( FormControlHidden::create( 'oldname' )->set_value($vocabulary->name) );
 
-				$form->append( new FormControlText( 'description', 'null:null', _t( 'Description' ), 'transparent_text' ) )
-					->value = $vocabulary->description;
+				$form->append( FormControlText::create( 'description' )
+					->set_value($vocabulary->description)
+					->label(_t( 'Description' )));
 
 				$edit_items_array = $this->get_menu_type_data();
 
@@ -564,35 +570,34 @@ JAVSCRIPT_RESPONSE;
 					) ) . "\">" . _t( 'Add %s', array($menu_type['label'] ) ) .  "</a>";
 				}
 
-				if ( !$vocabulary->is_empty() ) {
-					$form->append( 'tree', 'tree', $vocabulary->get_tree(), _t( 'Menu' ) );
-					$form->tree->options = $vocabulary->get_tree();
-					$form->tree->config = array( 'itemcallback' => array( $this, 'tree_item_callback' ) );
+				if ( $vocabulary->is_empty() ) {
+					$form->append( FormControlStatic::create('buttons')->set_static('<div id="menu_item_button_container">' . $edit_items . '</div>') );
+				}
+				else {
+					$form->append( FormControlTree::create('tree', null, array(), array( 'itemcallback' => array( $this, 'tree_item_callback' ) ))->set_value($vocabulary->get_tree()));
 //						$form->tree->value = $vocabulary->get_root_terms();
 					// append other needed controls, if there are any.
 
-					$form->append( 'static', 'buttons', '<div id="menu_item_button_container">' . $edit_items . '</div>' );
-					$form->append( 'submit', 'save', _t( 'Apply Changes' ) );
-				}
-				else {
-					$form->append( 'static', 'buttons', '<div id="menu_item_button_container">' . $edit_items . '</div>' );
+					$form->append( FormControlStatic::create('buttons')->set_static('<div id="menu_item_button_container">' . $edit_items . '</div>') );
+					$form->append( FormControlSubmit::create('save')->set_caption( _t( 'Apply Changes' ) ) );
 				}
 				$delete_link = URL::get( 'admin', Utils::WSSE( array( 'page' => 'menus', 'action' => 'delete_menu', 'menu' => $handler->handler_vars[ 'menu' ] ) ) );
 				//$delete_link = URL::get( 'admin', array( 'page' => 'menus', 'action' => 'delete_menu', 'menu' => $handler->handler_vars[ 'menu' ] ) );
-				$form->append( 'static', 'deletebutton', '<a class="a_button" href="' . $delete_link . '">' . _t( 'Delete Menu' ) . '</a>' );
-				$form->append( new FormControlHidden( 'menu', 'null:null' ) )->value = $handler->handler_vars[ 'menu' ];
+				$form->append( FormControlStatic::create('deletebutton')->set_static('<a class="a_button" href="' . $delete_link . '">' . _t( 'Delete Menu' ) . '</a>') );
+				$form->append( FormControlHidden::create( 'menu' ) )->set_value($handler->handler_vars[ 'menu' ]);
 				$form->on_success( array( $this, 'rename_menu_form_save' ) );
-				$form->properties['onsubmit'] = "return habari.menu_admin.submit_menu_update();";
+				$form->set_properties(array('onsubmit' => "return habari.menu_admin.submit_menu_update();"));
 				$theme->page_content .= $form->get();
 				break;
 
 			case 'create':
 				$form = new FormUI('create_menu');
-				$form->append( 'text', 'menuname', 'null:null', _t( 'Menu Name' ), 'transparent_text' )
+				$form->append( FormControlText::create('menuname')
 					->add_validator( 'validate_required', _t( 'You must supply a valid menu name' ) )
-					->add_validator( array($this, 'validate_newvocab' ) );
-				$form->append( 'text', 'description', 'null:null', _t( 'Description' ), 'transparent_text' );
-				$form->append( 'submit', 'submit', _t( 'Create Menu' ) );
+					->add_validator( array($this, 'validate_newvocab' ) )
+					->label(_t( 'Menu Name' ) ) );
+				$form->append( FormControlText::create('description')->label( _t( 'Description' ) ) );
+				$form->append( FormControlSubmit::create('submit')->set_caption( _t( 'Create Menu' ) ) );
 				$form->on_success( array( $this, 'add_menu_form_save' ) );
 				$theme->page_content = $form->get();
 
