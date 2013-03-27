@@ -33,19 +33,22 @@ controls.init(function(){
 		toleranceElement: '> div'
 	});
 
-	$('.tree_submitted').closest('form').submit(function(){
-		var tree_input = $('.tree_submitted', this);
-		var data = tree_input.siblings().nestedSortable('toArray', {startDepthCount: 1});
-		var comma = '';
-		var v = '';
-		for(var i in data) {
-			if(data[i].item_id != 'root') {
-				v += comma + '{"id":"' + parseInt(data[i].item_id) + '","left":"' + (parseInt(data[i].left)-1) + '","right":"' + (parseInt(data[i].right)-1) + '"}';
-				comma = ',';
+	$('.tree_control').closest('form').submit(function(){
+		var tree_input = $('.tree_control input[type=hidden]', this);
+		tree_input.each(function(){
+			var tree_input = $(this);
+			var data = tree_input.siblings().nestedSortable('toArray', {startDepthCount: 1});
+			var comma = '';
+			var v = '';
+			for(var i in data) {
+				if(data[i].item_id != 'root') {
+					v += comma + '{"id":"' + parseInt(data[i].item_id) + '","left":"' + (parseInt(data[i].left)-1) + '","right":"' + (parseInt(data[i].right)-1) + '"}';
+					comma = ',';
+				}
 			}
-		}
-		v = '[' + v + ']';
-		tree_input.val(v);
+			v = '[' + v + ']';
+			tree_input.val(v);
+		});
 	});
 });
 				</script>
@@ -64,13 +67,14 @@ CUSTOM_TREE_JS;
 		$this->vars['terms'] = $this->value;
 		$this->settings['ignore_name'] = true;
 		$this->settings['internal_value'] = true;
+		$this->add_class('tree_control');
 		$this->get_id();
 		return parent::get($theme);
 	}
 
 	public function process()
 	{
-		$values = json_decode($_POST->raw( $this->field . '_submitted'));
+		$values = json_decode($_POST->raw( $this->input_name() ));
 		$terms = array();
 		foreach($this->value as $term) {
 			$terms[$term->id] = $term;
@@ -82,9 +86,8 @@ CUSTOM_TREE_JS;
 		$terms = new Terms($terms);
 		$posted = $terms->tree_sort();
 
-
-		$this->set_value($_POST[$this->input_name()], false);
-		parent::process();
+		//$this->set_value($_POST[$this->input_name()], false);
+		$this->set_value($posted, false);
 	}
 
 
@@ -97,6 +100,7 @@ CUSTOM_TREE_JS;
 	 */
 	public function __get( $name )
 	{
+		Utils::debug($name);die();
 		static $posted = null;
 		switch ( $name ) {
 			case 'value':

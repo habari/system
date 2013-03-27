@@ -54,7 +54,7 @@ class FormContainer extends FormControl
 			function($setting_name, $control) use ($control) {
 				$control_id = array($control->name);
 				/** @var FormControl $control */
-				foreach ( $this->controls as $control ) {
+				foreach ( $control->controls as $control ) {
 					$control_id[]= $control->control_id();
 				}
 				$control_id = md5(implode(',', $control_id));
