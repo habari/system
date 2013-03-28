@@ -171,8 +171,10 @@ class Session extends Singleton
 
 		// Unserialize the data and set it into the internal session array
 		$data = unserialize($session->data);
-		foreach($data as $key => $value) {
-			$_SESSION[ $key ] = $value;
+		if(is_array($data)) {
+			foreach($data as $key => $value) {
+				$_SESSION[ $key ] = $value;
+			}
 		}
 
 		return true;
@@ -256,7 +258,9 @@ class Session extends Singleton
 		// don't just unset the ID in the current session, wipe it out
 		unset( $_SESSION );
 
-		$_SESSION = new SessionStorage();
+		// Don't write this session or cookie
+		self::$session_changed = false;
+		self::$session_id = null;
 
 		return true;
 	}
