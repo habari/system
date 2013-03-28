@@ -18,6 +18,9 @@ class Session extends Singleton
 	 * The initial data. Used to determine whether we should write anything.
 	 */
 	private static $lifetime;
+	static $session_id;
+	static $session_changed = false;
+	static $stored_session_hash;
 
 	const HABARI_SESSION_COOKIE_NAME = 'habari_session';
 
@@ -60,11 +63,12 @@ class Session extends Singleton
 
 		self::$lifetime = Plugins::filter( 'session_lifetime', $lifetime );
 
-		$_SESSION = new SessionStorage();
+		//$_SESSION = new SessionStorage();
 
 		if ( isset( $_COOKIE[ self::HABARI_SESSION_COOKIE_NAME ] ) ) {
-			$_SESSION->id = $_COOKIE[ self::HABARI_SESSION_COOKIE_NAME ];
+			self::$session_id = $_COOKIE[ self::HABARI_SESSION_COOKIE_NAME ];
 			self::read();
+			self::$stored_session_hash = self::session_data_hash();
 		}
 
 		// make sure we check whether or not we should write the session after the page is rendered
@@ -78,9 +82,9 @@ class Session extends Singleton
 	 */
 	public static function create ( ) {
 
-		$_SESSION->id = UUID::get();
+		self::$session_id = UUID::get();
 
-		self::cookie( $_SESSION->id );
+		self::cookie( self::$session_id );
 
 	}
 
@@ -115,7 +119,7 @@ class Session extends Singleton
 		$remote_address = Utils::get_ip();
 		// not always set, even by real browsers
 		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
-		$session = DB::get_row( 'SELECT * FROM {sessions} WHERE token = ?', array( $_SESSION->id ) );
+		$session = DB::get_row( 'SELECT * FROM {sessions} WHERE token = ?', array( self::$session_id ) );
 
 		// Verify session exists
 		if ( !$session ) {
@@ -150,7 +154,7 @@ class Session extends Singleton
 		if ( $valid != true ) {
 
 			// get rid of the session ID - it wasn't valid anyway
-			$_SESSION->id = null;
+			self::$session_id = null;
 
 			// expire the session cookie - the ID they sent us was bogus
 			Session::cookie( null, -1 );
@@ -162,7 +166,7 @@ class Session extends Singleton
 
 		// but if the expiration is close (less than half the session lifetime away), null it out so the session always gets written so we extend the session
 		if ( ( $session->expires - DateTime::create()->int ) < ( self::$lifetime / 2 ) ) {
-			$_SESSION->changed = true;
+			self::$session_changed = true;
 		}
 
 		// Unserialize the data and set it into the internal session array
@@ -186,16 +190,16 @@ class Session extends Singleton
 		$shutdown = true;
 
 		// if there is a session, we want to send some headers to prevent proxies from caching potentially sensitive pages
-		if ( !is_null( $_SESSION->id ) ) {
+		if ( !is_null( self::$session_id ) ) {
 			self::cache_limiter( 'nocache' );
 		}
 
 		// we only want to write the session to the DB if it is marked as changed
-		if ( $_SESSION->changed ) {
+		if ( self::changed() ) {
 			self::write();
 
 			// any time we actually write the session, make sure the cookie is set so it does not expire
-			self::cookie( $_SESSION->id );
+			self::cookie( self::$session_id );
 		}
 
 	}
@@ -205,16 +209,19 @@ class Session extends Singleton
 	 */
 	public static function write()
 	{
+		if(!isset(self::$session_id)) {
+			self::create();
+		}
 
 		$remote_address = Utils::get_ip();
 		// not always set, even by real browsers
 		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 
 		// get the data from the ArrayObject
-		$data = $_SESSION->getArrayCopy();
+		$data = $_SESSION;
 
 		// but let a plugin make the final decision. we may want to ignore search spiders, for instance
-		$dowrite = Plugins::filter( 'session_write', $_SESSION->changed, $_SESSION->id, $data );
+		$dowrite = Plugins::filter( 'session_write', self::changed(), self::$session_id, $data );
 
 		if ( $dowrite ) {
 			// DB::update() checks if the record key exists, and inserts if not
@@ -227,7 +234,7 @@ class Session extends Singleton
 			DB::update(
 				DB::table( 'sessions' ),
 				$record,
-				array( 'token' => $_SESSION->id )
+				array( 'token' => self::$session_id )
 			);
 
 		}
@@ -239,7 +246,7 @@ class Session extends Singleton
 	public static function destroy( )
 	{
 		$sql = 'DELETE FROM {sessions} WHERE token = ?';
-		$args = array( $_SESSION->id );
+		$args = array( self::$session_id );
 		$sql = Plugins::filter( 'sessions_clean', $sql, 'destroy', $args );
 		DB::query( $sql, $args );
 
@@ -274,7 +281,7 @@ class Session extends Singleton
 	public static function set_userid( $user_id )
 	{
 		if(!Plugins::filter('session_handlers', false)) {
-			DB::query( 'UPDATE {sessions} SET user_id = ? WHERE token = ?', array( $user_id, $_SESSION->id ) );
+			DB::query( 'UPDATE {sessions} SET user_id = ? WHERE token = ?', array( $user_id, self::$session_id ) );
 		}
 	}
 
@@ -286,8 +293,8 @@ class Session extends Singleton
 	public static function clear_userid( $user_id )
 	{
 		if(!Plugins::filter('session_handlers', false)) {
-			DB::query( 'DELETE FROM {sessions} WHERE user_id = ? AND token <> ?', array( $user_id, $_SESSION->id ) );
-			DB::query( 'UPDATE {sessions} SET user_id = NULL WHERE token = ?', array( $_SESSION->id ) );
+			DB::query( 'DELETE FROM {sessions} WHERE user_id = ? AND token <> ?', array( $user_id, self::$session_id ) );
+			DB::query( 'UPDATE {sessions} SET user_id = NULL WHERE token = ?', array( self::$session_id ) );
 		}
 	}
 
@@ -583,6 +590,22 @@ class Session extends Singleton
 				break;
 		}
 
+	}
+
+	public static function session_data_hash()
+	{
+		if(isset($_SESSION)) {
+			return md5(var_export($_SESSION, true));
+		}
+		return '';
+	}
+
+	public static function changed()
+	{
+		if(self::$session_changed) {
+			return true;
+		}
+		return self::session_data_hash() != self::$stored_session_hash;
 	}
 }
 
