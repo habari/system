@@ -508,16 +508,16 @@ abstract class FormControl
 		foreach ( $this->validators as $validator ) {
 			$validator_fn = array_shift( $validator );
 			if ( is_callable( $validator_fn ) ) {
-				$params = array_merge( array( $this->value, $this, $this->container ), $validator );
+				$params = array_merge( array( $this->value, $this, $this->get_form() ), $validator );
 				$valid = array_merge( $valid, call_user_func_array( $validator_fn, $params ) );
 			}
 			elseif ( FormValidators::have($validator_fn ) ) {
 				$validator_fn = Method::create( 'Habari\FormValidators', $validator_fn );
-				$params = array_merge( array( $this->value, $this, $this->container ), $validator );
+				$params = array_merge( array( $this->value, $this, $this->get_form() ), $validator );
 				$valid = array_merge( $valid, call_user_func_array( $validator_fn, $params ) );
 			}
 			else {
-				$params = array_merge( array( $validator_fn, $valid, $this->value, $this, $this->container ), $validator );
+				$params = array_merge( array( $validator_fn, $valid, $this->value, $this, $this->get_form() ), $validator );
 				$valid = array_merge( $valid, call_user_func_array( Method::create( '\\Habari\\Plugins', 'filter' ), $params ) );
 			}
 		}
