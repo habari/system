@@ -126,6 +126,9 @@ class FormUI extends FormContainer implements IsContent
 		// Add the control ID to the template output for the form
 		$this->vars['_control_id'] = $this->control_id();
 
+		// Load all of the initial values of controls from their storage locations
+		$this->load();
+
 		// Was the form submitted?
 		if( isset( $_POST['_form_id'] ) && $_POST['_form_id'] == $this->control_id() ) {
 			$this->submitted = true;
@@ -145,10 +148,6 @@ class FormUI extends FormContainer implements IsContent
 			// Save the values submitted into this form
 			// $this->store_submission();
 
-		}
-		else {
-			// Load all of the values of controls from their storage locations
-			$this->load();
 		}
 
 		$output = $this->pre_out_controls();
