@@ -184,7 +184,7 @@ class FormContainer extends FormControl
 	 * @param FormControl $control FormControl object to move
 	 * @param FormControl $target FormControl object acting as destination
 	 */
-	function move_before( $control, $target )
+	function move_before( FormControl $control, FormControl $target )
 	{
 		$this->move( $control, $target );
 	}
@@ -195,7 +195,7 @@ class FormContainer extends FormControl
 	 * @param FormControl $control FormControl object to move
 	 * @param FormControl $target FormControl object acting as destination
 	 */
-	function move_after( $control, $target )
+	function move_after( FormControl $control, FormControl $target )
 	{
 		$this->move( $control, $target, 1 ); // Increase left slice's size by one.
 	}
@@ -206,7 +206,7 @@ class FormContainer extends FormControl
 	 * @param FormControl $control FormControl object to move
 	 * @param FormControl $target FormControl object acting as destination
 	 */
-	public function move_into( $control, $target )
+	public function move_into( FormControl $control, FormControl $target )
 	{
 		// Remove the source control from its container's list of controls
 		$controls = array();
@@ -228,7 +228,7 @@ class FormContainer extends FormControl
 	 * @param FormControl $target FormControl object to replace
 	 * @param FormControl $control FormControl object to replace $target with
 	 */
-	function replace( $target, $control )
+	function replace( FormControl $target, FormControl $control )
 	{
 		$this->move_after( $control, $target );
 		$this->remove( $target );
@@ -239,7 +239,7 @@ class FormContainer extends FormControl
 	 *
 	 * @param FormControl $target FormControl to remove
 	 */
-	function remove( $target )
+	function remove( FormControl $target )
 	{
 		// Strictness will skip recursiveness, else you get an exception (recursive dependency)
 		unset( $this->controls[array_search( $target, $this->controls, true )] );
