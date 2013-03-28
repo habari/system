@@ -340,14 +340,11 @@ class FormContainer extends FormControl
 	 */
 	public function load()
 	{
-		if(!$this->value_set_manually && $this->storage instanceof FormStorage) {
-			$this->value = $this->storage->field_load($this->name);
-		}
-
 		/** @var FormControl $control */
 		foreach($this->controls as $control) {
 			$control->load();
 		}
+		parent::load();
 	}
 
 	/**
@@ -355,11 +352,11 @@ class FormContainer extends FormControl
 	 */
 	public function process()
 	{
-		$this->value = $_POST[$this->input_name()];
 		/** @var FormControl $control */
 		foreach($this->controls as $control) {
 			$control->process();
 		}
+		parent::process();
 	}
 
 	/**
@@ -373,6 +370,7 @@ class FormContainer extends FormControl
 		foreach ( $this->controls as $control ) {
 			$control->save();
 		}
+		parent::save();
 	}
 
 	/**
@@ -435,6 +433,27 @@ class FormContainer extends FormControl
 			}
 		}
 		return $value_out;
+	}
+
+	/**
+	 * Apply a function to every control in this container, and any sub-containers
+	 * @param Callable $fn A function with the signature (FormControl $control)
+	 */
+	public function each($fn) {
+		foreach($this->controls as $control) {
+			if($control instanceof FormContainer) {
+				$control->each($fn);
+			}
+			$fn($control);
+		}
+	}
+
+	/**
+	 * Reset the contained control values to their initial values
+	 */
+	public function clear() {
+		$this->each(function($control) { $control->clear(); });
+		parent::clear();
 	}
 
 }

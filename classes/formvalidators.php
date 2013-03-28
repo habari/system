@@ -66,7 +66,7 @@ class FormValidators
 	{
 		if ( ! empty( $text ) ) {
 			if ( !preg_match( "@^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*\@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$@i", $text ) ) {
-				$warning = empty( $warning ) ? _t( 'Value must be a valid Email Address.' ) : $warning;
+				$warning = empty( $warning ) ? _t( 'Value for %s must be a valid Email Address.', array($control->get_label()) ) : $warning;
 				return array( $warning );
 			}
 		}
@@ -85,7 +85,7 @@ class FormValidators
 	public static function validate_required( $value, $control, $form, $warning = null )
 	{
 		if ( empty( $value ) || $value == '' ) {
-			$warning = empty( $warning ) ? _t( 'A value for this field is required.' ) : $warning;
+			$warning = empty( $warning ) ? _t( 'A value for the %s field is required.', array($control->get_label()) ) : $warning;
 			return array( $warning );
 		}
 		return array();
@@ -107,7 +107,7 @@ class FormValidators
 			return array();
 		}
 		if ( User::get_by_name( $value ) ) {
-			$warning = empty( $warning ) ? _t( 'That username is already in use!' ) : $warning;
+			$warning = empty( $warning ) ? _t( 'That username supplied for %s is already in use.', array($control->get_label()) ) : $warning;
 			return array( $warning );
 		}
 		return array();
@@ -127,7 +127,7 @@ class FormValidators
 	public static function validate_same( $value, $control, $form, $matcher, $warning = null )
 	{
 		if ( $value != $matcher->value ) {
-			$warning = empty( $warning ) ? _t( 'The value of this field must match the value of %s.', array( $matcher->caption ) ) : $warning;
+			$warning = empty( $warning ) ? _t( 'The value of the %1$s field must match the value of %2$s.', array( $control->get_label(), $matcher->get_label() ) ) : $warning;
 			return array( $warning );
 		}
 		return array();
@@ -150,7 +150,7 @@ class FormValidators
 		}
 		else {
 			if ( $warning == null ) {
-				$warning = _t( 'The value does not meet submission requirements' );
+				$warning = _t( 'The value for %s does not meet submission requirements', array($control->get_label()) );
 			}
 			return array( $warning );
 		}
@@ -171,19 +171,37 @@ class FormValidators
 	{
 		if ( $value < $min ) {
 			if ( $warning == null ) {
-				$warning = _t( 'The value entered is lesser than the minimum of %d.', array( $min ) );
+				$warning = _t( 'The value entered for %s is lesser than the minimum of %d.', array( $control->get_label(), $min ) );
 			}
 			return array( $warning );
 		}
 		elseif ( $value > $max ) {
 			if ( $warning == null ) {
-				$warning = _t( 'The value entered is greater than the maximum of %d.', array( $max ) );
+				$warning = _t( 'The value entered for %s is greater than the maximum of %d.', array( $control->get_label(), $max ) );
 			}
 			return array( $warning );
 		}
 		else {
 			return array();
 		}
+	}
+
+	/**
+	 * A validation function that returns an error if the form's WSSE values don't pass
+	 *
+	 * @param string $value The container's value, not very useful
+	 * @param FormControl $control The container that holds the WSSE controls
+	 * @param FormContainer $form The form that holds the container, probalby the same value
+	 * @param string $warning An optional error message
+	 * @return array An empty array if the value exists, or an array with strings describing the errors
+	 */
+	public static function validate_wsse( $value, $control, $form, $warning = null )
+	{
+		if(!Utils::verify_wsse($_POST, true)) {
+			$warning = empty( $warning ) ? _t( 'This form must be submitted directly.' ) : $warning;
+			return array( $warning );
+		}
+		return array();
 	}
 }
 

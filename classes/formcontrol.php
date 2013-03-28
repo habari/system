@@ -16,6 +16,8 @@ abstract class FormControl
 	public $settings = array();
 	/** @var mixed $value This is the value of the control, which will differ depending on at what time you access it */
 	public $value;
+	/** @var mixed $initial_value This is the intially assigned value of the control, set and used internally */
+	public $initial_value;
 	/** @var FormContainer $container The container that contains this control */
 	public $container;
 	/** @var array $validators An array of validators to execute on this control */
@@ -390,6 +392,9 @@ abstract class FormControl
 	{
 		$this->value_set_manually = $manually;
 		$this->value = $value;
+		if($manually) {
+			$this->initial_value = $value;
+		}
 		return $this;
 	}
 
@@ -608,6 +613,29 @@ abstract class FormControl
 	public function label($label)
 	{
 		return FormControlLabel::wrap($label, $this);
+	}
+
+	/**
+	 * Get a text label for this control
+	 * @return string The label
+	 */
+	public function get_label()
+	{
+		if($this instanceof FormControlLabel) {
+			return $this->label;
+		}
+		if($this->container instanceof FormControlLabel) {
+			return $this->container->label;
+		}
+		return ucwords(str_replace('_', ' ', $this->name));
+	}
+
+	/**
+	 * Set this control to its initial value
+	 */
+	public function clear()
+	{
+		$this->set_value($this->initial_value);
 	}
 
 }

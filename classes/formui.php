@@ -67,12 +67,15 @@ class FormUI extends FormContainer implements IsContent
 			$callback = self::$registered_forms[$formtype];
 			$callback($this, $name, $formtype);
 		}
+
+		// Add WSSE validator so that it can be altered in form-building code
+		$this->add_validator('validate_wsse');
 	}
 
 	/**
 	 * Register a function to use to create a new form
 	 * @param string $name The name of the form to register
-	 * @param Callable $build_callback The method to call to customize a form instance
+	 * @param Callable $build_callback The method to call to customize a form instance (FormUI $form, string $name, string $form_type)
 	 */
 	public static function register($name, $build_callback)
 	{
@@ -146,6 +149,16 @@ class FormUI extends FormContainer implements IsContent
 				$this->success = true;
 				// If do_success() returns anything, it should be output instead of the form.
 				$this->success_render = $this->do_success();
+			}
+			else {
+				if(isset($this->settings['use_session_errors']) && $this->settings['use_session_errors']) {
+					$this->each(function($control) {
+						$control->errors = array();
+					});
+					foreach($validation_errors as $error) {
+						Session::error($error);
+					}
+				}
 			}
 
 			// Save the values submitted into this form
@@ -243,7 +256,7 @@ class FormUI extends FormContainer implements IsContent
 	/**
 	 * Set a function to call on form submission success
 	 *
-	 * @param mixed $callback A callback function or a plugin filter name.
+	 * @param mixed $callback A callback function or a plugin filter name (FormUI $form)
 	 */
 	public function on_success( $callback )
 	{
