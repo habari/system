@@ -129,6 +129,9 @@ class FormUI extends FormContainer implements IsContent
 		// Load all of the initial values of controls from their storage locations
 		$this->load();
 
+		// If there was an error submitting this form before, set the values of the controls to the old ones to retry
+		$this->set_from_error_values();
+
 		// Was the form submitted?
 		if( isset( $_POST['_form_id'] ) && $_POST['_form_id'] == $this->control_id() ) {
 			$this->submitted = true;
@@ -147,7 +150,12 @@ class FormUI extends FormContainer implements IsContent
 
 			// Save the values submitted into this form
 			// $this->store_submission();
-
+		}
+		else {
+			// Store the location at which this form was loaded, so we can potentially redirect to it later
+			if ( !isset( $_SESSION['forms'][$this->control_id()]['url'] ) ) {
+				$_SESSION['forms'][$this->control_id()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . '#' . $this->get_id(false);
+			}
 		}
 
 		$output = $this->pre_out_controls();
@@ -330,7 +338,7 @@ class FormUI extends FormContainer implements IsContent
 	 */
 	public function bounce()
 	{
-		$_SESSION['forms'][$this->control_id()]['error_data'] = $_POST;
+		$_SESSION['forms'][$this->control_id()]['error_data'] = $this->get_values();
 		Utils::redirect( $_SESSION['forms'][$this->control_id()]['url'] );
 	}
 
@@ -393,6 +401,20 @@ class FormUI extends FormContainer implements IsContent
 		}
 
 		return $form;
+	}
+
+	/**
+	 * Set the values of the form controls from their session error values, if stored
+	 */
+	private function set_from_error_values()
+	{
+		// Put any error data back into the form
+		if ( isset( $_SESSION['forms'][$this->control_id()]['error_data'] ) ) {
+			foreach ( $_SESSION['forms'][$this->control_id()]['error_data'] as $key => $value ) {
+				$this->$key->value = $value;
+			}
+			unset( $_SESSION['forms'][$this->control_id()]['error_data'] );
+		}
 	}
 }
 

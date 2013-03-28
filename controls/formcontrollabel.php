@@ -22,6 +22,10 @@ class FormControlLabel extends FormContainer
 	 */
 	public static function wrap($label, FormControl $control) {
 		$label_control = new FormControlLabel('label_for_' . $control->name);
+		if(isset($control->container)) {
+			$control->container->insert($control, $label_control);
+			$control->container->remove($control);
+		}
 		$label_control->append($control);
 		$label_control->label = $label;
 		$label_control->properties['for'] = $control->get_id();

@@ -157,7 +157,7 @@ class FormContainer extends FormControl
 	 * @param FormControl $target FormControl object acting as destination
 	 * @param int $int Integer added to $target's position (index)
 	 */
-	function move( $source, $target, $offset = 0 )
+	function move( FormControl $source, FormControl $target, $offset = 0 )
 	{
 		// Remove the source control from its container's list of controls
 		$controls = array();

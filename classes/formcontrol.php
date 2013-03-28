@@ -425,14 +425,15 @@ abstract class FormControl
 
 	/**
 	 * Produce a unique id (not name) for this control for use with labels and such, only if one is not provided in the control properties
-	 * @return string The id of this control
+	 * @param bool $force_set Default to true, forcing the id to be set to the name of the control if it's not set already
+	 * @return string|null The id of this control, or null if it's not set and not forced
 	 */
-	public function get_id()
+	public function get_id($force_set = true)
 	{
-		if(!isset($this->properties['id'])) {
+		if(!isset($this->properties['id']) && $force_set) {
 			$this->properties['id'] = $this->name;
 		}
-		return $this->properties['id'];
+		return isset($this->properties['id']) ? $this->properties['id'] : null;
 	}
 
 	/**

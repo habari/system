@@ -34,6 +34,9 @@
 		 */
 		public function offsetSet($offset, $value)
 		{
+			if($value instanceof \ArrayIterator) {
+				$value = $value->getArrayCopy();
+			}
 			if(is_array($value)) {
 				$value = new SessionStorage($value);
 				$value->set_parent($this);
@@ -67,6 +70,21 @@
 			if($this->parent) {
 				$this->parent->change();
 			}
+		}
+
+		/**
+		 * Get this object as an array instead of an ArrayObject
+		 * @return array The whole storage array as an array
+		 */
+		public function getArrayCopy()
+		{
+			$cp = parent::getArrayCopy();
+			foreach($cp as &$e) {
+				if($e instanceof SessionStorage) {
+					$e = $e->getArrayCopy();
+				}
+			}
+			return $cp;
 		}
 
 

@@ -1201,8 +1201,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 		// Now start the form.
 		$form = new FormUI( 'comment-' . $context, 'comment' );
-		$form->class[] = $context;
-		$form->class[] = 'commentform';
+		$form->add_class($context);
+		$form->add_class('commentform');
 		$form->set_wrap_each('<div>%s</div>');
 
 		// Enforce commenting rules
@@ -1228,7 +1228,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		}
 		else {
 
-			$form->set_option( 'form_action', URL::get( 'submit_feedback', array( 'id' => $this->id ) ) );
+			$form->set_properties(array('action' => URL::get( 'submit_feedback', array( 'id' => $this->id ) ) ) );
 
 			// Create the Name field
 			$form->append(
@@ -1243,18 +1243,21 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			);
 
 			// Create the Email field
-			$cf_email = $form->append(
-				FormControlLabel::wrap(_t('Email'), FormControlText::create('cf_email', 'null:null', array(
+			$form->append(
+				$cf_email = FormControlText::create('cf_email', 'null:null', array(
 						'id' => 'comment_email',
 						'type' => 'email',
 						'tabindex' => 2
-				)))->add_validator('validate_email', _t('The Email field value must be a valid email address'))
+				))->add_validator('validate_email', _t('The Email field value must be a valid email address'))
 			);
 			if ( Options::get( 'comments_require_id' ) == 1 ) {
 				$cf_email->add_validator(  'validate_required', _t( 'The Email field value must be a valid email address' ) );
-				$cf_email->container->label = _t( 'Email <span class="required">*Required</span>' );
+				$cf_email->label( _t( 'Email <span class="required">*Required</span>' ) );
 			}
-			$cf_email->value = $commenter_email;
+			else {
+				$cf_email->label(_t('Email'));
+			}
+			$cf_email->set_value($commenter_email);
 
 			// Create the URL field
 			$form->append(
@@ -1268,10 +1271,11 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 			// Create the Comment field
 			$form->append(
-				FormControlLabel::wrap(_t('Content'), FormControlTextArea::create('cf_content', 'null:null', array(
+				FormControlTextArea::create('cf_content', 'null:null', array(
 					'id' => 'comment_content',
 					'tabindex' => 4,
-				)))->add_validator( 'validate_required', _t( 'The Comment field value is required' ) )
+				))->add_validator( 'validate_required', _t( 'The Comment field value is required' ) )
+				->label(_t('Content'))
 			);
 			$form->cf_content->value = $commenter_content;
 
