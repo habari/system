@@ -145,8 +145,9 @@ abstract class InfoRecords implements URLProperties
 		$this->_load();
 		$this->__inforecord_array[$name] = array('changed'=>true, 'value'=>$value);
 		$this->_dirty = true;
-		register_shutdown_function(function(){
-			$this->commit();
+		$self = $this;
+		register_shutdown_function(function() use ($self){
+			$self->commit();
 		});
 	}
 
