@@ -3051,6 +3051,10 @@ select#block_instance_type {
 
 /* Tree Control */
 
+.tree_control {
+	clear: both;
+}
+
 ol.tree {
 	padding-left: 30px;
 }

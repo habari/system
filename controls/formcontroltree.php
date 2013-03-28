@@ -89,44 +89,6 @@ CUSTOM_TREE_JS;
 		//$this->set_value($_POST[$this->input_name()], false);
 		$this->set_value($posted, false);
 	}
-
-
-	/**
-	 * Magic __get method for returning property values
-	 * Override the handling of the value property to properly return the setting of the checkbox.
-	 *
-	 * @param string $name The name of the property
-	 * @return mixed The value of the requested property
-	 */
-	public function __get( $name )
-	{
-		Utils::debug($name);die();
-		static $posted = null;
-		switch ( $name ) {
-			case 'value':
-				if ( isset( $_POST[$this->field . '_submitted'] ) ) {
-					if(!isset($posted)) {
-						$valuesj = $_POST->raw( $this->field . '_submitted');
-						$values = json_decode($valuesj);
-						$terms = array();
-						foreach($this->get_default() as $term) {
-							$terms[$term->id] = $term;
-						}
-						foreach($values as $value) {
-							$terms[$value->id]->mptt_left = $value->left;
-							$terms[$value->id]->mptt_right = $value->right;
-						}
-						$terms = new Terms($terms);
-						$posted = $terms->tree_sort();
-					}
-					return $posted;
-				}
-				else {
-					return $this->get_default();
-				}
-		}
-		return parent::__get( $name );
-	}
 }
 
 ?>

@@ -574,7 +574,7 @@ JAVSCRIPT_RESPONSE;
 					$form->append( FormControlStatic::create('buttons')->set_static('<div id="menu_item_button_container">' . $edit_items . '</div>') );
 				}
 				else {
-					$form->append( FormControlTree::create('tree', null, array(), array( 'itemcallback' => array( $this, 'tree_item_callback' ) ))->set_value($vocabulary->get_tree()));
+					$form->append( FormControlTree::create('tree', $vocabulary->get_tree(), array(), array( 'itemcallback' => array( $this, 'tree_item_callback' ) )));
 //						$form->tree->value = $vocabulary->get_root_terms();
 					// append other needed controls, if there are any.
 
