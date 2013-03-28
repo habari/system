@@ -149,17 +149,14 @@ class UserHandler extends ActionHandler
 		// Build the login form
 		$form = new FormUI( 'habari_login' );
 		$form->on_success( array( $this, 'loginform_success' ) );
-		$form->append( 'static', 'reset_message', '<p id="reset_message" style="margin-bottom:20px;">' . _t('Please enter the username you wish to reset the password for.  A unique password reset link will be emailed to that user.') . '</p>' );
-		$form->append( 'text', 'habari_username', 'null:null', _t('Name') );
-		$form->habari_username->template = 'admincontrol_text';
-		$form->append( 'password', 'habari_password', 'null:null', _t('Password') );
-		$form->habari_password->template = 'admincontrol_password';
-		$form->append( 'submit', 'submit_button', _t('Login') );
-		$form->submit_button->template = 'admincontrol_submit';
-		$form->append( 'static', 'reset_link', '<a href="#" id="reset_link">' . _t('Reset password') . '</a>' );
-		$form->append( 'submit', 'reset_button', _t('Reset password') );
-		$form->reset_button->template = 'admincontrol_submit';
-		
+		$form->append( FormControlStatic::create('reset_message')->set_static('<p class="on_reset" style="margin-bottom:20px;">' . _t('Please enter the username you wish to reset the password for.  A unique password reset link will be emailed to that user.') . '</p>' ) );
+		$form->append( FormControlLabel::wrap(_t('Name'), FormControlText::create('habari_username'))->set_template('control.label.outsideleft'));
+		$form->append( FormControlLabel::wrap(_t('Password'), FormControlPassword::create('habari_password')->set_properties(array('class'=>'off_reset')))->set_template('control.label.outsideleft')->set_properties(array('class'=>'off_reset')));
+		$form->append( FormControlSubmit::create('submit_button')->set_caption(_t('Login'))->set_properties(array('class'=>'off_reset')) );
+		$form->append( FormControlStatic::create('reset_link')->set_static('<a href="#" class="off_reset reset_link">' . _t('Reset password') . '</a>') );
+		$form->append( FormControlStatic::create('login_link')->set_static('<a href="#" class="on_reset reset_link">' . _t('Login') . '</a>') );
+		$form->append( FormControlSubmit::create('reset_button')->set_caption(_t('Reset password'))->set_properties(array('class'=>'on_reset')) );
+
 		// Let plugins alter this form
 		Plugins::act( 'form_login', $form );
 		

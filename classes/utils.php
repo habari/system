@@ -607,7 +607,7 @@ class Utils
 				$option['id'] = $option['name'];
 			}
 			
-			$output .= '<input ' . self::html_attr($option) . '>';
+			$output .= '<input ' . self::html_attr($option) . ' />';  // This XML/XHTML looks spurious, but PHP's appendXML requires it elsewhere
 		}
 		
 		return $output;
@@ -1347,6 +1347,10 @@ class Utils
 		return $content;
 	}
 
+	/**
+	 * Produce a set of inputs that can be used to validate WSSE
+	 * @return string HTML inputs for WSSE support
+	 */
 	public static function setup_wsse() {
 		$wsse = self::WSSE();
 		$inputs = array();

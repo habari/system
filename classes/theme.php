@@ -17,6 +17,7 @@ class Theme extends Pluggable
 {
 	public $name = null;
 	public $version = null;
+	/** @var TemplateEngine $template_engine */
 	public $template_engine = null;
 	public $theme_dir = null;
 	public $config_vars = array();
@@ -86,7 +87,7 @@ class Theme extends Pluggable
 		$this->template_engine = new $engine();
 
 		$this->theme_dir = $theme_dir;
-		$this->template_engine->set_template_dir( $theme_dir );
+		$this->template_engine->queue_dirs( $theme_dir );
 		$this->plugin_id = $this->plugin_id();
 		$this->load();
 	}

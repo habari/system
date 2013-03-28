@@ -30,7 +30,7 @@ class HiEngine extends RawPHPEngine {
 	{
 		$streams = stream_get_wrappers();
 		if ( ! in_array( 'hi', $streams ) ) {
-			stream_wrapper_register( "hi", "HiEngineParser" )
+			stream_wrapper_register( "hi", "\Habari\HiEngineParser" )
 			or die( _t( "Failed to register HiEngine stream protocol" ) );
 		}
 	}
@@ -51,7 +51,7 @@ class HiEngine extends RawPHPEngine {
 			$template_file = 'hi://' . $template_file;
 			$fc = file_get_contents( $template_file );
 			//echo($fc);
-			eval( '?'.'>' . $fc );
+			eval( 'namespace Habari; ?'.'>' . $fc );
 			//include $template_file;  // stopped working properly in PHP 5.2.8 
 		}
 	}
@@ -317,7 +317,7 @@ class HiEngineParser
 	{
 		foreach ( $params as $k => $v ) {
 			if ( $k[0] == '@' ) {
-				$returnval = '$theme->' . substr( $cmd, 1 ) . '(' . $returnval . ", '" . $v . "')";
+				$returnval = '$theme->' . substr( $k, 1 ) . '(' . $returnval . ", '" . $v . "')";
 			}
 			switch ( $k ) {
 				case 'dateformat':

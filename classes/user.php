@@ -716,8 +716,14 @@ class User extends QueryRecord implements FormStorage, IsContent
 	 */
 	function field_save($key, $value)
 	{
-		$this->info->$key = $value;
-		$this->info->commit();
+		$default_fields = self::default_fields();
+		if(isset($default_fields[$key])) {
+			$this->$key = $value;
+		}
+		else {
+			$this->info->$key = $value;
+			$this->info->commit();
+		}
 	}
 
 	/**
@@ -728,7 +734,13 @@ class User extends QueryRecord implements FormStorage, IsContent
 	 */
 	function field_load($key)
 	{
-		return $this->info->$key;
+		$default_fields = self::default_fields();
+		if(isset($default_fields[$key])) {
+			return $this->$key;
+		}
+		else {
+			return $this->info->$key;
+		}
 	}
 
 	/**
