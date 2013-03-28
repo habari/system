@@ -153,7 +153,7 @@ class FormUI extends FormContainer implements IsContent
 		}
 		else {
 			// Store the location at which this form was loaded, so we can potentially redirect to it later
-			if ( !isset( $_SESSION['forms'][$this->control_id()]['url'] ) ) {
+			if ( !$this->has_session_data() || !isset( $_SESSION['forms'][$this->control_id()]['url'] ) ) {
 				$_SESSION['forms'][$this->control_id()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . '#' . $this->get_id(false);
 			}
 		}
@@ -404,12 +404,21 @@ class FormUI extends FormContainer implements IsContent
 	}
 
 	/**
+	 * Get whether there is session data stored for this form
+	 * @return bool True if this form has session data set
+	 */
+	public function has_session_data()
+	{
+		return isset( $_SESSION['forms'] ) && isset( $_SESSION['forms'][$this->control_id()] );
+	}
+
+	/**
 	 * Set the values of the form controls from their session error values, if stored
 	 */
-	private function set_from_error_values()
+	public function set_from_error_values()
 	{
 		// Put any error data back into the form
-		if ( isset( $_SESSION['forms'][$this->control_id()]['error_data'] ) ) {
+		if ( $this->has_session_data() && isset( $_SESSION['forms'][$this->control_id()]['error_data'] ) ) {
 			foreach ( $_SESSION['forms'][$this->control_id()]['error_data'] as $key => $value ) {
 				$this->$key->value = $value;
 			}
