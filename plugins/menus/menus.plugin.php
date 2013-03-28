@@ -350,12 +350,11 @@ class Menus extends Plugin
 		);
 		$menu_type_data['menu_spacer'] = array(
 			'label' => _t( 'Spacer' ),
-			'form' => function($form, $term) {
-				$spacer = new FormControlText( 'spacer_text', 'null:null', _t( 'Item text' ), 'optionscontrol_text' );
-				$spacer->helptext = _t( 'Leave blank for blank space' );
+			'form' => function(FormUI $form, $term) {
+				$spacer = FormControlText::create( 'spacer_text' )->set_helptext( _t( 'Leave blank for blank space' ) )->label( _t( 'Item text' ) );
 				if ( $term ) {
-					$spacer->value = $term->term_display;
-					$form->append( 'hidden', 'term' )->value = $term->id;
+					$spacer->set_value( $term->term_display );
+					$form->append( FormControlHidden::create('term')->set_value( $term->id ) );
 				}
 
 				$form->append( $spacer );
@@ -384,21 +383,20 @@ class Menus extends Plugin
 		);
 		$menu_type_data['post'] = array(
 			'label' => _t( 'Links to Posts' ),
-			'form' => function( $form, $term ) {
+			'form' => function( FormUI $form, $term ) {
 				if ( $term ) {
 					$object_types = $term->object_types();
 					$term_object = reset( $object_types );
 
-					$post_display = $form->append( 'text', 'term_display', 'null:null', _t( 'Title to display' ) );
-					$post_display->value = $term->term_display;
+					$form->append( FormControlText::create('term_display')->set_value($term->term_display)->label(_t( 'Title to display' ) ) );
 					$post = Post::get( $term_object->object_id );
-					$post_term = $form->append( 'static', 'post_link', _t( "Links to <a target='_blank' href='{$post->permalink}'>{$post->title}</a>" ) );
-					$form->append( 'hidden', 'term' )->value = $term->id;
+					$form->append( FormControlStatic::create('post_link')->set_static( _t( "Links to <a target='_blank' href='{$post->permalink}'>{$post->title}</a>" ) ) );
+					$form->append( FormControlHidden::create('term')->set_value($term->id) );
 				}
 				else {
-					$post_ids = $form->append( 'text', 'post_ids', 'null:null', _t( 'Posts' ) );
-					$post_ids->template = 'text_tokens';
-					$post_ids->ready_function = "$('#{$post_ids->field}').tokenInput( habari.url.ajaxPostTokens )";
+					$post_ids = $form->append( FormControlAutocomplete::create('post_ids')->set_properties(array('data-autocomplete-config'=>'{}'))->label( _t( 'Posts' ) ) );
+//					$post_ids->template = 'text_tokens';
+//					$post_ids->ready_function = "$('#{$post_ids->field}').tokenInput( habari.url.ajaxPostTokens )";
 				}
 			},
 			'save' => function($menu, $form) {
