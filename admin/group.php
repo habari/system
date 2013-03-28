@@ -85,7 +85,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 				</tr>
 				<?php foreach ( $crud_tokens as $token ): ?>
 				<tr>
-					<td class="token_description pct40"><strong><?php echo $token->description; ?></strong></td>
+					<td class="token_description pct40"><strong><?php _e($token->description); ?></strong></td>
 					<?php 
 					foreach ( $access_names as $name ):
 						$checked = ( isset($token->access) && ACL::access_check( $token->access, $name ) ) ? ' checked' : '';

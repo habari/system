@@ -20,7 +20,7 @@ class FormControlCheckboxes extends FormControlSelect
 			function(&$item, $key) use($control) {
 				$item = array(
 					'label' => Utils::htmlspecialchars($item),
-					'id' => Utils::slugify( $this->name . '-' . $key ),
+					'id' => Utils::slugify( $control->name . '-' . $key ),
 					'checked' => in_array($key, $control->value) ? 'checked="checked"' : '',
 				);
 			}
