@@ -18,7 +18,7 @@ namespace Habari;
 // Fail out if not included from root
 if ( !defined( 'HABARI_PATH' ) ) {
 	header( 'HTTP/1.1 403 Forbidden', true, 403 );
-	die();
+	die('If you are seeing this message, and <a href="http://wiki.habariproject.org/en/FAQ#I_get_a_403_error_.28Forbidden.29_when_I_try_to_run_Habari_for_the_first_time.2C_why.3F">you were expecting to see your Habari install</a>, you probably cloned the wrong repo.');
 }
 
 // Compares PHP version against our requirement.
