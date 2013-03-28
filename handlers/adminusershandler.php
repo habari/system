@@ -13,6 +13,38 @@ namespace Habari;
  */
 class AdminUsersHandler extends AdminHandler
 {
+	public function __construct()
+	{
+		FormUI::register('add_user', function(FormUI $form, $name){
+			$form->set_settings(array('use_session_errors' => true));
+			$form->append(
+				FormControlText::create('username')
+					->add_validator('validate_username')
+					->add_validator('validate_required')
+					->label(_t('Username'))->add_class('incontent')->set_template('control.label.outsideleft')
+			);
+			$form->append(
+				FormControlText::create('email')
+					->add_validator('validate_email')
+					->add_validator('validate_required')
+					->label(_t('E-Mail'))->add_class('incontent')->set_template('control.label.outsideleft')
+			);
+			$password = FormControlPassword::create('password')
+				->add_validator('validate_required');
+			$form->append(
+				$password->label(_t('Password'))->add_class('incontent')->set_template('control.label.outsideleft')
+			);
+			$form->append(
+				FormControlPassword::create('password_again')
+					->add_validator('validate_same', $password)
+					->label(_t('Password Again'))->add_class('incontent')->set_template('control.label.outsideleft')
+			);
+			$form->append(FormControlSubmit::create('newuser')->set_caption('Add User'));
+			$form->on_success(array($this, 'do_add_user'));
+		});
+		parent::__construct();
+	}
+
 	/**
 	 * Handles GET requests of a user page.
 	 */
@@ -398,6 +430,7 @@ class AdminUsersHandler extends AdminHandler
 	{
 		$this->fetch_users();
 
+		$this->theme->add_user_form = FormUI::build('add_user', 'add_user')->get();
 		$this->theme->currentuser = User::identify();
 
 		$this->theme->display( 'users' );
@@ -408,6 +441,10 @@ class AdminUsersHandler extends AdminHandler
 	 */
 	public function post_users()
 	{
+		$this->get_users();
+
+		FormUI::build('add_user', 'add_user')->get();
+
 		$wsse = Utils::WSSE( $this->handler_vars['nonce'], $this->handler_vars['timestamp'] );
 		if ( $this->handler_vars['password_digest'] != $wsse['digest'] ) {
 			Session::error( _t( 'WSSE authentication failed.' ) );
@@ -421,60 +458,35 @@ class AdminUsersHandler extends AdminHandler
 			$$key = $value;
 		}
 
-		if ( isset( $newuser ) ) {
-			$action = 'newuser';
-		}
-		elseif ( isset( $delete ) ) {
+		if ( isset( $delete ) ) {
 			$action = 'delete';
 		}
 
-		$error = '';
-		if ( isset( $action ) && ( 'newuser' == $action ) ) {
-			if ( !isset( $new_pass1 ) || !isset( $new_pass2 ) || empty( $new_pass1 ) || empty( $new_pass2 ) ) {
-				Session::error( _t( 'Password is required.' ), 'adduser' );
-			}
-			else if ( $new_pass1 !== $new_pass2 ) {
-				Session::error( _t( 'Password mis-match.' ), 'adduser' );
-			}
-			if ( !isset( $new_email ) || empty( $new_email ) || ( !strstr( $new_email, '@' ) ) ) {
-				Session::error( _t( 'Please supply a valid email address.' ), 'adduser' );
-			}
-			if ( !isset( $new_username ) || empty( $new_username ) ) {
-				Session::error( _t( 'Please supply a user name.' ), 'adduser' );
-			}
-			// safety check to make sure no such username exists
-			$user = User::get_by_name( $new_username );
-			if ( isset( $user->id ) ) {
-				Session::error( _t( 'That username is already assigned.' ), 'adduser' );
-			}
-			if ( !Session::has_errors( 'adduser' ) ) {
-				$user = new User( array( 'username' => $new_username, 'email' => $new_email, 'password' => Utils::crypt( $new_pass1 ) ) );
-				if ( $user->insert() ) {
-					Session::notice( _t( "Added user '%s'", array( $new_username ) ) );
-				}
-				else {
-					$dberror = DB::get_last_error();
-					Session::error( $dberror[2], 'adduser' );
-				}
-			}
-			else {
-				$settings = array();
-				if ( isset( $new_username ) ) {
-					$settings['new_username'] = $new_username;
-				}
-				if ( isset( $new_email ) ) {
-					$settings['new_email'] = $new_email;
-				}
-				$this->theme->assign( 'settings', $settings );
-			}
-		}
-		else if ( isset( $action ) && ( 'delete' == $action ) ) {
+		if ( isset( $action ) && ( 'delete' == $action ) ) {
 
 			$this->update_users( $this->handler_vars );
 
 		}
 
-		$this->theme->display( 'users' );
+		Utils::redirect(URL::get('admin', array('page' => 'users')));
+	}
+
+
+	/**
+	 * Success method for the add_user form
+	 * @param FormUI $form The add_user form
+	 */
+	public function do_add_user(FormUI $form) {
+
+		$user = new User( array( 'username' => $form->username->value, 'email' => $form->email->value, 'password' => Utils::crypt( $form->password->value ) ) );
+		if ( $user->insert() ) {
+			Session::notice( _t( "Added user '%s'", array( $form->username->value ) ) );
+			$form->clear();
+		}
+		else {
+			$dberror = DB::get_last_error();
+			Session::error( $dberror[2], 'adduser' );
+		}
 	}
 
 }
