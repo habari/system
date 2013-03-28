@@ -434,8 +434,11 @@ class Session extends Singleton
 	 */
 	public static function remove_error( $key )
 	{
-		unset( $_SESSION['errors'][$key] );
-		return ( !isset( $_SESSION['errors'][$key] ) ? true : false );
+		if(isset($_SESSION['errors'])) {
+			unset($_SESSION['errors'][$key]);
+			return ( !isset( $_SESSION['errors'][$key] ) ? true : false );
+		}
+		return true;
 	}
 
 	/**
