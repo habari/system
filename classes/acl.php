@@ -797,7 +797,7 @@ SQL;
 		self::create_token( 'post_any', 'Permissions to all posts', 'Content' , true );
 		self::create_token( 'post_unpublished', "Permissions to other users' unpublished posts", 'Content' , true );
 		foreach ( Post::list_active_post_types() as $name => $posttype ) {
-			self::create_token( 'post_' . Utils::slugify( $name ),  'Permissions to posts of type "%s"', array( $name ), 'Content' , true );
+			self::create_token( 'post_' . Utils::slugify( $name ), _t( 'Permissions to posts of type "%s"', array( $name ) ), 'Content' , true );
 		}
 
 		// comments tokens
