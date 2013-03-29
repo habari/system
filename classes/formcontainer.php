@@ -11,7 +11,7 @@ class FormContainer extends FormControl
 	 * Append a control to the end of this container
 	 *
 	 * @param FormControl $control A control to append to the end of this container
-	 * @return FormControl The provided FormControl object, fluid
+	 * @return FormControl|FormContainer The provided FormControl object, fluid
 	 */
 	public function append($control)
 	{
