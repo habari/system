@@ -867,9 +867,79 @@ SQL;
 	/**
 	 * Dummy function to inject strings into the .pot
 	 */
-	private static function translations() {
+/*	private static function translations() {
 		// @locale The names of the CRUD group token permissions
 		_t( 'read' ); _t( 'edit' ); _t( 'delete' ); _t( 'create' );
+	}
+*/
+	/**
+	 * Register plugin hooks
+	 * @static
+	 */
+	public static function __static()
+	{
+		Plugins::register( array( 'Habari\\ACL', '_filter_token_description_display' ), 'filter', 'token_description_display');
+		Plugins::register( array( 'Habari\\ACL', '_filter_token_group_display' ), 'filter', 'token_group_display');
+		Plugins::register( array( 'Habari\\ACL', '_filter_permission_display' ), 'filter', 'permission_display' );
+	}
+
+	public static function _filter_token_description_display( $token )
+	{
+		$desc = array(
+			'super_user' => _t( 'Permissions for super users' ),
+			// admin tokens
+			'manage_all_comments' => _t( 'Manage comments on all posts' ),
+			'manage_own_post_comments' => _t( 'Manage comments on one\'s own posts' ),
+			'manage_tags' => _t( 'Manage tags' ),
+			'manage_options' => _t( 'Manage options' ),
+			'manage_theme' => _t( 'Change theme' ),
+			'manage_theme_config' => _t( 'Configure the active theme' ),
+			'manage_plugins' => _t( 'Activate/deactivate plugins' ),
+			'manage_plugins_config' => _t( 'Configure active plugins' ),
+			'manage_import' => _t( 'Use the importer' ),
+			'manage_users' => _t( 'Add, remove, and edit users' ),
+			'manage_self' => _t( 'Edit own profile' ),
+			'manage_groups' => _t( 'Manage groups and permissions' ),
+			'manage_logs' => _t( 'Manage logs' ),
+			'manage_dash_modules' => _t( 'Manage dashboard modules' ),
+			// content tokens
+			'own_posts' => _t( 'Permissions on one\'s own posts' ),
+			'post_any' => _t( 'Permissions to all posts' ),
+			'post_unpublished' => _t( 'Permissions to other user\'s unpublished posts' ),
+			'comment' => _t( 'Make comments on any post' ),
+		);
+
+		// content tokens
+		foreach ( Post::list_active_post_types() as $name => $posttype ) {
+			$desc['post_' . Utils::slugify( $name )] = _t('Permissions to posts of type "%s"', array( $name ) );
+		}
+		return isset( $desc[$token] ) ? $desc[$token] : $token;
+
+	}
+
+	public static function _filter_token_group_display( $group )
+	{
+		$groups = array(
+			'Super User' => _t( 'Super User' ),
+			'Administration' => _t( 'Administration' ),
+			'Content' => _t( 'Content' ),
+			'Comments'=> _t( 'Comments' ),
+		);
+		return isset( $groups[$group] ) ? $groups[$group] : $group;
+
+	}
+
+	public static function _filter_permission_display( $permission )
+	{
+		$name = array(
+		    'read' => _t( 'read' ),
+		    'create' => _t( 'create' ),
+		    'edit' => _t( 'edit' ),
+		    'delete' => _t( 'delete' ),
+		    'deny' => _t( 'deny' ),
+		    'allow' => _t( 'allow' ),
+		);
+		return isset( $name[$permission] ) ? $name[$permission] : $permission;
 	}
 
 }
