@@ -86,6 +86,16 @@ class HTMLDoc
 		}
 		return $output;
 	}
+
+	/**
+	 * Render this DOM as a string
+	 * @return string the string representation of the DOM
+	 */
+	function __toString()
+	{
+		return $this->get();
+	}
+
 }
 
 /**
