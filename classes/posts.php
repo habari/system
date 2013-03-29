@@ -799,50 +799,6 @@ class Posts extends \ArrayObject implements IsContent
 	}
 
 	/**
-	 * Accept a parameter array for Posts::get() with presets, and return an array with all defined parameters from those presets
-	 * @param array $paramarray An array of parameters to Posts::get that may contain presets
-	 * @param array $presets a list of presets, keyed by preset name, each an array of parameters that define the preset
-	 * @return array The processed array, including all original presets and all newly added recursive presets and parameters
-	 */
-	public static function merge_presets($paramarray, $presets) {
-		if(isset($paramarray['preset'])) {
-			// Get the preset from the paramarray.
-			$requested_presets = Utils::single_array($paramarray['preset']);
-			unset($paramarray['preset']);
-
-			// Get the previously processed presets and remove them from the presets requested
-			$processed_presets = isset($paramarray['_presets']) ? array_keys($paramarray['_presets']) : array();
-			$requested_presets = array_diff($requested_presets, $processed_presets);
-
-			// Process fallbacks (in the simplest case, this will just iterate once - for the requested fallback-less preset)
-			foreach($requested_presets as $requested_preset) {
-				if(isset($presets[$requested_preset])) {
-					// We found one that exists, let plugins filter it and then merge it with our paramarray
-					$preset = Plugins::filter('posts_get_update_preset', $presets[$requested_preset], $requested_preset, $paramarray);
-					if(is_array($preset) || $preset instanceof \ArrayObject || $preset instanceof \ArrayIterator) {
-						$preset = new SuperGlobal($preset);
-						// This merge order ensures that the outside object has precedence
-						$paramarray = $preset->merge($paramarray)->getArrayCopy();
-						// Save the preset as "processed"
-						$paramarray['_presets'][$requested_preset] = true;
-						// We might have retrieved new presets to use. Do it again!
-						$paramarray = Posts::merge_presets($paramarray, $presets);
-					}
-				}
-				else {
-					// Save the preset as "tried to process but didn't"
-					$paramarray['_presets'][$requested_preset] = false;
-				}
-			}
-
-			// Restore the original requested preset to the paramarray
-			$paramarray['preset'] = $requested_presets;
-		}
-
-		return $paramarray;
-	}
-
-	/**
 	 * Extract parameters from a Posts::get()-style param array, even from within where's
 	 * @static
 	 * @param array $paramarray An array of Posts::get()-style parameters
