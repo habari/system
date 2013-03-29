@@ -1287,17 +1287,19 @@ class Theme extends Pluggable
 			unset( $block->_last );
 		}
 
-		// This is the area fallback template list
-		$fallback = array(
-			$context . '.area.' . $area,
-			$context . '.area',
-			'area.' . $area,
-			'area',
-		);
-		$this->content = $output;
-		$newoutput = $this->display_fallback( $fallback, 'fetch' );
-		if ( $newoutput !== false ) {
-			$output = $newoutput;
+		if(trim($output) != '') {
+			// This is the area fallback template list
+			$fallback = array(
+				$context . '.area.' . $area,
+				$context . '.area',
+				'area.' . $area,
+				'area',
+			);
+			$this->content = $output;
+			$newoutput = $this->display_fallback( $fallback, 'fetch' );
+			if ( $newoutput !== false ) {
+				$output = $newoutput;
+			}
 		}
 
 		$this->area = '';

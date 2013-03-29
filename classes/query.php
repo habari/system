@@ -398,7 +398,10 @@ class QueryWhere {
 			$in_elements = array();
 			if(is_callable($validator)) {
 				foreach($values as $value) {
-					$in_elements[] = $validator($value);
+					$newvalue = $validator($value);
+					if(!empty($newvalue)) {
+						$in_elements[] = $newvalue;
+					}
 				}
 			}
 			else {

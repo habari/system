@@ -296,8 +296,12 @@ class AdminUsersHandler extends AdminHandler
 		$info_fields = Plugins::filter( 'adminhandler_post_user_fields', $info_fields );
 
 		foreach ( $info_fields as $info_field ) {
-			if ( isset( $form->{$info_field} ) && ( $edit_user->info->{$info_field} != $form->{$info_field}->value ) ) {
+			if ( isset( $form->{$info_field} ) && ( $edit_user->info->{$info_field} != $form->{$info_field}->value ) && !empty( $form->{$info_field}->value ) ) {
 				$edit_user->info->{$info_field} = $form->$info_field->value;
+				$update = true;
+			}
+			else if ( isset( $edit_user->info->{$info_field} ) && empty( $form->{$info_field}->value ) ) {
+				unset( $edit_user->info->{$info_field} );
 				$update = true;
 			}
 		}
