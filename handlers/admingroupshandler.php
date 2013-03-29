@@ -49,8 +49,18 @@ class AdminGroupsHandler extends AdminHandler
 		else {
 
 			$tokens = ACL::all_tokens( 'id' );
+			array_walk( $tokens, function( &$value, $key) {
+				$value->description = Plugins::filter( 'token_description_display', $value->name);
+				$value->token_group = Plugins::filter( 'token_group_display', $value->token_group );
+			});
 			$access_names = ACL::$access_names;
 			$access_names[] = 'deny';
+			$access_display = array();
+			foreach( $access_names as $name ) {
+				$access_display[$name] = Plugins::filter( 'permission_display', $name );
+			}
+			$bool_access_display['allow'] = Plugins::filter( 'permission_display', 'allow' );
+			$bool_access_display['deny'] = Plugins::filter( 'permission_display', 'deny' );
 
 			// attach access bitmasks to the tokens
 			foreach ( $tokens as $token ) {
@@ -90,6 +100,8 @@ class AdminGroupsHandler extends AdminHandler
 
 			$this->theme->access_names = $access_names;
 			$this->theme->grouped_tokens = $grouped_tokens;
+			$this->theme->access_display = $access_display;
+			$this->theme->bool_access_display = $bool_access_display;
 
 			$this->theme->groups = UserGroups::get_all();
 			$this->theme->group = $group;
