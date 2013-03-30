@@ -275,21 +275,26 @@ class AdminThemesHandler extends AdminHandler
 		$msg = '';
 
 		$response = new AjaxResponse();
-		if ( isset( $_POST['area_blocks'] ) ) {
-			$area_blocks = $_POST['area_blocks'];
+		if ( isset( $_POST['changed'] ) ) {
+			// Empty area, regardless
 			DB::query( 'DELETE FROM {blocks_areas} WHERE scope_id = :scope_id', array( 'scope_id' => $scope ) );
 
-			foreach ( (array)$area_blocks as $area => $blocks ) {
-				$display_order = 0;
+			// Repopulate area if we have data to repopulate with
+			if ( isset( $_POST['area_blocks'] ) ) {
+				$area_blocks = $_POST['area_blocks'];
 
-				// if there are no blocks for a given area, skip it
-				if ( empty( $blocks ) ) {
-					continue;
-				}
+				foreach ( (array)$area_blocks as $area => $blocks ) {
+					$display_order = 0;
 
-				foreach ( $blocks as $block ) {
-					$display_order++;
-					DB::query( 'INSERT INTO {blocks_areas} (block_id, area, scope_id, display_order) VALUES (:block_id, :area, :scope_id, :display_order)', array( 'block_id'=>$block, 'area'=>$area, 'scope_id'=>$scope, 'display_order'=>$display_order ) );
+					// if there are no blocks for a given area, skip it
+					if ( empty( $blocks ) ) {
+						continue;
+					}
+
+					foreach ( $blocks as $block ) {
+						$display_order++;
+						DB::query( 'INSERT INTO {blocks_areas} (block_id, area, scope_id, display_order) VALUES (:block_id, :area, :scope_id, :display_order)', array( 'block_id'=>$block, 'area'=>$area, 'scope_id'=>$scope, 'display_order'=>$display_order ) );
+					}
 				}
 			}
 

@@ -610,7 +610,7 @@ var themeManage = {
 		});
 		habari_ajax.post(
 			habari.url.ajaxSaveAreas,
-			{area_blocks:output, scope:$('#scope_id').val()},
+			{area_blocks:output, scope:$('#scope_id').val(), changed:themeManage.changed()},
 			{'block_areas': '#scope_container'},
 			// Can't simply refresh the sortable because we've reloaded the element
 			function(data) {
