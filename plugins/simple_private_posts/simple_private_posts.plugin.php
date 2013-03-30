@@ -14,6 +14,34 @@ class SimplePrivatePosts extends Habari\Plugin
 		}
 	}
 
+	/**
+	 * function filter_token_description_display
+	 * Plugin filter to localize token descriptions
+	 * @param string Token to get the description of
+	 * @return string The localized token description
+	 */
+	public function filter_token_description_display( $token )
+	{
+		$desc = array(
+		    'private' => _t( 'Permission to read posts marked as "private"' ),
+		);
+		return isset( $desc[$token] ) ? $desc[$token] : $token;
+	}
+
+	/**
+	 * function filter_token_group_display
+	 * Plugin filter to localize token group name
+	 * @param string Original group name of the token
+	 * @return string The localized token group name
+	 */
+	public function filter_token_group_display( $group )
+	{
+		$name = array(
+		    'Private Posts' => _t( 'Private Posts' ),
+		);
+		return isset( $name[$group] ) ? $name[$group] : $group;
+	}
+
 	public function action_plugin_deactivation( $plugin_file )
 	{
 		if ( Plugins::id_from_file(__FILE__) == Plugins::id_from_file($plugin_file) ) {

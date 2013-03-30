@@ -883,6 +883,12 @@ SQL;
 		Plugins::register( array( 'Habari\\ACL', '_filter_permission_display' ), 'filter', 'permission_display' );
 	}
 
+	/**
+	 * function _filter_token_description_display
+	 * Filter to localize token descriptions
+	 * @param string Token to get the description of
+	 * @return string The localized token description
+	 */
 	public static function _filter_token_description_display( $token )
 	{
 		$desc = array(
@@ -917,6 +923,12 @@ SQL;
 
 	}
 
+	/**
+	 * function _filter_token_group_display
+	 * Filter to localize token group name
+	 * @param string Original group name of the token
+	 * @return string The localized token group name
+	 */
 	public static function _filter_token_group_display( $group )
 	{
 		$groups = array(
@@ -929,6 +941,12 @@ SQL;
 
 	}
 
+	/**
+	 * function _filter_permission_display
+	 * Filter to localize permission names
+	 * @param string Original name
+	 * @return string The localized permission name
+	 */
 	public static function _filter_permission_display( $permission )
 	{
 		$name = array(

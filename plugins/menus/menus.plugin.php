@@ -48,6 +48,20 @@ class Menus extends Plugin
 	}
 
 	/**
+	 * function filter_token_description_display
+	 * Plugin filter to localize token descriptions
+	 * @param string Token to get the description of
+	 * @return string The localized token description
+	 */
+	public function filter_token_description_display( $token )
+	{
+		$desc = array(
+		    'manage_menus' => _t( 'Manage menus' ),
+		);
+		return isset( $desc[$token] ) ? $desc[$token] : $token;
+	}
+
+	/**
 	 * Register the templates - one for the admin page, the other for the block.
 	 */
 	public function action_init()

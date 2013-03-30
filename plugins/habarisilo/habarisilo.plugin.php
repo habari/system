@@ -57,6 +57,23 @@ class HabariSilo extends Plugin implements MediaSilo
 	}
 
 	/**
+	 * function filter_token_description_display
+	 * Plugin filter to localize token descriptions
+	 * @param string Token to get the description of
+	 * @return string The localized token description
+	 */
+	public function filter_token_description_display( $token )
+	{
+		$descr = array(
+		    'create_directories' => _t( 'Create media silo directories' ),
+		    'delete_directories' => _t( 'Delete media silo directories' ),
+		    'upload_media' => _t( 'Upload files to media silos' ),
+		    'delete_media' => _t( 'Delete files from media silos' ),
+		);
+		return isset( $desc[$token] ) ? $desc[$token] : $token;
+	}
+
+	/**
 	*
 	* @param string $file. The name of the plugin file
 	*
