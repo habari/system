@@ -878,8 +878,8 @@ SQL;
 	 */
 	public static function __static()
 	{
-		Plugins::register( array( 'Habari\\ACL', '_filter_token_description_display' ), 'filter', 'token_description_display');
-		Plugins::register( array( 'Habari\\ACL', '_filter_token_group_display' ), 'filter', 'token_group_display');
+		Plugins::register( array( 'Habari\\ACL', '_filter_token_description_display' ), 'filter', 'token_description_display' );
+		Plugins::register( array( 'Habari\\ACL', '_filter_token_group_display' ), 'filter', 'token_group_display' );
 		Plugins::register( array( 'Habari\\ACL', '_filter_permission_display' ), 'filter', 'permission_display' );
 	}
 
@@ -917,7 +917,8 @@ SQL;
 
 		// content tokens
 		foreach ( Post::list_active_post_types() as $name => $posttype ) {
-			$desc['post_' . Utils::slugify( $name )] = _t('Permissions to posts of type "%s"', array( $name ) );
+			$label = MultiByte::strtolower( Plugins::filter( 'post_type_display', $name, 'singular' ) );
+			$desc['post_' . Utils::slugify( $name )] = _t('Permissions to posts of type "%s"', array( $label ) );
 		}
 		return isset( $desc[$token] ) ? $desc[$token] : $token;
 
