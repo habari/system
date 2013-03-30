@@ -1131,7 +1131,7 @@ class InstallHandler extends ActionHandler
 			try {
 				$rr_result = $rr->execute();
 			}
-			catch ( Exception $e ) {
+			catch ( \Exception $e ) {
 				$result = $this->write_htaccess( true, true, true );
 			}
 		}
