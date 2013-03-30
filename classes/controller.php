@@ -124,6 +124,9 @@ class Controller extends Singleton
 		/* Grab the base URL from the Site class */
 		$controller->base_url = Site::get_path( 'base', true );
 
+		/* If we're installed in a directory subsite, add that to the base_url */
+//		$controller->base_url .= Site::$config_urldir;
+
 		/* Start with the entire URL coming from web server... */
 		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
 			$start_url = $_SERVER['REQUEST_URI'];
@@ -147,7 +150,10 @@ class Controller extends Singleton
 		/* Strip out the base URL from the requested URL */
 		/* but only if the base URL isn't / */
 		if ( '/' != $controller->base_url ) {
-			$start_url = str_replace( $controller->base_url, '', $start_url );
+			if(substr($controller->base_url, -1) == '/') {
+				$controller->base_url = substr($controller->base_url, 0, -1);
+			}
+			$start_url = preg_replace( '#^' . preg_quote($controller->base_url, '#') . '#i', '', $start_url );
 		}
 
 		// undo &amp;s

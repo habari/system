@@ -20,7 +20,7 @@
 		<!--begin masthead-->
 		<div id="masthead"  class="span-15 pull-1">
 			<div id="branding">
-				<h1><a href="<?php Site::out_url( 'habari'); ?>" title="<?php Options::out( 'title' ); ?>"> <?php Options::out( 'title' ); ?></a></h1>
+				<h1><a href="<?php Site::out_url( 'site'); ?>" title="<?php Options::out( 'title' ); ?>"> <?php Options::out( 'title' ); ?></a></h1>
 				<h3 class="prepend-1"><em><?php Options::out( 'tagline' ); ?></em></h3>
 			</div>
 		</div>

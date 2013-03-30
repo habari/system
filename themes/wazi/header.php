@@ -15,7 +15,7 @@
 
 	<header id="header">
 		<hgroup>
-			<h1 itemprop="name"><a href="<?php Site::out_url( 'habari' ); ?>/" itemprop="url"><?php echo Options::get('title'); ?></a></h1>
+			<h1 itemprop="name"><a href="<?php Site::out_url( 'site' ); ?>/" itemprop="url"><?php echo Options::get('title'); ?></a></h1>
 			<h2 itemprop="description"><?php echo Options::get('tagline'); ?></h2>
 		</hgroup>
 		<?php echo $theme->area('nav'); ?>

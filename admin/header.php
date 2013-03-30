@@ -70,7 +70,7 @@ header( 'X-Frame-Options: DENY' );
 		</div>
 	</div>
 
-	<a href="<?php Site::out_url( 'habari' ); ?>" id="site" title="<?php _e( 'Go to Site' ); ?>"><?php Options::out( 'title' ); ?></a>
+	<a href="<?php Site::out_url( 'site' ); ?>" id="site" title="<?php _e( 'Go to Site' ); ?>"><?php Options::out( 'title' ); ?></a>
 
 </div>
 

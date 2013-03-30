@@ -202,7 +202,7 @@ class URL extends Singleton
 		if ( $selectedrule instanceOf RewriteRule ) {
 			$return_url = $selectedrule->build( $f_args, $useall, $noamp );
 			if ( $prepend_site ) {
-				return Site::get_url( 'habari', true ) . $return_url;
+				return Site::get_url( 'site', true ) . $return_url;
 			}
 			else {
 				return $return_url;
