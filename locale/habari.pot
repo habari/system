@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-29 19:06+0000\n"
+"POT-Creation-Date: 2013-03-30 01:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -110,12 +110,12 @@ msgstr ""
 msgid "Delete this comment"
 msgstr ""
 
-#: handlers/admincommentshandler.php:459 handlers/adminusershandler.php:193
-#: handlers/adminusershandler.php:199 admin/publish.php:18
+#: handlers/admincommentshandler.php:459 handlers/adminusershandler.php:194
+#: handlers/adminusershandler.php:200 admin/publish.php:18
 #: admin/posts_items.php:32 admin/block_instances.php:25
 #: admin/block_instances.php:37 admin/group.php:130 admin/groups_item.php:11
-#: plugins/habarisilo/habarisilo.plugin.php:489
-#: plugins/habarisilo/habarisilo.plugin.php:506
+#: plugins/habarisilo/habarisilo.plugin.php:496
+#: plugins/habarisilo/habarisilo.plugin.php:513
 msgid "Delete"
 msgstr ""
 
@@ -132,8 +132,8 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: handlers/admincommentshandler.php:541 handlers/adminusershandler.php:335
-#: handlers/adminusershandler.php:450 handlers/admintagshandler.php:41
+#: handlers/admincommentshandler.php:541 handlers/adminusershandler.php:340
+#: handlers/adminusershandler.php:455 handlers/admintagshandler.php:41
 #: handlers/admintagshandler.php:67 handlers/adminlogshandler.php:240
 #: handlers/adminpostshandler.php:455 handlers/admingroupshandler.php:129
 #: handlers/admingroupshandler.php:236
@@ -204,7 +204,7 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: handlers/userhandler.php:154 handlers/adminusershandler.php:35
+#: handlers/userhandler.php:154 handlers/adminusershandler.php:36
 #: installer/db_setup.php:65 installer/db_setup.php:112
 #: installer/db_setup.php:193
 msgid "Password"
@@ -437,171 +437,171 @@ msgstr ""
 msgid "The database file was left empty."
 msgstr ""
 
-#: handlers/adminusershandler.php:24 installer/db_setup.php:54
+#: handlers/adminusershandler.php:25 installer/db_setup.php:54
 #: installer/db_setup.php:101 installer/db_setup.php:183
 msgid "Username"
 msgstr ""
 
-#: handlers/adminusershandler.php:30
+#: handlers/adminusershandler.php:31
 msgid "E-Mail"
 msgstr ""
 
-#: handlers/adminusershandler.php:40
+#: handlers/adminusershandler.php:41
 msgid "Password Again"
 msgstr ""
 
-#: handlers/adminusershandler.php:62
+#: handlers/adminusershandler.php:63
 msgid "You"
 msgstr ""
 
-#: handlers/adminusershandler.php:63
+#: handlers/adminusershandler.php:64
 msgid "Your User Information"
 msgstr ""
 
-#: handlers/adminusershandler.php:71
+#: handlers/adminusershandler.php:72
 #, php-format
 msgid "%s's User Information"
 msgstr ""
 
-#: handlers/adminusershandler.php:75 handlers/adminhandler.php:116
+#: handlers/adminusershandler.php:76 handlers/adminhandler.php:116
 msgid "Access to that page has been denied by the administrator."
 msgstr ""
 
-#: handlers/adminusershandler.php:82 handlers/adminusershandler.php:419
+#: handlers/adminusershandler.php:83 handlers/adminusershandler.php:424
 msgid "nobody"
 msgstr ""
 
-#: handlers/adminusershandler.php:96
+#: handlers/adminusershandler.php:97
 msgid "No such user!"
 msgstr ""
 
-#: handlers/adminusershandler.php:104
+#: handlers/adminusershandler.php:105
 msgid "Change Password"
 msgstr ""
 
-#: handlers/adminusershandler.php:105
+#: handlers/adminusershandler.php:106
 msgid "Regional Settings"
 msgstr ""
 
-#: handlers/adminusershandler.php:106 handlers/adminhandler.php:331
+#: handlers/adminusershandler.php:107 handlers/adminhandler.php:331
 msgid "Dashboard"
 msgstr ""
 
-#: handlers/adminusershandler.php:123
+#: handlers/adminusershandler.php:124
 msgid "Display Name"
 msgstr ""
 
-#: handlers/adminusershandler.php:126
+#: handlers/adminusershandler.php:127
 msgid "User Name"
 msgstr ""
 
-#: handlers/adminusershandler.php:129 classes/post.php:1252
+#: handlers/adminusershandler.php:130 classes/post.php:1252
 msgid "Email"
 msgstr ""
 
-#: handlers/adminusershandler.php:132
+#: handlers/adminusershandler.php:133
 msgid "Portrait URL"
 msgstr ""
 
-#: handlers/adminusershandler.php:136
+#: handlers/adminusershandler.php:137
 msgid "New Password"
 msgstr ""
 
-#: handlers/adminusershandler.php:139
+#: handlers/adminusershandler.php:140
 msgid "New Password Again"
 msgstr ""
 
-#: handlers/adminusershandler.php:144
+#: handlers/adminusershandler.php:145
 msgid "Passwords must match."
 msgstr ""
 
-#: handlers/adminusershandler.php:151
+#: handlers/adminusershandler.php:152
 msgid "Timezone"
 msgstr ""
 
-#: handlers/adminusershandler.php:154 handlers/adminoptionshandler.php:84
+#: handlers/adminusershandler.php:155 handlers/adminoptionshandler.php:85
 msgid "Date Format"
 msgstr ""
 
-#: handlers/adminusershandler.php:161 handlers/adminusershandler.php:171
+#: handlers/adminusershandler.php:162 handlers/adminusershandler.php:172
 #, php-format
 msgid "See <a href=\"%s\">php.net/date</a> for details. Current format: %s"
 msgstr ""
 
-#: handlers/adminusershandler.php:164 handlers/adminoptionshandler.php:89
+#: handlers/adminusershandler.php:165 handlers/adminoptionshandler.php:90
 msgid "Time Format"
 msgstr ""
 
-#: handlers/adminusershandler.php:175
+#: handlers/adminusershandler.php:176
 msgid "Hide the number of SPAM comments on your dashboard."
 msgstr ""
 
-#: handlers/adminusershandler.php:176
+#: handlers/adminusershandler.php:177
 msgid "Hide Spam Count"
 msgstr ""
 
-#: handlers/adminusershandler.php:182 handlers/adminhandler.php:338
+#: handlers/adminusershandler.php:183 handlers/adminhandler.php:338
 msgid "Groups"
 msgstr ""
 
-#: handlers/adminusershandler.php:189 handlers/adminoptionshandler.php:164
+#: handlers/adminusershandler.php:190 handlers/adminoptionshandler.php:165
 #: admin/group.php:133
 msgid "Apply"
 msgstr ""
 
-#: handlers/adminusershandler.php:191
+#: handlers/adminusershandler.php:192
 #, php-format
 msgid "Reassign posts to: %s"
 msgstr ""
 
-#: handlers/adminusershandler.php:192 handlers/adminusershandler.php:198
+#: handlers/adminusershandler.php:193 handlers/adminusershandler.php:199
 msgid "and"
 msgstr ""
 
-#: handlers/adminusershandler.php:196
+#: handlers/adminusershandler.php:197
 msgid "Reassign posts to:"
 msgstr ""
 
-#: handlers/adminusershandler.php:207 handlers/adminhandler.php:337
+#: handlers/adminusershandler.php:208 handlers/adminhandler.php:337
 msgid "My Profile"
 msgstr ""
 
-#: handlers/adminusershandler.php:207 admin/logs.php:39
+#: handlers/adminusershandler.php:208 admin/logs.php:39
 msgid "User"
 msgstr ""
 
-#: handlers/adminusershandler.php:246
+#: handlers/adminusershandler.php:247
 #, php-format
 msgid "%s has been deleted"
 msgstr ""
 
-#: handlers/adminusershandler.php:251 handlers/adminusershandler.php:394
+#: handlers/adminusershandler.php:252 handlers/adminusershandler.php:399
 msgid "You cannot delete yourself."
 msgstr ""
 
-#: handlers/adminusershandler.php:259
+#: handlers/adminusershandler.php:260
 #, php-format
 msgid "%1$s has been renamed to %2$s."
 msgstr ""
 
-#: handlers/adminusershandler.php:272
+#: handlers/adminusershandler.php:273
 msgid "Password changed."
 msgstr ""
 
-#: handlers/adminusershandler.php:310
+#: handlers/adminusershandler.php:315
 msgid "User updated."
 msgstr ""
 
-#: handlers/adminusershandler.php:363
+#: handlers/adminusershandler.php:368
 msgid "No users deleted."
 msgstr ""
 
-#: handlers/adminusershandler.php:401
+#: handlers/adminusershandler.php:406
 #, php-format
 msgid "Deleted %d users."
 msgstr ""
 
-#: handlers/adminusershandler.php:483
+#: handlers/adminusershandler.php:488
 #, php-format
 msgid "Added user '%s'"
 msgstr ""
@@ -762,7 +762,7 @@ msgstr ""
 
 #: handlers/adminthemeshandler.php:160 themes/charcoal/theme.php:68
 #: admin/themes.php:91 classes/post.php:1024
-#: plugins/flickrsilo/flickrsilo.plugin.php:902
+#: plugins/flickrsilo/flickrsilo.plugin.php:935
 #: plugins/undelete/undelete.plugin.php:185
 msgid "Save"
 msgstr ""
@@ -795,115 +795,115 @@ msgstr ""
 msgid "This data is for a block of type \"%s\", which is no longer provided by a theme or plugin."
 msgstr ""
 
-#: handlers/adminoptionshandler.php:35
+#: handlers/adminoptionshandler.php:36
 msgid "Name & Tagline"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:37 installer/db_setup.php:173
+#: handlers/adminoptionshandler.php:38 installer/db_setup.php:173
 msgid "Site Name"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:42
+#: handlers/adminoptionshandler.php:43
 msgid "Site Tagline"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:47
+#: handlers/adminoptionshandler.php:48
 msgid "About"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:53
+#: handlers/adminoptionshandler.php:54
 #: plugins/pingback/pingback.plugin.php:389
 msgid "Publishing"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:55
+#: handlers/adminoptionshandler.php:56
 msgid "Items per Page"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:60
+#: handlers/adminoptionshandler.php:61
 msgid "Entries to show in Atom feed"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:65
+#: handlers/adminoptionshandler.php:66
 msgid "Require Comment Author Email"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:70
+#: handlers/adminoptionshandler.php:71
 msgid "Comment SPAM Threshold"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:72
+#: handlers/adminoptionshandler.php:73
 msgid "The likelihood a comment is considered SPAM, in percent."
 msgstr ""
 
-#: handlers/adminoptionshandler.php:76
+#: handlers/adminoptionshandler.php:77
 msgid "Time & Date"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:78
+#: handlers/adminoptionshandler.php:79
 msgid "Time Zone"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:81
+#: handlers/adminoptionshandler.php:82
 #, php-format
 msgid "Current Date Time: %s"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:86
+#: handlers/adminoptionshandler.php:87
 #, php-format
 msgid "Current Date: %s"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:91
+#: handlers/adminoptionshandler.php:92
 #, php-format
 msgid "Current Time: %s"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:95 installer/locale_dropdown.php:10
+#: handlers/adminoptionshandler.php:96 installer/locale_dropdown.php:10
 msgid "Language"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:97 installer/locale_dropdown.php:6
+#: handlers/adminoptionshandler.php:98 installer/locale_dropdown.php:6
 msgid "Locale"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:100
+#: handlers/adminoptionshandler.php:101
 msgid "International language code : This value is set in your config.php file, and cannot be changed here."
 msgstr ""
 
-#: handlers/adminoptionshandler.php:100
+#: handlers/adminoptionshandler.php:101
 msgid "International language code"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:105 handlers/adminhandler.php:196
+#: handlers/adminoptionshandler.php:106 handlers/adminhandler.php:196
 msgid "System Locale"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:107
+#: handlers/adminoptionshandler.php:108
 msgid "The appropriate locale code for your server"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:111
+#: handlers/adminoptionshandler.php:112
 msgid "Troubleshooting"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:113
+#: handlers/adminoptionshandler.php:114
 msgid "Minimum Severity"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:116
+#: handlers/adminoptionshandler.php:117
 msgid "Only log entries with a this or higher severity."
 msgstr ""
 
-#: handlers/adminoptionshandler.php:119
+#: handlers/adminoptionshandler.php:120
 msgid "Log Backtraces"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:121
+#: handlers/adminoptionshandler.php:122
 msgid "Logs error backtraces to the log table's data column. Can drastically increase log size!"
 msgstr ""
 
-#: handlers/adminoptionshandler.php:189
+#: handlers/adminoptionshandler.php:190
 msgid "Successfully updated options"
 msgstr ""
 
@@ -1085,7 +1085,7 @@ msgstr ""
 msgid "Manage tags"
 msgstr ""
 
-#: handlers/adminhandler.php:330 plugins/flickrsilo/flickrsilo.plugin.php:654
+#: handlers/adminhandler.php:330 plugins/flickrsilo/flickrsilo.plugin.php:669
 msgid "Tags"
 msgstr ""
 
@@ -1211,8 +1211,8 @@ msgid "Older Posts"
 msgstr ""
 
 #: themes/mzingi/searchform.php:6 plugins/coreblocks/coreblocks.plugin.php:377
-#: plugins/flickrsilo/flickrsilo.plugin.php:633
-#: plugins/flickrsilo/flickrsilo.plugin.php:1008
+#: plugins/flickrsilo/flickrsilo.plugin.php:648
+#: plugins/flickrsilo/flickrsilo.plugin.php:1047
 msgid "Search"
 msgstr ""
 
@@ -1366,7 +1366,7 @@ msgid "Message: (Required)"
 msgstr ""
 
 #: themes/mzingi/theme.php:115 themes/charcoal/theme.php:235
-#: classes/post.php:1278 plugins/habarisilo/habarisilo.plugin.php:471
+#: classes/post.php:1278 plugins/habarisilo/habarisilo.plugin.php:478
 #: plugins/coredashmodules/coredashmodules.plugin.php:93
 msgid "Submit"
 msgstr ""
@@ -1533,7 +1533,7 @@ msgstr ""
 msgid "Set to the number of tags to display on the default \"cloud\"."
 msgstr ""
 
-#: themes/charcoal/theme.php:69 plugins/flickrsilo/flickrsilo.plugin.php:903
+#: themes/charcoal/theme.php:69 plugins/flickrsilo/flickrsilo.plugin.php:936
 msgid "Options saved"
 msgstr ""
 
@@ -1626,13 +1626,17 @@ msgstr ""
 msgid "Sorry, commenting on this post is disabled."
 msgstr ""
 
+#: admin/dashboard_modules.php:5
+msgid "Add Item"
+msgstr ""
+
 #: admin/tags.php:6
 msgid "Type and wait to search tags"
 msgstr ""
 
 #: admin/tags.php:23 admin/comments.php:17 admin/comments.php:41
 #: admin/logs.php:18 admin/logs.php:81 admin/posts.php:16 admin/posts.php:42
-#: admin/users.php:40
+#: admin/users.php:40 admin/js/admin.js:322
 msgid "None selected"
 msgstr ""
 
@@ -1684,8 +1688,8 @@ msgstr ""
 msgid "Upload Plugin Package"
 msgstr ""
 
-#: admin/plugins.php:89 plugins/habarisilo/habarisilo.plugin.php:422
-#: plugins/habarisilo/habarisilo.plugin.php:583
+#: admin/plugins.php:89 plugins/habarisilo/habarisilo.plugin.php:429
+#: plugins/habarisilo/habarisilo.plugin.php:590
 msgid "Upload"
 msgstr ""
 
@@ -2225,6 +2229,10 @@ msgstr ""
 msgid "The XML file for the plugin %s contained errors and could not be loaded."
 msgstr ""
 
+#: admin/plugin.php:48
+msgid "core"
+msgstr ""
+
 #: admin/plugin.php:63
 msgid "v1.1 Update Available Now"
 msgstr ""
@@ -2258,7 +2266,7 @@ msgid "Configure Block: %1s (%2s)"
 msgstr ""
 
 #: admin/block_instances.php:17 classes/pluggable.php:285
-#: plugins/flickrsilo/flickrsilo.plugin.php:829
+#: plugins/flickrsilo/flickrsilo.plugin.php:862
 #: plugins/undelete/undelete.plugin.php:170
 #: plugins/undelete/undelete.plugin.php:182
 msgid "Configure"
@@ -3313,7 +3321,7 @@ msgstr ""
 msgid "Perform a single check for plugin updates, the plugin set has changed."
 msgstr ""
 
-#: classes/post.php:276 classes/acl.php:914
+#: classes/post.php:276 classes/acl.php:800 classes/acl.php:914
 #, php-format
 msgid "Permissions to posts of type \"%s\""
 msgstr ""
@@ -3440,31 +3448,31 @@ msgstr ""
 msgid "The Comment field value is required"
 msgstr ""
 
-#: classes/post.php:1677
+#: classes/post.php:1678
 msgid "Entry"
 msgstr ""
 
-#: classes/post.php:1678
+#: classes/post.php:1679
 msgid "Entries"
 msgstr ""
 
-#: classes/post.php:1681
+#: classes/post.php:1682
 msgid "Page"
 msgstr ""
 
-#: classes/post.php:1682
+#: classes/post.php:1683
 msgid "Pages"
 msgstr ""
 
-#: classes/post.php:1697
+#: classes/post.php:1698
 msgid "draft"
 msgstr ""
 
-#: classes/post.php:1698
+#: classes/post.php:1699
 msgid "published"
 msgstr ""
 
-#: classes/post.php:1699
+#: classes/post.php:1700
 msgid "scheduled"
 msgstr ""
 
@@ -3498,7 +3506,7 @@ msgstr ""
 msgid "User Group %1$s: Users were removed from the group."
 msgstr ""
 
-#: classes/url.php:221
+#: classes/url.php:222
 #, php-format
 msgid "Could not find a rule matching the following names: %s. File: %s (line %s)"
 msgstr ""
@@ -4194,128 +4202,128 @@ msgstr ""
 msgid "Delete files from media silos"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:420
+#: plugins/habarisilo/habarisilo.plugin.php:427
 msgid "Browse"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:425
+#: plugins/habarisilo/habarisilo.plugin.php:432
 msgid "Create Directory"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:428
+#: plugins/habarisilo/habarisilo.plugin.php:435
 msgid "Delete Directory"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:464
+#: plugins/habarisilo/habarisilo.plugin.php:471
 msgid "Parent Directory:"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:469
+#: plugins/habarisilo/habarisilo.plugin.php:476
 msgid "What would you like to call the new directory?"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:483
+#: plugins/habarisilo/habarisilo.plugin.php:490
 msgid "Directory:"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:488
+#: plugins/habarisilo/habarisilo.plugin.php:495
 msgid "Are you sure you want to delete this directory?"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:501
+#: plugins/habarisilo/habarisilo.plugin.php:508
 msgid "File:"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:505
+#: plugins/habarisilo/habarisilo.plugin.php:512
 msgid "Are you sure you want to delete this file?"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:517
+#: plugins/habarisilo/habarisilo.plugin.php:524
 msgid "File: "
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:526
+#: plugins/habarisilo/habarisilo.plugin.php:533
 #, php-format
 msgid "File uploaded: %s"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:532
+#: plugins/habarisilo/habarisilo.plugin.php:539
 msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:533
+#: plugins/habarisilo/habarisilo.plugin.php:540
 msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:534
+#: plugins/habarisilo/habarisilo.plugin.php:541
 msgid "The uploaded file was only partially uploaded."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:535
+#: plugins/habarisilo/habarisilo.plugin.php:542
 msgid "No file was uploaded."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:536
+#: plugins/habarisilo/habarisilo.plugin.php:543
 msgid "Missing a temporary folder."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:537
+#: plugins/habarisilo/habarisilo.plugin.php:544
 msgid "Failed to write file to disk."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:538
+#: plugins/habarisilo/habarisilo.plugin.php:545
 msgid "A PHP extension stopped the file upload. PHP does not provide a way to ascertain which extension caused the file upload to stop; examining the list of loaded extensions with phpinfo() may help."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:540
+#: plugins/habarisilo/habarisilo.plugin.php:547
 #, php-format
 msgid "File upload failed: %s"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:546
-#: plugins/habarisilo/habarisilo.plugin.php:659
+#: plugins/habarisilo/habarisilo.plugin.php:553
+#: plugins/habarisilo/habarisilo.plugin.php:666
 msgid "Browse the current silo path."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:548
+#: plugins/habarisilo/habarisilo.plugin.php:555
 msgid "Suspicious behaviour or too much time has elapsed.  Please upload your file again."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:583
+#: plugins/habarisilo/habarisilo.plugin.php:590
 msgid "Upload to:"
-msgstr ""
-
-#: plugins/habarisilo/habarisilo.plugin.php:601
-#, php-format
-msgid "The directory name contains invalid characters: %s."
 msgstr ""
 
 #: plugins/habarisilo/habarisilo.plugin.php:608
 #, php-format
+msgid "The directory name contains invalid characters: %s."
+msgstr ""
+
+#: plugins/habarisilo/habarisilo.plugin.php:615
+#, php-format
 msgid "Webserver does not have permission to create directory: %s."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:611
+#: plugins/habarisilo/habarisilo.plugin.php:618
 #, php-format
 msgid "Directory: %s already exists."
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:630
+#: plugins/habarisilo/habarisilo.plugin.php:637
 #, php-format
 msgid "Directory deleted: /%s"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:635
+#: plugins/habarisilo/habarisilo.plugin.php:642
 #, php-format
 msgid "Directory created: %s"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:654
+#: plugins/habarisilo/habarisilo.plugin.php:661
 #, php-format
 msgid "File deleted: /%s"
 msgstr ""
 
-#: plugins/habarisilo/habarisilo.plugin.php:656
+#: plugins/habarisilo/habarisilo.plugin.php:663
 #, php-format
 msgid "Failed to delete file: /%s"
 msgstr ""
@@ -4436,123 +4444,123 @@ msgstr ""
 msgid "Import is complete."
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:638
+#: plugins/flickrsilo/flickrsilo.plugin.php:653
 msgid "Search CC"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:644
+#: plugins/flickrsilo/flickrsilo.plugin.php:659
 msgid "Photos"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:649
+#: plugins/flickrsilo/flickrsilo.plugin.php:664
 msgid "Videos"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:659
+#: plugins/flickrsilo/flickrsilo.plugin.php:674
 msgid "Sets"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:807
+#: plugins/flickrsilo/flickrsilo.plugin.php:840
 msgid "This photo has no title"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:824
+#: plugins/flickrsilo/flickrsilo.plugin.php:857
 msgid "De-Authorize"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:827
+#: plugins/flickrsilo/flickrsilo.plugin.php:860
 msgid "Authorize"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:842
+#: plugins/flickrsilo/flickrsilo.plugin.php:875
 msgid "You have already successfully authorized Habari to access your Flickr account."
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:843
+#: plugins/flickrsilo/flickrsilo.plugin.php:876
 #, php-format
 msgid "Do you want to <a href=\"%1$s\">revoke authorization</a>?"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:850
+#: plugins/flickrsilo/flickrsilo.plugin.php:883
 #, php-format
 msgid "To use this plugin, you must <a href=\"%1$s\">authorized Habari to have access to your Flickr account</a>."
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:851
+#: plugins/flickrsilo/flickrsilo.plugin.php:884
 #, php-format
 msgid "When you have completed the authorization on Flickr, return here and <a href=\"%1$s\">confirm that the authorization was successful</a>."
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:865
+#: plugins/flickrsilo/flickrsilo.plugin.php:898
 #, php-format
 msgid "Either you have already authorized Habari to access your flickr account, or you have not yet done so.  Please <a href=\"%1$s\">try again</a>."
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:871
+#: plugins/flickrsilo/flickrsilo.plugin.php:904
 msgid "Your authorization was set successfully."
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:874
+#: plugins/flickrsilo/flickrsilo.plugin.php:907
 msgid "There was a problem with your authorization:"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:889
+#: plugins/flickrsilo/flickrsilo.plugin.php:922
 msgid "The Flickr Silo Plugin authorization has been deleted."
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:890
+#: plugins/flickrsilo/flickrsilo.plugin.php:923
 msgid "Do you want to "
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:890
+#: plugins/flickrsilo/flickrsilo.plugin.php:923
 msgid "re-authorize this plugin"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:900
+#: plugins/flickrsilo/flickrsilo.plugin.php:933
 msgid "Default size for images in Posts:"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:901
+#: plugins/flickrsilo/flickrsilo.plugin.php:934
 msgid "Square"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:901
+#: plugins/flickrsilo/flickrsilo.plugin.php:934
 msgid "Thumbnail"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:901
+#: plugins/flickrsilo/flickrsilo.plugin.php:934
 msgid "Small"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:901
+#: plugins/flickrsilo/flickrsilo.plugin.php:934
 msgid "Medium"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:901
+#: plugins/flickrsilo/flickrsilo.plugin.php:934
 msgid "Large"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:901
+#: plugins/flickrsilo/flickrsilo.plugin.php:934
 msgid "Original Size"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:934
+#: plugins/flickrsilo/flickrsilo.plugin.php:967
 msgid "embed_photo"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:935
+#: plugins/flickrsilo/flickrsilo.plugin.php:968
 msgid "embed_video"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:936
+#: plugins/flickrsilo/flickrsilo.plugin.php:969
 msgid "thumbnail"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:937
+#: plugins/flickrsilo/flickrsilo.plugin.php:970
 msgid "Open in new window"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:1008
+#: plugins/flickrsilo/flickrsilo.plugin.php:1047
 msgid "Search for photos"
 msgstr ""
 
@@ -4961,4 +4969,66 @@ msgstr ""
 #: plugins/pingback/pingback.plugin.php:419
 #, php-format
 msgid "%d Pingback"
+msgstr ""
+
+#: vendor/humanmsg/humanmsg.js:145
+msgid "Message Log"
+msgstr ""
+
+#: admin/js/admin.js:61 admin/js/admin.js:65
+msgid "Uh Oh. An error has occurred. Please try again later."
+msgstr ""
+
+#: admin/js/admin.js:327
+#, perl-format
+msgid "All %1$s visible selected (<a href=\"#all\" class=\"everything\">Select all %2$s</a>)"
+msgstr ""
+
+#: admin/js/admin.js:339
+#, perl-format
+msgid "All %s selected"
+msgstr ""
+
+#: admin/js/admin.js:345
+#, perl-format
+msgid "%s selected"
+msgstr ""
+
+#: admin/js/admin.js:348
+#, perl-format
+msgid "%1$s selected (%2$s visible)"
+msgstr ""
+
+#: admin/js/admin.js:564
+msgid "You did not save the changes you made. \\nLeaving this page will result in the lose of data."
+msgstr ""
+
+#: installer/script.js:157
+#, perl-format
+msgid "This plugin conflics with a requirement of the theme: %s"
+msgstr ""
+
+#: installer/script.js:163
+#, perl-format
+msgid "This plugin provides a requirement of the theme: %s"
+msgstr ""
+
+#: installer/script.js:182
+#, perl-format
+msgid "This plugin conflicts with the enabled plugin %1$s over this feature: %2$s"
+msgstr ""
+
+#: installer/script.js:192
+#, perl-format
+msgid "This plugin provides a feature that the enabled plugin %1$s conflicts with: %2$s"
+msgstr ""
+
+#: installer/script.js:203
+#, perl-format
+msgid "This plugin requires a feature that is not provided by the current theme or any available plugin: %s"
+msgstr ""
+
+#: installer/script.js:221
+#, perl-format
+msgid "This plugin provides a requirement of an active plugin: %s"
 msgstr ""
