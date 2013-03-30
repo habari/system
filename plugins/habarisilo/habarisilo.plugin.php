@@ -64,7 +64,7 @@ class HabariSilo extends Plugin implements MediaSilo
 	 */
 	public function filter_token_description_display( $token )
 	{
-		$descr = array(
+		$desc = array(
 		    'create_directories' => _t( 'Create media silo directories' ),
 		    'delete_directories' => _t( 'Delete media silo directories' ),
 		    'upload_media' => _t( 'Upload files to media silos' ),
