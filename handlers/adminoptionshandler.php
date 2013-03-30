@@ -26,8 +26,9 @@ class AdminOptionsHandler extends AdminHandler
 		parent::__construct();
 
 		// Let's register the options page form so we can use it with ajax
+		$self = $this;
 
-		FormUI::register('admin_options', function($form, $name, $extra_data) {
+		FormUI::register('admin_options', function($form, $name, $extra_data) use ($self) {
 			$option_items = array();
 			$timezones = \DateTimeZone::listIdentifiers();
 			$timezones = array_merge( array( ''=>'' ), array_combine( array_values( $timezones ), array_values( $timezones ) ) );
@@ -162,7 +163,7 @@ class AdminOptionsHandler extends AdminHandler
 			$buttons = $form->append(new FormControlWrapper('buttons', null, array('class' => 'container')));
 
 			$buttons->append( FormControlSubmit::create('apply', null, array('tabindex' => $tab_index))->set_caption(_t('Apply')) );
-			$form->on_success( array( $this, 'form_options_success' ) );
+			$form->on_success( array( $self, 'form_options_success' ) );
 		});
 	}
 

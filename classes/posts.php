@@ -94,6 +94,7 @@ class Posts extends \ArrayObject implements IsContent
 	 *     - vocabulary_name:not:term_display => a vocabulary name and term display pair or array of vocabulary name and term display pairs, none of which can be associated with the posts
 	 *     - vocabulary_name:all:term => a vocabulary name and term slug pair or array of vocabulary name and term slug pairs, all of which must be associated with the posts
 	 *     - vocabulary_name:all:term_display => a vocabulary name and term display pair or array of vocabulary name and term display pairs, all of which must be associated with the posts
+	 * - on_query_built => a closure that accepts a Query as a parameter, allowing a plugin to alter the Query for this request directly
 	 * - limit => the maximum number of posts to return, implicitly set for many queries
 	 * - nolimit => do not implicitly set limit
 	 * - offset => amount by which to offset returned posts, used in conjunction with limit
@@ -751,6 +752,7 @@ class Posts extends \ArrayObject implements IsContent
 			return $return_value;
 		}
 	}
+
 
 	/**
 	 * Accept a parameter array for Posts::get() with presets, and return an array with all defined parameters from those presets

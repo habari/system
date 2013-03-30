@@ -82,10 +82,20 @@ class HTMLDoc
 		$body_content = $this->query('//body/*');
 		$output = '';
 		foreach($body_content as $node) {
-			$output .= $this->dom->saveHTML($node->node);
+			$output .= $this->dom->saveXML($node->node);
 		}
 		return $output;
 	}
+
+	/**
+	 * Render this DOM as a string
+	 * @return string the string representation of the DOM
+	 */
+	function __toString()
+	{
+		return $this->get();
+	}
+
 }
 
 /**
@@ -258,6 +268,15 @@ class HTMLNode
 			$this->node->removeChild($child);
 			$this->node->parentNode->insertBefore($child, $this->node);
 		}
+	}
+
+	/**
+	 * Get this node's string representation
+	 * @return string The node's string representation
+	 */
+	function get()
+	{
+		return $this->node->ownerDocument->saveXML($this->node);
 	}
 
 }
