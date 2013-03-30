@@ -3,7 +3,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title><?php if($request->display_entry && isset($post)) { echo $post->title_title . ' - '; } ?><?php echo Options::get('title'); ?></title>
+	<title><?php if($request->display_entry && isset($post)) { echo $post->title . ' - '; } ?><?php echo Options::get('title'); ?></title>
 	<meta name="generator" content="Habari">
 	<meta name="viewport" content="width=device-width, maximum-scale = 1">
 	<link rel="Shortcut Icon" href="<?php echo $theme->get_url('/favicon.png'); ?>">
