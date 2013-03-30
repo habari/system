@@ -266,7 +266,7 @@ class User extends QueryRecord implements FormStorage, IsContent
 		Session::destroy();
 
 		if ( $redirect ) {
-			Utils::redirect( Site::get_url( 'habari' ) );
+			Utils::redirect( Site::get_url( 'site' ) );
 		}
 	}
 

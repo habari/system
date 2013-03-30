@@ -129,7 +129,7 @@ class UserHandler extends ActionHandler
 			$user->forget();
 			$user = null;
 		}
-		Utils::redirect( Site::get_url( 'habari' ) );
+		Utils::redirect( Site::get_url( 'site' ) );
 	}
 
 	/**

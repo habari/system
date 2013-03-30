@@ -100,7 +100,7 @@ class InstallHandler extends ActionHandler
 				// write new config file
 				if ( $this->write_config_file( true ) ) {
 					// successful, so redirect:
-					Utils::redirect( Site::get_url( 'habari' ) );
+					Utils::redirect( Site::get_url( 'site' ) );
 				}
 			}
 
@@ -195,7 +195,7 @@ class InstallHandler extends ActionHandler
 		}
 
 		EventLog::log( _t( 'Habari successfully installed.' ), 'info', 'default', 'habari' );
-		Utils::redirect( Site::get_url( 'habari' ) );
+		Utils::redirect( Site::get_url( 'site' ) );
 	}
 
 	/**
@@ -1124,7 +1124,7 @@ class InstallHandler extends ActionHandler
 			// the Habari block exists, but we need to make sure
 			// it is correct.
 			// Check that the rewrite rules actually do the job.
-			$test_ajax_url = Site::get_url( 'habari' ) . '/check_mod_rewrite';
+			$test_ajax_url = Site::get_url( 'site' ) . '/check_mod_rewrite';
 			$rr = new RemoteRequest( $test_ajax_url, 'POST', 5 );
 			try {
 				$rr_result = $rr->execute();

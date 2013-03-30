@@ -219,11 +219,19 @@ class Session extends Singleton
 		// not always set, even by real browsers
 		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 
-		// get the data from the ArrayObject
-		$data = $_SESSION;
+		$dowrite = self::changed();
+
+		if(isset($_SESSION)) {
+			// get the data from the ArrayObject
+			$data = $_SESSION;
+		}
+		else {
+			$dowrite = false;
+			$data = array();
+		}
 
 		// but let a plugin make the final decision. we may want to ignore search spiders, for instance
-		$dowrite = Plugins::filter( 'session_write', self::changed(), self::$session_id, $data );
+		$dowrite = Plugins::filter( 'session_write', $dowrite, self::$session_id, $data );
 
 		if ( $dowrite ) {
 			// DB::update() checks if the record key exists, and inserts if not

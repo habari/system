@@ -190,16 +190,16 @@ class Site
 				}
 				break;
 			case 'admin':
-				$url = Site::get_url( 'habari' ) . '/admin';
+				$url = Site::get_url( 'site' ) . '/admin';
 				break;
 			case 'admin_theme':
 				$url = Site::get_url( 'habari' ) . '/system/admin';
 				break;
 			case 'login':
-				$url = Site::get_url( 'habari' ) . '/auth/login';
+				$url = Site::get_url( 'site' ) . '/auth/login';
 				break;
 			case 'logout':
-				$url = Site::get_url( 'habari' ) . '/auth/logout';
+				$url = Site::get_url( 'site' ) . '/auth/logout';
 				break;
 			case 'system':
 				$url = Site::get_url( 'habari' ) . '/system';
