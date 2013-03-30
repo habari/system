@@ -1049,9 +1049,7 @@ class InstallHandler extends ActionHandler
 			$id = Plugins::id_from_file( $file );
 			if ( in_array( $id, $plugin_ids ) ) {
 				Plugins::activate_plugin( $file );
-				echo 'ACTIVATED:';
 			}
-			var_dump($file, $id);
 		}
 
 		// unset the user_id session variable
