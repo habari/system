@@ -5,7 +5,7 @@
 <html <?php if(isset($locale)): ?>lang="<?php echo $locale; endif; ?>">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; <?php if(isset($charset)): ?>charset=<?php echo $charset; endif; ?>">
-	<title><?php if (isset($request->display_entry) && $request->display_entry && isset($post)) { echo "{$post->title} - "; } ?><?php Options::out( 'title' ) ?></title>
+	<title><?php echo $page_title; ?></title>
 	<meta name="generator" content="Habari">
 
 	<link rel="stylesheet" type="text/css"  media="print" href="<?php Site::out_url( 'vendor'); ?>/blueprint/print.css">

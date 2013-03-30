@@ -141,6 +141,10 @@ class Theme extends Pluggable
 			$this->assign( 'page', isset( $this->page ) ? $this->page : 1 );
 		}
 
+		if ( !$this->template_engine->assigned('page_template') ) {
+			$this->assign('page_title', $this->page_title());
+		}
+
 		$handler = Controller::get_handler();
 		if ( isset( $handler ) ) {
 			Plugins::act( 'add_template_vars', $this, $handler->handler_vars );
@@ -1327,6 +1331,27 @@ class Theme extends Pluggable
 		$body_class = array_unique( array_merge( $body_class, Stack::get_named_stack( 'body_class' ), Utils::single_array( $args ) ) );
 		$body_class = Plugins::filter( 'body_class', $body_class, $theme );
 		return implode( ' ', $body_class );
+	}
+
+	/**
+	 * A Theme function to provide a page title
+	 * @param Theme $theme The current theme
+	 *
+	 */
+	function theme_page_title( $theme )
+	{
+		$component = array();
+		if(isset($this->request)) {
+			if($this->request->display_post && isset($theme->post)) {
+				$component['post'] = $theme->post->title_title;
+			}
+			if($this->request->display_entries_by_tag && isset($theme->post)) {
+				$component['tag'] = _t('Posts tagged with "%s"', array(implode(',', $theme->include_tag)));
+			}
+		}
+		$component['site'] = Options::get('title');
+		$component = Plugins::filter('page_titles', $component, $theme);
+		return implode(' - ', $component);
 	}
 	
 	/**
