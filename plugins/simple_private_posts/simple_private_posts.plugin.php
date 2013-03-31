@@ -1,6 +1,10 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
+<?php
 
-class SimplePrivatePosts extends Habari\Plugin
+namespace Habari;
+
+if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
+
+class SimplePrivatePosts extends Plugin
 {
 
 	public function action_plugin_activation()
