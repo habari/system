@@ -552,7 +552,7 @@ class InstallHandler extends ActionHandler
 			$connect = DB::connect( $pdo, $this->handler_vars['db_user'], html_entity_decode( $this->handler_vars['db_pass'] ) );
 			return true;
 		}
-		catch( PDOException $e ) {
+		catch( \PDOException $e ) {
 			if ( strpos( $e->getMessage(), '[1045]' ) ) {
 				$this->theme->assign( 'form_errors', array( 'mysql_db_pass' => _t( 'Access denied. Make sure these credentials are valid.' ) ) );
 			}
@@ -585,7 +585,7 @@ class InstallHandler extends ActionHandler
 			$connect = DB::connect( $pdo, $this->handler_vars['db_user'], html_entity_decode( $this->handler_vars['db_pass'] ) );
 			return true;
 		}
-		catch( PDOException $e ) {
+		catch( \PDOException $e ) {
 			if ( strpos( $e->getMessage(), '[1045]' ) ) {
 				$this->theme->assign( 'form_errors', array( 'pgsql_db_pass' => _t( 'Access denied. Make sure these credentials are valid.' ) ) );
 			}
@@ -659,7 +659,7 @@ class InstallHandler extends ActionHandler
 				DB::connect();
 				return true;
 			}
-			catch( PDOException $e ) {
+			catch( \PDOException $e ) {
 				$this->theme->assign( 'form_errors', array( 'db_user'=>_t( 'Problem connecting to supplied database credentials' ) ) );
 				return false;
 
@@ -1870,7 +1870,7 @@ class InstallHandler extends ActionHandler
 				$connect = DB::connect( $pdo, $_POST['user'], $_POST->raw( 'pass' ) );
 				$xml->addChild( 'status', 1 );
 			}
-			catch( Exception $e ) {
+			catch( \Exception $e ) {
 				$xml->addChild( 'status', 0 );
 				$xml_error = $xml->addChild( 'error' );
 				if ( strpos( $e->getMessage(), '[1045]' ) ) {
@@ -1941,7 +1941,7 @@ class InstallHandler extends ActionHandler
 				$connect = DB::connect( $pdo, $_POST['user'], $_POST->raw( 'pass' ) );
 				$xml->addChild( 'status', 1 );
 			}
-			catch( Exception $e ) {
+			catch( \Exception $e ) {
 				$xml->addChild( 'status', 0 );
 				$xml_error = $xml->addChild( 'error' );
 				if ( strpos( $e->getMessage(), '[1045]' ) ) {

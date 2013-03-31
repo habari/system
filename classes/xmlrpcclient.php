@@ -102,12 +102,12 @@ class XMLRPCClient
 				if ( !$responsestruct = reset( $tmp ) ) {
 					$tmp = $responsexml->xpath( '//fault/value' );
 					if ( !$responsestruct = reset( $tmp ) ) {
-						throw new Exception( _t( 'Invalid XML response.' ) );
+						throw new \Exception( _t( 'Invalid XML response.' ) );
 					}
 				}
 				return XMLRPCUtils::decode_args( $responsestruct );
 			}
-			catch ( Exception $e ){
+			catch ( \Exception $e ){
 				//Utils::debug( $response, $e );
 				error_reporting( $bit );
 				return false;

@@ -70,7 +70,7 @@ class flickrAPI
 			Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
 			return false;
 		}
-		catch ( Exception $e ) {
+		catch ( \Exception $e ) {
 			// at the moment we're using the same error message, though this is more catastrophic
 			Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
 			return false;
@@ -81,7 +81,7 @@ class flickrAPI
 			$xml = new SimpleXMLElement( $response );
 			return $xml;
 		}
-		catch( Exception $e ) {
+		catch( \Exception $e ) {
 			Session::error( 'Unable to process Flickr response.', 'flickr API' );
 			return false;
 		}
@@ -735,7 +735,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 			Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
 			return false;
 		}
-		catch ( Exception $e ) {
+		catch ( \Exception $e ) {
 			// at the moment we're using the same error message, though this is more catastrophic
 			Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
 			return false;
