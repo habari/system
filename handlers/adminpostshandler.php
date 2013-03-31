@@ -26,6 +26,7 @@ class AdminPostsHandler extends AdminHandler
 		// 0 is what's assigned to new posts
 		if ( isset( $id ) && ( $id != 0 ) ) {
 			$post = Post::get( array( 'id' => $id, 'status' => Post::status( 'any' ) ) );
+			Plugins::act('admin_publish_post', $post);
 			if ( !$post ) {
 				Session::error( _t( "You don't have permission to edit that post" ) );
 				$this->get_blank();
@@ -38,6 +39,7 @@ class AdminPostsHandler extends AdminHandler
 		}
 		else {
 			$post = new Post();
+			Plugins::act('admin_publish_post', $post);
 			$this->theme->post = $post;
 			$post->content_type = Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
 
@@ -112,6 +114,7 @@ class AdminPostsHandler extends AdminHandler
 	private function fetch_posts( $params = array() )
 	{
 		// Make certain handler_vars local with defaults, and add them to the theme output
+		// Do not provide defaults for the vars included in the Posts::get(), those will get defaults from the preset
 		$locals = array(
 			'do_update' => false,
 			'post_ids' => null,
@@ -119,16 +122,15 @@ class AdminPostsHandler extends AdminHandler
 			'timestamp' => '',
 			'password_digest' => '',
 			'change' => '',
-			'user_id' => 0,
-			'type' => Post::type( 'any' ),
-			'status' => Post::status( 'any' ),
-			'limit' => 20,
-			'offset' => 0,
+			'user_id' => null,
+			'type' => null,
+			'status' => null,
+			'limit' => null,
+			'offset' => null,
 			'search' => '',
 		);
 		foreach ( $locals as $varname => $default ) {
 			$$varname = isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : ( isset( $params[$varname] ) ? $params[$varname] : $default );
-			$this->theme->{$varname} = $$varname;
 		}
 
 		// numbers submitted by HTTP forms are seen as strings
@@ -184,19 +186,29 @@ class AdminPostsHandler extends AdminHandler
 		// we load the WSSE tokens
 		// for use in the delete button
 		$this->theme->wsse = Utils::WSSE();
-
-		$arguments = array(
-			'content_type' => $type,
-			'status' => $status,
-			'limit' => $limit,
-			'offset' => $offset,
-			'user_id' => $user_id,
-		);
+	
+		// Only pass set values to Posts::get(), otherwise they will override the defaults in the preset
+		$user_filters = array();
+		if ( isset( $type ) ) {
+			$user_filters['content_type'] = $type;
+		}
+		if ( isset( $status ) ) {
+			$user_filters['status'] = $status;
+		}
+		if ( isset( $limit ) ) {
+			$user_filters['limit'] = $limit;
+		}
+		if ( isset( $offset ) ) {
+			$user_filters['offset'] = $offset;
+		}
+		if ( isset( $user_id ) ) {
+			$user_filters['user_id'] = $user_id;
+		}
 
 		if ( '' != $search ) {
-			$arguments = array_merge( $arguments, Posts::search_to_get( $search ) );
+			$user_filters = array_merge( $user_filters, Posts::search_to_get( $search ) );
 		}
-		$this->theme->posts = Posts::get( $arguments );
+		$this->theme->posts = Posts::get( array_merge( array( 'preset' => 'admin' ), $user_filters ) );
 
 		// setup keyword in search field if a status or type was passed in POST
 		$this->theme->search_args = '';
@@ -213,7 +225,7 @@ class AdminPostsHandler extends AdminHandler
 			$this->theme->search_args .= $search;
 		}
 
-		$monthcts = Posts::get( array_merge( $arguments, array( 'month_cts' => true, 'nolimit' => true ) ) );
+		$monthcts = Posts::get( array_merge( $user_filters, array( 'month_cts' => true, 'nolimit' => true ) ) );
 		$years = array();
 		foreach ( $monthcts as $month ) {
 			if ( isset( $years[$month->year] ) ) {

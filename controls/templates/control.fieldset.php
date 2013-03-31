@@ -1,0 +1,1 @@
+<fieldset <?= $_attributes ?>><legend><?= $caption ?></legend><?= $content ?></fieldset>

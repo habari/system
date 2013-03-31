@@ -18,7 +18,7 @@ namespace Habari;
 // Fail out if not included from root
 if ( !defined( 'HABARI_PATH' ) ) {
 	header( 'HTTP/1.1 403 Forbidden', true, 403 );
-	die();
+	die('If you are seeing this message, and <a href="http://wiki.habariproject.org/en/FAQ#I_get_a_403_error_.28Forbidden.29_when_I_try_to_run_Habari_for_the_first_time.2C_why.3F">you were expecting to see your Habari install</a>, you probably cloned the wrong repo.');
 }
 
 // Compares PHP version against our requirement.
@@ -50,7 +50,7 @@ if ( !defined( 'GLOB_BRACE' ) ) {
 ob_start();
 
 require( dirname( __FILE__ ) . '/autoload.php' );
-spl_autoload_register( 'habari_autoload' );
+spl_autoload_register( array('\Habari\Autoload', 'habari_autoload') );
 
 // Replace all of the $_GET, $_POST and $_SERVER superglobals with object
 // representations of each.  Unset $_REQUEST, which is evil.
@@ -100,7 +100,7 @@ if ( Config::exists('db_connection') ) {
 			$installer->begin_install();
 		}
 	}
-	catch( PDOException $e ) {
+	catch( \PDOException $e ) {
 		// Error template.
 		$error_template = '<html><head><title>%s</title><link rel="stylesheet" type="text/css" href="' . Site::get_url( 'system' ) . '/admin/css/admin.css" media="screen"></head><body><div id="page"><div class="container"><h2>%s</h2><p>%s</p></div></div></body></html>';
 
@@ -159,9 +159,8 @@ if ( isset( $_GET['asyncronous'] ) && Utils::crypt( Options::get( 'GUID' ), $_GE
 header( 'Content-Type: text/html;charset=utf-8' );
 
 // Load and upgrade all the active plugins.
-spl_autoload_register( array( '\Habari\Plugins' , '_autoload' ) );
+spl_autoload_register( Method::create( '\Habari\Plugins' , '_autoload' ) );
 Plugins::load_active();
-Plugins::upgrade();
 
 // All plugins loaded, tell the plugins.
 Plugins::act( 'plugins_loaded' );
@@ -186,10 +185,13 @@ if ( defined( 'SUPPRESS_REQUEST' ) ) {
 Controller::parse_request();
 
 // Run the cron jobs asyncronously.
-CronHandler::run_cron( true );
+CronHandler::run_cron( Config::get('cron_async', true) );
 
 // Dispatch the request (action) to the matched handler.
 Controller::dispatch_request();
+
+// Shut down sessions so they can write and send cookies and headers before output, but after everything should be done
+Session::shutdown();
 
 // Flush (send) the output buffer.
 $buffer = ob_get_clean();

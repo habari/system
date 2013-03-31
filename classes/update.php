@@ -67,7 +67,7 @@ class Update extends Singleton
 	 * @param array $beacon the beacon data from the $beacons array
 	 * @return boolean true if there are updates available for this beacon
 	 */
-	private static function filter_unchanged( $beacon )
+	public static function filter_unchanged( $beacon )
 	{
 		return isset( $beacon['latest_version'] );
 	}
@@ -159,7 +159,7 @@ class Update extends Singleton
 			}
 			
 			// return an array of beacons that have updates
-			return array_filter( $instance->beacons, array( 'Update', 'filter_unchanged' ) );
+			return array_filter( $instance->beacons, Method::create( '\Habari\Update', 'filter_unchanged' ) );
 			
 		}
 		catch ( \Exception $e ) {
@@ -290,7 +290,7 @@ class Update extends Singleton
 			Options::delete( 'updates_available' );
 			
 			// schedule an update check the next time cron runs
-			CronHandler::add_single_cron( 'update_check_single', array( 'Update', 'cron' ), DateTime::date_create()->int, _t( 'Perform a single check for plugin updates, the plugin set has changed.' ) );
+			CronTab::add_single_cron( 'update_check_single', Method::create( '\Habari\Update', 'cron' ), DateTime::create()->int, _t( 'Perform a single check for plugin updates, the plugin set has changed.' ) );
 			
 		}
 		

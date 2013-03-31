@@ -22,7 +22,7 @@ class AdminDashboardHandler extends AdminHandler
 		// Not sure how best to determine this yet, maybe set an option on install, maybe do this:
 		$firstpostdate = DB::get_value( 'SELECT min(pubdate) FROM {posts} WHERE status = ?', array( Post::status( 'published' ) ) );
 		if ( $firstpostdate ) {
-			$this->theme->active_time = DateTime::date_create( $firstpostdate );
+			$this->theme->active_time = DateTime::create( $firstpostdate );
 		}
 
 		// check to see if we have updates to display
@@ -70,12 +70,10 @@ class AdminDashboardHandler extends AdminHandler
 	 */
 	public function get_additem_form()
 	{
-		$additem_form = new FormUI( 'dash_additem' );
-		$additem_form->append( 'select', 'module', 'null:unused' );
-		$additem_form->module->options = Plugins::filter( 'dashboard_block_list', array() );
-		$additem_form->append( 'submit', 'submit', _t( '+' ) );
-		//$form->on_success( array( $this, 'dash_additem' ) );
-		$additem_form->properties['onsubmit'] = "dashboard.add(); return false;";
+		/** @var FormUI $additem_form */
+		$additem_form = FormUI::create( 'dash_additem' )->set_properties(array('onsubmit' => 'dashboard.add(); return false;'));
+		$additem_form->append( FormControlSelect::create('module')->set_options(Plugins::filter( 'dashboard_block_list', array() )) );
+		$additem_form->append( FormControlSubmit::create('submit')->set_caption(_t('+')));
 		$this->theme->additem_form = $additem_form->get();
 	}
 

@@ -610,7 +610,7 @@ var themeManage = {
 		});
 		habari_ajax.post(
 			habari.url.ajaxSaveAreas,
-			{area_blocks:output, scope:$('#scope_id').val()},
+			{area_blocks:output, scope:$('#scope_id').val(), changed:themeManage.changed()},
 			{'block_areas': '#scope_container'},
 			// Can't simply refresh the sortable because we've reloaded the element
 			function(data) {
@@ -1637,7 +1637,7 @@ $(window).load( function() {
 
 	// Icons only for thin-width clients -- Must be run here to work properly in Safari
 	if ($('#title').width() < ($('#mediatabs li').length * $('#mediatabs li').width())) {
-		$('#mediatabs').addClass('iconify');
+		//$('#mediatabs').addClass('iconify');
 	}
 });
 
@@ -1738,22 +1738,3 @@ $(document).ready(function(){
 		themeinfo.toggle();
 	});
 });
-
-function resetTags() {
-	var current = $('#tags').val();
-
-	$('#tag-list li').each(function(){
-		replstr = new RegExp('\\s*"?' + $( this ).text() + '"?\\s*', "gi");
-		if (current.match(replstr)) {
-			$(this).addClass('clicked');
-		}
-		else {
-			$(this).removeClass('clicked');
-		}
-	});
-
-	if (current.length === 0 && !$('#tags').hasClass('focus')) {
-		$('label[for=tags]').addClass('overcontent').removeClass('abovecontent').show();
-	}
-
-}

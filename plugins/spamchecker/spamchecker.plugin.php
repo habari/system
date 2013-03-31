@@ -174,12 +174,14 @@ class SpamChecker extends Plugin
 		switch ($rulename) {
 		case 'submit_feedback':
 			$args['ccode'] = $this->get_code($args['id']);
+			$args['ccode'] = $this->get_code($args['id']);
 			if ( !isset($_SESSION['comments_allowed'])) {
 				$_SESSION['comments_allowed'] = array();
 			}
-			$_SESSION['comments_allowed'][] = $args['ccode'];
 			// Only allow comments on the last 10 posts you look at
-			$_SESSION['comments_allowed'] = array_slice($_SESSION['comments_allowed'], -10);
+			$allowed = array_slice($_SESSION['comments_allowed'], -9);
+			$allowed[] = $args['ccode'];
+			$_SESSION['comments_allowed'] = $allowed;
 			break;
 		}
 

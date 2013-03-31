@@ -45,7 +45,7 @@
 		?>
 
 		<?php if ( $plugin['core'] ): ?>
-			<span class="core">core</span>
+			<span class="core"><?php _e('core'); ?></span>
 		<?php endif; ?>
 
 		<?php if ( isset($plugin['help']) ): ?>
@@ -63,7 +63,7 @@
 			<li><a href="#"><?php _e('v1.1 Update Available Now'); ?></a></li>
 		</ul>
 		<?php endif; ?>
-		
+
 		<p class="description"><?php echo $plugin['info']->description; ?></p>
 
 	</div>

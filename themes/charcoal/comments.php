@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 		<?php if ( !$post->info->comments_disabled || $post->comments->moderated->count ) :?>
 			<div id="post-comments">

@@ -24,6 +24,8 @@ abstract class InfoRecords implements URLProperties
 	protected $_key_value;
 	// set to true only when the inforecords have been loaded
 	protected $_loaded = false;
+	// set to true if any values here have been changed but not saved
+	protected $_dirty = false;
 
 	protected $url_args;
 
@@ -78,13 +80,11 @@ abstract class InfoRecords implements URLProperties
 			return;
 		}
 		if ( empty($this->_key_value) ) {
-			$this->_loaded == true;
 			return;
 		}
 
 		// This InfoRecord is read-only?
 		if ( empty($this->_table_name) ) {
-			$this->_loaded == true;
 			return;
 		}
 
@@ -122,6 +122,17 @@ abstract class InfoRecords implements URLProperties
 		return $this->__inforecord_array[$name]['value'];
 	}
 
+	public function getArrayCopy ( ) {
+		$this->_load();
+
+		$result = array();
+		foreach ( $this->__inforecord_array as $k => $v ) {
+			$result[ $k ] = $v['value'];
+		}
+
+		return $result;
+	}
+
 	/**
 	 * Update the info record.
 	 * The value will not be stored in the database until calling $this->commit();
@@ -133,6 +144,11 @@ abstract class InfoRecords implements URLProperties
 	{
 		$this->_load();
 		$this->__inforecord_array[$name] = array('changed'=>true, 'value'=>$value);
+		$this->_dirty = true;
+		$self = $this;
+		register_shutdown_function(function() use ($self){
+			$self->commit();
+		});
 	}
 
 	/**
@@ -187,7 +203,7 @@ abstract class InfoRecords implements URLProperties
 	{
 		// This InfoRecord is read-only?
 		if ( empty($this->_table_name) ) {
-			return;
+			return false;
 		}
 		$result = DB::query( '
 			DELETE FROM ' . $this->_table_name . '
@@ -207,6 +223,7 @@ abstract class InfoRecords implements URLProperties
 	 * If this function is not called, then the options will not be written.
 	 *
 	 * @param mixed $metadata_key (optional) Key to use when writing info data.
+	 * @return bool True if the commit succeeded.
 	 */
 	public function commit( $metadata_key = null )
 	{
@@ -216,6 +233,11 @@ abstract class InfoRecords implements URLProperties
 		// If the info is not already loaded, and the key value is empty,
 		// then we don't have enough info to do the commit
 		if ( !$this->_loaded && empty($this->_key_value) ) {
+			return false;
+		}
+
+		// If there were no changes, do nothing and succeed.  Yay!
+		if ( !$this->_dirty ) {
 			return true;
 		}
 
@@ -253,8 +275,14 @@ abstract class InfoRecords implements URLProperties
 				$this->__inforecord_array[$name] = array('value'=>$value);
 			}
 		}
+		$this->_dirty = false;
+		return true;
 	}
-	
+
+	/**
+	 * Get the number of info records
+	 * @return int Number of info records here
+	 */
 	public function count()
 	{
 		$this->_load();

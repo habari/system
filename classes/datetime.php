@@ -7,7 +7,7 @@
 namespace Habari;
 
 /**
- * HabariDateTime class to wrap dates in.
+ * DateTime class to wrap dates in.
  *
  * @property-read DateTime $clone Returns a clonned object.
  * @property-read string $sql Returns a unix timestamp for inserting into DB.
@@ -106,7 +106,15 @@ class DateTime extends \DateTime
 	}
 
 	/**
-	 * Helper function to create a HabariDateTime object for the given
+	 * This function should not be used.  Use ::create() instead
+	 * @deprecated
+	 */
+	public static function date_create( $time = null, $timezone = null ) {
+		return self::create( $time, $timezone );
+	}
+
+	/**
+	 * Helper function to create a DateTime object for the given
 	 * time and timezone. If no time is given, defaults to 'now'. If no
 	 * timezone given defaults to timezone set in {@link set_default_timezone()}
 	 *
@@ -117,7 +125,7 @@ class DateTime extends \DateTime
 	 * @param string $timezone A timezone name, not an abbreviation.
 	 * @return \Habari\DateTime
 	 */
-	public static function date_create( $time = null, $timezone = null )
+	public static function create( $time = null, $timezone = null )
 	{
 		if ( $time instanceOf DateTime ) {
 			return $time;
@@ -287,7 +295,7 @@ class DateTime extends \DateTime
 	 * Returns date components inserted into a string
 	 * 
 	 * Example:
-	 * echo HabariDateTime::date_create('2010-01-01')->text_format('The year was {Y}.');
+	 * echo DateTime::create('2010-01-01')->text_format('The year was {Y}.');
 	 * // Expected output:  The year was 2010.	 	  	
 	 *	
 	 * @param string $format A string with single-character date format codes {@link http://php.net/date date()} surrounded by braces
@@ -448,7 +456,7 @@ class DateTime extends \DateTime
 
 	/**
 	 * Returns an associative array containing the date information for
-	 * this HabariDateTime object, as per {@link http://php.net/getdate getdate()}
+	 * this DateTime object, as per {@link http://php.net/getdate getdate()}
 	 *
 	 * @return array Associative array containing the date information
 	 */
@@ -467,10 +475,10 @@ class DateTime extends \DateTime
 	 * @param boolean $include_suffix Include the 'ago' or 'from now' suffix?
 	 * @return string Time passed in the specified units.
 	 */
-	public function friendly ( $precision = 7, $include_suffix = true )
+	public function friendly ( $precision = 7, $include_suffix = true, $comparison_date = 'now' )
 	{
 				
-		$difference = self::difference( self::date_create(), $this );
+		$difference = self::difference( $comparison_date, $this );
 				
 		
 		$result = array();
@@ -528,36 +536,81 @@ class DateTime extends \DateTime
 	 * 
 	 * Returns a very short version of the difference in time between now and the current HDT object.
 	 */
-	public function fuzzy ()
+	public function fuzzy ( $comparison_date = 'now' )
 	{
-		$difference = self::date_create()->int - $this->int;
+
+		// make sure the comparison date is something we can use
+		if ( !$comparison_date instanceof DateTime ) {
+			$comparison_date = DateTime::create( $comparison_date );
+		}
+
+		$difference = $comparison_date->int - $this->int;
 		
+		if ( $difference < 0 ) {
+			$future = true;
+		}
+		else {
+			$future = false;
+		}
+
+		$difference = abs( $difference );
+
 		if ( $difference < self::MINUTE ) {
 			$result = _t( 'just now' );
 		}
 		else if ( $difference < self::HOUR ) {
 			$minutes = round( $difference / self::MINUTE );
-			$result = sprintf( _n( '%d minute ago', '%d minutes ago', $minutes ), $minutes );
+			if ( $future ) {
+				$result = sprintf( _n( 'in just a minute', 'in %d minutes', $minutes ), $minutes );
+			}
+			else {
+				$result = sprintf( _n( '%d minute ago', '%d minutes ago', $minutes ), $minutes );
+			}
 		}
 		else if ( $difference < self::DAY ) {
 			$hours = round( $difference / self::HOUR );
-			$result = sprintf( _n( '%d hour ago', '%d hours ago', $hours ), $hours );
+			if ( $future ) {
+				$result = sprintf( _n( 'in %d hour', 'in %d hours', $hours ), $hours );
+			}
+			else {
+				$result = sprintf( _n( '%d hour ago', '%d hours ago', $hours ), $hours );
+			}
 		}
 		else if ( $difference < self::WEEK ) {
 			$days = round( $difference / self::DAY );
-			$result = sprintf( _n( 'yesterday', '%d days ago', $days ), $days );
+			if ( $future ) {
+				$result = sprintf( _n( 'tomorrow', 'in %d days', $days ), $days );
+			}
+			else {
+				$result = sprintf( _n( 'yesterday', '%d days ago', $days ), $days );
+			}
 		}
 		else if ( $difference < self::MONTH ) {
 			$weeks = round( $difference / self::WEEK );
-			$result = sprintf( _n( 'last week', '%d weeks ago', $weeks ), $weeks );
+			if ( $future ) {
+				$result = sprintf( _n( 'next week', 'in %d weeks', $weeks ), $weeks );
+			}
+			else {
+				$result = sprintf( _n( 'last week', '%d weeks ago', $weeks ), $weeks );
+			}
 		}
 		else if ( $difference < self::YEAR ) {
 			$months = round( $difference / self::MONTH );
-			$result = sprintf( _n( 'last month', '%d months ago', $months ), $months );
+			if ( $future ) {
+				$result = sprintf( _n( 'next month', 'in %d months', $months ), $months );
+			}
+			else {
+				$result = sprintf( _n( 'last month', '%d months ago', $months ), $months );
+			}
 		}
 		else {
 			$years = round( $difference / self::YEAR );
-			$result = sprintf( _n( 'last year', '%d years ago', $years ), $years );
+			if ( $future ) {
+				$result = sprintf( _n( 'next year', 'in %d years', $years ), $years );
+			}
+			else {
+				$result = sprintf( _n( 'last year', '%d years ago', $years ), $years );
+			}
 		}
 		
 		return $result;
@@ -568,9 +621,9 @@ class DateTime extends \DateTime
 	 * Returns an array representing the difference between two times by interval.
 	 * 
 	 * <code>
-	 * 	print_r( HabariDateTime::difference( 'now', 'January 1, 2010' ) );
+	 * 	print_r( DateTime::difference( 'now', 'January 1, 2010' ) );
 	 * 	// output (past): Array ( [invert] => [y] => 0 [m] => 9 [w] => 3 [d] => 5 [h] => 22 [i] => 33 [s] => 5 )
-	 * 	print_r( HabariDateTime::difference( 'now', 'January 1, 2011' ) );
+	 * 	print_r( DateTime::difference( 'now', 'January 1, 2011' ) );
 	 * 	// output (future): Array ( [invert] => 1 [y] => 0 [m] => 2 [w] => 0 [d] => 3 [h] => 5 [i] => 33 [s] => 11 ) 
 	 * </code>
 	 * 
@@ -580,8 +633,8 @@ class DateTime extends \DateTime
 	 *  
 	 *  @todo Add total_days, total_years, etc. values?
 	 * 
-	 * @param mixed $start_date The start date, as a HDT object or any format accepted by HabariDateTime::date_create().
-	 * @param mixed $end_date The end date, as a HDT object or any format accepted by HabariDateTime::date_create().
+	 * @param mixed $start_date The start date, as a HDT object or any format accepted by DateTime::create().
+	 * @param mixed $end_date The end date, as a HDT object or any format accepted by DateTime::create().
 	 * @return array Array of each interval and whether the interval is inverted or not.
 	 */
 	public static function difference( $start_date, $end_date )
@@ -589,11 +642,11 @@ class DateTime extends \DateTime
 		
 		// if the dates aren't HDT objects, try to convert them to one. this lets you pass in just about any format
 		if ( !$start_date instanceof DateTime ) {
-			$start_date = DateTime::date_create( $start_date );
+			$start_date = DateTime::create( $start_date );
 		}
 		
 		if ( !$end_date instanceof DateTime ) {
-			$end_date = DateTime::date_create( $end_date );
+			$end_date = DateTime::create( $end_date );
 		}
 		
 		$result = array();

@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <label><?php _e('New Block Type:')?> <select id="block_instance_type">
 	<?php foreach ( $blocks as $block_key => $block_name ): ?>

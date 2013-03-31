@@ -4,27 +4,11 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 ?>
 <?php include('header.php');?>
 
-<?php
-	// @todo this should be done in adminhandler, not here
-	$theme->currentuser = User::identify();
-?>
-
-
 <div class="container navigation">
 	<div class="pct40">
 
 		<form>
 		<select class="navigationdropdown" onChange="navigationDropdown.changePage(this.form.navigationdropdown)" name="navigationdropdown">
-			<?php /*
-			foreach ( Users::get_all() as $user ) {
-				if ( $user->username == $currentuser->username ) {
-					$url = Url::get( 'admin', 'page=user' );
-				}
-				else {
-					$url = Url::get( 'user_profile', array( 'page' => 'user', 'user' => $user->username ) );
-				}
-				echo '<option id="' . $user->id . '" value="' . $url . '">' . $user->displayname . '</option>';
-			} */ ?>
 			<option value=""><?php _e('Complete User List'); ?></option>
 		</select>
 		</form>
@@ -42,19 +26,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 	
 	<div class="addnewuser item">
 
-		<label for="new_username" class="incontent"><?php _e( 'Username' ); ?></label>
-		<input type="text" name="new_username" id="new_username" value="<?php echo ( isset( $settings['new_username'] ) ) ? $settings['new_username'] : ''; ?>" class="border">
-
-			<label for="new_email" class="incontent"><?php _e( 'E-Mail' ); ?></label>
-			<input type="text" id="new_email" name="new_email" value="<?php echo ( isset( $settings['new_email'] ) ) ? $settings['new_email'] : ''; ?>" class="border">
-
-			<label for="new_pass1" class="incontent"><?php _e( 'Password' ); ?></label>
-			<input type="password" name="new_pass1" id="new_pass1" class="border">
-
-			<label for="new_pass2" class="incontent"><?php _e( 'Password Again' ); ?></label>
-			<input type="password" name="new_pass2" id="new_pass2" class="border">
-
-		<input type="submit" name="newuser" value="<?php _e('Add User'); ?>">
+		<?php echo $add_user_form; ?>
 
 	</div>
 

@@ -44,6 +44,7 @@ class DatabaseConnection
 		'posts',
 		'poststatus',
 		'posttype',
+		'revisions',
 		'rewrite_rules',
 		'scopes',
 		'sessions',
@@ -82,6 +83,7 @@ class DatabaseConnection
 		$engines = array(
 			'sqlite' => '\Habari\SQLiteConnection',
 			'mysql' => '\Habari\MySQLConnection',
+			'pgsql' => '\Habari\PGSQLConnection',
 		);
 
 		require_once( HABARI_PATH . "/system/schema/{$engine}/connection.php" );

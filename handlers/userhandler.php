@@ -19,11 +19,15 @@ class UserHandler extends ActionHandler
 	 */
 	public function act_login()
 	{
+		// Display the login form.
+		$this->login_form();
+	}
+	
+	public function loginform_success ( $form )
+	{
 		// If we're a reset password request, do that.
-		if ( isset( $_POST['submit_button'] ) && $_POST['submit_button'] === _t( 'Reset password' ) ) {
-			Utils::check_request_method( array( 'POST' ) );
-
-			$name = $this->handler_vars['habari_username'];
+		if ( isset( $form->reset_button->value ) && !empty( $form->reset_button->value ) ) {
+			$name = $form->habari_username->value;
 			if ( $name !== null ) {
 				if ( !is_numeric( $name ) && $user = User::get( $name ) ) {
 					$hash = Utils::random_password();
@@ -40,9 +44,8 @@ class UserHandler extends ActionHandler
 		}
 		// Back to actual login.
 		else {
-			Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
-			$name = $_POST['habari_username'];
-			$pass = $_POST['habari_password'];
+			$name = $form->habari_username->value;
+			$pass = $form->habari_password->value;
 
 			if ( ( null != $name ) || ( null != $pass ) ) {
 				$user = User::authenticate( $name, $pass );
@@ -56,7 +59,7 @@ class UserHandler extends ActionHandler
 					
 					/* Successfully authenticated. */
 					// Timestamp last login date and time.
-					$user->info->authenticate_time = DateTime::date_create()->format( 'Y-m-d H:i:s' );
+					$user->info->authenticate_time = DateTime::create()->format( 'Y-m-d H:i:s' );
 					$user->update();
 
 					// Remove left over expired session error message.
@@ -102,13 +105,10 @@ class UserHandler extends ActionHandler
 
 				/* Authentication failed. */
 				// Remove submitted password, see, we're secure!
-				$_POST['habari_password'] = '';
+				$form->habari_password->value = '';
 				$this->handler_vars['error'] = _t( 'Bad credentials' );
 			}
 		}
-
-		// Display the login form.
-		$this->login_form( $name );
 	}
 
 	/**
@@ -129,7 +129,7 @@ class UserHandler extends ActionHandler
 			$user->forget();
 			$user = null;
 		}
-		Utils::redirect( Site::get_url( 'habari' ) );
+		Utils::redirect( Site::get_url( 'site' ) );
 	}
 
 	/**
@@ -137,26 +137,33 @@ class UserHandler extends ActionHandler
 	 *
 	 * @param string $name Pre-fill the name field with this name
 	 */
-	protected function login_form( $name )
+	protected function login_form()
 	{
-		// Display the login form.
-		$this->theme = Themes::create();
+		// Build theme and login page template
+		$this->setup_theme();
 		if ( !$this->theme->template_exists( 'login' ) ) {
 			$this->theme = Themes::create( 'admin', 'RawPHPEngine', Site::get_dir( 'admin_theme', true ) );
 			$this->theme->assign( 'admin_page', 'login' );
 		}
-		$request = new \StdClass();
-		foreach ( URL::get_active_rules() as $rule ) {
-			$request->{$rule->name} = ( $rule->name == URL::get_matched_rule()->name );
-		}
+		
+		// Build the login form
+		$form = new FormUI( 'habari_login' );
+		$form->on_success( array( $this, 'loginform_success' ) );
+		$form->append( FormControlStatic::create('reset_message')->set_static('<p class="on_reset" style="margin-bottom:20px;">' . _t('Please enter the username you wish to reset the password for.  A unique password reset link will be emailed to that user.') . '</p>' ) );
+		$form->append( FormControlLabel::wrap(_t('Name'), FormControlText::create('habari_username'))->set_template('control.label.outsideleft'));
+		$form->append( FormControlLabel::wrap(_t('Password'), FormControlPassword::create('habari_password')->set_properties(array('class'=>'off_reset')))->set_template('control.label.outsideleft')->set_properties(array('class'=>'off_reset')));
+		$form->append( FormControlSubmit::create('submit_button')->set_caption(_t('Login'))->set_properties(array('class'=>'off_reset')) );
+		$form->append( FormControlStatic::create('reset_link')->set_static('<a href="#" class="off_reset reset_link">' . _t('Reset password') . '</a>') );
+		$form->append( FormControlStatic::create('login_link')->set_static('<a href="#" class="on_reset reset_link">' . _t('Login') . '</a>') );
+		$form->append( FormControlSubmit::create('reset_button')->set_caption(_t('Reset password'))->set_properties(array('class'=>'on_reset')) );
 
-		if ( isset( $this->handler_vars['error'] ) ) {
-			$this->theme->assign( 'error', Utils::htmlspecialchars( $this->handler_vars['error'] ) );
-		}
-
-		$this->theme->assign( 'request', $request );
-		$this->theme->assign( 'habari_username', htmlentities( $name, ENT_QUOTES, 'UTF-8' ) );
+		// Let plugins alter this form
+		Plugins::act( 'form_login', $form );
+		
+		// Assign login form and display the page
+		$this->theme->form = $form;
 		$this->display( 'login' );
+		
 		return true;
 	}
 
@@ -180,7 +187,6 @@ class UserHandler extends ActionHandler
 
 		$id = $this->handler_vars['id'];
 		$hash = $this->handler_vars['hash'];
-		$name = '';
 
 		if ( $user = User::get( $id ) ) {
 			if ( is_string( $hash ) && ( $user->info->password_reset == md5( $hash ) ) ) {
@@ -201,15 +207,13 @@ class UserHandler extends ActionHandler
 				// Clear the request - it should only work once
 				unset( $user->info->password_reset );
 				$user->info->commit();
-
-				$name = $user->username;
 			}
 			else {
 				Session::notice( _t( 'The supplied password reset token has expired or is invalid.' ) );
 			}
 		}
 		// Display the login form.
-		$this->login_form( $name );
+		Utils::redirect( URL::get( 'auth', array( 'page' => 'login' ) ) );
 	}
 
 }

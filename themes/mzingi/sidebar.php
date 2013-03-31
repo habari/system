@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php Plugins::act( 'theme_sidebar_top' ); ?>
 	<!--begin secondary content-->
@@ -8,8 +9,10 @@
 		<li><a href="<?php Site::out_url( 'habari' ); ?>"><?php _e('Home'); ?></a></li>
 		<?php
 		// List Pages
-		foreach ( $pages as $page ) {
-			echo '<li><a href="' . $page->permalink . '" title="' . $page->title . '">' . $page->title . '</a></li>' . "\n";
+		if( isset( $pages ) && !empty( $pages ) ) {
+			foreach ( $pages as $page ) {
+				echo '<li><a href="' . $page->permalink . '" title="' . $page->title . '">' . $page->title . '</a></li>' . "\n";
+			}
 		}
 		?>
 	</ul>
@@ -17,15 +20,15 @@
 	<h2 id="aside"><?php _e('Asides'); ?></h2>
 	<ul id="asides">
 		<?php
+			if( isset( $asides ) && !empty( $asides ) ) {
 	          foreach($asides as $post):
               echo '<li><span class="date">';
 	      // @locale Date formats according to http://php.net/manual/en/function.date.php
               echo $post->pubdate->out( _t( 'F j, Y' ) ) . ' - ' . '</span>';
               echo '<a href="' . $post->permalink .'">' . $post->title_out . '</a>'. $post->content_out;
               echo '</li>';
-
  		?>
-	<?php endforeach; ?>
+	<?php endforeach; } ?>
    </ul>
 	<?php echo $theme->area( 'sidebar' ); ?>
 

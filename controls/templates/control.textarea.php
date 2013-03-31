@@ -1,0 +1,1 @@
+<textarea <?= $_attributes ?>><?= $value ?></textarea>

@@ -86,18 +86,55 @@ class RawPHPEngine extends TemplateEngine
 	 */
 	public function display( $template )
 	{
-		/**
-		 * @todo  Here would be a good place to notify observers of output.
-		 *        For instance, having sessions/headers output before
-		 *        the template content...
-		 */
 		extract( $this->engine_vars );
 		if ( $this->template_exists( $template ) ) {
-			//$template_file= Plugins::filter( 'include_template_file', $this->template_dir . $template . '.php', $template, __CLASS__ );
 			$template_file = isset( $this->template_map[$template] ) ? $this->template_map[$template] : null;
 			$template_file = Plugins::filter( 'include_template_file', $template_file, $template, __CLASS__ );
-			include ( $template_file );
+			if(is_string($template_file)) {
+				include ( $template_file );
+			}
+			elseif(is_callable($template_file)) {
+				$template_file($this->engine_vars);
+			}
 		}
+	}
+
+	/**
+	 * Search directories for templates to use
+	 * Templates are always taken from the first directory they're found in.
+	 * To override this behavior, the template must be specifically added via ->add_template()
+	 * @see add_template
+	 * @param string|array $dirs A directory to look for templates in
+	 */
+	public function queue_dirs($dirs)
+	{
+		$dirs = Utils::single_array($dirs);
+		$alltemplates = array();
+
+		// If multiple directories are passed, the earlier ones should override the later ones
+		$dirs = array_reverse( $dirs );
+		foreach ( $dirs as $dir ) {
+			$templates = Utils::glob( Utils::end_in_slash($dir) . '*.*' );
+			$alltemplates = array_merge( $alltemplates, $templates );
+		}
+		// Convert the template files into template names and produce a map from name => file
+		$available_templates = array_map( 'basename', $alltemplates, array_fill( 1, count( $alltemplates ), '.php' ) );
+		$template_map = array_combine( $available_templates, $alltemplates );
+		$this->template_map = array_merge($this->template_map, $template_map);
+
+		// Workaround for the 404 template key being merged into the 0 integer index
+		unset($this->template_map[0]);
+		if(isset($template_map[404])) {
+			$this->template_map['404'] = $template_map[404];
+		}
+
+		// The templates in the list should be uniquely identified
+		array_unique( $available_templates );
+
+		// Filter the templates that are available
+		$available_templates = Plugins::filter( 'available_templates', $available_templates, __CLASS__ );
+
+		$this->available_templates = array_merge($available_templates, $this->available_templates);
 	}
 
 	/**
@@ -108,29 +145,6 @@ class RawPHPEngine extends TemplateEngine
 	 */
 	public function template_exists( $template )
 	{
-		if ( !$this->loaded_templates ) {
-			if ( !is_array( $this->template_dir ) ) {
-				$this->template_dir = array( $this->template_dir );
-			}
-			$alltemplates = array();
-			$dirs = array_reverse( $this->template_dir );
-			foreach ( $dirs as $dir ) {
-				$templates = Utils::glob( $dir . '*.*' );
-				$alltemplates = array_merge( $alltemplates, $templates );
-			}
-			$available_templates = array_map( 'basename', $alltemplates, array_fill( 1, count( $alltemplates ), '.php' ) );
-			$template_map = array_combine( $available_templates, $alltemplates );
-			$this->template_map = array_merge($this->template_map, $template_map);
-			// Workaround for the 404 template key being merged into the 0 integer index
-			unset($this->template_map[0]);
-			if(isset($template_map[404])) {
-				$this->template_map['404'] = $template_map[404];
-			}
-			array_unique( $available_templates );
-			$available_templates = Plugins::filter( 'available_templates', $available_templates, __CLASS__ );
-			$this->available_templates = array_merge($this->available_templates, $available_templates);
-			$this->loaded_templates = true;
-		}
 		return in_array( $template, $this->available_templates );
 	}
 
@@ -196,6 +210,12 @@ class RawPHPEngine extends TemplateEngine
 		}
 	}
 
+	/**
+	 * Adds and/or replaces a previously queued template in the available template listing
+	 * @param string $name The name of the template
+	 * @param string $file The file of the template
+	 * @param bool $replace
+	 */
 	public function add_template($name, $file, $replace = false)
 	{
 		if($replace || !in_array($name, $this->available_templates)) {

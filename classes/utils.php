@@ -128,7 +128,7 @@ class Utils
 	public static function stripslashes( $value )
 	{
 		if ( is_array( $value ) ) {
-			$value = array_map( array( 'Utils', 'stripslashes' ), $value );
+			$value = array_map( Method::create( '\Habari\Utils', 'stripslashes' ), $value );
 		}
 		elseif ( !empty( $value ) && is_string( $value ) ) {
 			$value = stripslashes( $value );
@@ -142,7 +142,7 @@ class Utils
 	public static function addslashes( $value )
 	{
 		if ( is_array( $value ) ) {
-			$value = array_map( array( 'Utils', 'addslashes' ), $value );
+			$value = array_map( Method::create( '\Habari\Utils', 'addslashes' ), $value );
 		}
 		else if ( !empty( $value ) && is_string( $value ) ) {
 			$value = addslashes( $value );
@@ -198,7 +198,7 @@ class Utils
 		if ( ! is_array( $values ) ) {
 			$values = array();
 		}
-		$values = array_map( array( 'Utils', 'quote_spaced' ), $values );
+		$values = array_map( Method::create( '\Habari\Utils', 'quote_spaced' ), $values );
 		return implode( $separator, $values );
 	}
 
@@ -236,7 +236,7 @@ class Utils
 	/**
 	* Used with array_map to create an array of PHP stringvar-style search/replace strings using optional pre/postfixes
 	* <code>
-	* $mapped_values= array_map(array('Utils', 'map_array'), $values);
+	* $mapped_values= array_map(array('\Habari\Utils', 'map_array'), $values);
 	* </code>
 	* @param string $value The value to wrap
 	* @param string $prefix The prefix for the returned value
@@ -606,7 +606,8 @@ class Utils
 			if(!isset($option['id']) && isset($option['name'])) {
 				$option['id'] = $option['name'];
 			}
-			$output .= '<input ' . self::html_attr($options) . '>';
+			
+			$output .= '<input ' . self::html_attr($option) . ' />';  // This XML/XHTML looks spurious, but PHP's appendXML requires it elsewhere
 		}
 		
 		return $output;
@@ -744,7 +745,7 @@ class Utils
 			$display_errors = ini_set( 'display_errors', 'on' ); // Make sure we have something to catch
 			$html_errors = ini_set( 'html_errors', 'off');
 			$error_reporting = error_reporting( E_ALL ^ E_NOTICE );
-			$code = eval( ' if (0){' . $code . '}' ); // Put $code in a dead code sandbox to prevent its execution
+			$code = eval( "namespace HabariSandBox; return true; \n" . $code . "\n"); // Put $code in a dead code sandbox to prevent its execution
 			ini_set( 'display_errors', $display_errors ); // be a good citizen
 			ini_set( 'html_errors', $html_errors );
 			error_reporting( $error_reporting );
@@ -766,7 +767,7 @@ class Utils
 		$replacements = array(
 			'#^<\?(php)?\s#A' => '',
 			'#\?>$#' => '',
-			'#namespace [^;]+;#' => '',
+			'#namespace [^;]+;#' => 'namespace HabariSandBox\Plugin;'
 		);
 		foreach($replacements as $search => $replacement) {
 			if(preg_match($search, $plugin_code)) {
@@ -992,7 +993,7 @@ class Utils
 	 */
 	public static function array_or( $input )
 	{
-		return array_reduce( $input, array( '\Habari\Utils', 'ror' ), 0 );
+		return array_reduce( $input, Method::create( '\Habari\Utils', 'ror' ), 0 );
 	}
 
 	/**
@@ -1346,6 +1347,10 @@ class Utils
 		return $content;
 	}
 
+	/**
+	 * Produce a set of inputs that can be used to validate WSSE
+	 * @return string HTML inputs for WSSE support
+	 */
 	public static function setup_wsse() {
 		$wsse = self::WSSE();
 		$inputs = array();

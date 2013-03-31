@@ -1,0 +1,1 @@
+<input type="checkbox" data-target="<?= $_control->get_id() ?>" class="aggregate_ui"><input <?= $_attributes ?>>

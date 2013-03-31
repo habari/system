@@ -17,7 +17,7 @@ class Comments extends \ArrayObject
 	/**
 	 * function get
 	 * Returns requested comments
-	 * @param array An associated array of parameters, or a querystring
+	 * @param array $paramarray An associated array of parameters, or a querystring
 	 * @return array An array of Comment objects, one for each query result
 	 *
 	 * <code>
@@ -184,21 +184,21 @@ class Comments extends \ArrayObject
 					/* Got the full date */
 					$where[] = 'date BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
-					$start_date = HabariDateTime::date_create( $start_date );
+					$start_date = DateTime::create( $start_date );
 					$params[] = $start_date->sql;
 					$params[] = $start_date->modify( '+1 day' )->sql;
 				}
 				elseif ( isset( $paramset['month'] ) ) {
 					$where[] = 'date BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
-					$start_date = HabariDateTime::date_create( $start_date );
+					$start_date = DateTime::create( $start_date );
 					$params[] = $start_date->sql;
 					$params[] = $start_date->modify( '+1 month' )->sql;
 				}
 				elseif ( isset( $paramset['year'] ) ) {
 					$where[] = 'date BETWEEN ? AND ?';
 					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
-					$start_date = HabariDateTime::date_create( $start_date );
+					$start_date = DateTime::create( $start_date );
 					$params[] = $start_date->sql;
 					$params[] = $start_date->modify( '+1 year' )->sql;
 				}

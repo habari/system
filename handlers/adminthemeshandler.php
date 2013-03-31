@@ -132,6 +132,7 @@ class AdminThemesHandler extends AdminHandler
 		Utils::check_request_method( array( 'GET', 'POST' ) );
 
 		$block = DB::get_row( 'SELECT b.* FROM {blocks} b WHERE id = :id ORDER BY b.title ASC', array( 'id' => $_GET['blockid'] ), 'Block' );
+		/** @var FormUI $block_form  */
 		$block_form = $block->get_form();
 		$block_form->set_option( 'success_message', '</div><div class="humanMsg" id="humanMsg" style="display: block;top: auto;bottom:-50px;"><div class="imsgs"><div id="msgid_2" class="msg" style="display: block; opacity: 0.8;"><p>' . _t( 'Saved block configuration.' ) . '</p></div></div></div>
 <script type="text/javascript">
@@ -142,30 +143,25 @@ class AdminThemesHandler extends AdminHandler
 ');
 
 		$first_control = reset ( $block_form->controls );
+		$block_admin = FormControlFieldset::create('block_admin')->set_caption(_t( 'Block Display Settings' ));
 		if ( $first_control ) {
-			$block_form->insert( $first_control->name, 'fieldset', 'block_admin', _t( 'Block Display Settings' ) );
+			$block_form->insert( $first_control, $block_admin );
 		}
 		else {
-			$block_form->append( 'fieldset', 'block_admin', _t( 'Block Display Settings' ) );
+			$block_form->append( $block_admin );
 		}
 
-		$block_form->block_admin->append( 'text', '_title', array( 'configure_block_title', $block ), _t( 'Block Title:' ) );
-		$block_form->_title->value = $block->title;
-		$block_form->_title->add_validator( 'validate_required' );
-		$block_form->block_admin->append( 'checkbox', '_show_title', $block, _t( 'Display Block Title:' ) );
-		$block_form->append( 'submit', 'save', _t( 'Save' ) );
-
-		Plugins::register( array( $this, 'action_configure_block_title' ), 'action', 'configure_block_title' );
+		$block_title_storage = new ControlStorage(
+			function() use ($block) { return $block->title; },
+			function($name, $value) use ($block) { $block->title = $value; }
+		);
+		$block_admin->append( FormControlLabel::wrap(_t( 'Block Title:' ), FormControlText::create('_title', $block_title_storage)->add_validator( 'validate_required' ) ));
+		$block_admin->append( FormControlLabel::wrap(_t( 'Display Block Title:' ), FormControlCheckbox::create('_show_title', $block)));
+		$block_form->append( FormControlSubmit::create('save')->set_caption(_t( 'Save' )) );
 
 		$this->theme->content = $block_form->get();
 
 		$this->display( 'block_configure' );
-	}
-
-	function action_configure_block_title( $value, $name, $storage )
-	{
-		$storage[0]->title = $value;
-		return false;
 	}
 
 	/**
@@ -279,21 +275,26 @@ class AdminThemesHandler extends AdminHandler
 		$msg = '';
 
 		$response = new AjaxResponse();
-		if ( isset( $_POST['area_blocks'] ) ) {
-			$area_blocks = $_POST['area_blocks'];
+		if ( isset( $_POST['changed'] ) ) {
+			// Empty area, regardless
 			DB::query( 'DELETE FROM {blocks_areas} WHERE scope_id = :scope_id', array( 'scope_id' => $scope ) );
 
-			foreach ( (array)$area_blocks as $area => $blocks ) {
-				$display_order = 0;
+			// Repopulate area if we have data to repopulate with
+			if ( isset( $_POST['area_blocks'] ) ) {
+				$area_blocks = $_POST['area_blocks'];
 
-				// if there are no blocks for a given area, skip it
-				if ( empty( $blocks ) ) {
-					continue;
-				}
+				foreach ( (array)$area_blocks as $area => $blocks ) {
+					$display_order = 0;
 
-				foreach ( $blocks as $block ) {
-					$display_order++;
-					DB::query( 'INSERT INTO {blocks_areas} (block_id, area, scope_id, display_order) VALUES (:block_id, :area, :scope_id, :display_order)', array( 'block_id'=>$block, 'area'=>$area, 'scope_id'=>$scope, 'display_order'=>$display_order ) );
+					// if there are no blocks for a given area, skip it
+					if ( empty( $blocks ) ) {
+						continue;
+					}
+
+					foreach ( $blocks as $block ) {
+						$display_order++;
+						DB::query( 'INSERT INTO {blocks_areas} (block_id, area, scope_id, display_order) VALUES (:block_id, :area, :scope_id, :display_order)', array( 'block_id'=>$block, 'area'=>$area, 'scope_id'=>$scope, 'display_order'=>$display_order ) );
+					}
 				}
 			}
 

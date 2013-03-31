@@ -127,7 +127,7 @@ class Format
 		self::$formatters = array();
 		$classes = get_declared_classes();
 		foreach ( $classes as $class ) {
-			if ( ( get_parent_class( $class ) == 'Format' ) || ( $class == 'Format' ) ) {
+			if ( $class == __CLASS__ || get_parent_class( $class ) == __CLASS__ ) {
 				self::$formatters[] = new $class();
 			}
 		}
@@ -315,18 +315,18 @@ class Format
 	 * Format a date using a specially formatted string
 	 * Useful for using a single string to format multiple date components.
 	 * Example:
-	 *  If $dt is a HabariDateTime for December 10, 2008...
+	 *  If $dt is a DateTime for December 10, 2008...
 	 *  echo $dt->format_date('<div><span class="month">{F}</span> {j}, {Y}</div>');
 	 *  // Output: <div><span class="month">December</span> 10, 2008</div>
 	 *
-	 * @param HabariDateTime $date The date to format
+	 * @param DateTime $date The date to format
 	 * @param string $format A string with date()-like letters within braces to replace with date components
 	 * @return string The formatted string
 	 */
 	public static function format_date( $date, $format )
 	{
-		if ( !( $date instanceOf HabariDateTime ) ) {
-			$date = HabariDateTime::date_create( $date );
+		if ( !( $date instanceOf DateTime ) ) {
+			$date = DateTime::create( $date );
 		}
 		return $date->text_format( $format );
 	}
@@ -334,14 +334,14 @@ class Format
 	/**
 	 * function nice_date
 	 * Formats a date using a date format string
-	 * @param HabariDateTime $date A date as a HabariDateTime object
+	 * @param DateTime $date A date as a DateTime object
 	 * @param string $dateformat A date format string
 	 * @returns string The date formatted as a string
 	 */
 	public static function nice_date( $date, $dateformat = 'F j, Y' )
 	{
-		if ( !( $date instanceOf HabariDateTime ) ) {
-			$date = HabariDateTime::date_create( $date );
+		if ( !( $date instanceOf DateTime ) ) {
+			$date = DateTime::create( $date );
 		}
 		return $date->format( $dateformat );
 	}
@@ -349,14 +349,14 @@ class Format
 	/**
 	 * function nice_time
 	 * Formats a time using a date format string
-	 * @param HabariDateTime $date A date as a HabariDateTime object
+	 * @param DateTime $date A date as a DateTime object
 	 * @param string $dateformat A date format string
 	 * @returns string The time formatted as a string
 	 */
 	public static function nice_time( $date, $dateformat = 'H:i:s' )
 	{
-		if ( !( $date instanceOf HabariDateTime ) ) {
-			$date = HabariDateTime::date_create( $date );
+		if ( !( $date instanceOf DateTime ) ) {
+			$date = DateTime::create( $date );
 		}
 		return $date->format( $dateformat );
 	}
@@ -415,13 +415,21 @@ class Format
 				}
 			}
 			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) {
-				do {
-					$end = array_pop( $stack );
+				if(count($stack) > 0 && in_array($token['name'], Utils::array_map_field($stack, 'name'))) {
+					do {
+						$end = array_pop( $stack );
+						$end['type'] = HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE;
+						$end['attrs'] = null;
+						$end['value'] = null;
+						$summary[] = $end;
+					} while ( ( $bail || $end['name'] != $token['name'] ) && count( $stack ) > 0 );
+				}
+				else {
+					$end['name'] = $token['name'];
 					$end['type'] = HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE;
 					$end['attrs'] = null;
 					$end['value'] = null;
-					$summary[] = $end;
-				} while ( ( $bail || $end['name'] != $token['name'] ) && count( $stack ) > 0 );
+				}
 				if ( count( $stack ) == 0 ) {
 					$para++;
 				}

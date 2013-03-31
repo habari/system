@@ -58,7 +58,7 @@ class AdminLogsHandler extends AdminHandler
 		$date = Controller::get_var( 'date', 'any' );
 
 		if ( $date != 'any' ) {
-			$d = DateTime::date_create( $date );	// ! means fill any non-specified pieces with default Unix Epoch ones
+			$d = DateTime::create( $date );	// ! means fill any non-specified pieces with default Unix Epoch ones
 			$arguments['year'] = $d->format( 'Y' );
 			$arguments['month'] = $d->format( 'm' );
 		}
@@ -149,7 +149,7 @@ class AdminLogsHandler extends AdminHandler
 		);
 
 		foreach ( $db_dates as $db_date ) {
-			$date = DateTime::date_create( $db_date )->format( 'Y-m' );
+			$date = DateTime::create( $db_date )->format( 'Y-m' );
 			$dates[ $date ] = $date;
 		}
 		return $dates;
@@ -238,7 +238,7 @@ class AdminLogsHandler extends AdminHandler
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
 			Session::error( _t( 'WSSE authentication failed.' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
+			echo Session::messages_get( true, Method::create( '\Habari\Format', 'json_messages' ) );
 			return;
 		}
 		foreach ( $_POST as $id => $delete ) {
@@ -251,7 +251,7 @@ class AdminLogsHandler extends AdminHandler
 
 		if ( ( ! isset( $ids ) || empty( $ids ) ) && $handler_vars['action'] != 'purge' ) {
 			Session::notice( _t( 'No logs selected.' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
+			echo Session::messages_get( true, Method::create( '\Habari\Format', 'json_messages' ) );
 			return;
 		}
 
@@ -270,7 +270,7 @@ class AdminLogsHandler extends AdminHandler
 				break;
 		}
 
-		echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
+		echo Session::messages_get( true, Method::create( '\Habari\Format', 'json_messages' ) );
 	}
 
 }

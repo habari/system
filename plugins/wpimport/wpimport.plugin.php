@@ -1,11 +1,15 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
+<?php
+
+namespace Habari;
+
+if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 	
 	// define IMPORT_BATCH in your config.php to limit each batch of DB results
 	if ( !defined('IMPORT_BATCH') ) {
 		define('IMPORT_BATCH', 100);
 	}
 	
-	class WPImport extends Habari\Plugin implements Importer {
+	class WPImport extends Plugin implements Importer {
 		
 		private $supported_importers = array();
 		
@@ -236,7 +240,7 @@ WP_IMPORT_AJAX;
 				
 				return $wpdb;
 			}
-			catch ( Exception $e ) {
+			catch ( \Exception $e ) {
 				// just hide connection errors, it's enough that we errored out
 				return false;
 			}
@@ -317,7 +321,7 @@ WP_IMPORT_AJAX;
 						EventLog::log( _t( 'Created new user %1$s. Their old ID was %2$d.', array( $u->username, $wp_user->id ) ) );
 						
 					}
-					catch ( Exception $e ) {
+					catch ( \Exception $e ) {
 						
 						// no idea why we might error out, but catch it if we do
 						EventLog::log( $e->getMessage, 'err' );
@@ -426,8 +430,8 @@ WP_IMPORT_AJAX;
 					'title' => MultiByte::convert_encoding( $post->post_title ),
 					'content' => MultiByte::convert_encoding( $post->post_content ),
 					'user_id' => $user_map[ $post->post_author ],
-					'pubdate' => HabariDateTime::date_create( $post->post_date ),
-					'updated' => HabariDateTime::date_create( $post->post_modified ),
+					'pubdate' => DateTime::create( $post->post_date ),
+					'updated' => DateTime::create( $post->post_modified ),
 					'slug' => MultiByte::convert_encoding( $post->post_name ),
 				) );
 				
@@ -523,7 +527,7 @@ WP_IMPORT_AJAX;
 					}
 					
 				}
-				catch ( Exception $e ) {
+				catch ( \Exception $e ) {
 					
 					EventLog::log( $e->getMessage(), 'err' );
 					
@@ -652,7 +656,7 @@ WP_IMPORT_AJAX;
 					'name' => MultiByte::convert_encoding( $comment->comment_author ),
 					'email' => MultiByte::convert_encoding( $comment->comment_author_email ),
 					'url' => MultiByte::convert_encoding( $comment->comment_author_url ),
-					'date' => HabariDateTime::date_create( $comment->comment_date ),
+					'date' => DateTime::create( $comment->comment_date ),
 					'post_id' => $post_map[ $comment->comment_post_id ],
 				) );
 				
@@ -727,7 +731,7 @@ WP_IMPORT_AJAX;
 				try {
 					$c->insert();
 				}
-				catch ( Exception $e ) {
+				catch ( \Exception $e ) {
 					
 					EventLog::log( $e->getMessage(), 'err' );
 					

@@ -157,18 +157,19 @@ class Site
 					$url = self::$habari_url;
 				}
 				else {
-					$url = Site::get_url( 'host' );
-					$path = trim( dirname( Site::script_name() ), '/\\' );
-					if ( '' != $path ) {
-						$url .= '/' . $path;
-					}
-					self::$habari_url = $url;
+					self::$habari_url = Site::get_url( 'site' );
 				}
 				break;
 			case 'site':
 				$url = Site::get_url( 'host' );
+				// Am I installed into a subdir?
+				$path = trim( dirname( Site::script_name() ), '/\\' );
+				if ( '' != $path ) {
+					$url .= '/' . $path;
+				}
+				// Am I in a Habari subdir site?
 				if( self::$config_type == Site::CONFIG_SUBDIR ) {
-					$url .= '/' . self::$config_urldir;
+					$url .= self::$config_urldir;
 				}
 				break;
 			case 'user':
@@ -190,16 +191,16 @@ class Site
 				}
 				break;
 			case 'admin':
-				$url = Site::get_url( 'habari' ) . '/admin';
+				$url = Site::get_url( 'site' ) . '/admin';
 				break;
 			case 'admin_theme':
 				$url = Site::get_url( 'habari' ) . '/system/admin';
 				break;
 			case 'login':
-				$url = Site::get_url( 'habari' ) . '/auth/login';
+				$url = Site::get_url( 'site' ) . '/auth/login';
 				break;
 			case 'logout':
-				$url = Site::get_url( 'habari' ) . '/auth/logout';
+				$url = Site::get_url( 'site' ) . '/auth/logout';
 				break;
 			case 'system':
 				$url = Site::get_url( 'habari' ) . '/system';
@@ -231,7 +232,7 @@ class Site
 	/**
 	 * get_path returns a relative URL path, without leading protocol or host
 	 *	'base' returns the URL sub-directory in which Habari is installed, if any.
-	 *  'habari' returns the same as 'base'
+	 *  'habari' returns the path of Habari
 	 *	'user' returns one of the following:
 	 *		user
 	 *		user/sites/x.y.z
@@ -249,6 +250,9 @@ class Site
 			case 'base':
 			case 'habari':
 				$path = rtrim( dirname( Site::script_name() ), '/\\' );
+				if(self::$config_urldir != '') {
+					$path .= '/' . self::$config_urldir;
+				}
 				break;
 			case 'user':
 				if ( Site::is( 'main' ) ) {
@@ -326,7 +330,7 @@ class Site
 					if ( in_array( $match, $config_dirs ) ) {
 						self::$config_dir = $match;
 						self::$config_path = HABARI_PATH . '/user/sites/' . self::$config_dir;
-						self::$config_type = ( $basesegments > count($request) ) ? Site::CONFIG_SUBDOMAIN : Site::CONFIG_SUBDIR;
+						self::$config_type = ( $basesegments < count($request) ) ? Site::CONFIG_SUBDIR : Site::CONFIG_SUBDOMAIN;
 						self::$config_urldir = implode('/', array_slice($request, $basesegments));
 						break;
 					}

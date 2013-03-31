@@ -91,6 +91,19 @@ class SuperGlobal extends \ArrayIterator
 			return $this->raw_values[$index];
 		}
 	}
+
+	/**
+	 * Return the raw, escaped value of the requested index.
+	 * We escape with htmletities with the ENT_QUOTE flag.
+	 *
+	 * @param mixed $index The index of the value
+	 * @return mixed The unfiltered value
+	 * @TODO When our requirement is bumped to PHP 5.4 change flag to ENT_QUOTES | ENT_HTML5
+	 */
+	public function escape( $index )
+	{
+		return htmletities( $this->raw( $index ), ENT_QUOTES );
+	}
 	
 	/**
 	 * Return a copy of the filtered array. Implments ArrayIterator::getArrayCopy()

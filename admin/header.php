@@ -30,8 +30,8 @@ header( 'X-Frame-Options: DENY' );
 	</script>
 	<?php
 		Plugins::act( 'admin_header', $this );
-		Stack::out( 'admin_header_javascript', array( '\\Habari\\Stack', 'scripts' ) );
-		Stack::out( 'admin_stylesheet', array( '\\Habari\\Stack' , 'styles' ) );
+		Stack::out( 'admin_header_javascript', Method::create( '\\Habari\\Stack', 'scripts' ) );
+		Stack::out( 'admin_stylesheet', Method::create( '\\Habari\\Stack' , 'styles' ) );
 	?>
 	<!--[if IE 7]>
 	<link rel="stylesheet" type="text/css" href="<?php Site::out_url( 'admin_theme' ); ?>/css/ie.css" media="screen">
@@ -70,7 +70,7 @@ header( 'X-Frame-Options: DENY' );
 		</div>
 	</div>
 
-	<a href="<?php Site::out_url( 'habari' ); ?>" id="site" title="<?php _e( 'Go to Site' ); ?>"><?php Options::out( 'title' ); ?></a>
+	<a href="<?php Site::out_url( 'site' ); ?>" id="site" title="<?php _e( 'Go to Site' ); ?>"><?php Options::out( 'title' ); ?></a>
 
 </div>
 

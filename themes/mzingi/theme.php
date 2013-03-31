@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } 
 
 /**
@@ -83,35 +84,33 @@ class Mzingi extends Theme
 	/**
 	 * Customize comment form layout with fieldsets.
 	 */
-	public function action_form_comment( $form ) { 
-		//Create a fieldset for Name, Email and URL
-		$form->append( 'fieldset', 'cf_commenterinfo', _t( 'About You' ) );
-		//move the fieldset before Name
-		$form->move_before( $form->cf_commenterinfo, $form->cf_commenter );
+	public function action_form_comment( FormUI $form ) {
+		//Create a fieldset for Name, Email and URL before Name
+		/** @var FormControlFieldset $cf_commenterinfo  */
+		$cf_commenterinfo = $form->insert($form->label_for_cf_commenter, FormControlFieldset::create('cf_commenterinfo')->set_caption( _t( 'About You' ) ) );
 		//move the Name ( cf_commenter) into the fieldset
-		$form->cf_commenter->move_into( $form->cf_commenterinfo );
+		$form->move_into($form->label_for_cf_commenter, $cf_commenterinfo );
 
-		$form->cf_commenter->caption = _t( 'Name:' ) . '<span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? ' *' . _t( 'Required' ) : '' ) . '</span>';
+		//$form->label_for_cf_commenter->set_label( _t( 'Name:' ) . '<span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? ' *' . _t( 'Required' ) : '' ) . '</span>' );
 		//move the Email ( cf_email) into the Fieldset
-		$form->cf_email->move_into( $form->cf_commenterinfo );
+		$form->move_into( $form->label_for_cf_email, $cf_commenterinfo );
 
-		$form->cf_email->caption = _t( 'Email Address:' ) . '<span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? ' *' . _t( 'Required' ) : '' ) . '</span>';
+//		$label_for_cf_email = $form->label_for_cf_email;
+//		$label_for_cf_email->set_label(_t( 'Email Address:' ) . '<span class="required">' . ( Options::get( 'comments_require_id' ) == 1 ? ' *' . _t( 'Required' ) : '' ) . '</span>');
 		//move the URL into the fieldset
-		$form->cf_url->move_into( $form->cf_commenterinfo );
-		$form->cf_url->caption = _t( 'Web Address:' );
+		$form->move_into( $form->label_for_cf_url, $cf_commenterinfo );
+		$form->label_for_cf_url->set_label( _t( 'Web Address:' ) );
 		//add a disclaimer/message
-		$form->append('static','cf_disclaimer', _t( '<p><em><small>Email address is not published</small></em></p>' ) );
-		//move the disclaimer into the fieldset
-		$form->cf_disclaimer->move_into( $form->cf_commenterinfo );
+		$cf_commenterinfo->append(FormControlStatic::create('cf_disclaimer')->set_static( _t( '<p><em><small>Email address is not published</small></em></p>' ) ) );
 		//create a second fieldset for the comment textarea
-		$form->append('fieldset', 'cf_contentbox', _t( 'Add to the Discussion' ) );
-		//move the fieldset befoer the textarea
-		$form->move_before( $form->cf_contentbox, $form->cf_content );
+		$cf_contentbox = $form->append(FormControlFieldset::create('cf_contentbox')->set_caption( _t( 'Add to the Discussion' ) ) );
+		//move the fieldset before the textarea
+		$form->move_before( $form->cf_contentbox, $form->label_for_cf_content );
 		//move the textarea into the second fieldset
-		$form->cf_content->move_into( $form->cf_contentbox );
-	        $form->cf_content->caption = _t( 'Message: (Required)' );
+		$form->move_into($form->label_for_cf_content, $cf_contentbox );
+		$form->label_for_cf_content->set_label( _t( 'Message: (Required)' ) );
 
-		$form->cf_submit->caption = _t( 'Submit' );
+		$form->cf_submit->set_caption( _t( 'Submit' ) );
 	}
 
 }

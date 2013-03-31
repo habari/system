@@ -1,4 +1,8 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
+<?php
+Stack::add('template_header_javascript', Site::get_url('scripts') . '/jquery.js', 'jquery');
+?>
 <?php $theme->display ( 'header' ); ?>
 <!--begin content-->
 	<div id="content">

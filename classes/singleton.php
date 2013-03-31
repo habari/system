@@ -25,14 +25,8 @@ abstract class Singleton
 	 */
 	protected static function instance()
 	{
-		/*
-		 * It is important to note that subclasses MUST override this
-		 * method, as get_class will ALWAYS return 'Singleton' when
-		 * subclasses call this method through inheritance
-		 * return self::getInstanceOf( get_class() );
-		 */
-		trigger_error( _t( 'Not implemented: instance' ), E_USER_WARNING );
-		return null;
+		$class = get_called_class();
+		return self::getInstanceOf($class);
 	}
 
 	/**

@@ -1,9 +1,12 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
+<?php
+namespace Habari;
+if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
+?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="<?php echo $locale; ?>">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>">
-	<title><?php Options::out( 'title' ) ?><?php if ($request->display_entry && isset($post)) { echo " :: {$post->title}"; } ?></title>
+	<title><?php echo $page_title; ?></title>
 	<meta name="generator" content="Habari">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo $theme->get_url( 'style.css' ); ?>">
 	<!--[if lt IE 7]>

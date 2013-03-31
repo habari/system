@@ -1658,6 +1658,13 @@ body.page-options .item {
 	box-shadow: inset 1px 1px 1px #666;
 	color: #333;
 	letter-spacing: 1.5px;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor: default;
 }
 
 /*-- PLUGIN AND THEME HELP */
@@ -3050,6 +3057,10 @@ select#block_instance_type {
 
 
 /* Tree Control */
+
+.tree_control {
+	clear: both;
+}
 
 ol.tree {
 	padding-left: 30px;

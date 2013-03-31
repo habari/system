@@ -146,7 +146,7 @@ class Pingback extends Plugin
 				// catch our special type of exception and re-throw it
 				throw $e;
 			}
-			catch ( Exception $e ) {
+			catch ( \Exception $e ) {
 				throw new XMLRPCException( -32300 );
 			}
 
@@ -157,8 +157,8 @@ class Pingback extends Plugin
 			// Is the charset in the headers?
 			if ( isset( $headers['Content-Type'] ) && strpos( $headers['Content-Type'], 'charset' ) !== false ) {
 				// This regex should be changed to meet the HTTP spec at some point
-				if ( preg_match("/charset[\x09\x0A\x0C\x0D\x20]*=[\x09\x0A\x0C\x0D\x20]*('?)([A-Za-z0-9\-\_]+)\1/i", $headers['Content-Type'], $matches ) ) {
-					$source_encoding = strtoupper( $matches[2] );
+				if ( preg_match("/charset[\x09\x0A\x0C\x0D\x20]*=[\x09\x0A\x0C\x0D\x20]*'?([A-Za-z0-9_-]+)'?/i", $headers['Content-Type'], $matches ) ) {
+					$source_encoding = strtoupper( $matches[1] );
 				}
 			}
 			// Can we tell the charset from the stream itself?
@@ -242,7 +242,7 @@ class Pingback extends Plugin
 				'ip'		=>	Utils::get_ip(),
 				'content'	=>	$source_excerpt,
 				'status'	=>	Comment::STATUS_UNAPPROVED,
-				'date'		=>	HabariDateTime::date_create(),
+				'date'		=>	DateTime::create(),
 				'type' 		=> 	Comment::PINGBACK,
 				) );
 
@@ -273,7 +273,7 @@ class Pingback extends Plugin
 				return false;
 			}
 		}
-		catch ( Exception $e ) {
+		catch ( \Exception $e ) {
 			// log the pingback error
 			EventLog::log( _t( 'Unable to retrieve target, can\'t detect pingback endpoint. (Source: %1$s | Target: %2$s)', array( $source_uri, $target_uri ) ), 'err', 'Pingback' );
 			return false;
@@ -297,7 +297,7 @@ class Pingback extends Plugin
 		try {
 			$response = XMLRPCClient::open( $pingback_endpoint )->pingback->ping( $source_uri, $target_uri );
 		}
-		catch ( Exception $e ) {
+		catch ( \Exception $e ) {
 			EventLog::log( _t( 'Invalid Pingback endpoint - %1$s (Source: %2$s | Target: %3$s)', array( $pingback_endpoint, $source_uri, $target_uri ) ), 'err', 'Pingback' );
 			return false;
 		}

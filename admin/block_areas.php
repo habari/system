@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <label><?php _e("Scope:"); ?> <select id="scope_id" onchange="themeManage.change_scope();">
 	<option value="0"><?php _e('Default'); ?></option>

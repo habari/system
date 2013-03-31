@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <!doctype html>
 <html>
@@ -13,8 +14,8 @@
 	</script>
 	<?php
 	Plugins::act( 'admin_header', $this );
-	Stack::out( 'admin_header_javascript', array('\\Habari\\Stack', 'scripts') );
-	Stack::out( 'admin_stylesheet', array('\\Habari\\Stack', 'styles') );
+	Stack::out( 'admin_header_javascript', Method::create('\\Habari\\Stack', 'scripts') );
+	Stack::out( 'admin_stylesheet', Method::create('\\Habari\\Stack', 'styles') );
 	?>
 	<!--[if IE 7]>
 	<link rel="stylesheet" type="text/css" href="<?php Site::out_url('admin_theme'); ?>/css/ie.css" media="screen">
@@ -36,7 +37,7 @@
 
 <?php
 Plugins::act( 'admin_footer', $this );
-Stack::out( 'admin_footer_javascript', array('\\Habari\\Stack', 'scripts') );
+Stack::out( 'admin_footer_javascript', Method::create('\\Habari\\Stack', 'scripts') );
 ?>
 
 </div>

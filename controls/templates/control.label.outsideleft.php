@@ -1,0 +1,1 @@
+<label <?= $_attributes ?>><?= $label ?></label><?= $content ?>

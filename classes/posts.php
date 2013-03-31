@@ -94,6 +94,7 @@ class Posts extends \ArrayObject implements IsContent
 	 *     - vocabulary_name:not:term_display => a vocabulary name and term display pair or array of vocabulary name and term display pairs, none of which can be associated with the posts
 	 *     - vocabulary_name:all:term => a vocabulary name and term slug pair or array of vocabulary name and term slug pairs, all of which must be associated with the posts
 	 *     - vocabulary_name:all:term_display => a vocabulary name and term display pair or array of vocabulary name and term display pairs, all of which must be associated with the posts
+	 * - on_query_built => a closure that accepts a Query as a parameter, allowing a plugin to alter the Query for this request directly
 	 * - limit => the maximum number of posts to return, implicitly set for many queries
 	 * - nolimit => do not implicitly set limit
 	 * - offset => amount by which to offset returned posts, used in conjunction with limit
@@ -132,17 +133,7 @@ class Posts extends \ArrayObject implements IsContent
 			if(!isset($presets)) {
 				$presets = Plugins::filter('posts_get_all_presets', $presets, $paramarray['preset']);
 			}
-			$paramarray['preset'] = Utils::single_array($paramarray['preset']);
-			foreach($paramarray['preset'] as $presetname => $fallbackpreset) {
-				if(isset($presets[$fallbackpreset])) {
-					$preset = Plugins::filter('posts_get_update_preset', $presets[$fallbackpreset], $presetname, $paramarray);
-					if(is_array( $preset ) || $preset instanceof \ArrayObject || $preset instanceof \ArrayIterator) {
-						$preset = new SuperGlobal($preset);
-						$paramarray = $preset->merge($paramarray)->getArrayCopy();
-						break;
-					}
-				}
-			}
+			$paramarray = Posts::merge_presets($paramarray, $presets);
 		}
 
 		// let plugins alter the param array before we use it. could be useful for modifying search results, etc.
@@ -171,9 +162,6 @@ class Posts extends \ArrayObject implements IsContent
 			$select_ary[$fielddata['alias']] = "{$fielddata['table']}.{$fielddata['field']} AS {$fielddata['alias']}";
 			$select_distinct[$fielddata['alias']] = "{$fielddata['table']}.{$fielddata['field']}";
 		}
-
-		// Default parameters
-		$orderby = 'pubdate DESC';
 
 		// Define the WHERE sets to process and OR in the final SQL statement
 		if ( isset( $paramarray['where'] ) && is_array( $paramarray['where'] ) ) {
@@ -487,26 +475,26 @@ class Posts extends \ArrayObject implements IsContent
 			 */
 			if ( isset( $paramset['day'] ) && isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
 				$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
-				$start_date = HabariDateTime::date_create( $start_date );
+				$start_date = DateTime::create( $start_date );
 				$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 day -1 second' )->sql));
 			}
 			elseif ( isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
 				$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
-				$start_date = HabariDateTime::date_create( $start_date );
+				$start_date = DateTime::create( $start_date );
 				$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 month -1 second' )->sql));
 			}
 			elseif ( isset( $paramset['year'] ) ) {
 				$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
-				$start_date = HabariDateTime::date_create( $start_date );
+				$start_date = DateTime::create( $start_date );
 				$where->add('pubdate BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 year -1 second' )->sql));
 			}
 
 			if ( isset( $paramset['after'] ) ) {
-				$where->add('pubdate > :after_date', array('after_date' => HabariDateTime::date_create( $paramset['after'] )->sql));
+				$where->add('pubdate > :after_date', array('after_date' => DateTime::create( $paramset['after'] )->sql));
 			}
 
 			if ( isset( $paramset['before'] ) ) {
-				$where->add('pubdate < :before_date', array('before_date' => HabariDateTime::date_create( $paramset['before'] )->sql));
+				$where->add('pubdate < :before_date', array('before_date' => DateTime::create( $paramset['before'] )->sql));
 			}
 
 			// Concatenate the WHERE clauses
@@ -635,23 +623,8 @@ class Posts extends \ArrayObject implements IsContent
 			$$key = $value;
 		}
 
-		// Define the LIMIT if it does not exist, unless specific posts are requested or we're getting the monthly counts
-		if ( !isset( $limit ) && !isset( $paramset['id'] ) && !isset( $paramset['slug'] ) && !isset( $paramset['month_cts'] ) ) {
-			$limit = Options::get( 'pagination' ) ? (int) Options::get( 'pagination' ) : 5;
-		}
-		elseif ( !isset( $limit ) ) {
-			$selected_posts = 0;
-			if ( isset( $paramset['id'] ) ) {
-				$selected_posts += count( Utils::single_array( $paramset['id'] ) );
-			}
-			if ( isset( $paramset['slug'] ) ) {
-				$selected_posts += count( Utils::single_array( $paramset['slug'] ) );
-			}
-			$limit = $selected_posts > 0 ? $selected_posts : '';
-		}
-
-		// Calculate the OFFSET based on the page number
-		if ( isset( $page ) && is_numeric( $page ) && !isset( $paramset['offset'] ) ) {
+		// Calculate the OFFSET based on the page number. Requires a limit.
+		if ( isset( $page ) && is_numeric( $page ) && !isset( $paramset['offset'] ) && isset( $limit ) ) {
 			$offset = ( intval( $page ) - 1 ) * intval( $limit );
 		}
 
@@ -778,6 +751,51 @@ class Posts extends \ArrayObject implements IsContent
 			$return_value->get_param_cache = $paramarray;
 			return $return_value;
 		}
+	}
+
+
+	/**
+	 * Accept a parameter array for Posts::get() with presets, and return an array with all defined parameters from those presets
+	 * @param array $paramarray An array of parameters to Posts::get that may contain presets
+	 * @param array $presets a list of presets, keyed by preset name, each an array of parameters that define the preset
+	 * @return array The processed array, including all original presets and all newly added recursive presets and parameters
+	 */
+	public static function merge_presets($paramarray, $presets) {
+		if(isset($paramarray['preset'])) {
+			// Get the preset from the paramarray.
+			$requested_presets = Utils::single_array($paramarray['preset']);
+			unset($paramarray['preset']);
+
+			// Get the previously processed presets and remove them from the presets requested
+			$processed_presets = isset($paramarray['_presets']) ? array_keys($paramarray['_presets']) : array();
+			$requested_presets = array_diff($requested_presets, $processed_presets);
+
+			// Process fallbacks (in the simplest case, this will just iterate once - for the requested fallback-less preset)
+			foreach($requested_presets as $requested_preset) {
+				if(isset($presets[$requested_preset])) {
+					// We found one that exists, let plugins filter it and then merge it with our paramarray
+					$preset = Plugins::filter('posts_get_update_preset', $presets[$requested_preset], $requested_preset, $paramarray);
+					if(is_array($preset) || $preset instanceof \ArrayObject || $preset instanceof \ArrayIterator) {
+						$preset = new SuperGlobal($preset);
+						// This merge order ensures that the outside object has precedence
+						$paramarray = $preset->merge($paramarray)->getArrayCopy();
+						// Save the preset as "processed"
+						$paramarray['_presets'][$requested_preset] = true;
+						// We might have retrieved new presets to use. Do it again!
+						$paramarray = Posts::merge_presets($paramarray, $presets);
+					}
+				}
+				else {
+					// Save the preset as "tried to process but didn't"
+					$paramarray['_presets'][$requested_preset] = false;
+				}
+			}
+
+			// Restore the original requested preset to the paramarray
+			$paramarray['preset'] = $requested_presets;
+		}
+
+		return $paramarray;
 	}
 
 	/**
@@ -955,7 +973,7 @@ class Posts extends \ArrayObject implements IsContent
 			$select[$field] = "{posts}.$field AS $field";
 		}
 		$select = implode( ',', $select );
-		$posts = DB::get_results( 'SELECT ' . $select . ' FROM {posts} WHERE {posts}.status = ? AND {posts}.pubdate <= ? ORDER BY {posts}.pubdate DESC', array( Post::status( 'scheduled' ), HabariDateTime::date_create() ), 'Post' );
+		$posts = DB::get_results( 'SELECT ' . $select . ' FROM {posts} WHERE {posts}.status = ? AND {posts}.pubdate <= ? ORDER BY {posts}.pubdate DESC', array( Post::status( 'scheduled' ), DateTime::create() ), 'Post' );
 		foreach ( $posts as $post ) {
 			$post->publish();
 		}
@@ -975,7 +993,7 @@ class Posts extends \ArrayObject implements IsContent
 
 		CronTab::delete_cronjob( 'publish_scheduled_posts' );
 		if ( $min_time ) {
-			CronTab::add_single_cron( 'publish_scheduled_posts', array( 'Posts', 'publish_scheduled_posts' ), $min_time, 'Next run: ' . HabariDateTime::date_create( $min_time )->get( 'c' ) );
+			CronTab::add_single_cron( 'publish_scheduled_posts', Method::create( '\Habari\Posts', 'publish_scheduled_posts' ), $min_time, 'Next run: ' . DateTime::create( $min_time )->get( 'c' ) );
 		}
 	}
 
@@ -1266,10 +1284,21 @@ class Posts extends \ArrayObject implements IsContent
 	 */
 	public static function filter_posts_get_all_presets($presets)
 	{
+		// Presets used for navigation.
 		$presets['page_list'] = array( 'content_type' => 'page', 'status' => 'published', 'nolimit' => true );
 		$presets['asides'] = array( 'vocabulary' => array( 'tags:term' => 'aside' ), 'limit' => 5 );
-		$presets['home'] = array( 'content_type' => Post::type( 'entry' ), 'status' => Post::status( 'published' ), 'limit' => Options::get('pagination', 5) );
-
+		// Flow is the base preset all other presets should build on top of.
+		$presets['flow'] = array( 'content_type' => Post::type( 'entry' ), 'status' => Post::status( 'published' ), 'limit' => Options::get( 'pagination', 5), 'orderby' => 'pubdate DESC' );
+		// This is used only for a site's home page.
+		$presets['home'] = array( 'preset' => 'flow' );
+		// All pages that follow use this one:
+		$presets['page'] = array( 'preset' => 'flow' );
+		// Provide presets for all other pages, just to allow plugins to play with them.
+		$presets['tag'] = array( 'preset' => 'page' );
+		$presets['date'] = array( 'preset' => 'page' );
+		$presets['search'] = array( 'preset' => 'page' );
+		// Preset for default admin post lists
+		$presets['admin'] = array( 'limit' => 20, 'user_id' => 0, 'orderby' => 'pubdate DESC' );
 		return $presets;
 	}
 

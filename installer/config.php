@@ -1,10 +1,11 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php include( 'header.php' ); ?>
 <form action="" method="post">
 <?php
-foreach ($this->engine_vars as $key => $val) {
-	if ( is_scalar( $val ) ) {
-		echo '<input type="hidden" name="' . htmlentities($key, ENT_COMPAT, 'UTF-8') . '" value="' . htmlentities($val, ENT_COMPAT, 'UTF-8') . '">';
+foreach ($_POST as $key => $val) {
+	if ( is_scalar( $_POST->raw($key) ) ) {
+		echo '<input type="hidden" name="' . htmlentities($key, ENT_COMPAT, 'UTF-8') . '" value="' . htmlentities($_POST->raw($key), ENT_COMPAT, 'UTF-8') . '">';
 	}
 }
 ?>

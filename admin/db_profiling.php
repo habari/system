@@ -1,3 +1,4 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php
 if (! isset($_GET['db_profile']) ||  ( !User::identify()->loggedin ) )

@@ -1,10 +1,11 @@
+<?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
 "http://www.w3.org/TR/html4/strict.dtd">
-<html lang="<?php echo $locale; ?>">
+<html <?php if(isset($locale)): ?>lang="<?php echo $locale; endif; ?>">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>">
-	<title><?php if ($request->display_entry && isset($post)) { echo "{$post->title} - "; } ?><?php Options::out( 'title' ) ?></title>
+	<meta http-equiv="Content-Type" content="text/html; <?php if(isset($charset)): ?>charset=<?php echo $charset; endif; ?>">
+	<title><?php echo $page_title; ?></title>
 	<meta name="generator" content="Habari">
 
 	<link rel="stylesheet" type="text/css"  media="print" href="<?php Site::out_url( 'vendor'); ?>/blueprint/print.css">
@@ -19,7 +20,7 @@
 		<!--begin masthead-->
 		<div id="masthead"  class="span-15 pull-1">
 			<div id="branding">
-				<h1><a href="<?php Site::out_url( 'habari'); ?>" title="<?php Options::out( 'title' ); ?>"> <?php Options::out( 'title' ); ?></a></h1>
+				<h1><a href="<?php Site::out_url( 'site'); ?>" title="<?php Options::out( 'title' ); ?>"> <?php Options::out( 'title' ); ?></a></h1>
 				<h3 class="prepend-1"><em><?php Options::out( 'tagline' ); ?></em></h3>
 			</div>
 		</div>
