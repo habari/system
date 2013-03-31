@@ -157,18 +157,19 @@ class Site
 					$url = self::$habari_url;
 				}
 				else {
-					$url = Site::get_url( 'site' );
-					$path = trim( dirname( Site::script_name() ), '/\\' );
-					if ( '' != $path ) {
-						$url .= '/' . $path;
-					}
-					self::$habari_url = $url;
+					self::$habari_url = Site::get_url( 'site' );
 				}
 				break;
 			case 'site':
 				$url = Site::get_url( 'host' );
+				// Am I installed into a subdir?
+				$path = trim( dirname( Site::script_name() ), '/\\' );
+				if ( '' != $path ) {
+					$url .= '/' . $path;
+				}
+				// Am I in a Habari subdir site?
 				if( self::$config_type == Site::CONFIG_SUBDIR ) {
-					$url .= '/' . self::$config_urldir;
+					$url .= self::$config_urldir;
 				}
 				break;
 			case 'user':
