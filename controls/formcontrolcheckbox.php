@@ -7,6 +7,8 @@ namespace Habari;
  */
 class FormControlCheckbox extends FormControl
 {
+	public $returned_value;
+
 	/**
 	 * Called upon construct.  Sets control properties
 	 */
@@ -14,6 +16,7 @@ class FormControlCheckbox extends FormControl
 	{
 		$this->properties['type'] = 'checkbox';
 		$this->settings['internal_value'] = true;
+		$this->returned_value = true;
 	}
 
 	/**
@@ -24,12 +27,12 @@ class FormControlCheckbox extends FormControl
 	public function get(Theme $theme)
 	{
 		// Because this is a checkbox, the value isn't directly output in the control
-		$this->properties['value'] = 'checked';
-		if($this->value == true) {
-			$this->properties['checked'] = 'checked';
+		$this->properties['value'] = $this->returned_value;
+		if($this->value == false) {
+			unset($this->properties['checked']);
 		}
 		else {
-			unset($this->properties['checked']);
+			$this->properties['checked'] = 'checked';
 		}
 		return parent::get($theme);
 	}
@@ -39,12 +42,31 @@ class FormControlCheckbox extends FormControl
 	 */
 	public function process()
 	{
-		if(isset($_POST[$this->input_name()]) && $_POST[$this->input_name()] == 'checked') {
-			$this->value = true;
+		if(isset($_POST[$this->input_name()]) && $_POST[$this->input_name()] == $this->returned_value) {
+			$this->value = $this->returned_value;
 		}
 		else {
 			$this->value = false;
 		}
+	}
+
+	/**
+	 * Set the value returned when this control is checked
+	 * @param $returned_value The value returned when the value of this control is true;
+	 * @return FormControlCheckbox $this
+	 */
+	public function set_returned_value($returned_value)
+	{
+		$this->returned_value = $returned_value;
+		return $this;
+	}
+
+	public function set_value($value, $manually = true)
+	{
+		if($value != false) {
+			$this->returned_value = $value;
+		}
+		return parent::set_value($value, $manually);
 	}
 
 

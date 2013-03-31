@@ -360,6 +360,7 @@ class Stack
 		StackItem::register( 'admin-js', Site::get_url( 'admin_theme', '/js/admin.js' ) )->add_dependency( 'jquery' )->add_dependency( 'locale-js' );
 		StackItem::register( 'crc32', Site::get_url( 'vendor', '/crc32.js' ), '1.2' );
 		StackItem::register( 'select2', Site::get_url( 'vendor', '/select2/select2.min.js' ), '3.3.2' )->add_dependency( 'jquery' );
+		StackItem::register( 'select2-debug', Site::get_url( 'vendor', '/select2/select2.js' ), '3.3.2' )->add_dependency( 'jquery' );
 
 		StackItem::register( 'admin-css', array( Site::get_url( 'admin_theme', '/css/admin.css'), 'screen' ) );
 		StackItem::register( 'less', array( Site::get_url( 'vendor', '/less.min.js') ) );
