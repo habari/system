@@ -56,7 +56,7 @@ class Controller extends Singleton
 	 */
 	public static function get_full_url()
 	{
-		return self::get_base_url() . self::get_stub();
+		return Utils::end_in_slash(self::get_base_url()) . self::get_stub();
 	}
 
 	/**
