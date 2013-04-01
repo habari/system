@@ -418,22 +418,84 @@ body, html {
 			font-size: 18px;
 		}
 
+.dashboard .optionswindow {
+	display:none;
+}
+
 .dashboard .module {
 	height: 260px;
 	background: rgb(224, 221, 214);
+	overflow:hidden;
 }
 	.modulecore {
 		padding: 10px 20px;
 	}
-		.modulecore h2 {
+		.modulecore ul {
+			float:left;
+			margin-left: 0px;
+			margin-top: 10px;
+			width: 100%;
+		}
+		
+			.modulecore ul li {
+				margin:0px;
+				padding:5px 0px;
+				font-size: 12px;
+				float:left;
+				width: 100%;
+				border-bottom: 0px;
+				overflow:hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+			
+			.module ul li + li {
+				border-top: 1px solid rgb( 236, 233, 226 );
+			}
+				.modulecore ul li .date {
+					float:left;
+					margin-right: 20px;
+				}
+				
+				.modulecore ul li .comments {
+					float: right;
+				}
+				
+		.close, .options {
+			float:left;
+			padding: 3px 5px;
+			cursor: pointer;
+		}
+		
+		.close i, .options i {
+			color: #333;
+		}
+		
+		.handle {
+			background: #333;
+			width: 25%;
+			margin-top: -34px;
+			float:right;
+		}
+			.handle:hover {
+				cursor: move;
+			}
+		
+		.modulecore h2, .modulecore h2 a {
+			line-height: 10px;
 			font-size: 20px;
 			font-family: "Montserrat";
 			font-weight: normal;
 			margin:0px;
 			float:left;
+			padding:0px;
+			margin-top: 0px;
 			margin-right: 15px;
 		}
-		
+			#add-item-module h2 {
+				margin-top: 15px;
+			}
+			
 		.modulecore form {
 			float:left;
 			width: auto;
