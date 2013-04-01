@@ -993,7 +993,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$statuses = Plugins::filter( 'admin_publish_list_post_statuses', $statuses );
 
 		/** @var FormControlFieldset $settings */
-		$settings = $publish_controls->append( FormControlFieldset::create('settings')->set_caption(_t( 'Settings' )) );
+		$settings = $publish_controls->append( FormControlFieldset::create('post_settings')->set_caption(_t( 'Settings' )) );
 
 		$settings->append( FormControlLabel::wrap(_t( 'Content State' ), FormControlSelect::create('status')->set_options(array_flip( $statuses ))->set_value($this->status)));
 

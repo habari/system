@@ -52,7 +52,7 @@ class FormControlCheckbox extends FormControl
 
 	/**
 	 * Set the value returned when this control is checked
-	 * @param $returned_value The value returned when the value of this control is true;
+	 * @param mixed $returned_value The value returned when the value of this control is true;
 	 * @return FormControlCheckbox $this
 	 */
 	public function set_returned_value($returned_value)

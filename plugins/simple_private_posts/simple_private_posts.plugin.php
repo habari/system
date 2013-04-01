@@ -27,9 +27,15 @@ class SimplePrivatePosts extends Plugin
 
 	public function action_form_publish($form, $post)
 	{
-		$form->settings->append('checkbox', 'private_post', 'null:null', _t('Private Post'), 'tabcontrol_checkbox');
+		/** @var FormControlCheckbox $private_post  */
+		$private_post = FormControlCheckbox::create('private_post');
+		$private_post->set_returned_value(true);
+		$form->post_settings->append($private_post->label( _t('Private Post') ));
 		if ( $post->has_tokens('private') ) {
-			$form->private_post->value = true;
+			$private_post->set_value(true);
+		}
+		else {
+			$private_post->set_value(false);
 		}
 	}
 
