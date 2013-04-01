@@ -268,6 +268,16 @@ class FormContainer extends FormControl
 	 */
 	function __get( $name )
 	{
+		return $this->get_control($name);
+	}
+
+	/**
+	 * Get a control from this container by name.
+	 * @param string $name The name of the control
+	 * @return FormControl|null The control object requested, or null if not found
+	 */
+	function get_control( $name )
+	{
 		if ( isset( $this->controls[$name] ) ) {
 			return $this->controls[$name];
 		}
@@ -279,6 +289,7 @@ class FormContainer extends FormControl
 				}
 			}
 		}
+		return null;
 	}
 
 	/**
