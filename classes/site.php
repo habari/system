@@ -153,21 +153,21 @@ class Site
 				$url = $protocol . '://' . $host . $portpart;
 				break;
 			case 'habari':
-				if ( null == self::$habari_url ) {
-					self::$habari_url = Site::get_url( 'site' );
+				if(self::$habari_url == null) {
+					self::$habari_url = Site::get_url( 'host' );
+					// Am I installed into a subdir?
+					$path = trim( dirname( Site::script_name() ), '/\\' );
+					if ( '' != $path ) {
+						self::$habari_url .= '/' . $path;
+					}
 				}
 				$url = self::$habari_url;
 				break;
 			case 'site':
-				$url = Site::get_url( 'host' );
-				// Am I installed into a subdir?
-				$path = trim( dirname( Site::script_name() ), '/\\' );
-				if ( '' != $path ) {
-					$url .= '/' . $path;
-				}
+				$url = Site::get_url( 'habari' );
 				// Am I in a Habari subdir site?
 				if( self::$config_type == Site::CONFIG_SUBDIR ) {
-					$url .= self::$config_urldir;
+					$url = Utils::end_in_slash($url) . self::$config_urldir;
 				}
 				break;
 			case 'user':
