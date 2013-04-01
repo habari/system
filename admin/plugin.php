@@ -1,8 +1,7 @@
 <?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php if ( $plugin['debug'] ): ?>
-
-<div class="item plugin clear">
+<div class="item plugin columns sixteen">
 	<div class="head">
 		<p><?php printf( _t('The plugin file %s had syntax errors and could not load.'), $plugin['file'] ); ?></p>
 		<div style="display:none;" id="error_<?php echo $plugin['plugin_id']; ?>"><?php echo $plugin['error']; ?></div>
@@ -11,27 +10,22 @@
 			</ul>
 	</div>
 </div>
-
 <?php elseif ( $plugin['info'] == 'legacy' ): ?>
-
-<div class="item plugin clear">
+<div class="item plugin">
 	<div class="head">
 		<p><?php printf( _t('The plugin file %s is a legacy plugin, and does not include an XML info file.'), $plugin['file'] ); ?></p>
 	</div>
 </div>
-
 <?php elseif ( $plugin['info'] == 'broken' ): ?>
-
-<div class="item plugin clear">
+<div class="item plugin">
 	<div class="head">
 		<p><?php echo _t('The XML file for the plugin %s contained errors and could not be loaded.', array( basename( $plugin['file'] ) ) ); ?></p>
 	</div>
 </div>
-
 <?php else: ?>
-
-<div class="item plugin clear" id="plugin_<?php echo $plugin['plugin_id']; ?>">
+<div class="item plugin" id="plugin_<?php echo $plugin['plugin_id']; ?>">
 	<div class="head">
+		<div class="title">
 		<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a>
 		<span class="dim"><?php _e('by'); ?></span>
 
@@ -43,7 +37,7 @@
 		// @locale The string used between the last two items in the list of authors of a plugin on the admin page (one, two, three *and* four).
 		echo Format::and_list( $authors, '<span class="dim">, </span>', '<span class="dim">' . _t( ' and ' ) . '</span>');
 		?>
-
+		</div>
 		<?php if ( $plugin['core'] ): ?>
 			<span class="core"><?php _e('core'); ?></span>
 		<?php endif; ?>
