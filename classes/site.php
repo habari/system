@@ -153,12 +153,10 @@ class Site
 				$url = $protocol . '://' . $host . $portpart;
 				break;
 			case 'habari':
-				if ( null !== self::$habari_url ) {
-					$url = self::$habari_url;
-				}
-				else {
+				if ( null == self::$habari_url ) {
 					self::$habari_url = Site::get_url( 'site' );
 				}
+				$url = self::$habari_url;
 				break;
 			case 'site':
 				$url = Site::get_url( 'host' );
