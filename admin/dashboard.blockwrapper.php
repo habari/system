@@ -1,11 +1,11 @@
 <?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-<li class="module <?php echo $block->css_classes; ?>" id="dashboard_block_<?php echo $block->id; ?>" data-module-area-id="<?php echo $block->id; ?>" data-module-id="<?php echo $block->id; ?>">
-	<div class="close">&nbsp;</div>
+<li class="module columns eight <?php echo $block->css_classes; ?>" id="dashboard_block_<?php echo $block->id; ?>" data-module-area-id="<?php echo $block->id; ?>" data-module-id="<?php echo $block->id; ?>">
+	<div class="close"><i class="icon-remove"></i></div>
 	<?php if ( isset($block->has_options) && $block->has_options ) : ?>
-	<div class="options">&nbsp;</div>
+	<div class="options"><i class="icon-cog"></i></div>
 	<?php endif; ?>
-
+	<div class="clear"></div>
 	<div class="modulecore">
 		<h2>
 			<?php if(isset($block->link)): ?>
