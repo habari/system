@@ -149,7 +149,7 @@ class UserHandler extends ActionHandler
 		// Build the login form
 		$form = new FormUI( 'habari_login' );
 		$form->on_success( array( $this, 'loginform_success' ) );
-		$form->append( FormControlStatic::create('reset_message')->set_static('<p class="on_reset" style="margin-bottom:20px;">' . _t('Please enter the username you wish to reset the password for.  A unique password reset link will be emailed to that user.') . '</p>' ) );
+		$form->append( FormControlStatic::create('reset_message')->set_static('<p id="reset_message" class="on_reset">' . _t('Please enter the username you wish to reset the password for.  A unique password reset link will be emailed to that user.') . '</p>' ) );
 		$form->append( FormControlLabel::wrap(_t('Name'), FormControlText::create('habari_username'))->set_template('control.label.outsideleft'));
 		$form->append( FormControlLabel::wrap(_t('Password'), FormControlPassword::create('habari_password')->set_properties(array('class'=>'off_reset')))->set_template('control.label.outsideleft')->set_properties(array('class'=>'off_reset')));
 		$form->append( FormControlSubmit::create('submit_button')->set_caption(_t('Login'))->set_properties(array('class'=>'off_reset')) );

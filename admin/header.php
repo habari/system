@@ -33,9 +33,6 @@ header( 'X-Frame-Options: DENY' );
 		Stack::out( 'admin_header_javascript', Method::create( '\\Habari\\Stack', 'scripts' ) );
 		Stack::out( 'admin_stylesheet', Method::create( '\\Habari\\Stack' , 'styles' ) );
 	?>
-	<!--[if IE 7]>
-	<link rel="stylesheet" type="text/css" href="<?php Site::out_url( 'admin_theme' ); ?>/css/ie.css" media="screen">
-	<![endif]-->
 
 	<?php
 		Plugins::act( 'admin_header_after', $this );
@@ -43,16 +40,14 @@ header( 'X-Frame-Options: DENY' );
 
 </head>
 <body class="page-<?php echo $page; ?>">
-
 <div id="menubar">
-
 	<div id="menu" class="dropbutton">
-		<h1 id="menubutton"><a href="<?php echo $admin_page_url; ?>"><?php echo ( isset( $mainmenu[$admin_page]['text'] ) ? $mainmenu[$admin_page]['text'] : $admin_page ); ?> <span class="hotkey">Q</span></a></h1>
-
+		<h1 id="menubutton"><a href="<?php echo $admin_page_url; ?>"><?php echo ( isset( $mainmenu[$admin_page]['text'] ) ? $mainmenu[$admin_page]['text'] : $admin_page ); ?> <i class="arrow icon-circle-arrow-down"></i><span class="hotkey">Q</span></a></h1>
 		<div id="menulist" class="dropbuttonlist">
 			<ul>
 			<?php foreach ( $mainmenu as $menu_id => $menu ): ?>
 				<li id="link-<?php echo $menu_id ?>" class="<?php if ( $menu['selected'] == true ) { echo 'selected'; } if ( isset( $menu['submenu'] ) ) { echo ' submenu'; } if ( isset( $menu['class'] ) ) { echo " " . $menu['class']; } ?>" title="<?php echo $menu['title']; ?>"><a class="top" href="<?php echo $menu['url']; ?>"><?php echo $menu['text']; ?>
+				<?php if( isset($menu['submenu']) ) { echo '<i class="arrow icon-circle-arrow-right"></i>'; } ?>
 				<?php if ( isset( $menu['hotkey'] ) && $menu['hotkey'] != '' ): ?><span class="hotkey"><?php echo $menu['hotkey']; ?></span><?php endif; ?>
 				</a>
 				<?php if ( isset( $menu['submenu'] ) ): ?>
@@ -69,13 +64,8 @@ header( 'X-Frame-Options: DENY' );
 			</ul>
 		</div>
 	</div>
-
 	<a href="<?php Site::out_url( 'habari' ); ?>" id="site" title="<?php _e( 'Go to Site' ); ?>"><?php Options::out( 'title' ); ?></a>
-
 </div>
-
 <div id="spinner"></div>
-
 <div id="page">
-
 <?php Plugins::act( 'admin_info', $theme, $page ); ?>

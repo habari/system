@@ -1,8 +1,7 @@
 <?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php include( 'header.php' ); ?>
-
-<div class="container dashboardinfo transparent">
+<div class="container">
 		<!--[if lte IE 6]>
 		<p><?php
 		
@@ -14,15 +13,14 @@
 			
 		?></p>
 		<![endif]-->
-
-		<p>
-		<?php
-		if ( isset($active_time) ) {
-			_e( '%s has been active for %s', array( Options::get('title'), $active_time->friendly( 3, false ) ) );
-		}
-		?>
-		<br>
-
+		<div id="welcome" class="sixteen columns alpha">
+			<p>
+			<?php
+			if ( isset($active_time) ) {
+				_e( '%s has been active for %s', array( Options::get('title'), $active_time->friendly( 3, false ) ) );
+			}
+			?>
+			</p>
 		<?php
 		$content_type_msg = array();
 		$user = User::identify();
@@ -118,7 +116,7 @@
 			_e('You have %s', array(Format::and_list( $message_bits)) );
 		}
 		?></p>
-
+		</div>
 		<?php
 			
 			if ( !empty( $updates ) ) {
@@ -182,7 +180,7 @@
  	$msg = str_replace( array( '[', ']' ), array( '<a href="' . Site::get_url('habari') . '/doc/manual/index.html" onclick="popUp(this.href);return false;" title="' . _t('Habari Manual') . '">', '</a>' ), $msg );
 ?>
 
-<div class="container dashboard transparent">
+<div class="container">
 	<div class="item">
 	<p><?php echo $msg; ?></p>
 	<p><?php _e( 'This message will disappear next time you visit.' ); ?></p>
@@ -191,7 +189,7 @@
 
 <?php endif; ?>
 
-<div class="container dashboard transparent">
+<div class="container dashboard">
 
 	<ul class="modules">
 		<?php echo $theme->display('dashboard_modules'); ?>
