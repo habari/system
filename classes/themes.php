@@ -52,6 +52,7 @@ class Themes
 				$themedata['theme_dir'] = $theme_path;
 
 				$themedata['info'] = simplexml_load_file( $theme_path . '/theme.xml' );
+				$themedata['info']['filename'] = $theme_path . '/theme.xml';
 				if ( $themedata['info']->getName() != 'pluggable' || (string) $themedata['info']->attributes()->type != 'theme' ) {
 					$themedata['screenshot'] = Site::get_url( 'admin_theme' ) . "/images/screenshot_default.png";
 					$themedata['info']->description = '<span class="error">' . _t( 'This theme is a legacy theme that is not compatible with Habari ' ) . Version::get_habariversion() . '. <br><br>Please update your theme.</span>';

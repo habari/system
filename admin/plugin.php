@@ -113,7 +113,7 @@
 		elseif ( isset($plugin['info']->help) ) {
 			foreach ( $plugin['info']->help as $help ) {
 				if ( (string)$help['name'] == '' ) {
-					echo  '<div class="help">' . $help->value . '</div>';
+					echo  '<div class="help">' . Pluggable::get_xml_text($plugin['info']['filename'], $help) . '</div>';
 				}
 			}
 		} ?>

@@ -421,6 +421,32 @@ abstract class Pluggable
 			}
 		}
 	}
+
+	/**
+	 * Get the text associated to an info xml node, possibly using an href parameter
+	 * @param string $filename The filename of the xml file
+	 * @param \SimpleXMLElement $node The text node with value children to sift through
+	 * @return mixed|string The result text
+	 */
+	public static function get_xml_text($filename, \SimpleXMLElement $node)
+	{
+		$values = $node->xpath('value[not(@lang)]');
+		$value = reset($values);
+		$filename = (string) $filename;
+
+		if($value['href']) {
+			$href = dirname($filename). '/' . str_replace('..', '', $value['href']);
+			if(file_exists($href)) {
+				$initial = file_get_contents($href);
+				$result = Plugins::filter('get_xml_text', $initial, $filename );
+				if($initial == $result) {
+					$result = Format::autop($initial);
+				}
+				return $result;
+			}
+		}
+		return (string)$value;
+	}
 }
 
 ?>

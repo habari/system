@@ -405,9 +405,8 @@ class Locale
 	 * @param \SimpleXMLElement $child The child node we're trying to translate
 	 * @param string $ns The namespace to use for the lang attribute of the node to be translated
 	 * @param null|string $locale The locale we want to translate into
-	 * @todo These defaults may need tweaked. It seems there should be a better way to do this whole thing
 	 */
-	public static function translate_xml( $parent, $child, $ns = 'http://www.w3.org/XML/1998/namespace', $locale = null )
+	public static function translate_xml( \SimpleXMLElement $parent, \SimpleXMLElement $child, $ns = 'http://www.w3.org/XML/1998/namespace', $locale = null )
 	{
 		$use = null;
 		// Set the locale
@@ -416,19 +415,11 @@ class Locale
 		}
 		// Loop through the child elements
 		foreach( $child as $el ) {
-			$attr = $el->attributes( $ns );
-			foreach( $attr as $key => $value ) {
-				// Found one with the language of the current locale
-				if ( $key == 'lang' && $value == $locale ) {
-					$use = (string)$el;
-				}
+			if(isset($el['lang']) && $el['lang'] == $locale) {
+				// If a translation for the element is found, use it instead of the default value
+				// Remove the lang attribute in memory to make it the default
+				unset($el['lang']);
 			}
-		}
-		// If a translation for the element is found, use it instead of the default value
-		if ( ! empty( $use ) ) {
-			$name = $child->getName();
-			unset( $parent->$name );
-			$parent->addChild( $name, $use );
 		}
 	}
 }

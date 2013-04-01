@@ -111,6 +111,7 @@ class Theme extends Pluggable
 		}
 		if ( $xml_content = file_get_contents( $xml_file ) ) {
 			$theme_data = new \SimpleXMLElement( $xml_content );
+			$theme_data['filename'] = $xml_file;
 			return $theme_data;
 		}
 	}

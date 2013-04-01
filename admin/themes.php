@@ -53,7 +53,7 @@
 			<?php if ( isset( $active_theme['info']->help ) ): ?>
 			<div id="themehelp" class="pct70 <?php if( Controller::get_var('help') == $active_theme['dir'] ): ?>active<?php endif; ?>">
 				<div class="help">
-					<?php echo (string) $active_theme['info']->help->value; ?>
+					<?php echo Pluggable::get_xml_text($active_theme['info']['filename'], $active_theme['info']->help); ?>
 				</div>
 			</div>
 			<?php endif; ?>

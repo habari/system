@@ -464,15 +464,19 @@ class Plugins
 				if ( $info->getName() != 'pluggable' ) {
 					$info = 'legacy';
 				}
+				else {
 
-				// Translate the plugin description
-				Locale::translate_xml( $info, $info->description );
+					$info['filename'] = $xml_file;
 
-				// Translate the plugin help
-				foreach( $info->help as $help ) {
-					Locale::translate_xml( $help, $help->value );
+					// Translate the plugin description
+					Locale::translate_xml( $info, $info->description );
+
+					// Translate the plugin help
+					foreach( $info->help as $help ) {
+						Locale::translate_xml( $help, $help->value );
+					}
+
 				}
-				
 			}
 			catch ( \Exception $e ) {
 				
