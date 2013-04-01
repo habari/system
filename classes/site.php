@@ -171,7 +171,7 @@ class Site
 				}
 				break;
 			case 'user':
-				$url = Site::get_url( 'host' ) . Site::get_path( 'base', true ) . Site::get_path( 'user' );
+				$url = Site::get_url( 'habari', true ) . Site::get_path( 'user' );
 				break;
 			case 'theme':
 				$theme = Themes::get_theme_dir();
