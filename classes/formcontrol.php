@@ -436,7 +436,7 @@ abstract class FormControl
 	public function get_id($force_set = true)
 	{
 		if(!isset($this->properties['id']) && $force_set) {
-			$this->properties['id'] = $this->name;
+			$this->properties['id'] = Utils::slugify($this->name, '_');
 		}
 		return isset($this->properties['id']) ? $this->properties['id'] : null;
 	}
