@@ -17,7 +17,7 @@ $(document).ready(function(){
 	<?php if ( isset( $post->id ) && ( $post->id != '' ) && ACL::access_check( $post->get_access(), 'delete' ) ) : ?>
 	$('.container.buttons').prepend($('<input type="button" id="delete" class="button delete" tabindex="6" value="<?php _e('Delete'); ?>">'));
 	$('#delete').click(function(){
-		$('#create-content')
+		$(this).closest('form')
 			.append($('<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>"><input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>"><input type="hidden" name="digest" value="<?php echo $wsse['digest']; ?>">'))
 			.attr('action', '<?php URL::out( 'admin', array('page' => 'delete_post', 'id' => $post->id )); ?>')
 			.submit();
