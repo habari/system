@@ -99,12 +99,12 @@ class AdminPostsHandler extends AdminHandler
 		}
 
 		if ( !$okay ) {
-			Utils::redirect( URL::get( 'admin', 'page=posts&type='. Post::status( 'any' ) ) );
+			Utils::redirect( URL::get( 'admin', 'page=posts&type=' . $post->content_type ) );
 		}
 
 		$post->delete();
 		Session::notice( _t( 'Deleted the %1$s titled "%2$s".', array( Post::type_name( $post->content_type ), Utils::htmlspecialchars( $post->title ) ) ) );
-		Utils::redirect( URL::get( 'admin', 'page=posts&type=' . Post::status( 'any' ) ) );
+		Utils::redirect( URL::get( 'admin', 'page=posts&type=' . $post->content_type ) );
 	}
 
 	/**
