@@ -970,10 +970,11 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 		// Create the Content field
 		$form->append( FormControlLabel::wrap( _t('Content'), FormControlTextArea::create('content', null, array('class' => array('resizable', 'check-change'), 'tabindex' => 2))->set_value($this->content_internal)) );
-		$form->content->raw = true;  // What does this do?
+		$form->content->raw = true;  // @todo What does this do?
 
 		// Create the tags field
-		$form->append( FormControlLabel::wrap( _t( 'Tags, separated by, commas' ), $tags_control = FormControlText::create('tags', null, array('class' => 'check-change', 'tabindex' => 3))));
+		/** @var FormControlAutocomplete $tags_control */
+		$form->append( FormControlLabel::wrap( _t( 'Tags, separated by, commas' ), $tags_control = FormControlAutocomplete::create('tags', null, array('style' => 'width:90%;', 'class' => 'check-change', 'tabindex' => 3), array('allow_new'=>true))));
 
 		$tags = (array)$this->get_tags();
 		array_walk($tags, function(&$element, $key) {
@@ -981,6 +982,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		});
 
 		$tags_control->set_value(implode( ', ', $tags ));
+		$tags_control->set_ajax(URL::auth_ajax('tag_list'));
 
 		// Create the splitter
 		/** @var FormControlTabs $publish_controls  */

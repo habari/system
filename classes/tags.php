@@ -18,6 +18,7 @@ class Tags extends Vocabulary
 	/**
 	 * Return a tag based on an id, tag text or slug
 	 *
+	 * @param string|integer $tag A tag's text, slug, or id
 	 * @return Tag The tag object
 	 */
 	public static function get_one( $tag )
@@ -32,7 +33,8 @@ class Tags extends Vocabulary
 	/**
 	 * Return a tag based on a tag's text
 	 *
-	 * @return	A Tag object
+	 * @param string $tag The tag's text (not slug)
+	 * @return Tag A Tag object
 	 */
 	public static function get_by_text( $tag )
 	{
@@ -42,7 +44,8 @@ class Tags extends Vocabulary
 	/**
 	 * Return a tag based on a tag's text
 	 *
-	 * @return	A Tag object
+	 * @param string $tag The tag slug
+	 * @return Tag A Tag object
 	 */
 	public static function get_by_slug( $tag )
 	{
@@ -52,8 +55,8 @@ class Tags extends Vocabulary
 	/**
 	 * Returns a Tag object based on a supplied ID
 	 *
-	 * @param Integer tag_id The ID of the tag to retrieve
-	 * @return	A Tag object
+	 * @param Integer $tag The ID of the tag to retrieve
+	 * @return Tag A Tag object
 	 */
 	public static function get_by_id( $tag )
 	{
@@ -161,6 +164,20 @@ class Tags extends Vocabulary
 		}
 
 		return compact('include_tag', 'exclude_tag');
+	}
+
+	/**
+	 * Return a terms that match a substring criteria
+	 * @param string $q Criteria of a term to match
+	 * @return Terms The matching terms
+	 */
+	public static function search($q)
+	{
+		$terms = self::vocabulary()->search_term( '%' . $q . '%' );
+		if ( !$terms instanceOf Terms ) {
+			return new Terms();
+		}
+		return $terms;
 	}
 }
 ?>

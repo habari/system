@@ -17,7 +17,6 @@ class FormControlAutocomplete extends FormControl
 		$this->properties['type'] = 'hidden';
 		$this->properties['class'] = 'autocomplete_control';
 
-		$this->settings['allow_new'] = false;
 
 		$config = new \stdClass();
 		$config->minimumInputLength = 2;
@@ -88,7 +87,7 @@ CUSTOM_AUTOCOMPLETE_JS;
 				'ajax_url' => $url,
 				'ajax_ishtml' => $ishtml,
 			),
-			true
+			false
 		);
 		return $this;
 	}
@@ -104,6 +103,7 @@ CUSTOM_AUTOCOMPLETE_JS;
 		}
 		if(isset($this->settings['allow_new'])) {
 			$this->properties['data-autocomplete-config']->tokenSeparators = array(',');
+			$this->properties['data-autocomplete-config']->allow_new = true;
 		}
 		$this->properties['data-autocomplete-config'] = json_encode($this->properties['data-autocomplete-config'] );
 /*
