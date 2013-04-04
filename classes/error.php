@@ -109,6 +109,11 @@ class Error extends \Exception
 			{
 				return $v;
 			}
+
+			function _n( $singular, $plural, $count )
+			{
+				return ( $count == 1 ? $singular : $plural );
+			}
 		}
 
 		// Don't be fooled, we can't actually handle most of these.
