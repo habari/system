@@ -324,8 +324,7 @@ class Site
 				// Collect the subdirectory(s) the core is located in to determine the base path later
 				// Don't add them to $request, they will be added with $_SERVER['REQUEST_URI']
 				$coresubdir = explode( '/', trim( $server['path'], '/' ) );
-				$subsite_segments = count($request) + count($coresubdir);
-				$base_segments = count($request);
+				$basesegments = count($request) + count($coresubdir);
 				$request = array_merge($request, explode( '/', trim( $_SERVER['REQUEST_URI'], '/' ) ) );
 				// Now cut parts from the end until we found a matching site directory
 				$x = 0;
@@ -334,8 +333,8 @@ class Site
 					if ( in_array( $match, $config_dirs ) ) {
 						self::$config_dir = $match;
 						self::$config_path = HABARI_PATH . '/user/sites/' . self::$config_dir;
-						self::$config_type = ( $subsite_segments < count($request) ) ? Site::CONFIG_SUBDIR : Site::CONFIG_SUBDOMAIN;
-						self::$config_urldir = implode('/', array_slice($request, $base_segments));
+						self::$config_type = ( $basesegments < count($request) ) ? Site::CONFIG_SUBDIR : Site::CONFIG_SUBDOMAIN;
+						self::$config_urldir = implode('/', array_slice($request, $basesegments));
 						break;
 					}
 
