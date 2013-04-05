@@ -323,8 +323,11 @@ class Site
 				$request = array_merge($request, explode('.', $server['host']));
 				// Collect the subdirectory(s) the core is located in to determine the base path later
 				// Don't add them to $request, they will be added with $_SERVER['REQUEST_URI']
-				$coresubdir = explode( '/', trim( $server['path'], '/' ) );
-				$basesegments = count($request) + count($coresubdir);
+				$basesegments = count($request);
+				if(!empty($server['path'])) {
+					$coresubdir = explode( '/', trim( $server['path'], '/' ) );
+					$basesegments += count($coresubdir);
+				}
 				$request = array_merge($request, explode( '/', trim( $_SERVER['REQUEST_URI'], '/' ) ) );
 				// Now cut parts from the end until we found a matching site directory
 				$x = 0;
