@@ -335,6 +335,8 @@ class Themes
 		// @todo: Potentially break themes by sending an array to the constructor instead of this QueryRecord
 		$themedata = new QueryRecord($themedata);
 
+		// Set the default fallback theme class, which a parent can override
+		$fallback_classname = '\\Habari\\Theme';
 
 		// Deal with parent themes
 		if(isset($themedata->parent)) {
@@ -348,6 +350,14 @@ class Themes
 
 			$themedata->parent_theme_dir = Utils::single_array($parent_data['theme_dir']);
 			$themedata->theme_dir = array_merge(Utils::single_array($themedata->theme_dir), $themedata->parent_theme_dir);
+
+			// Does the parent have a class? If so, set the fallback class name
+			if ( isset( $themedata->class ) ) {
+				$fallback_classname = $themedata->class;
+			}
+			else {
+				$fallback_classname = self::class_from_filename( $parent_data['theme_dir'] . $parent_themefile );
+			}
 		}
 		$primary_theme_dir = $themedata->theme_dir;
 		$primary_theme_dir = is_array($primary_theme_dir) ? reset($primary_theme_dir) : $primary_theme_dir;
@@ -366,7 +376,7 @@ class Themes
 
 		// the final fallback, for the admin "theme"
 		if ( $classname == '' ) {
-			$classname = '\\Habari\\Theme';
+			$classname = $fallback_classname;
 		}
 
 		$created_theme = new $classname( $themedata );
