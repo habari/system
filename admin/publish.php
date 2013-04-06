@@ -37,10 +37,10 @@ $(document).ready(function(){
 
 	// Submit when the publish button is clicked.
 	$('#publish').click( function() {
-		$('#create-content').submit();
+		$('#create_content').submit();
 	});
 
-	$('#create-content').submit(function(){
+	$('#create_content').submit(function(){
 		$('.check-change').each(function() {
 			$(this).data('checksum', crc32($(this).val()));
 		});
