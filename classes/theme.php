@@ -142,7 +142,7 @@ class Theme extends Pluggable
 			$this->assign( 'page', isset( $this->page ) ? $this->page : 1 );
 		}
 
-		if ( !$this->template_engine->assigned('page_template') ) {
+		if ( !isset($this->page_title) ) {
 			$this->assign('page_title', $this->page_title());
 		}
 
@@ -993,12 +993,13 @@ class Theme extends Pluggable
 	 * Detects if a variable is assigned to the template engine for use in
 	 * constructing the template's output.
 	 *
-	 * @param key name of variable
-	 * @returns boolean true if name is set, false if not set
+	 * @param string $key name of variable
+	 * @return bool true if name is set, false if not set
 	 */
 	public function __isset( $key )
 	{
-		return isset( $this->var_stack[$this->current_var_stack][$key] );
+		$stack = call_user_func_array('array_merge', $this->var_stack);
+		return isset( $stack[$key] );
 	}
 
 	/**
