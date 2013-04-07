@@ -73,6 +73,7 @@ class HabariSilo extends Plugin implements MediaSilo
 		$ui->max_thumbnail_width->add_validator('validate_regex', '/^[0-9]*$/', _t('Only numbers may be entered for thumbnail width.'));
 		$ui->append( FormControlLabel::wrap( _t('Max thumbnail height:'), FormControlText::create( 'max_thumbnail_height', __CLASS__ . '__max_thumbnail_height' ) ) );
 		$ui->max_thumbnail_height->add_validator('validate_regex', '/^[0-9]*$/', _t('Only numbers may be entered for thumbnail height.'));
+		$ui->append( FormControlLabel::wrap( _t('Always create square thumbnails (pad with black if not high enough):' ), FormControlCheckbox::create( 'force_square', __CLASS__ . '__force_square_thumbnail' ) ) );
 		$ui->append(FormControlSubmit::create('save')->set_caption('Save'));
 		$ui->out();
 	}
@@ -314,13 +315,16 @@ class HabariSilo extends Plugin implements MediaSilo
 
 		// Calculate the output size based on the original's aspect ratio
 		$y_displacement = 0;
+		$displace = Options::get( __CLASS__ . '__force_square_thumbnail', true );
 		if ( $src_width / $src_height > $max_width / $max_height ) {
 			$thumb_w = $max_width;
 			$thumb_h = $src_height * $max_width / $src_width;
 
-		// thumbnail is not full height, position it down so that it will be padded on the
-		// top and bottom with black
-		$y_displacement = ( $max_height - $thumb_h ) / 2;
+			if($displace) {
+				// thumbnail is not full height, position it down so that it will be padded on the
+				// top and bottom with black
+				$y_displacement = ( $max_height - $thumb_h ) / 2;
+			}
 		}
 		else {
 			$thumb_w = $src_width * $max_height / $src_height;
@@ -328,7 +332,7 @@ class HabariSilo extends Plugin implements MediaSilo
 		}
 
 		// Create the output image and copy to source to it
-		$dst_img = ImageCreateTrueColor( $thumb_w, $max_height );
+		$dst_img = ImageCreateTrueColor( $thumb_w, ($displace) ? $max_height : $thumb_h );
 		imagecopyresampled( $dst_img, $src_img, 0, $y_displacement, 0, 0, $thumb_w, $thumb_h, $src_width, $src_height );
 
 		/* Sharpen before save?
