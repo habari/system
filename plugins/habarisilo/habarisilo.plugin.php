@@ -55,6 +55,27 @@ class HabariSilo extends Plugin implements MediaSilo
 		ACL::create_token( 'upload_media', _t( 'Upload files to media silos' ), 'Administration' );
 		ACL::create_token( 'delete_media', _t( 'Delete files from media silos' ), 'Administration' );
 	}
+	
+	/**
+	 * function filter_plugin_config
+	 * Add configuration options
+	 */
+	public function filter_plugin_config( $actions )
+	{
+		$actions['configure'] = _t('Configure');
+		return $actions;
+	}
+	
+	public function action_plugin_ui_configure()
+	{
+		$ui = new FormUI( strtolower( get_class( $this ) ) );
+		$ui->append( FormControlLabel::wrap( _t('Max thumbnail width:'), FormControlText::create( 'max_thumbnail_width', __CLASS__ . '__max_thumbnail_width' ) ) );
+		$ui->max_thumbnail_width->add_validator('validate_regex', '/^[0-9]*$/', _t('Only numbers may be entered for thumbnail width.'));
+		$ui->append( FormControlLabel::wrap( _t('Max thumbnail height:'), FormControlText::create( 'max_thumbnail_height', __CLASS__ . '__max_thumbnail_height' ) ) );
+		$ui->max_thumbnail_height->add_validator('validate_regex', '/^[0-9]*$/', _t('Only numbers may be entered for thumbnail height.'));
+		$ui->append(FormControlSubmit::create('save')->set_caption('Save'));
+		$ui->out();
+	}
 
 	/**
 	 * function filter_token_description_display
@@ -193,7 +214,10 @@ class HabariSilo extends Plugin implements MediaSilo
 		$mtime = '';
 
 		if ( !file_exists( dirname( $realfile ) . '/' . $thumbnail_suffix ) ) {
-			if ( !$this->create_thumbnail( $realfile ) ) {
+			// Attempt to create thumbnail
+			$max_thumbnail_width = Options::get( __CLASS__ . '__max_thumbnail_width', Media::THUMBNAIL_WIDTH );
+			$max_thumbnail_height = Options::get( __CLASS__ . '__max_thumbnail_height', Media::THUMBNAIL_HEIGHT );
+			if ( !$this->create_thumbnail( $realfile, $max_thumbnail_width, $max_thumbnail_height ) ) {
 				// there is no thumbnail so use icon based on mimetype.
 				$icon_path = Plugins::filter( 'habarisilo_icon_base_path', dirname( $this->get_file() ) . '/icons' );
 				$icon_url = Plugins::filter( 'habarisilo_icon_base_url', $this->get_url() . '/icons' );
@@ -349,7 +373,9 @@ class HabariSilo extends Plugin implements MediaSilo
 
 		$result = $filedata->save( $file );
 		if ( $result ) {
-			$this->create_thumbnail( $file );
+			$max_thumbnail_width = Options::get( __CLASS__ . '__max_thumbnail_width', Media::THUMBNAIL_WIDTH );
+			$max_thumbnail_height = Options::get( __CLASS__ . '__max_thumbnail_height', Media::THUMBNAIL_HEIGHT );
+			$this->create_thumbnail( $file, $max_thumbnail_width, $max_thumbnail_height );
 		}
 
 		return $result;
