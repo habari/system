@@ -48,8 +48,6 @@ class DatabaseConnection
 		'rewrite_rules',
 		'scopes',
 		'sessions',
-		'tags',
-		'tag2post',
 		'terms',
 		'terminfo',
 		'tokens',
