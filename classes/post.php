@@ -974,14 +974,14 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 		// Create the tags field
 		/** @var FormControlAutocomplete $tags_control */
-		$form->append( FormControlLabel::wrap( _t( 'Tags, separated by, commas' ), $tags_control = FormControlAutocomplete::create('tags', null, array('style' => 'width:90%;', 'class' => 'check-change', 'tabindex' => 3), array('allow_new'=>true))));
+		$form->append( FormControlLabel::wrap( _t( 'Tags, separated by, commas' ), $tags_control = FormControlAutocomplete::create('tags', null, array('style' => 'width:90%;', 'class' => 'check-change', 'tabindex' => 3), array('allow_new' => true, 'init_selection' => true))));
 
 		$tags = (array)$this->get_tags();
 		array_walk($tags, function(&$element, $key) {
 			$element->term_display = MultiByte::strpos( $element->term_display, ',' ) === false ? $element->term_display : $element->tag_text_searchable;
 		});
 
-		$tags_control->set_value(implode( ', ', $tags ));
+		$tags_control->set_value(implode( ',', $tags ));
 		$tags_control->set_ajax(URL::auth_ajax('tag_list'));
 
 		// Create the splitter

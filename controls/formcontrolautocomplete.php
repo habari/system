@@ -61,6 +61,18 @@ controls.init(function(){
 				}
 			});
 		}
+		if(autocomplete_config.init_selection) {
+			$.extend(autocomplete_config, {
+				initSelection: function(element, callback) {
+					var data = [];
+					$(element.val().split(',')).each(function () {
+						data.push({id: this, text: this});
+					});
+					callback(data);
+				}
+			});
+		}
+
 		console.log(autocomplete_config);
 		self.select2(autocomplete_config);
 	});
@@ -104,6 +116,9 @@ CUSTOM_AUTOCOMPLETE_JS;
 		if(isset($this->settings['allow_new'])) {
 			$this->properties['data-autocomplete-config']->tokenSeparators = array(',');
 			$this->properties['data-autocomplete-config']->allow_new = true;
+		}
+		if(isset($this->settings['init_selection'])) {
+			$this->properties['data-autocomplete-config']->init_selection = true;
 		}
 		$this->properties['data-autocomplete-config'] = json_encode($this->properties['data-autocomplete-config'] );
 /*
