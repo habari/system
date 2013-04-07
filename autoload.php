@@ -63,7 +63,11 @@ class Autoload
 	{
 		$success = false;
 		$full_class_name = $class_name;
-		$class_name = preg_replace('#^.+\\\\#', '', $class_name);
+		if(!preg_match('#^\\\\?Habari\\\\#', $class_name)) {
+			return false;
+		}
+
+		$class_name = preg_replace('#^\\\\?Habari\\\\#', '', $class_name);
 		$class_file = strtolower( $class_name ) . '.php';
 
 		if ( empty( self::$files ) ) {
