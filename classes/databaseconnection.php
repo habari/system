@@ -256,12 +256,15 @@ class DatabaseConnection
 		if ( $this->pdo_statement = $this->pdo->prepare( $query ) ) {
 			if ( $this->fetch_mode == \PDO::FETCH_CLASS ) {
 				/* Try to get the result class autoloaded. */
-				if ( ! class_exists( strtolower( $this->fetch_class_name ), true ) ) {
+				if ( ! class_exists( $this->fetch_class_name, true ) ) {
 					$tmp = $this->fetch_class_name;
-					// @todo This is a GIANT namespace kludge, replacing Model class names with no namespace with a default prefixed class
+					// @todo This is a GIANT namespace kludge, replacing Model class names with no namespace that don't exist with a default prefixed class
 					if(strpos($tmp, '\\') == false) {
 						$tmp = '\\Habari\\' . $tmp;
 						$this->fetch_class_name = $tmp;
+						if ( ! class_exists( $this->fetch_class_name, true ) ) {
+							throw new \Exception('The model class that was specified for data retreival could not be loaded.');
+						}
 					}
 					new $tmp();
 				}
