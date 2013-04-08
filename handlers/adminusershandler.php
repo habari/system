@@ -230,19 +230,26 @@ class AdminUsersHandler extends AdminHandler
 				// we're going to re-assign all of this user's posts
 				$newauthor = Controller::get_var( 'reassign' );
 				Posts::reassign( $newauthor, $posts );
-				$edit_user->delete();
+				$success = $edit_user->delete();
 			}
 			else {
 				// delete user, then delete posts
-				$edit_user->delete();
+				$success = $edit_user->delete();
 
 				// delete posts
-				foreach ( $posts as $post ) {
-					$post->delete();
+				if($success) {
+					foreach ( $posts as $post ) {
+						$post->delete();
+					}
 				}
 			}
-
-			Session::notice( _t( '%s has been deleted', array( $username ) ) );
+			
+			if($success) {
+				Session::notice( _t( '%s has been deleted', array( $username ) ) );
+			}
+			else {
+				Session::error( _t( 'There was a problem deleting %s', array( $username ) ) );
+			}
 
 			Utils::redirect( URL::get( 'admin', array( 'page' => 'users' ) ) );
 		}
