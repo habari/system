@@ -327,8 +327,6 @@ class AdminUsersHandler extends AdminHandler
 	{
 		if ( isset( $handler_vars['delete'] ) ) {
 
-			$currentuser = User::identify();
-
 			$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 			if ( isset( $handler_vars['digest'] ) && $handler_vars['digest'] != $wsse['digest'] ) {
 				Session::error( _t( 'WSSE authentication failed.' ) );
