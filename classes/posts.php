@@ -1004,21 +1004,19 @@ class Posts extends \ArrayObject implements IsContent
 	 * @param The params by which to work out what is the next ascending post
 	 * @return Post The ascending post
 	 */
-	public static function ascend( $post, $params = null )
+	public static function ascend( $post, $userparams = null )
 	{
 		$posts = null;
 		$ascend = false;
-		if ( !$params ) {
-			$params = array( 'where' => "pubdate >= '{$post->pubdate->sql}' AND content_type = {$post->content_type} AND status = {$post->status}", 'limit' => 2, 'orderby' => 'pubdate ASC' );
-			$posts = Posts::get( $params );
-		}
-		elseif ( $params instanceof Posts ) {
-			$posts = $params;
+		if ( $userparams instanceof Posts ) {
+			$posts = $userparams;
 		}
 		else {
-			if ( !array_key_exists( 'orderby', $params ) ) {
-				$params['orderby'] = 'pubdate ASC';
+			$defaultparams = array( 'where' => "pubdate >= '{$post->pubdate->sql}'", 'content_type' => $post->content_type, 'status' => $post->status, 'limit' => 2, 'orderby' => 'pubdate ASC' );
+			if($userparams == null) {
+				$userparams = array();
 			}
+			$params = array_merge( $defaultparams, $userparams );
 			$posts = Posts::get( $params );
 		}
 		if($posts) {
@@ -1040,21 +1038,19 @@ class Posts extends \ArrayObject implements IsContent
 	 * @param The params by which to work out what is the next descending post
 	 * @return Post The descending post
 	 */
-	public static function descend( $post, $params = null )
+	public static function descend( $post, $userparams = null )
 	{
 		$posts = null;
-		$descend = false;
-		if ( !$params ) {
-			$params = array( 'where' => "pubdate <= '{$post->pubdate->sql}' AND content_type = {$post->content_type} AND status = {$post->status}", 'limit' => 2, 'orderby' => 'pubdate DESC' );
-			$posts = Posts::get( $params );
-		}
-		elseif ( $params instanceof Posts ) {
-			$posts = array_reverse( $params );
+		$ascend = false;
+		if ( $userparams instanceof Posts ) {
+			$posts = $userparams;
 		}
 		else {
-			if ( !array_key_exists( 'orderby', $params ) ) {
-				$params['orderby'] = 'pubdate DESC';
+			$defaultparams = array( 'where' => "pubdate <= '{$post->pubdate->sql}'", 'content_type' => $post->content_type, 'status' => $post->status, 'limit' => 2, 'orderby' => 'pubdate DESC' );
+			if($userparams == null) {
+				$userparams = array();
 			}
+			$params = array_merge( $defaultparams, $userparams );
 			$posts = Posts::get( $params );
 		}
 		if($posts) {
