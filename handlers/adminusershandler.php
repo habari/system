@@ -221,36 +221,30 @@ class AdminUsersHandler extends AdminHandler
 
 		// Let's check for deletion
 		if ( Controller::get_var( 'delete' ) != null ) {
-			if ( $current_user->id != $edit_user->id ) {
+			// We're going to delete the user before we need it, so store the username
+			$username = $edit_user->username;
 
-				// We're going to delete the user before we need it, so store the username
-				$username = $edit_user->username;
+			$posts = Posts::get( array( 'user_id' => $edit_user->id, 'nolimit' => true ) );
 
-				$posts = Posts::get( array( 'user_id' => $edit_user->id, 'nolimit' => true ) );
-
-				if ( ( Controller::get_var( 'reassign' ) != null ) && ( Controller::get_var( 'reassign' ) != 0 ) && ( Controller::get_var( 'reassign' ) != $edit_user->id ) ) {
-					// we're going to re-assign all of this user's posts
-					$newauthor = Controller::get_var( 'reassign' );
-					Posts::reassign( $newauthor, $posts );
-					$edit_user->delete();
-				}
-				else {
-					// delete user, then delete posts
-					$edit_user->delete();
-
-					// delete posts
-					foreach ( $posts as $post ) {
-						$post->delete();
-					}
-				}
-
-				Session::notice( _t( '%s has been deleted', array( $username ) ) );
-
-				Utils::redirect( URL::get( 'admin', array( 'page' => 'users' ) ) );
+			if ( ( Controller::get_var( 'reassign' ) != null ) && ( Controller::get_var( 'reassign' ) != 0 ) && ( Controller::get_var( 'reassign' ) != $edit_user->id ) ) {
+				// we're going to re-assign all of this user's posts
+				$newauthor = Controller::get_var( 'reassign' );
+				Posts::reassign( $newauthor, $posts );
+				$edit_user->delete();
 			}
 			else {
-				Session::notice( _t( 'You cannot delete yourself.' ) );
+				// delete user, then delete posts
+				$edit_user->delete();
+
+				// delete posts
+				foreach ( $posts as $post ) {
+					$post->delete();
+				}
 			}
+
+			Session::notice( _t( '%s has been deleted', array( $username ) ) );
+
+			Utils::redirect( URL::get( 'admin', array( 'page' => 'users' ) ) );
 		}
 
 		$update = false;
@@ -373,30 +367,25 @@ class AdminUsersHandler extends AdminHandler
 				$id = $id['id'];
 				$user = User::get_by_id( $id );
 
-				if ( $currentuser != $user ) {
-					$assign = intval( $handler_vars['reassign'] );
+				$assign = intval( $handler_vars['reassign'] );
 
-					if ( $user->id == $assign ) {
-						return;
-					}
-
-					$posts = Posts::get( array( 'user_id' => $user->id, 'nolimit' => 1) );
-
-					$user->delete();
-
-					if ( isset( $posts[0] ) ) {
-						if ( 0 == $assign ) {
-							foreach ( $posts as $post ) {
-								$post->delete();
-							}
-						}
-						else {
-							Posts::reassign( $assign, $posts );
-						}
-					}
+				if ( $user->id == $assign ) {
+					return;
 				}
-				else {
-					$msg_status = _t( 'You cannot delete yourself.' );
+
+				$posts = Posts::get( array( 'user_id' => $user->id, 'nolimit' => 1) );
+
+				$user->delete();
+
+				if ( isset( $posts[0] ) ) {
+					if ( 0 == $assign ) {
+						foreach ( $posts as $post ) {
+							$post->delete();
+						}
+					}
+					else {
+						Posts::reassign( $assign, $posts );
+					}
 				}
 
 				$count++;
