@@ -362,6 +362,7 @@ class AdminUsersHandler extends AdminHandler
 			}
 
 			$count = 0;
+			$success = true;
 
 			if ( ! isset( $ids ) ) {
 				Session::notice( _t( 'No users deleted.' ) );
@@ -380,9 +381,9 @@ class AdminUsersHandler extends AdminHandler
 
 				$posts = Posts::get( array( 'user_id' => $user->id, 'nolimit' => 1) );
 
-				$user->delete();
+				$one_success = $user->delete();
 
-				if ( isset( $posts[0] ) ) {
+				if ( $one_success && isset( $posts[0] ) ) {
 					if ( 0 == $assign ) {
 						foreach ( $posts as $post ) {
 							$post->delete();
@@ -393,14 +394,18 @@ class AdminUsersHandler extends AdminHandler
 					}
 				}
 
+				$success = $success && $one_success;
 				$count++;
 			}
 
-			if ( !isset( $msg_status ) ) {
+			if ( !isset( $msg_status && $success ) ) {
 				$msg_status = _t( 'Deleted %d users.', array( $count ) );
+				Session::notice( $msg_status );
 			}
-
-			Session::notice( $msg_status );
+			else {
+				$msg_status = _t( 'There was a problem deleting users.' );
+				Session::error( $msg_status );
+			}
 		}
 	}
 
