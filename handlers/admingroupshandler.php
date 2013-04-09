@@ -53,7 +53,7 @@ class AdminGroupsHandler extends AdminHandler
 				$value->description = Plugins::filter( 'token_description_display', $value->name);
 				$value->token_group = Plugins::filter( 'token_group_display', $value->token_group );
 			});
-			$access_names = ACL::$access_names;
+			$access_names = ACL::access_names();
 			$access_names[] = 'deny';
 			$access_display = array();
 			foreach( $access_names as $name ) {
@@ -144,15 +144,17 @@ class AdminGroupsHandler extends AdminHandler
 						$group->remove( $user );
 					}
 				}
+				
+				$access_names = ACL::access_names();
 
 				foreach ( $tokens as $token ) {
-					$bitmask = new Bitmask( ACL::$access_names );
+					$bitmask = new Bitmask( $access_names );
 					if ( isset( $this->handler_vars['tokens'][$token->id]['deny'] ) ) {
 						$bitmask->value = 0;
 						$group->deny( $token->id );
 					}
 					else {
-						foreach ( ACL::$access_names as $name ) {
+						foreach ( $access_names as $name ) {
 							if ( isset( $this->handler_vars['tokens'][$token->id][$name] ) ) {
 								$bitmask->$name = true;
 							}

@@ -28,8 +28,13 @@ class ACL
 	const ACCESS_NONEXISTENT_PERMISSION = 0;
 	const CACHE_NULL = -1;
 
-	public static $access_names = array( 'read', 'edit', 'delete', 'create' );
+	private static $access_names = array( 'read', 'edit', 'delete', 'create' );
 	private static $token_cache = null;
+	
+	public static function access_names()
+	{
+		return Plugins::filter( 'post_access_names', self::$access_names );
+	}
 
 	/**
 	 * Check a permission bitmask for a particular access type.
@@ -63,7 +68,7 @@ class ACL
 	 */
 	public static function get_bitmask( $mask )
 	{
-		$bitmask = new Bitmask( self::$access_names, $mask );
+		$bitmask = new Bitmask( self::access_names(), $mask );
 		return $bitmask;
 	}
 
@@ -367,7 +372,7 @@ class ACL
 		if ( defined( 'LOCKED_OUT_SUPER_USER' ) && $token == 'super_user' ) {
 			$su = User::get( LOCKED_OUT_SUPER_USER );
 			if ( $su->id == $user_id ) {
-				return new Bitmask( self::$access_names, 'read');
+				return new Bitmask( self::access_names(), 'read');
 			}
 		}
 
@@ -475,8 +480,7 @@ SQL;
 	public static function user_tokens( $user, $access = 'full', $posts_only = false )
 	{
 		static $post_tokens = null;
-
-		$bitmask = new Bitmask ( self::$access_names );
+		$bitmask = new Bitmask ( self::access_names() );
 		$tokens = array();
 
 		// convert $user to an ID
