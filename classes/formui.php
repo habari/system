@@ -396,7 +396,7 @@ class FormUI extends FormContainer implements IsContent
 		// Add synthetic controls for any found inputs
 		foreach($dom->find('input') as $input) {
 			/** @var FormControl $control */
-			$form->append($control = FormControlSynthetic::create($input->name)->set_node($input));
+			$form->append($control = FormControlDom::create($input->name)->set_node($input));
 			if($input->data_validators) {
 				foreach(explode(' ', $input->data_validators) as $validator) {
 					$control->add_validator($validator);
@@ -405,7 +405,7 @@ class FormUI extends FormContainer implements IsContent
 		}
 		foreach($dom->find('textarea') as $input) {
 			/** @var FormControl $control */
-			$form->append($control = FormControlSynthetic::create($input->name)->set_node($input));
+			$form->append($control = FormControlDom::create($input->name)->set_node($input));
 			if(!empty($input->data_validators)) {
 				foreach(explode(' ', $input->data_validators) as $validator) {
 					$control->add_validator($validator);
