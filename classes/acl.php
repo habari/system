@@ -30,7 +30,12 @@ class ACL
 
 	private static $access_names = array( 'read', 'edit', 'delete', 'create' );
 	private static $token_cache = null;
-	
+
+
+	/**
+	 * Obtain the list of access names (CRUD) to use for permissions.
+	 * @return array the list of access names available to ACL
+	 */
 	public static function access_names()
 	{
 		return Plugins::filter( 'post_access_names', self::$access_names );
