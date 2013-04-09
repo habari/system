@@ -335,49 +335,56 @@ class AdminUsersHandler extends AdminHandler
 		if ( isset( $handler_vars['delete'] ) ) {
 
 			$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
-			if ( isset( $handler_vars['digest'] ) && $handler_vars['digest'] != $wsse['digest'] ) {
+			if (isset( $handler_vars['digest'] ) && $handler_vars['digest'] != $wsse['digest'] ) {
 				Session::error( _t( 'WSSE authentication failed.' ) );
-				return Session::messages_get( true, 'array' );
+				exit;
+				//return Session::messages_get( true, 'array' );
 			}
 
-			foreach ( $_POST as $id => $delete ) {
+			$success = true;
 
+			// Get the user to assign deleted users' posts to
+			$assign = intval( $handler_vars['reassign'] );
+
+			foreach ( $_POST as $id => $delete ) {
 				// skip POST elements which are not user ids
 				if ( preg_match( '/^p\d+$/', $id ) && $delete ) {
 					$id = (int) substr( $id, 1 );
-
+					// If the user to assign the posts to is set to be deleted
+					if($assign != 0 && $assign == $id) {
+						Session::error( _t( 'You may not assign posts from deleted users to a user that is being deleted' ) );
+						$success = false;
+						break;
+					}
 					$ids[] = array( 'id' => $id );
-
 				}
-
 			}
 
 			if ( isset( $handler_vars['checkbox_ids'] ) ) {
 				$checkbox_ids = $handler_vars['checkbox_ids'];
 				foreach ( $checkbox_ids as $id => $delete ) {
 					if ( $delete ) {
+						// If the user to assign the posts to is set to be deleted
+						if($assign != 0 && $assign == $id) {
+							Session::error( _t( 'You may not assign posts from deleted users to a user that is being deleted' ) );
+							$success = false;
+							break;
+						}
 						$ids[] = array( 'id' => $id );
 					}
 				}
 			}
 
 			$count = 0;
-			$success = true;
 
 			if ( ! isset( $ids ) ) {
 				Session::notice( _t( 'No users deleted.' ) );
-				return Session::messages_get( true, 'array' );
+				return false;
 			}
 
 			foreach ( $ids as $id ) {
 				$id = $id['id'];
 				$user = User::get_by_id( $id );
-
-				$assign = intval( $handler_vars['reassign'] );
-
-				if ( $user->id == $assign ) {
-					return;
-				}
 
 				$posts = Posts::get( array( 'user_id' => $user->id, 'nolimit' => 1) );
 
@@ -385,6 +392,7 @@ class AdminUsersHandler extends AdminHandler
 
 				if ( $one_success && isset( $posts[0] ) ) {
 					if ( 0 == $assign ) {
+						/** @var Post $post */
 						foreach ( $posts as $post ) {
 							$post->delete();
 						}
@@ -401,12 +409,16 @@ class AdminUsersHandler extends AdminHandler
 			if ( $success ) {
 				$msg_status = _t( 'Deleted %d users.', array( $count ) );
 				Session::notice( $msg_status );
+				return true;
 			}
 			else {
 				$msg_status = _t( 'There was a problem deleting users.' );
 				Session::error( $msg_status );
+				return false;
 			}
 		}
+
+		return true; // ?
 	}
 
 	/**
