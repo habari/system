@@ -264,7 +264,7 @@ abstract class FormControl
 			$properties = array_merge(array('name' => $this->name), $properties);
 		}
 		if(!isset($this->settings['internal_value'])) {
-			$properties = array_merge(array('value' => $this->value), $properties);
+			$properties = array_merge(array('value' => $this->get_setting('html_value', $this->value)), $properties);
 		}
 		$theme->_attributes = Utils::html_attr($properties);
 
