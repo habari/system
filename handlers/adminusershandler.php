@@ -398,7 +398,7 @@ class AdminUsersHandler extends AdminHandler
 				$count++;
 			}
 
-			if ( !isset( $msg_status && $success ) ) {
+			if ( $success ) {
 				$msg_status = _t( 'Deleted %d users.', array( $count ) );
 				Session::notice( $msg_status );
 			}
