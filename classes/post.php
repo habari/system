@@ -1006,11 +1006,11 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 		// hide the minor edit checkbox if the post is new
 		if ( $newpost ) {
-			$settings->append( FormControlSynthetic::create('minor_edit')->set_value(false));
+			$settings->append( FormControlData::create('minor_edit')->set_value(false));
 		}
 		else {
 			$settings->append( FormControlLabel::wrap( _t( 'Minor Edit' ), FormControlCheckbox::create('minor_edit')->set_value(true)));
-			$form->append( FormControlSynthetic::create('modified')->set_value($this->modified));
+			$form->append( FormControlData::create('modified')->set_value($this->modified));
 		}
 
 		$settings->append( FormControlLabel::wrap(_t( 'Comments Allowed' ), FormControlCheckbox::create('comments_enabled')->set_value($this->info->comments_disabled ? false : true)));
@@ -1018,7 +1018,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$settings->append( FormControlLabel::wrap(_t( 'Publication Time' ), FormControlText::create('pubdate')->set_value($this->pubdate->format( 'Y-m-d H:i:s' ))));
 		//$settings->pubdate->helptext = _t( 'YYYY-MM-DD HH:MM:SS' );  // @todo figure out a clean way to do help text on a control -- a new FormControlLabel-like wrapper?
 
-		$settings->append( FormControlSynthetic::create('updated')->set_value($this->updated->int) );
+		$settings->append( FormControlData::create('updated')->set_value($this->updated->int) );
 
 		$settings->append( FormControlLabel::wrap(_t( 'Content Address' ), FormControlText::create('newslug')->set_value($this->slug) ));
 
@@ -1032,9 +1032,9 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		}
 
 		// Add required hidden controls
-		$form->append( FormControlSynthetic::create('content_type', null, array('id' => 'content_type'))->set_value($this->content_type) );
-		$form->append( FormControlSynthetic::create('post_id', null, array('id' => 'id'))->set_value($this->id) );
-		$form->append( FormControlSynthetic::create('slug', null, array('id' => 'originalslug'))->set_value($this->slug) );
+		$form->append( FormControlData::create('content_type', null, array('id' => 'content_type'))->set_value($this->content_type) );
+		$form->append( FormControlData::create('post_id', null, array('id' => 'id'))->set_value($this->id) );
+		$form->append( FormControlData::create('slug', null, array('id' => 'originalslug'))->set_value($this->slug) );
 
 		$form->on_success(array($this, 'form_publish_success'));
 

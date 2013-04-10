@@ -81,7 +81,7 @@ class AdminUsersHandler extends AdminHandler
 			);
 
 			// Create a tracker for who we are dealing with
-			$form->append( FormControlSynthetic::create('edit_user')->set_value($edit_user->id) );
+			$form->append( FormControlData::create('edit_user')->set_value($edit_user->id) );
 
 			// Generate sections
 			foreach ( $field_sections as $key => $name ) {
