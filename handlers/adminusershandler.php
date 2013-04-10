@@ -487,7 +487,7 @@ class AdminUsersHandler extends AdminHandler
 		}
 
 		if ( $success ) {
-			$msg_status = _n( 'Deleted one user.', 'Deleted %s users.', $count );
+			$msg_status = sprintf(_n( 'Deleted one user.', 'Deleted %s users.', $count ), $count);
 			Session::notice( $msg_status );
 			return true;
 		}
