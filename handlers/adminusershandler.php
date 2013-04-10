@@ -41,7 +41,31 @@ class AdminUsersHandler extends AdminHandler
 					->label(_t('Password Again'))->add_class('incontent')->set_template('control.label.outsideleft')
 			);
 			$form->append(FormControlSubmit::create('newuser')->set_caption('Add User'));
+			$form->add_validator(array($self, 'validate_add_user'));
 			$form->on_success(array($self, 'do_add_user'));
+		});
+		FormUI::register('delete_users', function(FormUI $form, $name) use ($self) {
+			$form->set_settings(array('use_session_errors' => true));
+			$form->append(
+				FormControlAggregate::create('deletion_queue')
+					->set_selector('.select_user')
+					->label('Select All')
+			);
+			$author_list = Users::get_all();
+			$authors[0] = _t( 'nobody' );
+			foreach ( $author_list as $author ) {
+				$authors[ $author->id ] = $author->displayname;
+			}
+			$form->append(
+				FormControlSelect::create('reassign')
+					->set_options($authors)
+			);
+			$form->append(
+				FormControlSubmit::create('delete_selected')
+					->set_caption( _t('Delete Selected') )
+			);
+			$form->add_validator(array($self, 'validate_delete_users'));
+			$form->on_success(array($self, 'do_delete_users'));
 		});
 		parent::__construct();
 	}
@@ -328,108 +352,10 @@ class AdminUsersHandler extends AdminHandler
 	}
 
 	/**
-	 * Update an array of POSTed users.
+	 * Handles GET requests of the users page.
 	 */
-	public function update_users( $handler_vars )
+	public function get_users()
 	{
-		if ( isset( $handler_vars['delete'] ) ) {
-
-			$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
-			if (isset( $handler_vars['digest'] ) && $handler_vars['digest'] != $wsse['digest'] ) {
-				Session::error( _t( 'WSSE authentication failed.' ) );
-				exit;
-				//return Session::messages_get( true, 'array' );
-			}
-
-			$success = true;
-
-			// Get the user to assign deleted users' posts to
-			$assign = intval( $handler_vars['reassign'] );
-
-			foreach ( $_POST as $id => $delete ) {
-				// skip POST elements which are not user ids
-				if ( preg_match( '/^p\d+$/', $id ) && $delete ) {
-					$id = (int) substr( $id, 1 );
-					// If the user to assign the posts to is set to be deleted
-					if($assign != 0 && $assign == $id) {
-						Session::error( _t( 'You may not assign posts from deleted users to a user that is being deleted' ) );
-						$success = false;
-						break;
-					}
-					$ids[] = array( 'id' => $id );
-				}
-			}
-
-			if ( isset( $handler_vars['checkbox_ids'] ) ) {
-				$checkbox_ids = $handler_vars['checkbox_ids'];
-				foreach ( $checkbox_ids as $id => $delete ) {
-					if ( $delete ) {
-						// If the user to assign the posts to is set to be deleted
-						if($assign != 0 && $assign == $id) {
-							Session::error( _t( 'You may not assign posts from deleted users to a user that is being deleted' ) );
-							$success = false;
-							break;
-						}
-						$ids[] = array( 'id' => $id );
-					}
-				}
-			}
-
-			$count = 0;
-
-			if ( ! isset( $ids ) ) {
-				Session::notice( _t( 'No users deleted.' ) );
-				return false;
-			}
-
-			foreach ( $ids as $id ) {
-				$id = $id['id'];
-				$user = User::get_by_id( $id );
-
-				$posts = Posts::get( array( 'user_id' => $user->id, 'nolimit' => 1) );
-
-				$one_success = $user->delete();
-
-				if ( $one_success && isset( $posts[0] ) ) {
-					if ( 0 == $assign ) {
-						/** @var Post $post */
-						foreach ( $posts as $post ) {
-							$post->delete();
-						}
-					}
-					else {
-						Posts::reassign( $assign, $posts );
-					}
-				}
-
-				$success = $success && $one_success;
-				$count++;
-			}
-
-			if ( $success ) {
-				$msg_status = _t( 'Deleted %d users.', array( $count ) );
-				Session::notice( $msg_status );
-				return true;
-			}
-			else {
-				$msg_status = _t( 'There was a problem deleting users.' );
-				Session::error( $msg_status );
-				return false;
-			}
-		}
-
-		return true; // ?
-	}
-
-	/**
-	 * Assign values needed to display the users listing
-	 *
-	 */
-	private function fetch_users( $params = null )
-	{
-		// prepare the WSSE tokens
-		$this->theme->wsse = Utils::WSSE();
-
 		// Get author list
 		$author_list = Users::get_all();
 		$authors[0] = _t( 'nobody' );
@@ -437,56 +363,40 @@ class AdminUsersHandler extends AdminHandler
 			$authors[ $author->id ] = $author->displayname;
 		}
 		$this->theme->authors = $authors;
-	}
-
-	/**
-	 * Handles GET requests of the users page.
-	 */
-	public function get_users()
-	{
-		$this->fetch_users();
+		$this->theme->currentuser = User::identify();
 
 		$this->theme->add_user_form = FormUI::build('add_user', 'add_user')->get();
-		$this->theme->currentuser = User::identify();
+		$this->theme->delete_users_form = FormUI::build('delete_users', 'delete_users')->get();
 
 		$this->theme->display( 'users' );
 	}
 
 	/**
-	 * Handles POST requests from the Users listing (ie: creating a new user)
+	 * Handles POST requests from the Users listing (ie: creating a new user, deleting from the user list)
 	 */
 	public function post_users()
 	{
-		$this->get_users();
-
-		FormUI::build('add_user', 'add_user')->get();
-
-		$wsse = Utils::WSSE( $this->handler_vars['nonce'], $this->handler_vars['timestamp'] );
-		if ( $this->handler_vars['password_digest'] != $wsse['digest'] ) {
-			Session::error( _t( 'WSSE authentication failed.' ) );
-			return Session::messages_get( true, 'array' );
-		}
-
-		$this->fetch_users();
-
-		$extract = $this->handler_vars->filter_keys( 'newuser', 'delete', 'new_pass1', 'new_pass2', 'new_email', 'new_username' );
-		foreach ( $extract as $key => $value ) {
-			$$key = $value;
-		}
-
-		if ( isset( $delete ) ) {
-			$action = 'delete';
-		}
-
-		if ( isset( $action ) && ( 'delete' == $action ) ) {
-
-			$this->update_users( $this->handler_vars );
-
-		}
-
-		Utils::redirect(URL::get('admin', array('page' => 'users')));
+		// Process the forms on this page, if they were submitted.
+		$redirect_to = URL::get('admin', array('page' => 'users'));
+		FormUI::build('add_user', 'add_user')->post_redirect($redirect_to);
+		FormUI::build('delete_users', 'delete_users')->post_redirect($redirect_to);
 	}
 
+	/**
+	 * Validation for the add_user form
+	 * @param mixed $unused This is technically the value of the form itself, which is unknown
+	 * @param FormUI $form The add_user form
+	 * @return array An array of errors, or an empty array if no errors
+	 */
+	public function validate_add_user($unused, $form) {
+		$errors = array();
+
+		if(!User::identify()->can('manage_users')) {
+			$errors[] = _t( 'You have insufficient permissions to add users.' );
+		}
+
+		return $errors;
+	}
 
 	/**
 	 * Success method for the add_user form
@@ -502,6 +412,89 @@ class AdminUsersHandler extends AdminHandler
 		else {
 			$dberror = DB::get_last_error();
 			Session::error( $dberror[2], 'adduser' );
+		}
+	}
+
+	/**
+	 * Validation for the delete_users form
+	 * @param mixed $unused This is technically the value of the form itself, which is unknown
+	 * @param FormUI $form The delete_users form
+	 * @return array An array of errors, or an empty array if no errors
+	 */
+	public function validate_delete_users($unused, $form) {
+		$errors = array();
+
+		if(!User::identify()->can('manage_users')) {
+			$errors[] = _t( 'You have insufficient permissions to delete users.' );
+		}
+
+		$assign = intval( $form->reassign->value );
+		if(in_array($assign, $form->deletion_queue->value)) {
+			$errors[] = _t( 'You may not assign posts from deleted users to a user that is being deleted' );
+		}
+
+		if ( count($form->deletion_queue->value) == 0 ) {
+			$errors[] = _t( 'No users selected to delete!' );
+		}
+
+		return $errors;
+	}
+
+	/**
+	 * Success method for the delete_users form
+	 * @param FormUI $form The delete_users form
+	 */
+	public function do_delete_users( FormUI $form )
+	{
+		$success = true;
+
+		// Get the user to assign deleted users' posts to
+		$assign = intval( $form->reassign->value );
+
+		if(in_array($assign, $form->deletion_queue->value)) {
+			Session::error( _t( 'You may not assign posts from deleted users to a user that is being deleted' ) );
+			return false;
+		}
+
+		$count = 0;
+
+		if ( count($form->deletion_queue->value) == 0 ) {
+			Session::notice( _t( 'No users deleted.' ) );
+			return false;
+		}
+
+		foreach ( $form->deletion_queue->value as $id ) {
+			$user = User::get_by_id( $id );
+
+			$posts = Posts::get( array( 'user_id' => $user->id, 'nolimit' => 1) );
+
+			$one_success = $user->delete();
+
+			if ( $one_success && count($posts) ) {
+				if ( 0 == $assign ) {
+					/** @var Post $post */
+					foreach ( $posts as $post ) {
+						$post->delete();
+					}
+				}
+				else {
+					Posts::reassign( $assign, $posts );
+				}
+			}
+
+			$success = $success && $one_success;
+			$count++;
+		}
+
+		if ( $success ) {
+			$msg_status = _n( 'Deleted one user.', 'Deleted %s users.', $count );
+			Session::notice( $msg_status );
+			return true;
+		}
+		else {
+			$msg_status = _t( 'There was a problem deleting users.' );
+			Session::error( $msg_status );
+			return false;
 		}
 	}
 

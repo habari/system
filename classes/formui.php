@@ -160,9 +160,6 @@ class FormUI extends FormContainer implements IsContent
 					}
 				}
 			}
-
-			// Save the values submitted into this form
-			// $this->store_submission();
 		}
 		else {
 			// Store the location at which this form was loaded, so we can potentially redirect to it later
@@ -196,6 +193,27 @@ class FormUI extends FormContainer implements IsContent
 	{
 		$args = func_get_args();
 		echo call_user_func_array( array( $this, 'get' ), $args );
+	}
+
+	/**
+	 * Process a form, then redirect, saving control values on errors for redisplay
+	 * @param string $url The URL to redirect to, presumably with the original form on it
+	 * @return string The form output, if needed
+	 */
+	public function post_redirect($url = null)
+	{
+		$result = $this->get();
+		if($this->submitted) {
+			if(!$this->success) {
+				// Store the form values in the session prior to redirection so that they can be re-displayed
+				$_SESSION['forms'][$this->control_id()]['error_data'] = $this->get_values();
+			}
+			if(empty($url)) {
+				$url = $_SESSION['forms'][$this->control_id()]['url'];
+			}
+			Utils::redirect($url);
+		}
+		return $result;
 	}
 
 	/**

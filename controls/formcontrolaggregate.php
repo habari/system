@@ -54,11 +54,12 @@ controls.init(function(){
 		}
 		$('body')
 			.on('change', self.data('selector'), do_update)
-			.on('change', self, function(){
+			.on('change', visualizer, function(){
 				if(!visualizer.prop('indeterminate')) checkboxes.prop('checked', visualizer.prop('checked'));
 				do_update();
 			});
-		$.each($.parseJSON(self.val()), function(i, e){
+		var values = $.parseJSON(self.val());
+		$.each(values || [], function(i, e){
 			checkboxes.filter('[value="' + e + '"]').prop('checked', true);
 			do_update();
 		});
