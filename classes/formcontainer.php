@@ -371,11 +371,25 @@ class FormContainer extends FormControl
 	}
 
 	/**
+	 * Calls the success callback for the form, and optionally saves the form values
+	 * to the options table.
+	 * @return boolean|string A string to replace the rendering of the form with, or false
+	 */
+	public function do_success()
+	{
+		/** @var FormControl $control */
+		foreach ( $this->controls as $control ) {
+			$control->do_success();
+		}
+		return parent::do_success();
+	}
+
+	/**
 	 * Store each contained control's value under the control's specified key.
 	 *
 	 * @param string $key (optional) The Options table key to store this option in
 	 */
-	function save()
+	public function save()
 	{
 		/** @var FormControl $control */
 		foreach ( $this->controls as $control ) {
@@ -466,5 +480,6 @@ class FormContainer extends FormControl
 		$this->each(function($control) { $control->clear(); });
 		parent::clear();
 	}
+
 
 }

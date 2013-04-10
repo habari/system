@@ -32,6 +32,8 @@ abstract class FormControl
 	public $value_set_manually = false;
 	/** @var bool|string $helptext This is help text for the control, if it is set */
 	public $helptext = false;
+	protected $on_success = array();
+	protected $on_save = array();
 
 
 	/**
@@ -199,6 +201,11 @@ abstract class FormControl
 	{
 		if($this->storage instanceof FormStorage) {
 			$this->storage->field_save($this->name, $this->value);
+		}
+		foreach ( $this->on_save as $save ) {
+			$callback = array_shift( $save );
+			array_unshift($save, $this);
+			Method::dispatch_array($callback, $save);
 		}
 	}
 
@@ -636,6 +643,46 @@ abstract class FormControl
 	public function clear()
 	{
 		$this->set_value($this->initial_value);
+	}
+
+	/**
+	 * Calls the success callback for the form, and optionally saves the form values
+	 * to the options table.
+	 * @return boolean|string A string to replace the rendering of the form with, or false
+	 */
+	public function do_success()
+	{
+		$output = false;
+		foreach ($this->on_success as $success) {
+			$callback = array_shift($success);
+			array_unshift($success, $this->get_form(), $this);
+			$result = Method::dispatch_array($callback, $success);
+			if ( is_string($result) ) {
+				$output = $result;
+			}
+		}
+		$this->save();
+		return $output;
+	}
+
+	/**
+	 * Set a function to call on form submission success
+	 *
+	 * @param mixed $callback A callback function or a plugin filter name (FormUI $form)
+	 */
+	public function on_success($callback)
+	{
+		$this->on_success[] = func_get_args();
+	}
+
+	/**
+	 * Set a function to call on form submission success
+	 *
+	 * @param mixed $callback A callback function or a plugin filter name.
+	 */
+	public function on_save($callback)
+	{
+		$this->on_save[] = func_get_args();
 	}
 
 }

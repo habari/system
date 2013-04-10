@@ -25,8 +25,6 @@ namespace Habari;
  */
 class FormUI extends FormContainer implements IsContent
 {
-	protected $on_success = array();
-	protected $on_save = array();
 
 	public $success = false;
 	public $submitted = false;
@@ -65,8 +63,9 @@ class FormUI extends FormContainer implements IsContent
 		}
 		if(isset(self::$registered_forms[$formtype])) {
 			$callback = self::$registered_forms[$formtype];
-			$callback($this, $name, $formtype);
+			$callback($this, $name, $formtype, $extra_data);
 		}
+		$this->set_settings(array('data' => $extra_data));
 
 		// Add WSSE validator so that it can be altered in form-building code
 		$this->add_validator('validate_wsse');
@@ -88,11 +87,11 @@ class FormUI extends FormContainer implements IsContent
 	 * @param string $formtype
 	 * @return FormUI
 	 */
-	public static function build($name, $formtype = null)
+	public static function build($name, $formtype = null, $extra_data = array())
 	{
 		$class = get_called_class();
 		$r_class = new \ReflectionClass($class);
-		return $r_class->newInstanceArgs( compact('name', 'formtype') );
+		return $r_class->newInstanceArgs( compact('name', 'formtype', 'extra_data') );
 	}
 
 	/**
@@ -269,62 +268,6 @@ class FormUI extends FormContainer implements IsContent
 			$out .= '<script type="text/javascript">window.setTimeout(function(){controls.init();}, 500);</script>';
 		}
 		return $out;
-	}
-
-	/**
-	 * Set a function to call on form submission success
-	 *
-	 * @param mixed $callback A callback function or a plugin filter name (FormUI $form)
-	 */
-	public function on_success( $callback )
-	{
-		$this->on_success[] = func_get_args();
-	}
-
-	/**
-	 * Set a function to call on form submission success
-	 *
-	 * @param mixed $callback A callback function or a plugin filter name.
-	 */
-	public function on_save( $callback )
-	{
-		$this->on_save[] = func_get_args();
-	}
-
-	/**
-	 * Calls the success callback for the form, and optionally saves the form values
-	 * to the options table.
-	 * @return boolean|string A string to replace the rendering of the form with, or false
-	 */
-	public function do_success()
-	{
-		$output = false;
-		foreach ( $this->on_success as $success ) {
-			$callback = array_shift( $success );
-			array_unshift($success, $this);
-			$result = Method::dispatch_array($callback, $success);
-			if(is_string($result)) {
-				$output = $result;
-			}
-		}
-		$this->save();
-		return $output;
-	}
-
-	/**
-	 * Save all controls to their storage locations
-	 */
-	public function save()
-	{
-		/** @var FormControl $control */
-		foreach ( $this->controls as $control ) {
-			$control->save();
-		}
-		foreach ( $this->on_save as $save ) {
-			$callback = array_shift( $save );
-			array_unshift($save, $this);
-			Method::dispatch_array($callback, $save);
-		}
 	}
 
 

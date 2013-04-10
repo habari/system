@@ -44,6 +44,7 @@ class AdminUsersHandler extends AdminHandler
 			$form->add_validator(array($self, 'validate_add_user'));
 			$form->on_success(array($self, 'do_add_user'));
 		});
+
 		FormUI::register('delete_users', function(FormUI $form, $name) use ($self) {
 			$form->set_settings(array('use_session_errors' => true));
 			$form->append(
@@ -67,6 +68,119 @@ class AdminUsersHandler extends AdminHandler
 			$form->add_validator(array($self, 'validate_delete_users'));
 			$form->on_success(array($self, 'do_delete_users'));
 		});
+
+		FormUI::register('edit_user', function(FormUI $form, $name, $form_type, $data) use($self) {
+			$form->set_settings(array('use_session_errors' => true));
+
+			$edit_user = $data['edit_user'];
+			$field_sections = array(
+				'user_info' => _t('User Information'),
+				'change_password' => _t( 'Change Password' ),
+				'regional_settings' => _t( 'Regional Settings' ),
+				'dashboard' => _t( 'Dashboard' ),
+			);
+
+			// Create a tracker for who we are dealing with
+			$form->append( FormControlSynthetic::create('edit_user')->set_value($edit_user->id) );
+
+			// Generate sections
+			foreach ( $field_sections as $key => $name ) {
+				$fieldset = $form->append( 'wrapper', $key, $name );
+				$fieldset->add_class('container settings');
+				$fieldset->append( FormControlStatic::create($key)->set_static('<h2>' . htmlentities( $name, ENT_COMPAT, 'UTF-8' ) . '</h2>') );
+			}
+
+			// User Info
+			$displayname = FormControlText::create('displayname')->add_class('important item clear')->set_value($edit_user->displayname);
+			$form->user_info->append( FormControlLabel::wrap(_t( 'Display Name' ), $displayname));
+
+			$username = FormControlText::create('username')->add_class('item clear')->add_validator('validate_username', $edit_user->username)->set_value($edit_user->username);
+			$form->user_info->append( FormControlLabel::wrap(_t( 'User Name' ), $username) );
+
+			$email = FormControlText::create('email')->add_class('item clear')->add_validator('validate_email')->set_value($edit_user->email);
+			$form->user_info->append(FormControlLabel::wrap(_t('Email'), $email));
+
+			$imageurl = FormControlText::create('imageurl')->add_class('item clear')->set_value($edit_user->info->imageurl);
+			$form->user_info->append( FormControlLabel::wrap(_t( 'Portrait URL' ), $imageurl) );
+
+			// Change Password
+			$password1 = FormControlPassword::create('password1', null, array('autocomplete'=>'off'))->add_class('item clear')->set_value('');
+			$form->change_password->append( FormControlLabel::wrap(_t( 'New Password' ), $password1) );
+
+			$password2 = FormControlPassword::create('password2', null, array('autocomplete'=>'off'))->add_class('item clear')->set_value('');
+			$form->change_password->append( FormControlLabel::wrap(_t( 'New Password Again' ), $password2) );
+
+			$delete = $this->handler_vars->filter_keys( 'delete' );
+			// don't validate password match if action is delete
+			if ( !isset( $delete['delete'] ) ) {
+				$password2->add_validator( 'validate_same', $password1, _t( 'Passwords must match.' ) );
+			}
+
+			// Regional settings
+			$timezones = \DateTimeZone::listIdentifiers();
+			$timezones = array_merge( array_combine( array_values( $timezones ), array_values( $timezones ) ) );
+			$locale_tz = FormControlSelect::create('locale_tz', null, array('multiple'=>false))->add_class('item clear')->set_options($timezones)->set_value($edit_user->info->locale_tz);
+			$form->regional_settings->append( FormControlLabel::wrap(_t( 'Timezone' ), $locale_tz) );
+
+			$locale_date_format = FormControlText::create('locale_date_format')->add_class('item clear')->set_value($edit_user->info->locale_date_format);
+			$form->regional_settings->append( FormControlLabel::wrap(_t( 'Date Format' ), $locale_date_format ));
+			if ( isset( $edit_user->info->locale_date_format ) && $edit_user->info->locale_date_format != '' ) {
+				$current = DateTime::create()->get( $edit_user->info->locale_date_format );
+			}
+			else {
+				$current = DateTime::create()->date;
+			}
+			$locale_date_format->set_helptext(_t( 'See <a href="%s">php.net/date</a> for details. Current format: %s', array( 'http://php.net/date', $current )));
+
+			$locale_time_format = FormControlText::create('locale_time_format')->add_class('item clear')->set_value($edit_user->info->locale_time_format);
+			$form->regional_settings->append( FormControlLabel::wrap(_t( 'Time Format' ), $locale_time_format) );
+			if ( isset( $edit_user->info->locale_time_format ) && $edit_user->info->locale_time_format != '' ) {
+				$current = DateTime::create()->get( $edit_user->info->locale_time_format );
+			}
+			else {
+				$current = DateTime::create()->time;
+			}
+			$locale_time_format->set_helptext(_t( 'See <a href="%s">php.net/date</a> for details. Current format: %s', array( 'http://php.net/date', $current ) ));
+
+
+			$spam_count = FormControlCheckbox::create('dashboard_hide_spam_count')->add_class('item clear')
+				->set_helptext(_t( 'Hide the number of SPAM comments on your dashboard.' ))->set_value($edit_user->info->dashboard_hide_spam_count);
+			$form->dashboard->append( FormControlLabel::wrap(_t( 'Hide Spam Count' ), $spam_count ));
+
+			// Groups
+			if(User::identify()->can('manage_groups')) {
+				$fieldset = $form->append( FormControlWrapper::create('groups'));
+				$fieldset->add_class('container settings');
+				$fieldset->append( FormControlStatic::create('groups_title')->set_static('<h2>' . htmlentities( _t('Groups'), ENT_COMPAT, 'UTF-8' ) . '</h2>' ));
+				$fieldset->append( FormControlCheckboxes::create('user_group_membership')->set_options(Utils::array_map_field(UserGroups::get_all(), 'name', 'id'))->set_value($edit_user->groups) );
+			}
+
+			// Controls
+			$controls = $form->append( FormControlWrapper::create('page_controls')->add_class('container controls transparent') );
+
+			$apply = $controls->append( FormControlSubmit::create('apply')->set_caption(_t( 'Apply' ))->add_class('pct30') );
+
+			// Get author list
+			$author_list = Users::get_all();
+			$authors[0] = _t( 'nobody' );
+			foreach ( $author_list as $author ) {
+				$authors[ $author->id ] = $author->displayname;
+			}
+
+			unset( $authors[ $edit_user->id ] ); // We can't reassign this user's posts to themselves if we're deleting them
+
+			$reassign = FormControlSelect::create('reassign')->set_options($authors);
+			$reassign_label = FormControlLabel::wrap(_t('Reassign posts to:') , $reassign)->set_settings(array('wrap'=> '<span class="pct35 reassigntext">%s</span>'));
+			$controls->append($reassign_label);
+			$controls->append(FormControlStatic::create('conjunction')->set_static(_t('and'))->set_settings(array('wrap' => '<span class="minor pct5 conjunction">%s</span>')));
+			$delete = $controls->append(FormControlSubmit::create('delete')->set_caption(_t('Delete'))->set_settings(array('wrap' => '<span class="pct30">%s</span>'))->add_class('button'));
+
+			$delete->on_success(array($this, 'edit_user_delete'));
+			$delete->add_validator(array($this, 'validate_delete_user'));
+
+			$apply->on_success( array( $this, 'edit_user_apply' ) );
+			$apply->add_validator(array($this, 'validate_edit_user'));
+		});
 		parent::__construct();
 	}
 
@@ -75,46 +189,17 @@ class AdminUsersHandler extends AdminHandler
 	 */
 	public function get_user()
 	{
-		$edit_user = User::identify();
 		$permission = false;
 
 		// Check if the user is editing their own profile
-		$self = $this->handler_vars['user'] == '' || User::get_by_name($this->handler_vars['user']) == $edit_user;
-		if ($self) {
-			if ( $edit_user->can( 'manage_self' ) || $edit_user->can( 'manage_users' ) ) {
-				$permission = true;
-			}
-			$who = _t( "You" );
-			$possessive = _t( "Your User Information" );
+		if($this->handler_vars['user'] == '') {
+			$edit_user = User::identify();
+			$self = true;
 		}
 		else {
-			if ( $edit_user->can( 'manage_users' ) ) {
-				$permission = true;
-			}
 			$edit_user = User::get_by_name( $this->handler_vars['user'] );
-			$who = $edit_user->username;
-			$possessive = _t( "%s's User Information", array( $who ) );
+			$self = $edit_user->id == User::identify()->id;
 		}
-
-		if ( !$permission ) {
-			Session::error( _t( 'Access to that page has been denied by the administrator.' ) );
-			$this->get_blank();
-			return;
-		}
-
-		// Get author list
-		$author_list = Users::get_all();
-		$authors[0] = _t( 'nobody' );
-		foreach ( $author_list as $author ) {
-			$authors[ $author->id ] = $author->displayname;
-		}
-
-		unset( $authors[ $edit_user->id ] ); // We can't reassign posts to ourself
-
-		$this->theme->authors = $authors;
-		$this->theme->edit_user = $edit_user;
-		$this->theme->who = $who;
-		$this->theme->possessive = $possessive;
 
 		// Redirect to the users management page if we're trying to edit a non-existent user
 		if ( !$edit_user ) {
@@ -122,161 +207,129 @@ class AdminUsersHandler extends AdminHandler
 			Utils::redirect( URL::get( 'admin', 'page=users' ) );
 		}
 
+		// Check permissions to see this page
+		if ($self && ( User::identify()->can( 'manage_self' ) || User::identify()->can( 'manage_users' ) ) ) {
+			$permission = true;
+		}
+		elseif ( User::identify()->can( 'manage_users' ) ) {
+			$permission = true;
+		}
+
+		// No permission? Show blank page.
+		if ( !$permission ) {
+			Session::error( _t( 'Access to that page has been denied by the administrator.' ) );
+			$this->get_blank();
+			return;
+		}
+
 		$this->theme->edit_user = $edit_user;
 
-		$field_sections = array(
-			'user_info' => $possessive,
-			'change_password' => _t( 'Change Password' ),
-			'regional_settings' => _t( 'Regional Settings' ),
-			'dashboard' => _t( 'Dashboard' ),
-		);
-
-		$form = new FormUI( 'User Options' );
-
-		// Create a tracker for who we are dealing with
-		$form->append( FormControlHidden::create('edit_user')->set_value($edit_user->id) );
-
-		// Generate sections
-		foreach ( $field_sections as $key => $name ) {
-			$fieldset = $form->append( 'wrapper', $key, $name );
-			$fieldset->add_class('container settings');
-			$fieldset->append( FormControlStatic::create($key)->set_static('<h2>' . htmlentities( $name, ENT_COMPAT, 'UTF-8' ) . '</h2>') );
-		}
-
-		// User Info
-		$displayname = FormControlText::create('displayname')->add_class('important item clear')->set_value($edit_user->displayname);
-		$form->user_info->append( FormControlLabel::wrap(_t( 'Display Name' ), $displayname));
-
-		$username = FormControlText::create('username')->add_class('item clear')->add_validator('validate_username', $edit_user->username)->set_value($edit_user->username);
-		$form->user_info->append( FormControlLabel::wrap(_t( 'User Name' ), $username) );
-
-		$email = FormControlText::create('email')->add_class('item clear')->add_validator('validate_email')->set_value($edit_user->email);
-		$form->user_info->append(FormControlLabel::wrap(_t('Email'), $email));
-
-		$imageurl = FormControlText::create('imageurl')->add_class('item clear')->set_value($edit_user->info->imageurl);
-		$form->user_info->append( FormControlLabel::wrap(_t( 'Portrait URL' ), $imageurl) );
-
-		// Change Password
-		$password1 = FormControlPassword::create('password1', null, array('autocomplete'=>'off'))->add_class('item clear')->set_value('');
-		$form->change_password->append( FormControlLabel::wrap(_t( 'New Password' ), $password1) );
-
-		$password2 = FormControlPassword::create('password2', null, array('autocomplete'=>'off'))->add_class('item clear')->set_value('');
-		$form->change_password->append( FormControlLabel::wrap(_t( 'New Password Again' ), $password2) );
-
-		$delete = $this->handler_vars->filter_keys( 'delete' );
-		// don't validate password match if action is delete
-		if ( !isset( $delete['delete'] ) ) {
-			$password2->add_validator( 'validate_same', $password1, _t( 'Passwords must match.' ) );
-		}
-
-		// Regional settings
-		$timezones = \DateTimeZone::listIdentifiers();
-		$timezones = array_merge( array_combine( array_values( $timezones ), array_values( $timezones ) ) );
-		$locale_tz = FormControlSelect::create('locale_tz', null, array('multiple'=>false))->add_class('item clear')->set_options($timezones)->set_value($edit_user->info->locale_tz);
-		$form->regional_settings->append( FormControlLabel::wrap(_t( 'Timezone' ), $locale_tz) );
-
-		$locale_date_format = FormControlText::create('locale_date_format')->add_class('item clear')->set_value($edit_user->info->locale_date_format);
-		$form->regional_settings->append( FormControlLabel::wrap(_t( 'Date Format' ), $locale_date_format ));
-		if ( isset( $edit_user->info->locale_date_format ) && $edit_user->info->locale_date_format != '' ) {
-			$current = DateTime::create()->get( $edit_user->info->locale_date_format );
-		}
-		else {
-			$current = DateTime::create()->date;
-		}
-		$locale_date_format->set_helptext(_t( 'See <a href="%s">php.net/date</a> for details. Current format: %s', array( 'http://php.net/date', $current )));
-
-		$locale_time_format = FormControlText::create('locale_time_format')->add_class('item clear')->set_value($edit_user->info->locale_time_format);
-		$form->regional_settings->append( FormControlLabel::wrap(_t( 'Time Format' ), $locale_time_format) );
-		if ( isset( $edit_user->info->locale_time_format ) && $edit_user->info->locale_time_format != '' ) {
-			$current = DateTime::create()->get( $edit_user->info->locale_time_format );
-		}
-		else {
-			$current = DateTime::create()->time;
-		}
-		$locale_time_format->set_helptext(_t( 'See <a href="%s">php.net/date</a> for details. Current format: %s', array( 'http://php.net/date', $current ) ));
-
-
-		$spam_count = FormControlCheckbox::create('dashboard_hide_spam_count')->add_class('item clear')
-			->set_helptext(_t( 'Hide the number of SPAM comments on your dashboard.' ))->set_value($edit_user->info->dashboard_hide_spam_count);
-		$form->dashboard->append( FormControlLabel::wrap(_t( 'Hide Spam Count' ), $spam_count ));
-
-		// Groups
-		if(User::identify()->can('manage_groups')) {
-			$fieldset = $form->append( FormControlWrapper::create('groups'));
-			$fieldset->add_class('container settings');
-			$fieldset->append( FormControlStatic::create('groups_title')->set_static('<h2>' . htmlentities( _t('Groups'), ENT_COMPAT, 'UTF-8' ) . '</h2>' ));
-			$fieldset->append( FormControlCheckboxes::create('user_group_membership')->set_options(Utils::array_map_field(UserGroups::get_all(), 'name', 'id'))->set_value($edit_user->groups) );
-		}
-
-		// Controls
-		$controls = $form->append( FormControlWrapper::create('page_controls')->add_class('container controls transparent') );
-
-		$submit = $controls->append( FormControlSubmit::create('apply')->set_caption(_t( 'Apply' ))->add_class('pct30') );
-
-		$controls->append( 'static', 'reassign', '<span class="pct35 reassigntext">' . _t( 'Reassign posts to: %s', array( Utils::html_select( 'reassign', $authors ) ) ) . '</span>
-		<span class="minor pct5 conjunction">' . _t( 'and' ) . '</span>
-		<span class="pct30"><input type="submit" name="delete" value="' . _t( 'Delete' ) . '" class="delete button"></span>' );
-
-		$reassign = FormControlSelect::create('reassign')->set_options($authors);
-		$reassign_label = FormControlLabel::wrap(_t('Reassign posts to:') , $reassign)->set_properties(array('wrap'=> '<span class="pct35 reassigntext">%s</span>'));
-		$controls->append($reassign_label);
-		$controls->append(FormControlStatic::create('conjunction')->set_static(_t('and'))->set_properties(array('wrap' => '<span class="minor pct5 conjunction">%s</span>')));
-		$controls->append(FormControlSubmit::create('delete')->set_caption(_t('Delete'))->set_properties(array('wrap' => '<span class="pct30">%s</span>'))->add_class('delete button'));
-
-		$form->on_success( array( $this, 'form_user_success' ) );
-
-		// Let plugins alter this form
-		Plugins::act( 'form_user', $form, $edit_user );
+		$form = FormUI::build( 'edit_user', 'edit_user', array('edit_user' => $edit_user) );
 
 		$this->theme->form = $form->get();
-		$this->theme->admin_page = $self ? _t( 'My Profile') : _t( 'User' );
+		$this->theme->admin_page = $self ? _t( 'My Profile') : _t( 'User Profile for %s', array(Utils::htmlspecialchars($edit_user->username)) );
 
 		$this->theme->display( 'user' );
+	}
+
+	/**
+	 * Validation for when a user is edited
+	 * @param $unused
+	 * @param FormControlSubmit $control The Apply button
+	 * @param FormUI $form The editing form
+	 * @return array An empty array if there are no errors, or strings describing the error.
+	 */
+	public function validate_edit_user($unused, $control, $form)
+	{
+		$errors = array();
+
+		$self = $form->edit_user->value == User::identify()->id;
+		if($self) {
+			if(!User::identify()->can('manage_users') && !User::identify()->can('manage_self')) {
+				$errors[] = _t( 'You have insufficient permissions to manage your own user account.' );
+			}
+		}
+		else {
+			if(!User::identify()->can('manage_users')) {
+				$errors[] = _t( 'You have insufficient permissions to manage users.' );
+			}
+		}
+
+		return $errors;
+	}
+
+	/**
+	 * Validation for when a user is deleted
+	 * @param $unused
+	 * @param FormControlSubmit $control The Delete button
+	 * @param FormUI $form The editing form
+	 * @return array An empty array if there are no errors, or strings describing the error.
+	 */
+	public function validate_delete_user($unused, $control, $form)
+	{
+		$errors = array();
+
+		if(!User::identify()->can('manage_users')) {
+			$errors[] = _t( 'You have insufficient permissions to delete users.' );
+		}
+
+		if(intval( $form->reassign->value ) == intval($form->edit_user->value)) {
+			$errors[] = _t( 'You may not assign posts from deleted users to a user that is being deleted' );
+		}
+
+		return $errors;
+	}
+
+	/**
+	 * The on_success handler of the Delete button on the user profile editing page
+	 * @param FormUI $form
+	 */
+	public function edit_user_delete(FormUI $form)
+	{
+		$edit_user = User::get_by_id( $form->edit_user->value );
+
+		// We're going to delete the user before we need it, so store the username
+		$username = $edit_user->username;
+
+		$posts = Posts::get( array( 'user_id' => $edit_user->id, 'nolimit' => true ) );
+
+		if ( $form->reassign->value != 0 ) {
+			// we're going to re-assign all of this user's posts
+			$newauthor = $form->reassign->value;
+			Posts::reassign( $newauthor, $posts );
+			$success = $edit_user->delete();
+		}
+		else {
+			// delete user, then delete posts
+			$success = $edit_user->delete();
+
+			// delete posts
+			if($success) {
+				/** @var Post $post */
+				foreach ( $posts as $post ) {
+					$post->delete();
+				}
+			}
+		}
+
+		if($success) {
+			Session::notice( _t( '%s has been deleted', array( $username ) ) );
+		}
+		else {
+			Session::error( _t( 'There was a problem deleting %s', array( $username ) ) );
+		}
+
+		Utils::redirect( URL::get( 'admin', array( 'page' => 'users' ) ) );
 
 	}
 
 	/**
-	 * Handles form submission from a user's page.
+	 * The on_success handler of the Apply button on the user profile editing page
+	 * @param FormUI $form
 	 */
-	public function form_user_success( $form )
+	public function edit_user_apply( FormUI $form )
 	{
 		$edit_user = User::get_by_id( $form->edit_user->value );
-		$current_user = User::identify();
-
-		// Let's check for deletion
-		if ( Controller::get_var( 'delete' ) != null ) {
-			// We're going to delete the user before we need it, so store the username
-			$username = $edit_user->username;
-
-			$posts = Posts::get( array( 'user_id' => $edit_user->id, 'nolimit' => true ) );
-
-			if ( ( Controller::get_var( 'reassign' ) != null ) && ( Controller::get_var( 'reassign' ) != 0 ) && ( Controller::get_var( 'reassign' ) != $edit_user->id ) ) {
-				// we're going to re-assign all of this user's posts
-				$newauthor = Controller::get_var( 'reassign' );
-				Posts::reassign( $newauthor, $posts );
-				$success = $edit_user->delete();
-			}
-			else {
-				// delete user, then delete posts
-				$success = $edit_user->delete();
-
-				// delete posts
-				if($success) {
-					foreach ( $posts as $post ) {
-						$post->delete();
-					}
-				}
-			}
-			
-			if($success) {
-				Session::notice( _t( '%s has been deleted', array( $username ) ) );
-			}
-			else {
-				Session::error( _t( 'There was a problem deleting %s', array( $username ) ) );
-			}
-
-			Utils::redirect( URL::get( 'admin', array( 'page' => 'users' ) ) );
-		}
 
 		$update = false;
 
