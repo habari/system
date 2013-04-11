@@ -130,14 +130,8 @@ class AdminDashboardHandler extends AdminHandler
 				$form->set_option( 'success_message', _t('Module Configuration Saved.')
 					. '<script type="text/javascript">window.setTimeout(function(){$(".form_message").fadeOut();}, 2000);</script>'
 				);
-				$control_id = new FormControlHidden('moduleid', 'null:null');
-				$control_id->value = $block->id;
-				$control_id->id = 'moduleid';
-				$form->append($control_id);
-				$control_action = new FormControlHidden('action', 'null:null');
-				$control_action->value = 'configModule';
-				$control_action->id = 'action';
-				$form->append($control_action);
+				$form->append( FormControlData::create( 'moduleid', null, array( 'id' => 'moduleid' ) )->set_value( $block->id ) );
+				$form->append( FormControlData::create( 'action', null, array( 'id' => 'action' ) )->set_value( 'configModule' ) );
 				$form->out();
 				$form_id = $form->name;
 				exit;
