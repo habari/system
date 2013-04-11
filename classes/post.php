@@ -696,6 +696,11 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			}
 		}
 
+		// If content has changed, update cached_content with prerendered content
+		if(isset($this->newfields['content']) && $this->fields['content'] != $this->newfields['content']) {
+			$this->newfields['cached_content'] = Plugins::filter( 'post_prerender_content', $this->newfields['content'], $this );
+		}
+
 		// invoke plugins for all fields which have been changed
 		// For example, a plugin action "post_update_status" would be
 		// triggered if the post has a new status value
@@ -834,6 +839,19 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		}
 
 		switch ( $name ) {
+			case 'content':
+				if($filter == 'internal') {
+					$out = parent::__get( 'content' );
+				}
+				else {
+					$out = parent::__get( 'cached_content' );
+					// Didn't bother to store a cached version? Run the prerender filter on the raw version.
+					if(empty($out)) {
+						$out = Plugins::filter( "post_prerender_content", parent::__get( 'content' ), $this );
+						// Queue rendered content for writing to cached_content field?
+					}
+				}
+				break;
 			case 'statusname':
 				$out = self::status_name( $this->status );
 				break;
