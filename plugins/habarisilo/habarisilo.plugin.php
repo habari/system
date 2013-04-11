@@ -50,10 +50,10 @@ class HabariSilo extends Plugin implements MediaSilo
 	public function action_plugin_activation( $file )
 	{
 		// Create required tokens
-		ACL::create_token( 'create_directories', _t( 'Create media silo directories' ), 'Administration' );
-		ACL::create_token( 'delete_directories', _t( 'Delete media silo directories' ), 'Administration' );
-		ACL::create_token( 'upload_media', _t( 'Upload files to media silos' ), 'Administration' );
-		ACL::create_token( 'delete_media', _t( 'Delete files from media silos' ), 'Administration' );
+		ACL::create_token( 'create_directories', 'Create media silo directories', 'Administration' );
+		ACL::create_token( 'delete_directories', 'Delete media silo directories', 'Administration' );
+		ACL::create_token( 'upload_media', 'Upload files to media silos', 'Administration' );
+		ACL::create_token( 'delete_media', 'Delete files from media silos', 'Administration' );
 	}
 	
 	/**
