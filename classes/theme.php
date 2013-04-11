@@ -114,6 +114,7 @@ class Theme extends Pluggable
 			$theme_data['filename'] = $xml_file;
 			return $theme_data;
 		}
+		return null;
 	}
 
 	/**
@@ -130,20 +131,20 @@ class Theme extends Pluggable
 			$this->charset = MultiByte::hab_encoding();
 		}
 		
-		if ( !$this->template_engine->assigned( 'user' ) ) {
-			$this->assign( 'user', User::identify() );
+		if ( !isset($this->user) ) {
+			$this->user = User::identify();
 		}
 
-		if ( !$this->template_engine->assigned( 'loggedin' ) ) {
-			$this->assign( 'loggedin', User::identify()->loggedin );
+		if ( !isset($this->loggedin) ) {
+			$this->loggedin = User::identify()->loggedin;
 		}
 
-		if ( !$this->template_engine->assigned( 'page' ) ) {
-			$this->assign( 'page', isset( $this->page ) ? $this->page : 1 );
+		if ( !isset($this->page) ) {
+			$this->page = isset( $this->page ) ? $this->page : 1;
 		}
 
 		if ( !isset($this->page_title) ) {
-			$this->assign('page_title', $this->page_title());
+			$this->page_title = $this->page_title();  // This calls theme_page_title via the theme_* plugin hook.
 		}
 
 		$handler = Controller::get_handler();
@@ -582,10 +583,10 @@ class Theme extends Pluggable
 			$this->add_template_vars();
 		}
 		$this->template_engine->clear();
-		for ( $z = 0; $z <= $this->current_var_stack; $z++ ) {
-			foreach ( $this->var_stack[$z] as $key => $value ) {
-				$this->template_engine->assign( $key, $value );
-			}
+
+		$stack = call_user_func_array('array_merge', $this->var_stack);
+		foreach ( $stack as $key => $value ) {
+			$this->template_engine->assign( $key, $value );
 		}
 	}
 
@@ -1004,6 +1005,7 @@ class Theme extends Pluggable
 
 	/**
 	 * Set a template variable, a property alias for assign()
+	 * This can only affect the current stack level!
 	 *
 	 * @param string $key The template variable to set
 	 * @param mixed $value The value of the variable
@@ -1021,14 +1023,16 @@ class Theme extends Pluggable
 	 */
 	public function __get( $key )
 	{
-		if ( isset( $this->var_stack[$this->current_var_stack][$key] ) ) {
-			return $this->var_stack[$this->current_var_stack][$key];
+		$stack = call_user_func_array('array_merge', $this->var_stack);
+		if ( isset( $stack[$key] ) ) {
+			return $stack[$key];
 		}
 		return '';
 	}
 
 	/**
 	 * Remove a template variable value
+	 * This can only affect the current stack level!
 	 *
 	 * @param string $key The template variable name to unset
 	 */
