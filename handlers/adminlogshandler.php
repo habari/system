@@ -143,13 +143,13 @@ class AdminLogsHandler extends AdminHandler
 
 	private function fetch_log_dates()
 	{
-		$db_dates = DB::get_column( 'SELECT timestamp FROM {log} ORDER BY timestamp DESC' );
+		$db_dates = DB::get_results( 'SELECT MONTH(FROM_UNIXTIME(timestamp)) AS month, YEAR(FROM_UNIXTIME(timestamp)) AS year FROM {log} ORDER BY timestamp DESC' );
 		$dates = array(
 			'any' => _t( 'Any' )
 		);
 
 		foreach ( $db_dates as $db_date ) {
-			$date = DateTime::create( $db_date )->format( 'Y-m' );
+			$date = sprintf('%04d-%02d', $db_date->year, $db_date->month);
 			$dates[ $date ] = $date;
 		}
 		return $dates;
