@@ -408,7 +408,11 @@ class Menus extends Plugin
 					$form->append( FormControlHidden::create('term')->set_value($term->id) );
 				}
 				else {
-					$post_ids = $form->append( FormControlAutocomplete::create('post_ids')->set_properties(array('data-autocomplete-config'=>'{}'))->label( _t( 'Posts' ) ) );
+					$post_ids = $form->append(
+						FormControlAutocomplete::create('post_ids', null, array('style' => 'width:90%;'), array())
+							->set_ajax(URL::auth_ajax('post_list' ))
+							->label( _t( 'Posts' ) )->set_template('control.label.outsideleft')
+					);
 //					$post_ids->template = 'text_tokens';
 //					$post_ids->ready_function = "$('#{$post_ids->field}').tokenInput( habari.url.ajaxPostTokens )";
 				}
