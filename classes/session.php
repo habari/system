@@ -17,6 +17,7 @@ class Session extends Singleton
 	/*
 	 * The initial data. Used to determine whether we should write anything.
 	 */
+	static $write_queue = array();
 	private static $lifetime;
 	static $session_id;
 	static $session_changed = false;
@@ -73,6 +74,9 @@ class Session extends Singleton
 
 		// make sure we check whether or not we should write the session after the page is rendered
 		register_shutdown_function( Method::create( '\Habari\Session', 'shutdown' ) );
+
+		// process the write queue
+		register_shutdown_function( Method::create( '\Habari\Session', 'process_queue' ) );
 
 		return true;
 	}
@@ -604,6 +608,10 @@ class Session extends Singleton
 
 	}
 
+	/**
+	 * Get a hash of the contents of the session data for change comparison
+	 * @return string a hash of the session data
+	 */
 	public static function session_data_hash()
 	{
 		if(isset($_SESSION)) {
@@ -612,6 +620,10 @@ class Session extends Singleton
 		return '';
 	}
 
+	/**
+	 * Determine if the session data has changed
+	 * @return bool True if the session data has changed
+	 */
 	public static function changed()
 	{
 		if(self::$session_changed) {
@@ -619,6 +631,43 @@ class Session extends Singleton
 		}
 		return self::session_data_hash() != self::$stored_session_hash;
 	}
+
+	/**
+	 * Add objects or functions to the post-processing queue, executed via self::process_queue()
+	 * @param QueryRecord|Callable $fn A QueryRecord to call ->update() on, or a function to execute
+	 * @param null|string $name An index to save the queue under, defaults to the SPL object hash for objects
+	 */
+	public static function queue($fn, $name = null)
+	{
+		if(is_null($name) && is_object($fn)) {
+			$name = spl_object_hash($fn);
+		}
+		if(is_object($name)) {
+			$name = spl_object_hash($name);
+		}
+		if(is_null($name)) {
+			self::$write_queue[] = $fn;
+		}
+		else {
+			self::$write_queue[$name] = $fn;
+		}
+	}
+
+	/**
+	 * Call update() on QueryRecords or execute the function queued with self::queue()
+	 */
+	public static function process_queue()
+	{
+		foreach(self::$write_queue as $fn) {
+			if($fn instanceof QueryRecord) {
+				$fn->update();
+			}
+			else {
+				$fn();
+			}
+		}
+	}
+
 }
 
 ?>

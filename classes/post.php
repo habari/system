@@ -1759,8 +1759,19 @@ LIST_REVISIONS;
 		}
 		else {
 			$this->info->$key = $field_value;
-			$this->info->commit();
 		}
+		$self = $this;
+		Session::queue(
+			function() use($self) {
+				if($self->id == 0) {
+					$self->insert();
+				}
+				else {
+					$self->update();
+				}
+			},
+			$this
+		);
 	}
 
 

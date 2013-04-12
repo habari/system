@@ -727,8 +727,19 @@ class User extends QueryRecord implements FormStorage, IsContent
 		}
 		else {
 			$this->info->$key = $value;
-			$this->info->commit();
 		}
+		$self = $this;
+		Session::queue(
+			function() use($self) {
+				if($self->id == 0) {
+					$self->insert();
+				}
+				else {
+					$self->update();
+				}
+			},
+			$this
+		);
 	}
 
 	/**

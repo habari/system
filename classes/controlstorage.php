@@ -48,6 +48,7 @@ class ControlStorage implements FormStorage
 				};
 				$saver = function($name, $value) {
 					User::identify()->info->{$name} = $value;
+					Session::queue(User::identify());
 				};
 				break;
 			case 'option':
