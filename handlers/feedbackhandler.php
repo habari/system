@@ -33,7 +33,7 @@ class FeedbackHandler extends ActionHandler
 		// Allow theme action hooks to work
 		Themes::create();
 		$form = $post->comment_form();
-		$form->get( null, false );
+		$form->get();
 
 		// Disallow non-FormUI comments
 		if ( !$form->submitted ) {
