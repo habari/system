@@ -880,28 +880,5 @@ LINKS;
 			Stack::add( 'admin_header_javascript', $this->get_url('/menus_admin.js'), 'menus_admin', 'admin-js');
 		}
 	}
-
-	/**
-	 * Respond to Javascript callbacks for autocomplete when creating items linking to posts
-	 */
-	public function action_auth_ajax_post_tokens( $handler )
-	{
-		// Get the data that was sent
-		$response = $handler->handler_vars[ 'q' ];
-
-		$final_response = array();
-
-		$new_response = Posts::get( array( "title_search" => $response, "status" => Post::status( 'published' ) ) );
-		foreach ( $new_response as $post ) {
-
-			$final_response[] = array(
-				'id' => $post->id,
-				'name' => $post->title,
-			);
-		}
-
-		// Send the response
-		echo json_encode( $final_response );
-	}
 }
 ?>
