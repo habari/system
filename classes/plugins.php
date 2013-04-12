@@ -48,8 +48,7 @@ class Plugins
 
 				// Reactivate it to try to get the new class loaded
 				self::activate_plugin($filename);
-				Utils::redirect(null, false);
-				exit();
+				Utils::redirect();
 			}
 		}
 	}
