@@ -14,8 +14,8 @@
 class StackItem
 {
 	static $items = array();
-	public $dependencies = array();
-	public $resource = '';
+	protected $dependencies = array();
+	protected $resource = '';
 
 	/**
 	 * Constructor for StackItem
