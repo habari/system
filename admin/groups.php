@@ -45,26 +45,8 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 <div class="container addgroup">
 	<h2><?php _e('Add Group'); ?></h2>
 	
-	<div class="item clear">
-		<span class="pct25">
-			<label for="new_groupname"><?php _e( 'Group Name' ); ?></label>
-		</span>
-		<span class="pct25">
-			<input type="text" name="new_groupname" id="new_groupname" value="<?php echo ( isset( $addform['name'] ) ) ? $addform['name'] : ''; ?>" class="border">
-		</span>
-	</div>
-	
-	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
-	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-	<input type="hidden" name="password_digest" id="password_digest" value="<?php echo $wsse['digest']; ?>">
-	
-	<div class="item submit clear">
-		<span class="pct25">
-			<input type="submit" name="newgroup" value="<?php _e('Add Group'); ?>">
-		</span>
-	</div>
+	<?php echo $add_group_form; ?>
 
-	
 </div>
 </form>
 
