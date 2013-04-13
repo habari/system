@@ -45,10 +45,10 @@ class FormControlSubmit extends FormControl
 	 * This control only executes its on_success callbacks when it was clicked
 	 * @return bool|string A string to replace the rendering of the form with, or false
 	 */
-	public function do_success()
+	public function do_success($form)
 	{
 		if(isset($_POST[$this->input_name()])) {
-			return parent::do_success();
+			return parent::do_success($form);
 		}
 		return false;
 	}

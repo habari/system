@@ -137,6 +137,19 @@ class AdminLogsHandler extends AdminHandler
 
 		$this->theme->years = $years;
 
+		$form = new FormUI('logs_batch', 'logs_batch');
+		$form->append(FormControlAggregate::create('entries')->set_selector('.log_entry')->label('None Selected'));
+		$form->append(FormControlDropbutton::create('action')->set_actions(array(
+			_t('Delete Selected') => function($form){
+				Session::notice("This should delete something but it doesn't yet");
+			},
+			_t('Purge Logs') => function($form){
+				Session::notice("This should purge the logs but it doesn't yet");
+			},
+		)));
+
+		$this->theme->form = $form;
+
 		$this->theme->wsse = Utils::WSSE(); // prepare a WSSE token for any ajax calls
 
 	}

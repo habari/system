@@ -95,6 +95,20 @@ class FormUI extends FormContainer implements IsContent
 	}
 
 	/**
+	 * Produce a form "duplicate" that does not process the form, display output, or include one-time-javascripts
+	 *
+	 * @param Theme $theme The theme to render the controls into
+	 * @return string HTML form generated from all controls assigned to this form
+	 */
+	public function dupe( Theme $theme = null )
+	{
+		$this->settings['is_dupe'] = true;
+		$result = $this->get($theme);
+		$this->settings['is_dupe'] = false;
+		return $result;
+	}
+
+	/**
 	 * Produce a form with the contained fields.
 	 *
 	 * @param Theme $theme The theme to render the controls into
@@ -134,45 +148,51 @@ class FormUI extends FormContainer implements IsContent
 		// If there was an error submitting this form before, set the values of the controls to the old ones to retry
 		$this->set_from_error_values();
 
-		// Was the form submitted?
-		if( isset( $_POST['_form_id'] ) && $_POST['_form_id'] == $this->control_id() ) {
-			$this->submitted = true;
+		// Is this form not a same-page duplicate?
+		if(!$this->get_setting('is_dupe', false)) {
+			// Was the form submitted?
+			if( isset( $_POST['_form_id'] ) && $_POST['_form_id'] == $this->control_id()) {
+				$this->submitted = true;
 
-			// Process all of the submitted values into the controls
-			$this->process();
+				// Process all of the submitted values into the controls
+				$this->process();
 
-			// Do any of the controls fail validation?  This call alters the wrap
-			$validation_errors = $this->validate();
-			if(count($validation_errors) == 0) {
-				// All of the controls validate
-				$this->success = true;
-				// If do_success() returns anything, it should be output instead of the form.
-				$this->success_render = $this->do_success();
-			}
-			else {
-				if(isset($this->settings['use_session_errors']) && $this->settings['use_session_errors']) {
-					$this->each(function($control) {
-						$control->errors = array();
-					});
-					foreach($validation_errors as $error) {
-						Session::error($error);
+				// Do any of the controls fail validation?  This call alters the wrap
+				$validation_errors = $this->validate();
+				if(count($validation_errors) == 0) {
+					// All of the controls validate
+					$this->success = true;
+					// If do_success() returns anything, it should be output instead of the form.
+					$this->success_render = $this->do_success($this);
+				}
+				else {
+					if(isset($this->settings['use_session_errors']) && $this->settings['use_session_errors']) {
+						$this->each(function($control) {
+							$control->errors = array();
+						});
+						foreach($validation_errors as $error) {
+							Session::error($error);
+						}
 					}
 				}
 			}
-		}
-		else {
-			// Store the location at which this form was loaded, so we can potentially redirect to it later
-			if ( !$this->has_session_data() || !isset( $_SESSION['forms'][$this->control_id()]['url'] ) ) {
-				$_SESSION['forms'][$this->control_id()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . '#' . $this->get_id(false);
+			else {
+				// Store the location at which this form was loaded, so we can potentially redirect to it later
+				if ( !$this->has_session_data() || !isset( $_SESSION['forms'][$this->control_id()]['url'] ) ) {
+					$_SESSION['forms'][$this->control_id()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . '#' . $this->get_id(false);
+				}
+			}
+
+			$output = $this->pre_out_controls();
+			if($this->success_render) {
+				$output .= $this->success_render;
+			}
+			else {
+				$output .= parent::get($theme);
 			}
 		}
-
-		$output = $this->pre_out_controls();
-		if($this->success_render) {
-			$output .= $this->success_render;
-		}
 		else {
-			$output .= parent::get($theme);
+			$output = parent::get($theme);
 		}
 
 

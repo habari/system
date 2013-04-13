@@ -375,13 +375,13 @@ class FormContainer extends FormControl
 	 * to the options table.
 	 * @return boolean|string A string to replace the rendering of the form with, or false
 	 */
-	public function do_success()
+	public function do_success($form)
 	{
 		/** @var FormControl $control */
 		foreach ( $this->controls as $control ) {
-			$control->do_success();
+			$control->do_success($form);
 		}
-		return parent::do_success();
+		return parent::do_success($form);
 	}
 
 	/**

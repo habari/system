@@ -6,29 +6,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 
 <?php include( 'navigator.php' ); ?>
 
-<form method="post" action="<?php URL::out('admin', array( 'page' => 'logs' ) ); ?>" class="buttonform">
-
-<div class="container transparent item controls">
-
-	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
-	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-	<input type="hidden" name="password_digest" id="password_digest" value="<?php echo $wsse['digest']; ?>">
-	<span class="checkboxandselected pct30">
-		<input type="checkbox" id="master_checkbox" name="master_checkbox">
-		<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
-	</span>
-	<ul class="dropbutton">
-		<?php $page_actions = array(
-			'delete' => array('action' => 'itemManage.update(\'delete\');return false;', 'title' => _t('Delete Selected'), 'label' => _t('Delete Selected') ),
-			'purge' => array('action' => 'itemManage.update(\'purge\');return false;', 'title' => _t('Purge Logs'), 'label' => _t('Purge Logs') ),
-		);
-		$page_actions = Plugins::filter('logs_manage_actions', $page_actions);
-		foreach( $page_actions as $page_action ) : ?>
-			<li><a href="*" onclick="<?php echo $page_action['action']; ?>" title="<?php echo $page_action['title']; ?>"><?php echo $page_action['label']; ?></a></li>
-		<?php endforeach; ?>
-	</ul>
-	
-</div>
+<?php echo $form; ?>
 
 <div class="container">
 
@@ -74,26 +52,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 
 </div>
 
-<div class="container transparent item controls">
-
-	<span class="checkboxandselected pct30">
-		<input type="checkbox" id="master_checkbox_2" name="master_checkbox_2">
-		<label class="selectedtext minor none" for="master_checkbox_2"><?php _e('None selected'); ?></label>
-	</span>
-	<ul class="dropbutton">
-		<?php $page_actions = array(
-			'delete' => array('action' => 'itemManage.update(\'delete\');return false;', 'title' => _t('Delete Selected'), 'label' => _t('Delete Selected') ),
-			'purge' => array('action' => 'itemManage.update(\'purge\');return false;', 'title' => _t('Purge Logs'), 'label' => _t('Purge Logs') ),
-		);
-		$page_actions = Plugins::filter('logs_manage_actions', $page_actions);
-		foreach( $page_actions as $page_action ) : ?>
-			<li><a href="*" onclick="<?php echo $page_action['action']; ?>" title="<?php echo $page_action['title']; ?>"><?php echo $page_action['label']; ?></a></li>
-		<?php endforeach; ?>
-	</ul>
-
-</div>
-
-</form>
+<?php echo $form->dupe(); ?>
 
 <script type="text/javascript">
 

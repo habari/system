@@ -650,7 +650,7 @@ abstract class FormControl
 	 * to the options table.
 	 * @return boolean|string A string to replace the rendering of the form with, or false
 	 */
-	public function do_success()
+	public function do_success($form)
 	{
 		$output = false;
 		foreach ($this->on_success as $success) {
