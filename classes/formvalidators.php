@@ -113,6 +113,28 @@ class FormValidators
 		return array();
 	}
 
+	/**
+	 * A validation function that returns an error if the the passed group name is unavailable
+	 *
+	 * @param string $text A value to test as group name
+	 * @param FormControl $control The control that defines the value
+	 * @param FormContainer $form The container that holds the control
+	 * @param string $allowed_name An optional name which overrides the check and is always allowed
+	 * @param string $warning An optional error message
+	 * @return array An empty array if the value exists, or an array with strings describing the errors
+	 */
+	public static function validate_groupname( $value, $control, $form, $allowed_name = null, $warning = null )
+	{
+		if ( isset( $allowed_name ) && ( $value == $allowed_name ) ) {
+			return array();
+		}
+		if ( UserGroup::exists( $value ) ) {
+			$warning = empty( $warning ) ? _t( 'The group %s already exists.', array($value) ) : $warning;
+			return array( $warning );
+		}
+		return array();
+	}
+
 
 	/**
 	 * A validation function that returns an error if the passed control values do not match

@@ -110,7 +110,7 @@ class AdminUsersHandler extends AdminHandler
 			$password2 = FormControlPassword::create('password2', null, array('autocomplete'=>'off'))->add_class('item clear')->set_value('');
 			$form->change_password->append( FormControlLabel::wrap(_t( 'New Password Again' ), $password2) );
 
-			$delete = $this->handler_vars->filter_keys( 'delete' );
+			$delete = $self->handler_vars->filter_keys( 'delete' );
 			// don't validate password match if action is delete
 			if ( !isset( $delete['delete'] ) ) {
 				$password2->add_validator( 'validate_same', $password1, _t( 'Passwords must match.' ) );
@@ -175,11 +175,11 @@ class AdminUsersHandler extends AdminHandler
 			$controls->append(FormControlStatic::create('conjunction')->set_static(_t('and'))->set_settings(array('wrap' => '<span class="minor pct5 conjunction">%s</span>')));
 			$delete = $controls->append(FormControlSubmit::create('delete')->set_caption(_t('Delete'))->set_settings(array('wrap' => '<span class="pct30">%s</span>'))->add_class('button'));
 
-			$delete->on_success(array($this, 'edit_user_delete'));
-			$delete->add_validator(array($this, 'validate_delete_user'));
+			$delete->on_success(array($self, 'edit_user_delete'));
+			$delete->add_validator(array($self, 'validate_delete_user'));
 
-			$apply->on_success( array( $this, 'edit_user_apply' ) );
-			$apply->add_validator(array($this, 'validate_edit_user'));
+			$apply->on_success( array( $self, 'edit_user_apply' ) );
+			$apply->add_validator(array($self, 'validate_edit_user'));
 		});
 		parent::__construct();
 	}
