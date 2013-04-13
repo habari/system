@@ -141,10 +141,25 @@ class AdminLogsHandler extends AdminHandler
 		$form->append(FormControlAggregate::create('entries')->set_selector('.log_entry')->label('None Selected'));
 		$form->append(FormControlDropbutton::create('action')->set_actions(array(
 			_t('Delete Selected') => function($form){
-				Session::notice("This should delete something but it doesn't yet");
+				$ids = $form->entries->value;
+				$count = 0;
+				/** @var LogEntry $log */
+				foreach ( $ids as $id ) {
+					$logs = EventLog::get( array( 'id' => $id ) );
+					foreach($logs as $log) {
+						$log->delete();
+						$count++;
+					}
+				}
+				Session::notice( _t( 'Deleted %d logs.', array( $count ) ) );
 			},
 			_t('Purge Logs') => function($form){
-				Session::notice("This should purge the logs but it doesn't yet");
+				if(EventLog::purge()) {
+					Session::notice( _t( 'Logs purged.' ) );
+				}
+				else {
+					Session::notice( _t( 'There was a problem purging the event logs.' ) );
+				}
 			},
 		)));
 
@@ -236,54 +251,6 @@ class AdminLogsHandler extends AdminHandler
 			'timeline' => $timeline,
 		);
 		$ar->out();
-	}
-
-	/**
-	 * Handles AJAX from /logs.
-	 * Used to delete logs.
-	 */
-	public function ajax_delete_logs( $handler_vars )
-	{
-		Utils::check_request_method( array( 'POST' ) );
-
-		$count = 0;
-
-		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
-		if ( $handler_vars['digest'] != $wsse['digest'] ) {
-			Session::error( _t( 'WSSE authentication failed.' ) );
-			echo Session::messages_get( true, Method::create( '\Habari\Format', 'json_messages' ) );
-			return;
-		}
-		foreach ( $_POST as $id => $delete ) {
-			// skip POST elements which are not log ids
-			if ( preg_match( '/^p\d+$/', $id ) && $delete ) {
-				$id = (int) substr( $id, 1 );
-				$ids[] = array( 'id' => $id );
-			}
-		}
-
-		if ( ( ! isset( $ids ) || empty( $ids ) ) && $handler_vars['action'] != 'purge' ) {
-			Session::notice( _t( 'No logs selected.' ) );
-			echo Session::messages_get( true, Method::create( '\Habari\Format', 'json_messages' ) );
-			return;
-		}
-
-		switch ( $handler_vars['action'] ) {
-			case 'delete':
-				$to_delete = EventLog::get( array( 'date' => 'any', 'where' => $ids, 'nolimit' => 1 ) );
-				foreach ( $to_delete as $log ) {
-					$log->delete();
-					$count++;
-				}
-				Session::notice( _t( 'Deleted %d logs.', array( $count ) ) );
-				break;
-			case 'purge':
-				$result = EventLog::purge();
-				Session::notice( _t( 'Logs purged.' ) );
-				break;
-		}
-
-		echo Session::messages_get( true, Method::create( '\Habari\Format', 'json_messages' ) );
 	}
 
 }

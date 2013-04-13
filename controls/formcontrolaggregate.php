@@ -45,7 +45,7 @@ controls.init(function(){
 			self.val(JSON.stringify(results));
 			var checked = checkboxes.filter(':checked');
 			visualizer.prop('indeterminate', checked.length > 0 && checked.length < checkboxes.length);
-			visualizer.prop('checked', checked.length == checkboxes.length);
+			visualizer.prop('checked', checked.length == checkboxes.length && checkboxes.length != 0);
 			if(visualizer.data('label') != '') {
 				label = $('#' + visualizer.data('label'));
 				num_checked = checkboxes.filter(':checked').length;

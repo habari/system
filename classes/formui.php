@@ -102,8 +102,16 @@ class FormUI extends FormContainer implements IsContent
 	 */
 	public function dupe( Theme $theme = null )
 	{
+		static $dupe_count = 0;
+		$dupe_count++;
 		$this->settings['is_dupe'] = true;
+		$this->each(function(FormControl $control) use ($dupe_count) {
+			$control->settings['id_prefix'] = 'dupe_' . $dupe_count . '_';
+		});
 		$result = $this->get($theme);
+		$this->each(function(FormControl $control) use ($dupe_count) {
+			unset($control->settings['id_prefix']);
+		});
 		$this->settings['is_dupe'] = false;
 		return $result;
 	}

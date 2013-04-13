@@ -273,6 +273,9 @@ abstract class FormControl
 		if(!isset($this->settings['internal_value'])) {
 			$properties = array_merge(array('value' => $this->get_setting('html_value', $this->value)), $properties);
 		}
+		if($id = $this->get_id(false)) {
+			$properties['id'] = $id;
+		}
 		$theme->_attributes = Utils::html_attr($properties);
 
 		// Do rendering
@@ -445,7 +448,7 @@ abstract class FormControl
 		if(!isset($this->properties['id']) && $force_set) {
 			$this->properties['id'] = Utils::slugify($this->name, '_');
 		}
-		return isset($this->properties['id']) ? $this->properties['id'] : null;
+		return isset($this->properties['id']) ? $this->get_setting('id_prefix', '') . $this->properties['id'] : null;
 	}
 
 	/**
