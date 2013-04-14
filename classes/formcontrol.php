@@ -688,4 +688,12 @@ abstract class FormControl
 		$this->on_save[] = func_get_args();
 	}
 
+	/**
+	 * Returns the HTML id of the element that the control exposes as a target, for example, for labels
+	 */
+	public function get_visualizer()
+	{
+		return $this->get_id();
+	}
+
 }

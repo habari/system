@@ -31,11 +31,15 @@ class FormControlAggregate extends FormControl
 				<script type="text/javascript">
 controls.init(function(){
 	$('.aggregate_control').each(function(){
+		// self - the hidden input element that represents the value of the aggregate control
 		var self = $(this);
+		// visualizer - the master checkbox that checks/unchecks all those checkboxes indicated by the selector
 		var visualizer = $('.aggregate_ui[data-target=' + self.attr('id') + ']');
+		// checkboxes - the checkboxes selected by the aggregator
 		var checkboxes = $(self.data('selector'));
 		var do_update = function(){
 			var results = [];
+			// get the json for the checked boxes and put it in the control's hidden input
 			checkboxes.filter(':checked').each(function(){
 				var checkbox = $(this);
 				if(checkbox.prop('checked')) {
@@ -43,21 +47,27 @@ controls.init(function(){
 				}
 			});
 			self.val(JSON.stringify(results));
+			// Set the checked state of the visualizer
 			var checked = checkboxes.filter(':checked');
 			visualizer.prop('indeterminate', checked.length > 0 && checked.length < checkboxes.length);
 			visualizer.prop('checked', checked.length == checkboxes.length && checkboxes.length != 0);
+			// Set the label contents
 			if(visualizer.data('label') != '') {
 				label = $('#' + visualizer.data('label'));
 				num_checked = checkboxes.filter(':checked').length;
 				label.html(_t('%d selected').replace(/%d/, num_checked));
 			}
 		}
+		// Add change events to the visualizer and the checkboxes the aggregator watches
 		$('body')
 			.on('change', self.data('selector'), do_update)
-			.on('change', visualizer, function(){
-				if(!visualizer.prop('indeterminate')) checkboxes.prop('checked', visualizer.prop('checked'));
+			.on('change', visualizer, function(ev){
+				if(ev.target == visualizer[0] && !visualizer.prop('indeterminate')) {
+					checkboxes.prop('checked', visualizer.prop('checked'));
+				}
 				do_update();
 			});
+		// Use the value of aggregator input to initially check appropriate boxes
 		var values = $.parseJSON(self.val());
 		$.each(values || [], function(i, e){
 			checkboxes.filter('[value="' + e + '"]').prop('checked', true);
@@ -117,6 +127,13 @@ CUSTOM_AUTOCOMPLETE_JS;
 			}
 			return '';
 		});
+	}
+
+	/**
+	 * Provide the HTML id of the visualizer element, which is different from the input element that provides a value
+	 */
+	public function get_visualizer() {
+		return $this->get_id() . '_visualizer';
 	}
 
 	/**

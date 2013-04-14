@@ -28,7 +28,7 @@ class FormControlLabel extends FormContainer
 		}
 		$label_control->append($control);
 		$label_control->label = $label;
-		$label_control->properties['for'] = $control->get_id();
+		$label_control->properties['for'] = $control->get_visualizer();
 		return $label_control;
 	}
 
