@@ -880,7 +880,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 			$_SESSION['flickr_frob'] = '' . $flickr->getFrob();
 			$auth_url = $flickr->authLink( $_SESSION['flickr_frob'] );
 			$confirm_url = URL::get( 'admin', array( 'page' => 'plugins', 'configure' => $this->plugin_id(), 'configaction' => 'confirm' ) ) . '#plugin_options';
-			echo '<p>' . _t( 'To use this plugin, you must <a href="%1$s">authorized Habari to have access to your Flickr account</a>.', array( $auth_url ) ) . '</p>';
+			echo '<p>' . _t( 'To use this plugin, you must <a href="%1$s">authorize Habari to access your Flickr account</a>.', array( $auth_url ) ) . '</p>';
 			echo '<p>' . _t( 'When you have completed the authorization on Flickr, return here and <a href="%1$s">confirm that the authorization was successful</a>.', array( $confirm_url ) ) . '</p>';
 		}
 	}
@@ -895,7 +895,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 		$flickr = new Flickr(  $this->params );
 		if ( !isset( $_SESSION['flickr_frob'] ) ){
 			$auth_url = URL::get( 'admin', array( 'page' => 'plugins', 'configure' => $this->plugin_id(), 'configaction' => 'authorize' ) ) . '#plugin_options';
-			echo '<p>' . _t( 'Either you have already authorized Habari to access your flickr account, or you have not yet done so.  Please <a href="%1$s">try again</a>.', array( $auth_url ) ) . '</p>';
+			echo '<p>' . _t( 'Data submission was unsuccessful and it could not be determined if you have already authorized Habari to access your flickr account, or you have not yet done so. Please <a href="%1$s">try again</a>.', array( $auth_url ) ) . '</p>';
 		}
 		else{
 			$token = $flickr->getToken( $_SESSION['flickr_frob'] );
