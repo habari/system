@@ -1399,12 +1399,10 @@ class InstallHandler extends ActionHandler
 				$db_name = '';
 				break;
 			case 'mysql':
-				list( $host,$name ) = explode( ';', $remainder );
-				list( $discard, $db_name ) = explode( '=', $name );
-				break;
 			case 'pgsql':
-				list( $host,$name ) = explode( ' ', $remainder );
-				list( $discard, $db_name ) = explode( '=', $name );
+				$pairs = $this->parse_dsn( $remainder );
+				
+				$db_name = $pairs['dbname'];
 				break;
 		}
 
