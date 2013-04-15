@@ -129,7 +129,7 @@ CREATE TABLE {$prefix}log (
   type_id INTEGER NOT NULL,
   severity_id TINYINT NOT NULL,
   message VARCHAR(255) NOT NULL,
-  data BLOB NULL,
+  data TEXT NULL,
   timestamp INTEGER NOT NULL,
   ip VARCHAR(45) NOT NULL
 );

@@ -149,7 +149,7 @@ CREATE TABLE {$prefix}log (
   type_id INT NOT NULL,
   severity_id TINYINT NOT NULL,
   message VARCHAR(255) NOT NULL,
-  data BLOB NULL,
+  data LONGTEXT NULL,
   timestamp INT UNSIGNED NOT NULL,
   ip VARCHAR(45) NOT NULL,
   PRIMARY KEY (id)
