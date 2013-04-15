@@ -7,9 +7,11 @@
 			<span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name"><?php echo $content->author->displayname; ?></span></span>
 			<time datetime="<?php echo $content->pubdate->format('Y-m-d\TH:i:s\Z'); ?>" itemprop="datePublished"><?php echo $content->pubdate->format(Options::get('dateformat') . ' ' . Options::get('timeformat')); ?></time>
 		</div>
+		<?php if ( $content->tags->count() ): ?>
 		<div itemprop="keywords" class="tags">
 			<?php echo Format::tag_and_list($content->tags, ', ', ', and '); ?>
 		</div>
+		<?php endif; ?>
 	</header>
 
 	<div class="content" itemprop="articleBody">
