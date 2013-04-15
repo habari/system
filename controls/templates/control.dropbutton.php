@@ -7,7 +7,7 @@
 			<?php if($first): $first = false; ?>
 				<input <?= $_attributes ?>>
 			<?php endif; ?>
-		<a href="#<?= $action_id ?>"><?= $action['caption'] ?></a></li>
+		<a href="<?= $action['href'] ?>"><?= $action['caption'] ?></a></li>
 		<?php endforeach; ?>
 	<?php endif; ?>
 </ul>

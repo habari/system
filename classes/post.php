@@ -1228,22 +1228,22 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		if(Options::get('comments_disabled')) {
 			$form->append(new FormControlStatic('message', _t('Comments are disabled site-wide.')));
 			$form->class[] = 'comments_disabled';
-			$form->set_option( 'form_action', '/' );
+			$form->set_properties( array('action' => '/') );
 		}
 		elseif($this->info->comments_disabled) {
 			$form->append(new FormControlStatic('message', _t('Comments for this post are disabled.')));
 			$form->class[] = 'comments_disabled';
-			$form->set_option( 'form_action', '/' );
+			$form->set_properties( array('action' => '/') );
 		}
 		elseif(Options::get('comments_require_logon') && !$user->loggedin) {
 			$form->append(new FormControlStatic('message', _t('Commenting on this site requires authentication.')));
 			$form->class[] = 'comments_require_logon';
-			$form->set_option( 'form_action', '/' );
+			$form->set_properties( array('action' => '/') );
 		}
 		elseif(!$user->can('comment')) {
 			$form->append(new FormControlStatic('message', _t('You do not have permission to comment on this site.')));
 			$form->class[] = 'comments_require_permission';
-			$form->set_option( 'form_action', '/' );
+			$form->set_properties( array('action' => '/') );
 		}
 		else {
 

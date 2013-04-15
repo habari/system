@@ -24,9 +24,16 @@ class FormControlDropbutton extends FormControl
 	{
 		$actions = array();
 		foreach($new_actions as $caption => $fn) {
-			$actions[Utils::slugify($caption)] = array(
+			if(is_callable($fn)) {
+				$href = '#' . Utils::slugify($caption);
+			}
+			else {
+				$href = $fn;
+			}
+			$actions[] = array(
 				'caption' => $caption,
 				'fn' => $fn,
+				'href' => $href,
 			);
 		}
 		if(!$override) {

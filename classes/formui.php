@@ -198,6 +198,9 @@ class FormUI extends FormContainer implements IsContent
 			else {
 				$output .= parent::get($theme);
 			}
+			if($this->success && isset($this->settings['success_message'])) {
+				$output .= $this->settings['success_message'];
+			}
 		}
 		else {
 			$output = parent::get($theme);
@@ -298,30 +301,6 @@ class FormUI extends FormContainer implements IsContent
 		return $out;
 	}
 
-
-	/**
-	 * Set a form option
-	 * Defaults for options are stored in the $this->options array
-	 *
-	 * @param string $option The name of the option to set
-	 * @param mixed $value The value of the option
-	 */
-	public function set_option( $option, $value )
-	{
-		$this->options[$option] = $value;
-	}
-
-	/**
-	 * Get a form option
-	 *
-	 * @param string $option The name of the option to get
-	 * @return mixed The value of the named option if set, null if not set
-	 */
-	public function get_option( $option )
-	{
-		return isset( $this->options[$option] ) ? $this->options[$option] : null;
-	}
-
 	/**
 	 * Configure all the options necessary to make this form work inside a media bar panel
 	 * @param string $path Identifies the silo
@@ -362,6 +341,12 @@ class FormUI extends FormContainer implements IsContent
 		return $this->get();
 	}
 
+	/**
+	 * Create a form with controls from HTML
+	 * @param string $name Name of the form
+	 * @param string $html HTML of a form
+	 * @return FormUI The form created from the supplied HTML
+	 */
 	public static function from_html($name, $html)
 	{
 		$dom = new HTMLDoc($html);

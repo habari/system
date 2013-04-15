@@ -66,7 +66,7 @@ class Charcoal extends Theme
 
 		// Save
 		$ui->append( 'submit', 'save', _t( 'Save' ) );
-		$ui->set_option( 'success_message', _t( 'Options saved' ) );
+		$ui->set_settings( array('success_message' => _t( 'Options saved' )) );
 		$ui->out();
 	}
 	
