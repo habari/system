@@ -104,7 +104,7 @@ class PGSQLConnection extends DatabaseConnection
 			else if ( preg_match( "|CREATE DATABASE ([^ ]*)|", $qry, $matches ) ) {
 				array_unshift( $cqueries, $qry );
 			}
-			else if ( preg_match( "|CREATE SEQUENCE ([^ ]*)|", $qry, $matches ) ) {
+			else if ( preg_match( "|CREATE SEQUENCE ([^ ;]*)|", $qry, $matches ) ) {
 				$cseqqueries[strtolower( $matches[1] )] = $qry;
 			}
 			else if ( preg_match( "|ALTER SEQUENCE ([^ ]*)|", $qry, $matches ) ) {
