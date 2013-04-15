@@ -148,13 +148,12 @@ class Error extends \Exception
 			E_STRICT => _t( 'Strict Notice' ),
 			// @locale A fatal PHP error at runtime. An error handler may be able to work around it. If not, code execution stops.
 			E_RECOVERABLE_ERROR => _t( 'Recoverable Error' ),
-		);
-		if ( version_compare( PHP_VERSION, '5.3.0', '>=' ) ) {
 			// @locale A notification from PHP that the code is outdated and may not work in the future
-			$error_names[E_DEPRECATED] = _t( 'Deprecated violation' );
+			E_DEPRECATED => _t( 'Deprecated violation' ),
 			// @locale A notification that the code is outdated and Habari may not work with it in the future
-			$error_names[E_USER_DEPRECATED] = _t( 'User deprecated violation' );
-		}
+			E_USER_DEPRECATED => _t( 'User deprecated violation' ),
+		);
+		
 		if ( strpos( $errfile, HABARI_PATH ) === 0 ) {
 			$errfile = substr( $errfile, strlen( HABARI_PATH ) + 1 );
 		}
