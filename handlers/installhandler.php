@@ -2050,19 +2050,45 @@ class InstallHandler extends ActionHandler
 				$this->handler_vars['db_file'] = $remainder;
 				break;
 			case 'mysql':
-				list( $host,$name ) = explode( ';', $remainder );
-				list( $discard, $this->handler_vars['db_host'] ) = explode( '=', $host );
-				list( $discard, $this->handler_vars['db_schema'] ) = explode( '=', $name );
-				break;
 			case 'pgsql':
-				list( $host,$name )= explode( ' ', $remainder );
-				list( $discard, $this->handler_vars['db_host'] ) = explode( '=', $host );
-				list( $discard, $this->handler_vars['db_schema'] ) = explode( '=', $name );
+				$pairs = $this->parse_dsn( $remainder );
+				
+				$host = $pairs['host'];
+				
+				if ( isset( $pairs['port'] ) ) {
+					$host .= ';port=' . $pairs['port'];
+				}
+				
+				$this->handler_vars['db_host'] = $host;
+				$this->handler_vars['db_schema'] = $pairs['dbname'];
+				
 				break;
 		}
 		$this->handler_vars['db_user'] = Config::get( 'db_connection' )->username;
 		$this->handler_vars['db_pass'] = Config::get( 'db_connection' )->password;
 		$this->handler_vars['table_prefix'] = Config::get( 'db_connection' )->prefix;
+	}
+	
+	private function parse_dsn ( $dsn ) {
+		
+		// before we replace spaces, which may give us double semicolons if there's one after a semicolon, condense it down
+		$dsn = str_replace( '; ', ';', $dsn );
+		
+		// spaces are also allowed in the dsn, but let's unify everything with a semicolon for parsing
+		$dsn = str_replace( ' ', ';', $dsn );
+		
+		// now to split them apart
+		$temp_pairs = explode( ';', $dsn );
+		
+		// and then by =
+		$pairs = array();
+		foreach ( $temp_pairs as $temp_pair ) {
+			list( $k, $v ) = explode( '=', $temp_pair );
+			$pairs[ $k ] = $v;
+		}
+		
+		return $pairs;
+		
 	}
 
 	/**
