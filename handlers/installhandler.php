@@ -1076,7 +1076,7 @@ class InstallHandler extends ActionHandler
 		);
 		$rewrite_base = trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
 		if ( $rewrite_base != '' ) {
-			$htaccess['rewrite_base'] = 'RewriteBase /' . $rewrite_base;
+			$htaccess['rewrite_base'] = 'RewriteBase "/' . $rewrite_base . '"';
 		}
 
 		return $htaccess;
@@ -1148,7 +1148,7 @@ class InstallHandler extends ActionHandler
 		$htaccess = $this->htaccess();
 		if ( $rewritebase ) {
 			$rewrite_base = trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
-			$htaccess['rewrite_base'] = 'RewriteBase /' . $rewrite_base;
+			$htaccess['rewrite_base'] = 'RewriteBase "/' . $rewrite_base . '"';
 		}
 		$file_contents = "\n" . implode( "\n", $htaccess ) . "\n";
 
