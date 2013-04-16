@@ -27,7 +27,7 @@
 	<div class="head">
 		<div class="title">
 		<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a>
-		<span class="dim"><?php _e('by'); ?></span>
+		<span><?php _e('by'); ?></span>
 
 		<?php
 		$authors = array();
@@ -35,7 +35,7 @@
 			$authors[] = isset( $author['url'] ) ? '<a href="' . $author['url'] . '">' . $author . '</a>' : $author;
 		}
 		// @locale The string used between the last two items in the list of authors of a plugin on the admin page (one, two, three *and* four).
-		echo Format::and_list( $authors, '<span class="dim">, </span>', '<span class="dim">' . _t( ' and ' ) . '</span>');
+		echo Format::and_list( $authors, '<span>, </span>', '<span>' . _t( ' and ' ) . '</span>');
 		?>
 		</div>
 		<?php if ( $plugin['core'] ): ?>
