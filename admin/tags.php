@@ -18,18 +18,18 @@
 	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 	<input type="hidden" name="password_digest" id="password_digest" value="<?php echo $wsse['digest']; ?>">
 
-	<span class="checkboxandselected pct20">
+	<span class="checkboxandselected">
 		<input type="checkbox" id="master_checkbox" name="master_checkbox">
 		<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
 	</span>
 
-	<span class="renamecontrols pct35"><input type="text" class="renametext"></span>
+	<span class="renamecontrols"><input type="text" class="renametext"></span>
 
-	<span class="pct15 buttons"><input type="button" value="<?php _e('Rename'); ?>" class="rename button"></span>
+	<span class="buttons"><input type="button" value="<?php _e('Rename'); ?>" class="rename button"></span>
 
-	<span class="or pct10"><?php _e('or'); ?></span>
+	<span class="or><?php _e('or'); ?></span>
 
-	<span class="pct15 buttons"><input type="button" value="<?php _e('Delete Selected'); ?>" class="delete button"></span>
+	<span class="buttons"><input type="button" value="<?php _e('Delete Selected'); ?>" class="delete button"></span>
 </div>
 
 <script type="text/javascript">
