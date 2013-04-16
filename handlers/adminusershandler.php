@@ -15,7 +15,8 @@ class AdminUsersHandler extends AdminHandler
 {
 	public function __construct()
 	{
-		FormUI::register('add_user', function(FormUI $form, $name){
+		$self = $this;
+		FormUI::register('add_user', function(FormUI $form, $name) use($self) {
 			$form->set_settings(array('use_session_errors' => true));
 			$form->append(
 				FormControlText::create('username')
@@ -40,7 +41,7 @@ class AdminUsersHandler extends AdminHandler
 					->label(_t('Password Again'))->add_class('incontent')->set_template('control.label.outsideleft')
 			);
 			$form->append(FormControlSubmit::create('newuser')->set_caption('Add User'));
-			$form->on_success(array($this, 'do_add_user'));
+			$form->on_success( array( $self, 'do_add_user' ) );
 		});
 		parent::__construct();
 	}
