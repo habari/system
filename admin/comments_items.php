@@ -3,21 +3,21 @@
 <?php if ( count($comments) != 0 ) :
 	foreach ( $comments as $comment ) : ?>
 
-<div class="item clear <?php echo strtolower( $comment->statusname ); ?>" id="comment_<?php echo $comment->id; ?>" style="<?php echo Plugins::filter('comment_style', '', $comment); ?>">
-	<div class="head clear">
-		<span class="checkbox title pct5">
+<div class="item <?php echo strtolower( $comment->statusname ); ?>" id="comment_<?php echo $comment->id; ?>" style="<?php echo Plugins::filter('comment_style', '', $comment); ?>">
+	<div class="head">
+		<span class="checkbox title">
 			<input type="checkbox" class="checkbox" name="comment_ids[<?php echo $comment->id; ?>]" id="comments_ids[<?php echo $comment->id; ?>]" value="1">
 		</span>
-		<span class="checkbox title pct20">
+		<span class="checkbox title">
 			<?php if ( $comment->url != '' ): ?>
 			<a href="#" class="author" title="<?php echo Utils::htmlspecialchars( $comment->name ); ?>"><?php echo Utils::htmlspecialchars( $comment->name ); ?></a>
 			<?php else: ?>
 			<?php echo Utils::htmlspecialchars( $comment->name ); ?>
 			<?php endif; ?>
 		</span>
-		<span class="title pct35"><span class="dim"><?php _e('in'); ?> '</span><a href="<?php echo $comment->post->permalink ?>#comment-<?php echo $comment->id; ?>" title="<?php _e( 'Go to %s', array( $comment->post->title ) ); ?>"><?php echo $comment->post->title; ?></a><span class="dim">'</span></span>
-		<span class="date pct15"><span class="dim"><?php _e('on'); ?></span> <a href="<?php URL::out('admin', array('page' => 'comments', 'status' => $comment->status, 'year' => $comment->date->year, 'month' => $comment->date->mon )); ?>" title="<?php _e('Search for other comments from %s', array($comment->date->format( 'M, Y' ) ) ); ?>"><?php $comment->date->out( DateTime::get_default_date_format() ); ?></a></span>
-		<span class="time pct10 dim"><?php _e('at'); ?> <span><?php $comment->date->out( DateTime::get_default_time_format() );?></span></span>
+		<span class="title"><span class="dim"><?php _e('in'); ?> '</span><a href="<?php echo $comment->post->permalink ?>#comment-<?php echo $comment->id; ?>" title="<?php _e( 'Go to %s', array( $comment->post->title ) ); ?>"><?php echo $comment->post->title; ?></a><span class="dim">'</span></span>
+		<span class="date"><span class="dim"><?php _e('on'); ?></span> <a href="<?php URL::out('admin', array('page' => 'comments', 'status' => $comment->status, 'year' => $comment->date->year, 'month' => $comment->date->mon )); ?>" title="<?php _e('Search for other comments from %s', array($comment->date->format( 'M, Y' ) ) ); ?>"><?php $comment->date->out( DateTime::get_default_date_format() ); ?></a></span>
+		<span class="time dim"><?php _e('at'); ?> <span><?php $comment->date->out( DateTime::get_default_time_format() );?></span></span>
 
 		<ul class="dropbutton">
 			<?php
@@ -30,8 +30,8 @@
 		</ul>
 	</div>
 
-	<div class="infoandcontent clear">
-		<div class="authorinfo pct25 minor">
+	<div class="infoandcontent">
+		<div class="authorinfo">
 			<ul>
 				<?php if ( $comment->url != '' ) {
 						echo '<li><a class="url" href="' . $comment->url . '">' . $comment->url . '</a></li>'."\r\n";
@@ -57,7 +57,7 @@
 
 			<p class="comment-type"><?php echo Plugins::filter( 'comment_type_display', $comment->typename, 'singular' ); ?></p>
 		</div>
-		<span class="content pct75"><?php
+		<span class="content"><?php
 			if ( MultiByte::valid_data( $comment->content ) ) {
 				echo nl2br( Utils::htmlspecialchars( $comment->content ) );
 			}
