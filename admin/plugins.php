@@ -39,8 +39,8 @@ if ( isset($config_plugin) ): ?>
 <?php endif; ?>
 
 <?php if ( count($active_plugins) > 0 ): ?>
-<div class="container plugins activeplugins" id="activeplugins">
-	<h2><?php _e('Active Plugins'); ?></h2>
+<div class="container main plugins activeplugins" id="activeplugins">
+	<h2 class="lead"><?php _e('Active Plugins'); ?></h2>
 	<?php
 	foreach ( $active_plugins as $plugin ) {
 		$theme->plugin = $plugin;
@@ -51,9 +51,9 @@ if ( isset($config_plugin) ): ?>
 <?php endif; ?>
 
 <?php if ( count($inactive_plugins) > 0 ): ?>
-<div class="container plugins inactiveplugins" id="inactiveplugins">
+<div class="container main plugins inactiveplugins" id="inactiveplugins">
 
-	<h2><?php _e('Inactive Plugins'); ?></h2>
+	<h2 class="lead"><?php _e('Inactive Plugins'); ?></h2>
 	
 	<?php
 	foreach ( $inactive_plugins as $plugin) {

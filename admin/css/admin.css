@@ -587,22 +587,24 @@ body, html {
 		background: #666;
 	}
 
+/* Common */
+
+h2.lead  {
+    font-family: "Montserrat";
+    font-weight: normal;
+    font-size: 15px;
+    margin: -10px -20px 0px;
+    padding-left: 20px;
+    color: #fff;
+    background: #333;
+  }
 	
-.plugins {
+.main {
 	margin-top: 10px;
 	background: rgb(224, 221, 214);
 	color: #333;
 	padding: 10px 20px 0px;
 }
-	.plugins h2 {
-		font-family: "Montserrat";
-		font-weight: normal;
-		font-size: 15px;
-		margin: -10px -20px 0px;
-		padding-left: 20px;
-		color: #fff;
-		background: #333;
-	}
 	
 .item {
 	padding: 20px 0px;
