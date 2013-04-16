@@ -11,9 +11,9 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
 	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 	<input type="hidden" name="password_digest" id="password_digest" value="<?php echo $wsse['digest']; ?>">
-	<span class="checkboxandselected pct30">
+	<span class="checkboxandselected">
 		<input type="checkbox" id="master_checkbox" name="master_checkbox">
-		<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
+		<label class="selectedtext none" for="master_checkbox"><?php _e('None selected'); ?></label>
 	</span>
 	<ul class="dropbutton">
 		<?php $page_actions = array(
@@ -24,7 +24,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 			<li><a href="*" onclick="<?php echo $page_action['action']; ?>" title="<?php echo $page_action['title']; ?>"><?php echo $page_action['label']; ?></a></li>
 		<?php endforeach; ?>
 	</ul>
-	
+
 </div>
 
 
@@ -37,9 +37,9 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 
 <div class="container transparent item controls">
 
-	<span class="checkboxandselected pct30">
+	<span class="checkboxandselected">
 		<input type="checkbox" id="master_checkbox_2" name="master_checkbox_2">
-		<label class="selectedtext minor none" for="master_checkbox_2"><?php _e('None selected'); ?></label>
+		<label class="selectedtext none" for="master_checkbox_2"><?php _e('None selected'); ?></label>
 	</span>
 	<ul class="dropbutton">
 		<?php $page_actions = array(
