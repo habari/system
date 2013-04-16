@@ -3,16 +3,16 @@
 namespace Habari;
 
 if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
-	
+
 	// define IMPORT_BATCH in your config.php to limit each batch of DB results
 	if ( !defined('IMPORT_BATCH') ) {
 		define('IMPORT_BATCH', 100);
 	}
-	
+
 	class WPImport extends Plugin implements Importer {
-		
+
 		private $supported_importers = array();
-		
+
 		private $default_values = array(
 			'db_name' => '',
 			'db_host' => 'localhost',
@@ -23,84 +23,75 @@ if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 			'import_index' => 0,
 			'error' => '',
 		);
-		
+
 		public function action_init ( ) {
-			
+
 			$this->supported_importers[] = _t('WordPress Database');
-			
+
 		}
-		
+
 		public function filter_import_names ( $import_names ) {
-			
+
 			return array_merge( $import_names, $this->supported_importers );
-			
+
 		}
-		
+
 		public function filter_import_stage ( $stage_output, $import_name, $stage, $step ) {
-			
+
 			// only act on this filter if the import_name is one we handle
 			if ( !in_array( $import_name, $this->supported_importers ) ) {
 				// it's a filter, always return the output another plugin might have generated
 				return $stage_output;
 			}
-			
+
 			// the values we'll hand to each stage for processing
 			$inputs = array();
-			
+
 			// validate input and figure out which stage we're at
 			switch ( $stage ) {
-				
+
 				case 1:
-					
 					if ( isset( $_POST['wpimport'] ) ) {
-						
+
 						$inputs = $_POST->filter_keys( array( 'db_name', 'db_user', 'db_host', 'db_pass', 'db_prefix', 'category_import', 'import_index' ) );
 						$inputs = $inputs->getArrayCopy();
-						
+
 						// try to connect to the db with the given values
 						if ( $this->wp_connect( $inputs['db_host'], $inputs['db_name'], $inputs['db_user'], $inputs['db_pass'] ) ) {
-							
+
 							// we've got good connection info, bump to stage 2
 							$stage = 2;
-							
 						}
 						else {
-							
+
 							// add a warning to the stack
 							$inputs['error'] = _t('Could not connect to the WordPress database using the values supplied. Please correct them and try again.');
-							
 						}
-						
 					}
-					
 					break;
-				
 			}
-			
-			
+
 			// now dispatch the right stage
 			switch ( $stage ) {
-				
+
 				case 1:
 				default:
 					$output = $this->stage1( $inputs );
 					break;
-					
+
 				case 2:
 					$output = $this->stage2( $inputs );
 					break;
-				
 			}
-			
+
 			// return the output for the importer to display
 			return $output;
-			
 		}
-		
+
 		private function stage1 ( $inputs ) {
-			
+
 			$inputs = array_merge( $this->default_values, $inputs );
-			
+
 			// if there is a error, display it
 			if ( $inputs['error'] != '' ) {
 				$error = '<p class="error">' . $inputs['error'] . '</p>';
@@ -109,78 +100,78 @@ if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 				// blank it out just so we can use the value in output
 				$error = '';
 			}
-			
+
 			$output = '<p>' . _t( 'Habari will attempt to import from a WordPress database.') . '</p>';
 			$output .= $error;
-			
+
 			// get the FormUI form
 			//$form = $this->get_form( $inputs );
-			
+
 			// append the output of the form
 			//$output .= $form->get();
-			
+
 			$output .= '<div class="item clear">';
 			$output .= 	'<span class="pct25"><label for="db_name">' . _t( 'Database Name' ) . '</label></span><span class="pct40"><input type="text" name="db_name" id="db_name" value="' . $inputs['db_name'] . '"></span>';
 			$output .= '</div>';
-			
+
 			$output .= '<div class="item clear">';
 			$output .= 	'<span class="pct25"><label for="db_host">' . _t( 'Database Host' ) . '</label></span><span class="pct40"><input type="text" name="db_host" id="db_host" value="' . $inputs['db_host'] . '"></span>';
 			$output .= '</div>';
-			
+
 			$output .= '<div class="item clear">';
 			$output .= 	'<span class="pct25"><label for="db_user">' . _t( 'Database User' ) . '</label></span><span class="pct40"><input type="text" name="db_user" id="db_user" value="' . $inputs['db_user'] . '"></span>';
 			$output .= '</div>';
-			
+
 			$output .= '<div class="item clear">';
 			$output .= 	'<span class="pct25"><label for="db_pass">' . _t( 'Database Password' ) . '</label></span><span class="pct40"><input type="text" name="db_pass" id="db_pass" value="' . $inputs['db_pass'] . '"></span>';
 			$output .= '</div>';
-			
+
 			$output .= '<div class="item clear">';
 			$output .= 	'<span class="pct25"><label for="db_prefix">' . _t( 'Table Prefix' ) . '</label></span><span class="pct40"><input type="text" name="db_prefix" id="db_prefix" value="' . $inputs['db_prefix'] . '"></span>';
 			$output .= '</div>';
-			
+
 			$output .= '<div class="item clear">';
 			$output .= 	'<span class="pct25"><label for="category_import">' . _t( 'Import Categories as Tags' ) . '</label></span><span class="pct40"><input type="checkbox" name="category_import" id="category_import" value="true" ' . ( ( $inputs['category_import'] == true ) ? 'checked="checked"' : '' ) . '></span>';
 			$output .= '</div>';
-			
+
 			$output .= '<div class="item clear transparent">';
 			$output .=	'<input type="submit" class="button" name="wpimport" value="' . _t( 'Import' ) . '">';
 			$output .= '</div>';
-			
+
 			return $output;
-			
+
 		}
-		
+
 		private function stage2 ( $inputs ) {
-			
+
 			// make sure we have all our default values
 			$inputs = array_merge( $this->default_values, $inputs );
-			
+
 			// the first thing we import are users, so get that URL to kick off the ajax process
 			$ajax_url = URL::get( 'auth_ajax', array( 'context' => 'wp_import_users' ) );
-			
+
 			// the variables we'll hand to the ajax call are all the input values
 			$vars = $inputs;
-			
+
 			EventLog::log( _t('Starting import from "%s"', array( $inputs['db_name'] ) ) );
-			
+
 			$output = '<p>' . _t('Import in Progress') . '</p>';
 			$output .= '<div id="import_progress">' . _t( 'Starting Import&hellip;' ) . '</div>';
 			$output .= $this->get_ajax( $ajax_url, $vars );
-			
+
 			return $output;
-			
+
 		}
-		
+
 		private function get_ajax ( $url, $vars = array() ) {
-			
+
 			// generate the vars we'll use
 			$ajax_vars = array();
 			foreach ( $vars as $k => $v ) {
 				$ajax_vars[] = $k . ': "' . $v . '"';
 			}
 			$ajax_vars = implode( ',', $ajax_vars );
-			
+
 			$output = <<<WP_IMPORT_AJAX
 				<script type="text/javascript">
 					$(document).ready( function() {
@@ -195,13 +186,13 @@ if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 WP_IMPORT_AJAX;
 
 			return $output;
-			
+
 		}
-		
+
 		private function get_form ( $inputs ) {
 			// this isn't used right now because we can't use formui in an importer, there's already a form
 			$form = new FormUI('wp_importer');
-			
+
 			$db_name = $form->append( 'text', 'db_name', 'null:null', _t( 'Database Name') );
 			$db_name->value = $inputs['db_name'];
 			
@@ -705,83 +696,70 @@ WP_IMPORT_AJAX;
 						else {
 							$c->status = $status;
 						}
-						
 						break;
-					
 				}
-				
+
 				// save the old comment ID in info
 				$c->info->wp_id = $comment->comment_id;
-				
+
 				// save the old post ID in info
 				$c->info->wp_post_id = $comment->comment_post_id;
-				
+
 				// save the old comment karma - but only if it is something
 				if ( $comment->comment_karma != '0' ) {
 					$c->info->wp_karma = $comment->comment_karma;
 				}
-				
+
 				// save the old comment user agent - but only if it is something
 				if ( $comment->comment_agent != '' ) {
 					$c->info->wp_agent = $comment->comment_agent;
 				}
-				
-				
+
 				// now that we've got all the pieces in place, save the comment
 				try {
 					$c->insert();
 				}
 				catch ( \Exception $e ) {
-					
+
 					EventLog::log( $e->getMessage(), 'err' );
-					
+
 					echo '<p class="error">' . _t( 'There was an error importing comment ID %d. See the EventLog for the error message.', array( $comment->comment_id ) );
-					
+
 					echo '<p>' . _t( 'Rolling back changes&hellip;' ) . '</p>';
-					
+
 					// rollback all changes before we return so the import hasn't changed anything yet
 					DB::rollback();
-					
+
 					// and return so they don't get AJAX to send them on to the next step
 					return false;
-					
 				}
-				
 			}
-			
-			
+
 			// if we've finished without an error, commit the import
 			DB::commit();
-			
+
 			if ( $max < $num_comments ) {
-				
+
 				// if there are more posts to import
-				
+
 				// get the next ajax url
 				$ajax_url = URL::get( 'auth_ajax', array( 'context' => 'wp_import_comments' ) );
-				
+
 				// bump the import index by one so we get a new batch next time
 				$inputs['import_index']++;
-				
-				
 			}
 			else {
-				
+
 				// display the completed message!
-				
 				EventLog::log( _t( 'Import completed from "%s"', array( $inputs['db_name'] ) ) );
 				echo '<p>' . _t( 'Import is complete.' ) . '</p>';
-				
+
 				return;
-				
 			}
-			
+
 			// and spit out ajax to send them to the next step - posts!
 			echo $this->get_ajax( $ajax_url, $inputs );
-			
 		}
-
-		
 	}
 
 ?>
