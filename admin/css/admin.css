@@ -613,12 +613,13 @@ body, html {
 	}
 	
 	.item .title {
-		float:left;
-		font-weight: bold;
+		float:left;;
 	}
-		.item .title .dim {
-			font-weight:normal;
-		}
+
+  .title a, .theme_credits a {
+    font-weight: bold;
+  }
+	
 	.item .dropbutton {
 		float:right;
 	}
