@@ -10,11 +10,11 @@
 
 	<div class="manage">
 	<?php foreach ( $sysinfo as $key => $value ) : ?>
-		<div class="item clear">
-			<span class="pct25"><?php echo $key; 
-				$plaintext_output .= $key; ?></span>
-			<span class="pct75 minor"><span><?php echo $value;
-				$plaintext_output .= ": $value\n"; ?></span></span>
+		<div class="item">
+			<?php echo $key; 
+				$plaintext_output .= $key; ?> 
+			<?php echo $value;
+				$plaintext_output .= ": $value\n"; ?>
 		</div>
 	<?php endforeach; ?>
 	</div>
@@ -27,11 +27,11 @@
 
 	<div class="manage">
 	<?php foreach ( $siteinfo as $key => $value ) : ?>
-		<div class="item clear">
-			<span class="pct25"><?php echo $key; 
-				$plaintext_output .= $key; ?></span>
-			<span class="pct75 minor"><span><?php echo $value;
-				$plaintext_output .= ": $value\n"; ?></span></span>
+		<div class="item">
+			<?php echo $key; 
+				$plaintext_output .= $key; ?>
+			<?php echo $value;
+				$plaintext_output .= ": $value\n"; ?>
 		</div>
 	<?php endforeach; ?>
 	</div>
@@ -44,15 +44,15 @@
 
 	<div class="manage">
 	<?php foreach ( $classinfo as $fullpath ) : ?>
-		<div class="item clear">
-			<span class="pct100"><?php echo $fullpath; 
-				$plaintext_output .= "$fullpath\n"; ?></span>
+		<div class="item">
+			<?php echo $fullpath; 
+				$plaintext_output .= "$fullpath\n"; ?>
 		</div>
 
 	<?php endforeach; ?>
 	<?php if ( empty( $fullpath ) ) : ?>
-		<div class="item clear"><span class="pct100"><?php _e( "None found" ); 
-			$plaintext_output .= _t( "None found" ) . "\n"; ?></span></div>
+		<div class="item"><?php _e( "None found" ); 
+			$plaintext_output .= _t( "None found" ) . "\n"; ?></div>
 	<?php endif; ?>
 	</div>
 </div>
@@ -67,17 +67,17 @@
 		$plaintext_output .= "\n/$section/plugins:\n"; ?></h3>
 	<div class="manage">
 	<?php foreach ( $sec_plugins as $name => $pluginfile ) : ?>
-		<div class="item clear">
-			<span class="pct25"><?php echo $name; 
-				$plaintext_output .= $name; ?></span>
-			<span class="pct75 minor"><span><?php echo $pluginfile;
-				$plaintext_output .= ": $pluginfile\n"; ?></span></span>
+		<div class="item">
+			<?php echo $name; 
+				$plaintext_output .= $name; ?>
+			<?php echo $pluginfile;
+				$plaintext_output .= ": $pluginfile\n"; ?>
 		</div>
 
 	<?php endforeach; ?>
 	<?php if ( count($sec_plugins) == 0 ) : ?>
-		<div class="item clear"><span class="pct100"><?php _e( "None found" ); 
-			$plaintext_output .= _t( "None found" ) . "\n"; ?></span></div>
+		<div class="item"><?php _e( "None found" ); 
+			$plaintext_output .= _t( "None found" ) . "\n"; ?></div>
 	<?php endif; ?>
 	</div>
 	<?php endforeach; ?>
