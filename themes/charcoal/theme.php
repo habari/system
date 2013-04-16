@@ -44,28 +44,19 @@ class Charcoal extends Theme
 	{
 		$ui = new FormUI( __CLASS__ );
 		// This is a fudge as I only need to add a little bit of styling to make things look nice.
-		$ui->append( 'static', 'style', '<style type="text/css">#charcoal .formcontrol { line-height: 2.2em; }</style>');
-		$ui->append( 'checkbox', 'show_title_image', __CLASS__.'__show_title_image', _t( 'Show Title Image:'), 'optionscontrol_checkbox' );
-			$ui->show_title_image->helptext = _t( 'Check to show the title image, uncheck to display the title text.' );
-		$ui->append( 'text', 'home_label', __CLASS__.'__home_label', _t( 'Home label:' ), 'optionscontrol_text' );
-			$ui->home_label->helptext = _t( 'Set to whatever you want your first tab text to be.' );
-		$ui->append( 'checkbox', 'show_entry_paperclip', __CLASS__.'__show_entry_paperclip', _t( 'Show Entry Paperclip:' ), 'optionscontrol_checkbox' );
-			$ui->show_entry_paperclip->helptext = _t( 'Check to show the paperclip graphic in posts, uncheck to hide it.' );
-		$ui->append( 'checkbox', 'show_page_paperclip', __CLASS__.'__show_page_paperclip', _t( 'Show Page Paperclip:' ), 'optionscontrol_checkbox' );
-			$ui->show_page_paperclip->helptext = _t( 'Check to show the paperclip graphic in pages, uncheck to hide it.' );
-		$ui->append( 'checkbox', 'show_powered', __CLASS__.'__show_powered', _t( 'Show Powered By:' ), 'optionscontrol_checkbox' );
-			$ui->show_powered->helptext = _t( 'Check to show the "powered by Habari" graphic in the sidebar, uncheck to hide it.' );
-		$ui->append( 'checkbox', 'display_login', __CLASS__.'__display_login', _t( 'Display Login:' ), 'optionscontrol_checkbox' );
-			$ui->display_login->helptext = _t( 'Check to show the Login/Logout link in the navigation bar, uncheck to hide it.' );
-		$ui->append( 'checkbox', 'tags_in_multiple', __CLASS__.'__tags_in_multiple', _t( 'Tags in Multiple Posts Page:'), 'optionscontrol_checkbox' );
-			$ui->tags_in_multiple->helptext = _t( 'Check to show the post tags in the multiple posts pages (search, tags, archives), uncheck to hide them.' );
-		$ui->append( 'checkbox', 'show_post_nav', __CLASS__.'__show_post_nav', _t( 'Show Post Navigation:' ), 'optionscontrol_checkbox' );
-			$ui->show_post_nav->helptext = _t( 'Set to true to show single post navigation links, false to hide them.' );
-		$ui->append( 'text', 'tags_count', __CLASS__.'__tags_count', _t( 'Tag Cloud Count:' ), 'optionscontrol_text' );
-			$ui->tags_count->helptext = _t( 'Set to the number of tags to display on the default "cloud".' );
+		$ui->append( FormControlStatic::create('style')->set_static('<style type="text/css">#charcoal .formcontrol { line-height: 2.2em; }</style>'));
+		$ui->append( FormControlCheckbox::create('show_title_image', __CLASS__.'__show_title_image')->set_helptext(_t( 'Check to show the title image, uncheck to display the title text.' ))->label(_t( 'Show Title Image:')) );
+		$ui->append( FormControlText::create('home_label', __CLASS__.'__home_label')->set_helptext(_t( 'Set to whatever you want your first tab text to be.' ))->label(_t( 'Home label:' ) ));
+		$ui->append( FormControlCheckbox::create('show_entry_paperclip', __CLASS__.'__show_entry_paperclip')->set_helptext(_t( 'Check to show the paperclip graphic in posts, uncheck to hide it.' ))->label( _t( 'Show Entry Paperclip:' ) ) );
+		$ui->append( FormControlCheckbox::create('show_page_paperclip', __CLASS__.'__show_page_paperclip')->set_helptext(_t( 'Check to show the paperclip graphic in pages, uncheck to hide it.' ))->label( _t( 'Show Page Paperclip:' ) ) );
+		$ui->append( FormControlCheckbox::create('show_powered', __CLASS__.'__show_powered')->set_helptext(_t( 'Check to show the "powered by Habari" graphic in the sidebar, uncheck to hide it.' ))->label( _t( 'Show Powered By:' ) ) );
+		$ui->append( FormControlCheckbox::create('display_login', __CLASS__.'__display_login')->set_helptext(_t( 'Check to show the Login/Logout link in the navigation bar, uncheck to hide it.' ))->label( _t( 'Display Login:' ) ) );
+		$ui->append( FormControlCheckbox::create('tags_in_multiple', __CLASS__.'__tags_in_multiple')->set_helptext(_t( 'Check to show the post tags in the multiple posts pages (search, tags, archives), uncheck to hide them.' ))->label(_t( 'Tags in Multiple Posts Page:') ) );
+		$ui->append( FormControlCheckbox::create('show_post_nav', __CLASS__.'__show_post_nav')->set_helptext(_t( 'Set to true to show single post navigation links, false to hide them.' ))->label( _t( 'Show Post Navigation:' ) ) );
+		$ui->append( FormControlText::create('tags_count', __CLASS__.'__tags_count')->set_helptext(_t( 'Set to the number of tags to display on the default "cloud".' ))->label(_t( 'Tag Cloud Count:' ) ) );
 
 		// Save
-		$ui->append( 'submit', 'save', _t( 'Save' ) );
+		$ui->append( FormControlSubmit::create('save')->set_caption( _t( 'Save' ) ) );
 		$ui->set_settings( array('success_message' => _t( 'Options saved' )) );
 		$ui->out();
 	}
