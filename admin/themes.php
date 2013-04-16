@@ -2,8 +2,8 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php include('header.php');?>
 
-<div class="container currenttheme">
-	<h2><?php _e( 'Current Theme' ); ?></h2>
+<div class="container main currenttheme">
+	<h2 class="lead"><?php _e( 'Current Theme' ); ?></h2>
 	<div class="item">
 		<div class="head">
 
@@ -106,9 +106,9 @@
 */ ?>
 	</div>
 
-<div class="container availablethemes">
+<div class="container main availablethemes">
 
-	<h2><?php _e('Available Themes'); ?></h2>
+	<h2 class="lead"><?php _e('Available Themes'); ?></h2>
 <?php
 foreach ( $all_themes as $inactive_theme ):
 	if ( $inactive_theme['path'] != $active_theme_dir ) : ?>
