@@ -4,17 +4,17 @@
 
 <div class="container currenttheme">
 	<h2><?php _e( 'Current Theme' ); ?></h2>
-	<div class="item clear">
+	<div class="item">
 		<div class="head">
 
-			<a href="<?php echo $active_theme['info']->url; ?>" class="plugin"><?php echo $active_theme['info']->name; ?></a> <span class="version dim"><?php echo $active_theme['info']->version; ?></span> <span class="dim"><?php _e('by'); ?></span>
+			<a href="<?php echo $active_theme['info']->url; ?>" class="plugin"><?php echo $active_theme['info']->name; ?></a> <?php echo $active_theme['info']->version; ?> <?php _e('by'); ?>
 			<?php
 			$authors = array();
 			foreach ( $active_theme['info']->author as $author ) {
 				$authors[] = isset( $author['url'] ) ? '<a href="' . $author['url'] . '">' . $author . '</a>' : $author;
 			}
 			// @locale The string used between the last two items in the list of authors of a theme on the admin page (one, two, three *and* four).
-			echo Format::and_list( $authors, '<span class="dim">, </span>', '<span class="dim">' . _t( ' and ' ) . '</span>');
+			echo Format::and_list( $authors,  _t( ' and ' ));
 			?>
 			<?php
 				if ( isset( $active_theme['info']->help ) ):
@@ -43,15 +43,15 @@
 		</div>
 
 		<div>
-			<div class="thumb pct30"><span><img src="<?php echo $active_theme['screenshot']; ?>"></span></div>
+			<div class="thumb"><img src="<?php echo $active_theme['screenshot']; ?>"></div>
 
-			<p class="description pct70"><?php echo $active_theme['info']->description; ?></p>
+			<p class="description"><?php echo $active_theme['info']->description; ?></p>
 			<?php if ( $active_theme['info']->license != '' ): ?>
-			<p class="description pct70"><?php printf( _t('%1$s is licensed under the %2$s'), $active_theme['info']->name, '<a href="' . $active_theme['info']->license['url'] . '">' . $active_theme['info']->license . '</a>' ); ?></p>
+			<p class="description"><?php printf( _t('%1$s is licensed under the %2$s'), $active_theme['info']->name, '<a href="' . $active_theme['info']->license['url'] . '">' . $active_theme['info']->license . '</a>' ); ?></p>
 			<?php endif; ?>
 
 			<?php if ( isset( $active_theme['info']->help ) ): ?>
-			<div id="themehelp" class="pct70 <?php if( Controller::get_var('help') == $active_theme['dir'] ): ?>active<?php endif; ?>">
+			<div id="themehelp" class="<?php if( Controller::get_var('help') == $active_theme['dir'] ): ?>active<?php endif; ?>">
 				<div class="help">
 					<?php echo Pluggable::get_xml_text($active_theme['info']['filename'], $active_theme['info']->help); ?>
 				</div>
@@ -69,7 +69,7 @@
 	if (trim($output) != '') :
 	?>
 
-	<div class="item clear">
+	<div class="item">
 		<h3><?php _e( "General" ); ?></h3>
 		<?php echo $output; ?>
 		<div></div>
@@ -77,7 +77,7 @@
 	<?php endif; ?>
 
 	<?php if ( isset($active_theme['info']->areas) ): ?>
-	<div id="blocksconfigure" class="item clear">
+	<div id="blocksconfigure" class="item">
 		<h3><?php _e( "Areas" ); ?></h3>
 				<div>
 					<div id="block_add">
@@ -87,16 +87,14 @@
 					<div id="scope_container">
 					<?php $this->display('block_areas'); ?>
 					</div>
-					<hr style="clear:both;visibility: hidden;height:5px;" />
 					<div class="formcontrol"><button id="save_areas" disabled="disabled"><?php _e('Save'); ?></button>
 					</div>
-					<hr style="clear:both;visibility: hidden;" />
 				</div>
 			</div>
 			<?php endif; ?>
 
 <?php /* hide this until Scope is implemented
-		<div class="item clear">
+		<div class="item">
 		<h3>Scopes</h3>
 
 
@@ -114,16 +112,16 @@
 <?php
 foreach ( $all_themes as $inactive_theme ):
 	if ( $inactive_theme['path'] != $active_theme_dir ) : ?>
-	<div class="item pct30<?php if ($previewed == $inactive_theme['dir']) echo " previewing"; ?>"> 
+	<div class="item <?php if ($previewed == $inactive_theme['dir']) echo " previewing"; ?>"> 
 		<div class="head theme_credits"> 
-			<a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?> <span class="version dim"><?php echo $inactive_theme['info']->version; ?></span></a> <span class="dim"><?php _e('by'); ?></span> 
+			<a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?> ><?php echo $inactive_theme['info']->version; ?></a> <?php _e('by'); ?> 
 			<?php
 			$authors = array();
 			foreach ( $inactive_theme['info']->author as $author ) {
 				$authors[] = isset( $author['url'] ) ? '<a href="' . $author['url'] . '">' . $author . '</a>' : $author;
 			}
 			// @locale The string used between the last two items in the list of authors of a theme on the admin page (one, two, three *and* four).
-			echo Format::and_list( $authors, '<span class="dim">, </span>', '<span class="dim">' . _t( ' and ' ) . '</span>');
+			echo Format::and_list( $authors,  _t( ' and ' ));
 			?>
 		</div> 
  
