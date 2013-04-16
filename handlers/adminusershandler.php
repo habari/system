@@ -91,23 +91,23 @@ class AdminUsersHandler extends AdminHandler
 			}
 
 			// User Info
-			$displayname = FormControlText::create('displayname')->add_class('important item clear')->set_value($edit_user->displayname);
+			$displayname = FormControlText::create('displayname')->add_class('important')->set_value($edit_user->displayname);
 			$form->user_info->append( FormControlLabel::wrap(_t( 'Display Name' ), $displayname));
 
-			$username = FormControlText::create('username')->add_class('item clear')->add_validator('validate_username', $edit_user->username)->set_value($edit_user->username);
+			$username = FormControlText::create('username')->add_validator('validate_username', $edit_user->username)->set_value($edit_user->username);
 			$form->user_info->append( FormControlLabel::wrap(_t( 'User Name' ), $username) );
 
-			$email = FormControlText::create('email')->add_class('item clear')->add_validator('validate_email')->set_value($edit_user->email);
+			$email = FormControlText::create('email')->add_validator('validate_email')->set_value($edit_user->email);
 			$form->user_info->append(FormControlLabel::wrap(_t('Email'), $email));
 
-			$imageurl = FormControlText::create('imageurl')->add_class('item clear')->set_value($edit_user->info->imageurl);
+			$imageurl = FormControlText::create('imageurl')->set_value($edit_user->info->imageurl);
 			$form->user_info->append( FormControlLabel::wrap(_t( 'Portrait URL' ), $imageurl) );
 
 			// Change Password
-			$password1 = FormControlPassword::create('password1', null, array('autocomplete'=>'off'))->add_class('item clear')->set_value('');
+			$password1 = FormControlPassword::create('password1', null, array('autocomplete'=>'off'))->set_value('');
 			$form->change_password->append( FormControlLabel::wrap(_t( 'New Password' ), $password1) );
 
-			$password2 = FormControlPassword::create('password2', null, array('autocomplete'=>'off'))->add_class('item clear')->set_value('');
+			$password2 = FormControlPassword::create('password2', null, array('autocomplete'=>'off'))->set_value('');
 			$form->change_password->append( FormControlLabel::wrap(_t( 'New Password Again' ), $password2) );
 
 			$delete = $self->handler_vars->filter_keys( 'delete' );
@@ -119,10 +119,10 @@ class AdminUsersHandler extends AdminHandler
 			// Regional settings
 			$timezones = \DateTimeZone::listIdentifiers();
 			$timezones = array_merge( array_combine( array_values( $timezones ), array_values( $timezones ) ) );
-			$locale_tz = FormControlSelect::create('locale_tz', null, array('multiple'=>false))->add_class('item clear')->set_options($timezones)->set_value($edit_user->info->locale_tz);
+			$locale_tz = FormControlSelect::create('locale_tz', null, array('multiple'=>false))->set_options($timezones)->set_value($edit_user->info->locale_tz);
 			$form->regional_settings->append( FormControlLabel::wrap(_t( 'Timezone' ), $locale_tz) );
 
-			$locale_date_format = FormControlText::create('locale_date_format')->add_class('item clear')->set_value($edit_user->info->locale_date_format);
+			$locale_date_format = FormControlText::create('locale_date_format')->set_value($edit_user->info->locale_date_format);
 			$form->regional_settings->append( FormControlLabel::wrap(_t( 'Date Format' ), $locale_date_format ));
 			if ( isset( $edit_user->info->locale_date_format ) && $edit_user->info->locale_date_format != '' ) {
 				$current = DateTime::create()->get( $edit_user->info->locale_date_format );
@@ -132,7 +132,7 @@ class AdminUsersHandler extends AdminHandler
 			}
 			$locale_date_format->set_helptext(_t( 'See <a href="%s">php.net/date</a> for details. Current format: %s', array( 'http://php.net/date', $current )));
 
-			$locale_time_format = FormControlText::create('locale_time_format')->add_class('item clear')->set_value($edit_user->info->locale_time_format);
+			$locale_time_format = FormControlText::create('locale_time_format')->set_value($edit_user->info->locale_time_format);
 			$form->regional_settings->append( FormControlLabel::wrap(_t( 'Time Format' ), $locale_time_format) );
 			if ( isset( $edit_user->info->locale_time_format ) && $edit_user->info->locale_time_format != '' ) {
 				$current = DateTime::create()->get( $edit_user->info->locale_time_format );
@@ -143,7 +143,7 @@ class AdminUsersHandler extends AdminHandler
 			$locale_time_format->set_helptext(_t( 'See <a href="%s">php.net/date</a> for details. Current format: %s', array( 'http://php.net/date', $current ) ));
 
 
-			$spam_count = FormControlCheckbox::create('dashboard_hide_spam_count')->add_class('item clear')
+			$spam_count = FormControlCheckbox::create('dashboard_hide_spam_count')
 				->set_helptext(_t( 'Hide the number of SPAM comments on your dashboard.' ))->set_value($edit_user->info->dashboard_hide_spam_count);
 			$form->dashboard->append( FormControlLabel::wrap(_t( 'Hide Spam Count' ), $spam_count ));
 
@@ -158,7 +158,7 @@ class AdminUsersHandler extends AdminHandler
 			// Controls
 			$controls = $form->append( FormControlWrapper::create('page_controls')->add_class('container controls transparent') );
 
-			$apply = $controls->append( FormControlSubmit::create('apply')->set_caption(_t( 'Apply' ))->add_class('pct30') );
+			$apply = $controls->append( FormControlSubmit::create('apply')->set_caption(_t( 'Apply' )) );
 
 			// Get author list
 			$author_list = Users::get_all();
@@ -170,10 +170,10 @@ class AdminUsersHandler extends AdminHandler
 			unset( $authors[ $edit_user->id ] ); // We can't reassign this user's posts to themselves if we're deleting them
 
 			$reassign = FormControlSelect::create('reassign')->set_options($authors);
-			$reassign_label = FormControlLabel::wrap(_t('Reassign posts to:') , $reassign)->set_settings(array('wrap'=> '<span class="pct35 reassigntext">%s</span>'));
+			$reassign_label = FormControlLabel::wrap(_t('Reassign posts to:') , $reassign)->set_settings(array('wrap'=> '<span class="reassigntext">%s</span>'));
 			$controls->append($reassign_label);
-			$controls->append(FormControlStatic::create('conjunction')->set_static(_t('and'))->set_settings(array('wrap' => '<span class="minor pct5 conjunction">%s</span>')));
-			$delete = $controls->append(FormControlSubmit::create('delete')->set_caption(_t('Delete'))->set_settings(array('wrap' => '<span class="pct30">%s</span>'))->add_class('button'));
+			$controls->append(FormControlStatic::create('conjunction')->set_static(_t('and'))->set_settings(array('wrap' => '<span class="conjunction">%s</span>')));
+			$delete = $controls->append(FormControlSubmit::create('delete')->set_caption(_t('Delete'))->set_settings(array('wrap' => '<span>%s</span>'))->add_class('button'));
 
 			$delete->on_success(array($self, 'edit_user_delete'));
 			$delete->add_validator(array($self, 'validate_delete_user'));
