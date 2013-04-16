@@ -109,7 +109,7 @@ if ( Config::exists('db_connection') ) {
 			_t( "Habari General Error" ), // page title
 			_t( "An error occurred" ), // H1 tag
 			( defined( 'DEBUG' ) && DEBUG == true ) ?
-				_t( "Unable to connect to database.  Error message: %s", array( $e->getMessage() ) ) :
+				_t( "Unable to connect to database.  Error message: @error", array( '@error' => $e->getMessage() ) ) :
 				_t( "Unable to connect to database." ) 
 			// Error message, more detail if DEBUG is defined.
 		);

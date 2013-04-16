@@ -324,6 +324,26 @@ class Locale
 		}
 
 		if ( !empty( $args ) && is_array( $args ) ) {
+			$trs = array();
+			foreach($args as $key => $value) {
+				if(is_string($key)) {
+					$usekey = $key;
+					switch($key[0]) {
+						case '@': // HTML Escape
+							$value = Utils::htmlspecialchars($value);
+							break;
+						case ':': // Use literally
+							//$value = $value;
+							break;
+						case '{': // Table name
+							$value = DB::table(preg_replace('#^\{(.+)\}?$#', '$1', $key));
+							break;
+					}
+					$trs[$usekey] = str_replace('%', '%%', $value);
+				}
+			}
+			$t = strtr($t, $trs);
+
 			array_unshift( $args, $t );
 			$t = call_user_func_array( 'sprintf', $args );
 		}
