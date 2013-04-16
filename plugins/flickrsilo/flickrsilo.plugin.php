@@ -930,9 +930,17 @@ class FlickrSilo extends Plugin implements MediaSilo
 	public function action_plugin_ui_configure()
 	{
 		$ui = new FormUI( strtolower( get_class( $this ) ) );
-		$ui->append( 'select', 'flickr_size','option:flickrsilo__flickr_size', _t( 'Default size for images in Posts:' ) );
-		$ui->flickr_size->options = array( '_s' => _t( 'Square' ) . ' (75x75)', '_t' => _t( 'Thumbnail' ) . ' (100px)', '_m' => _t( 'Small' ) . ' (240px)', '' => _t( 'Medium' ) . ' (500px)', '_b' => _t( 'Large') . ' (1024px)', '_o' => _t( 'Original Size' ) );
-		$ui->append('submit', 'save', _t( 'Save' ) );
+		$ui->append( FormControlLabel::wrap( _t( 'Default size for images in Posts:' ),
+			FormControlSelect::create( 'flickr_size', 'option:flickrsilo__flickr_size' )->set_options( array(
+			    '_s' => _t( 'Square' ) . ' (75x75)',
+			    '_t' => _t( 'Thumbnail' ) . ' (100px)',
+			    '_m' => _t( 'Small' ) . ' (240px)',
+			    '' => _t( 'Medium' ) . ' (500px)',
+			    '_b' => _t( 'Large') . ' (1024px)',
+			    '_o' => _t( 'Original Size' )
+			    ))
+		));
+		$ui->append( FormControlSubmit::create( 'save') )->set_caption( _t( 'Save' ) );
 		$ui->set_settings(array('success_message' => _t( 'Options saved' )));
 		$ui->out();
 	}
