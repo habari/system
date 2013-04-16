@@ -515,14 +515,14 @@ class HabariSilo extends Plugin implements MediaSilo
 					$fullpath = self::SILO_NAME . '/' . $path;
 
 					$form = new FormUI( 'habarisilomkdir' );
-					$form->append( 'static', 'ParentDirectory', '<div style="margin: 10px auto;">' . _t( 'Parent Directory:' ) . " <strong>/{$path}</strong></div>" );
-
+					$form->append( FormControlStatic::create( 'ParentDirectory' )->set_static( '<div style="margin: 10px auto;">' . _t( 'Parent Directory:' ) . " <strong>/{$path}</strong></div>" ) );
 					// add the parent directory as a hidden input for later validation
-					$form->append( 'hidden', 'path', 'null:unused' )->value = $path;
-					$form->append( 'hidden', 'action', 'null:unused')->value = $panelname;
-					$dir_text_control = $form->append( 'text', 'directory', 'null:unused', _t('What would you like to call the new directory?') );
-					$dir_text_control->add_validator( array( $this, 'mkdir_validator' ) );
-					$form->append( 'submit', 'submit', _t('Submit') );
+					$form->append( FormControlData::create( 'path' )->set_value( $path ) );
+					$form->append( FormControlData::create( 'action' )->set_value( $panelname ) );
+
+					$form->append( FormControlLabel::wrap( _t('What would you like to call the new directory?'), 
+						FormControlText::create( 'directory' )->add_validator( array( $this, 'mkdir_validator' ) ) ) );
+					$form->append( FormControlSubmit::create( 'submit' )->set_caption( _t('Submit') ) );
 					$form->media_panel($fullpath, $panelname, 'habari.media.forceReload();');
 					$form->on_success( array( $this, 'dir_success' ) );
 					$panel = $form->get(); /* form submission magicallly happens here */
@@ -534,13 +534,12 @@ class HabariSilo extends Plugin implements MediaSilo
 					$fullpath = self::SILO_NAME . '/' . $path;
 
 					$form = new FormUI( 'habarisilormdir' );
-					$form->append( 'static', 'RmDirectory', '<div style="margin: 10px auto;">' . _t( 'Directory:' ) . " <strong>/{$path}</strong></div>" );
-
+					$form->append( FormControlStatic::create( 'RmDirectory' )->set_static( '<div style="margin: 10px auto;">' . _t( 'Directory:' ) . " <strong>/{$path}</strong></div>" ) );
 					// add the parent directory as a hidden input for later validation
-					$form->append( 'hidden', 'path', 'null:unused' )->value = $path;
-					$form->append( 'hidden', 'action', 'null:unused')->value = $panelname;
-					$dir_text_control = $form->append( 'static', 'directory', _t( 'Are you sure you want to delete this directory?' ) );
-					$form->append( 'submit', 'submit', _t('Delete') );
+					$form->append( FormControlData::create( 'path')->set_value( $path ) );
+					$form->append( FormControlData::create( 'action' )->set_value( $panelname ) );
+					$form->append( FormControlStatic::create( 'directory' )->set_static( _t( 'Are you sure you want to delete this directory?' ) ) );
+					$form->append( FormControlSubmit::create( 'submit' )->set_caption( _t('Delete') ) );
 					$form->media_panel( $fullpath, $panelname, 'habari.media.forceReload();' );
 					$form->on_success( array( $this, 'dir_success' ) );
 					$panel = $form->get(); /* form submission magicallly happens here */
@@ -552,15 +551,14 @@ class HabariSilo extends Plugin implements MediaSilo
 					$fullpath = self::SILO_NAME . '/' . $path;
 
 					$form = new FormUI( 'habarisilodelete' );
-					$form->append( 'static', 'RmFile', '<div style="margin: 10px auto;">' . _t( 'File:' ) . " <strong>/{$path}</strong></div>" );
-
+					$form->append( FormControlStatic::create( 'RmFile' )->set_static( '<div style="margin: 10px auto;">' . _t( 'File:' ) . " <strong>/{$path}</strong></div>" ) );
 					// add the parent directory as a hidden input for later validation
-					$form->append( 'hidden', 'path', 'null:unused' )->value = $path;
-					$dir_text_control = $form->append( 'static', 'directory', '<p>' . _t( 'Are you sure you want to delete this file?' ) . '</p>');
-					$form->append( 'submit', 'submit', _t('Delete') );
+					$form->append( FormControlData::create( 'path')->set_value( $path ) );
+					$form->append( FormControlStatic::create( 'directory' )->set_static( '<p>' . _t( 'Are you sure you want to delete this file?' ) . '</p>' ) );
+					$form->append( FormControlSubmit::create( 'submit' )->set_caption( _t('Delete') ) );
 					$form->media_panel( $fullpath, $panelname, 'habari.media.forceReload();' );
 					$form->on_success( array( $this, 'do_delete' ) );
-					$panel = $form->get();
+					$panel = $form->get(); /* form submission magicallly happens here */
 
 					return $panel;
 					break;

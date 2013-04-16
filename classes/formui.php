@@ -311,8 +311,9 @@ class FormUI extends FormContainer implements IsContent
 	 */
 	public function media_panel( $path, $panel, $callback )
 	{
-		$this->options['ajax'] = true;
-		$this->options['form_action'] = URL::get( 'admin_ajax', array( 'context' => 'media_panel' ) );
+		// @todo fix this
+//		$this->options['ajax'] = true;
+		$this->properties['action'] = URL::get( 'admin_ajax', array( 'context' => 'media_panel' ) );
 		$this->properties['onsubmit'] = "habari.media.submitPanel('$path', '$panel', this, '{$callback}');return false;";
 	}
 
