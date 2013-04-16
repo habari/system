@@ -110,31 +110,31 @@ if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 			// append the output of the form
 			//$output .= $form->get();
 
-			$output .= '<div class="item clear">';
-			$output .= 	'<span class="pct25"><label for="db_name">' . _t( 'Database Name' ) . '</label></span><span class="pct40"><input type="text" name="db_name" id="db_name" value="' . $inputs['db_name'] . '"></span>';
+			$output .= '<div class="item">';
+			$output .= 	'<span><label for="db_name">' . _t( 'Database Name' ) . '</label></span><span><input type="text" name="db_name" id="db_name" value="' . $inputs['db_name'] . '"></span>';
 			$output .= '</div>';
 
-			$output .= '<div class="item clear">';
-			$output .= 	'<span class="pct25"><label for="db_host">' . _t( 'Database Host' ) . '</label></span><span class="pct40"><input type="text" name="db_host" id="db_host" value="' . $inputs['db_host'] . '"></span>';
+			$output .= '<div class="item">';
+			$output .= 	'<span><label for="db_host">' . _t( 'Database Host' ) . '</label></span><span><input type="text" name="db_host" id="db_host" value="' . $inputs['db_host'] . '"></span>';
 			$output .= '</div>';
 
-			$output .= '<div class="item clear">';
-			$output .= 	'<span class="pct25"><label for="db_user">' . _t( 'Database User' ) . '</label></span><span class="pct40"><input type="text" name="db_user" id="db_user" value="' . $inputs['db_user'] . '"></span>';
+			$output .= '<div class="item">';
+			$output .= 	'<span><label for="db_user">' . _t( 'Database User' ) . '</label></span><span><input type="text" name="db_user" id="db_user" value="' . $inputs['db_user'] . '"></span>';
 			$output .= '</div>';
 
-			$output .= '<div class="item clear">';
-			$output .= 	'<span class="pct25"><label for="db_pass">' . _t( 'Database Password' ) . '</label></span><span class="pct40"><input type="text" name="db_pass" id="db_pass" value="' . $inputs['db_pass'] . '"></span>';
+			$output .= '<div class="item">';
+			$output .= 	'<span><label for="db_pass">' . _t( 'Database Password' ) . '</label></span><span><input type="text" name="db_pass" id="db_pass" value="' . $inputs['db_pass'] . '"></span>';
 			$output .= '</div>';
 
-			$output .= '<div class="item clear">';
-			$output .= 	'<span class="pct25"><label for="db_prefix">' . _t( 'Table Prefix' ) . '</label></span><span class="pct40"><input type="text" name="db_prefix" id="db_prefix" value="' . $inputs['db_prefix'] . '"></span>';
+			$output .= '<div class="item">';
+			$output .= 	'<span><label for="db_prefix">' . _t( 'Table Prefix' ) . '</label></span><span><input type="text" name="db_prefix" id="db_prefix" value="' . $inputs['db_prefix'] . '"></span>';
 			$output .= '</div>';
 
-			$output .= '<div class="item clear">';
-			$output .= 	'<span class="pct25"><label for="category_import">' . _t( 'Import Categories as Tags' ) . '</label></span><span class="pct40"><input type="checkbox" name="category_import" id="category_import" value="true" ' . ( ( $inputs['category_import'] == true ) ? 'checked="checked"' : '' ) . '></span>';
+			$output .= '<div class="item">';
+			$output .= 	'<span><label for="category_import">' . _t( 'Import Categories as Tags' ) . '</label></span><span><input type="checkbox" name="category_import" id="category_import" value="true" ' . ( ( $inputs['category_import'] == true ) ? 'checked="checked"' : '' ) . '></span>';
 			$output .= '</div>';
 
-			$output .= '<div class="item clear transparent">';
+			$output .= '<div class="item transparent">';
 			$output .=	'<input type="submit" class="button" name="wpimport" value="' . _t( 'Import' ) . '">';
 			$output .= '</div>';
 
