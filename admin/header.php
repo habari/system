@@ -41,9 +41,9 @@ header( 'X-Frame-Options: DENY' );
 </head>
 <body class="page-<?php echo $page; ?>">
 <div id="menubar">
-	<div id="menu" class="dropbutton">
+	<div id="menu">
 		<h1 id="menubutton"><a href="<?php echo $admin_page_url; ?>"><?php echo ( isset( $mainmenu[$admin_page]['text'] ) ? $mainmenu[$admin_page]['text'] : $admin_page ); ?> <i class="arrow icon-circle-arrow-down"></i><span class="hotkey">Q</span></a></h1>
-		<div id="menulist" class="dropbuttonlist">
+		<div id="menulist">
 			<ul>
 			<?php foreach ( $mainmenu as $menu_id => $menu ): ?>
 				<li id="link-<?php echo $menu_id ?>" class="<?php if ( $menu['selected'] == true ) { echo 'selected'; } if ( isset( $menu['submenu'] ) ) { echo ' submenu'; } if ( isset( $menu['class'] ) ) { echo " " . $menu['class']; } ?>" title="<?php echo $menu['title']; ?>"><a class="top" href="<?php echo $menu['url']; ?>"><?php echo $menu['text']; ?>

@@ -349,6 +349,7 @@ body, html {
 	z-index: 5;
 	position:relative;
 	padding-bottom: 75px;
+	margin-top: 65px;
 }
 
 #spinner {
@@ -388,7 +389,7 @@ body, html {
 			#menubutton .arrow {float:right;font-size: 15px; padding: 13px 0px;margin-left: 15px;}
 			#menulist .hotkey { float:right; margin-right: 30px; }
 			#menubutton .hotkey.enabled { color: #fff; font-weight: bold}
-			.dropbutton:hover #menulist { display:block; }
+			#menu:hover #menulist { display:block; }
 			.submenu:hover .submenu  { display:block; }
 			#menulist ul li .arrow {float:right;font-size: 15px; margin-left: -15px; padding-top:1px;}
 	.submenu .submenu {
@@ -540,7 +541,6 @@ body, html {
 }
 
 .navigation {
-	margin-top: 65px;
 	background: rgb(224, 221, 214);
 	color: #333;
 	padding: 20px 20px 0px;
@@ -557,6 +557,36 @@ body, html {
 	.navigation #search {
 		width: 100%;
 	}
+
+.dropbutton {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+	.dropbutton li {
+		display:none;
+		font-weight: bold;
+		font-size: 10px;
+		line-height: 5px;
+		position: absolute;
+		margin-bottom: 0;
+	}
+	.dropbutton li:first-child {
+		display: block;
+		position: relative;
+	}
+	.dropbutton:hover li {
+		display: block;
+	}
+	.dropbutton a {
+		color: #fff;
+		padding: 10px;
+		display: block;
+		background: #333;
+	}
+	.dropbutton a:hover {
+		background: #666;
+	}
+
 	
 .plugins {
 	margin-top: 10px;
@@ -591,26 +621,8 @@ body, html {
 		}
 	.item .dropbutton {
 		float:right;
-		background: #333;
-		margin-top: 0px;
-		margin-bottom: 0px;
 	}
-		.item .dropbutton li {
-			display:none;
-			font-weight: bold;
-			font-size: 10px;
-			line-height: 5px;
-			padding: 10px 10px 0px;
-		}
-		
-		.item .dropbutton a {
-			color: #fff;
-		}
-		
-		.item .dropbutton li.first-child {
-			display:block;
-		}
-		
+
 		.item .description {
 			margin-top: 5px;
 			clear:both;
