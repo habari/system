@@ -5,7 +5,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 <?php include('header.php');?>
 
 <div class="container navigation">
-	<div class="pct40">
+	<div>
 
 		<form>
 		<select class="navigationdropdown" onChange="navigationDropdown.changePage(this.form.navigationdropdown)" name="navigationdropdown">
@@ -13,17 +13,17 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 		</select>
 		</form>
 	</div>
-	<span class="or pct20">
+	<span class="or">
 		<?php _e('or'); ?>
 	</span>
-	<span class="pct40">
+	<span>
 		<input id="search" type="search" placeholder="<?php _e('search users'); ?>" autofocus="autofocus">
 	</span>
 </div>
 
 <form method="post" action="" autocomplete="off">
 <div class="container users">
-	
+
 	<div class="addnewuser item">
 
 		<?php echo $add_user_form; ?>

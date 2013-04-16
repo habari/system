@@ -12,15 +12,15 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 		}
 	?>
 
-	<li class="item clear">
-		<div class="clear">
-			<span class="checkbox pct5"><span><input type="checkbox" class="checkbox select_user" value="<?php echo $user->id; ?>"></span></span>
-			<span class="user pct95"><a href="<?php echo $url ?>" title="<?php printf( _t('Open %s\'s user page'), $user->displayname ) ?>"><?php echo $user->displayname ?></a></span>
+	<li class="item">
+		<div>
+			<span class="checkbox"><span><input type="checkbox" class="checkbox select_user" value="<?php echo $user->id; ?>"></span></span>
+			<span class="user"><a href="<?php echo $url ?>" title="<?php printf( _t('Open %s\'s user page'), $user->displayname ) ?>"><?php echo $user->displayname ?></a></span>
 		</div>
 
-		<div class="clear">
-			<span class="nothing pct5">&nbsp;</span>
-			<span class="aka pct90">
+		<div>
+			<span class="nothing">&nbsp;</span>
+			<span class="aka">
 
 			<?php
 
