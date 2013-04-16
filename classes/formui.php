@@ -36,7 +36,7 @@ class FormUI extends FormContainer implements IsContent
 		'action' => '',
 		'onsubmit' => '',
 		'enctype' => 'application/x-www-form-urlencoded',
-		'accept_charset' => 'UTF-8',
+		'accept-charset' => 'UTF-8',
 		'method' => 'POST',
 	);
 
