@@ -28,7 +28,6 @@ class FormControlLabel extends FormContainer
 		}
 		$label_control->append($control);
 		$label_control->label = $label;
-		$label_control->properties['for'] = $control->get_visualizer();
 		return $label_control;
 	}
 
@@ -41,6 +40,7 @@ class FormControlLabel extends FormContainer
 	function get(Theme $theme)
 	{
 		$this->vars['label'] = $this->label;
+		$this->properties['for'] = reset($this->controls)->get_visualizer();
 		return parent::get($theme);
 	}
 

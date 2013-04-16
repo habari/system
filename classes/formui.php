@@ -412,6 +412,17 @@ class FormUI extends FormContainer implements IsContent
 			unset( $_SESSION['forms'][$this->control_id()]['error_data'] );
 		}
 	}
+
+	/**
+	 * Get a string that will be used to generate a component of a control's HTML id
+	 * @return string
+	 */
+	public function get_id_component()
+	{
+		return $this->name;
+	}
+
+
 }
 
 ?>

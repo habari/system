@@ -31,6 +31,16 @@ class FormControlFieldset extends FormContainer
 		$this->vars['caption'] = $this->caption;
 		return parent::get($theme);
 	}
+
+	/**
+	 * Get a string that will be used to generate a component of a control's HTML id
+	 * @return string
+	 */
+	public function get_id_component()
+	{
+		return $this->name;
+	}
+
 }
 
 ?>

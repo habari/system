@@ -446,9 +446,25 @@ abstract class FormControl
 	public function get_id($force_set = true)
 	{
 		if(!isset($this->properties['id']) && $force_set) {
-			$this->properties['id'] = Utils::slugify($this->name, '_');
+			$id_stack = array($this->name);
+			$c = $this->container;
+			while(!empty($c)) {
+				array_unshift($id_stack, $c->get_id_component());
+				$c = $c->container;
+			}
+			$id_stack = array_filter($id_stack);
+			$this->properties['id'] = Utils::slugify(implode('_', $id_stack), '_');
 		}
 		return isset($this->properties['id']) ? $this->get_setting('id_prefix', '') . $this->properties['id'] : null;
+	}
+
+	/**
+	 * Get a string that will be used to generate a component of a control's HTML id
+	 * @return bool|string False if this component doesn't contribute to id creation, or the string component
+	 */
+	public function get_id_component()
+	{
+		return false;
 	}
 
 	/**
