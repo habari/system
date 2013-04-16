@@ -91,7 +91,7 @@ class AdminUsersHandler extends AdminHandler
 			}
 
 			// User Info
-			$displayname = FormControlText::create('displayname')->add_class('important')->set_value($edit_user->displayname);
+			$displayname = FormControlText::create('displayname')->set_value($edit_user->displayname);
 			$form->user_info->append( FormControlLabel::wrap(_t( 'Display Name' ), $displayname));
 
 			$username = FormControlText::create('username')->add_validator('validate_username', $edit_user->username)->set_value($edit_user->username);
