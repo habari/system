@@ -48,8 +48,7 @@ class Plugins
 
 				// Reactivate it to try to get the new class loaded
 				self::activate_plugin($filename);
-				Utils::redirect(null, false);
-				exit();
+				Utils::redirect();
 			}
 		}
 	}
@@ -464,15 +463,19 @@ class Plugins
 				if ( $info->getName() != 'pluggable' ) {
 					$info = 'legacy';
 				}
+				else {
 
-				// Translate the plugin description
-				Locale::translate_xml( $info, $info->description );
+					$info['filename'] = $xml_file;
 
-				// Translate the plugin help
-				foreach( $info->help as $help ) {
-					Locale::translate_xml( $help, $help->value );
+					// Translate the plugin description
+					Locale::translate_xml( $info, $info->description );
+
+					// Translate the plugin help
+					foreach( $info->help as $help ) {
+						Locale::translate_xml( $help, $help->value );
+					}
+
 				}
-				
 			}
 			catch ( \Exception $e ) {
 				
@@ -567,6 +570,36 @@ class Plugins
 			// trim off the leading habari path from the filename
 			$short_file = MultiByte::substr( $file, strlen( HABARI_PATH ) );
 		}
+
+		//Activate all dependency plugins first
+		$provider_data = self::provided(null, true, true);
+		$providing_data = self::provided();
+		$info = self::load_info($file);
+		if ( isset( $info->requires ) ) {
+			$dependencies = array();
+			foreach ( $info->requires->feature as $feature ) {
+				// Does something already provide this required feature?
+				if(isset($providing_data[(string) $feature])) {
+					continue;
+				}
+				// Could one inactive thing provide this required feature?
+				if(isset($provider_data[(string) $feature]) && count($provider_data[(string) $feature]) == 1) {
+					$dependencies[] = reset($provider_data[(string) $feature]);
+				}
+				else {
+					return false;
+				}
+			}
+			// Try to activate the dependencies we accumulated just then
+			foreach($dependencies as $dependency) {
+				$result = self::activate_plugin($dependency);
+				// Couldn't activate a dependency?  Can't activate this one.
+				if(!$result) {
+					return false;
+				}
+			}
+		}
+
 
 		$activated = Options::get( 'active_plugins' );
 		if ( !is_array( $activated ) || !in_array( $short_file, $activated ) ) {
@@ -763,18 +796,42 @@ class Plugins
 		Plugins::act( 'plugin_ui_any', $configure, $configaction );
 	}
 
-	public static function provided($exclude = null)
+	/**
+	 * Get a list of features and the active plugins that provide that feature
+	 * @param null|string $exclude A plugin id to exclude from the results
+	 * @param bool $include_inactive Default false.  If true, include inactive plugins in the list.
+	 * @param bool $use_file If true, return a filename as the depenedency. If false (default), return the name of the plugin.
+	 * @return array An array with keys of the feature name, values are an array of plugin names providing that feature
+	 */
+	public static function provided($exclude = null, $include_inactive = false, $use_file = false)
 	{
-		$active_plugins = Plugins::get_active();
+		if($include_inactive) {
+			$all_plugins = Plugins::list_all();
+			$plugin_list = array();
+			foreach($all_plugins as $plugin => $plugin_file) {
+				$pdata = new \stdClass();
+				$pdata->info = self::load_info($plugin_file);
+				$pdata->filename = $plugin_file;
+				$plugin_list[self::id_from_file($plugin_file)] = $pdata;
+			}
+		}
+		else {
+			$plugin_list = Plugins::get_active();
+		}
 
 		$provided = array();
-		foreach($active_plugins as $plugin_id => $plugin) {
+		foreach($plugin_list as $plugin_id => $plugin) {
 			if($plugin->info->name == $exclude || $plugin_id == $exclude) {
 				continue;
 			}
 			if(isset($plugin->info->provides)) {
 				foreach($plugin->info->provides->feature as $provide) {
-					$provided[(string)$provide][] = (string)$plugin->info->name;
+					if($use_file) {
+						$provided[(string)$provide][] = isset(self::$plugin_files[get_class($plugin)]) ? self::$plugin_files[get_class($plugin)] : $plugin->filename;
+					}
+					else {
+						$provided[(string)$provide][] = (string)$plugin->info->name;
+					}
 				}
 			}
 		}

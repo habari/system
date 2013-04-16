@@ -134,13 +134,14 @@ class AdminThemesHandler extends AdminHandler
 		$block = DB::get_row( 'SELECT b.* FROM {blocks} b WHERE id = :id ORDER BY b.title ASC', array( 'id' => $_GET['blockid'] ), 'Block' );
 		/** @var FormUI $block_form  */
 		$block_form = $block->get_form();
-		$block_form->set_option( 'success_message', '</div><div class="humanMsg" id="humanMsg" style="display: block;top: auto;bottom:-50px;"><div class="imsgs"><div id="msgid_2" class="msg" style="display: block; opacity: 0.8;"><p>' . _t( 'Saved block configuration.' ) . '</p></div></div></div>
+		// @todo This.  Is dumb.  Fix it.
+		$block_form->set_properties( array('success_message' => '</div><div class="humanMsg" id="humanMsg" style="display: block;top: auto;bottom:-50px;"><div class="imsgs"><div id="msgid_2" class="msg" style="display: block; opacity: 0.8;"><p>' . _t( 'Saved block configuration.' ) . '</p></div></div></div>
 <script type="text/javascript">
 		$("#humanMsg").animate({bottom: "5px"}, 500, function(){ window.setTimeout(function(){$("#humanMsg").animate({bottom: "-50px"}, 500)},3000) })
 		parent.refresh_block_forms();
 </script>
 <div style="display:none;">
-');
+'));
 
 		$first_control = reset ( $block_form->controls );
 		$block_admin = FormControlFieldset::create('block_admin')->set_caption(_t( 'Block Display Settings' ));
@@ -275,21 +276,26 @@ class AdminThemesHandler extends AdminHandler
 		$msg = '';
 
 		$response = new AjaxResponse();
-		if ( isset( $_POST['area_blocks'] ) ) {
-			$area_blocks = $_POST['area_blocks'];
+		if ( isset( $_POST['changed'] ) ) {
+			// Empty area, regardless
 			DB::query( 'DELETE FROM {blocks_areas} WHERE scope_id = :scope_id', array( 'scope_id' => $scope ) );
 
-			foreach ( (array)$area_blocks as $area => $blocks ) {
-				$display_order = 0;
+			// Repopulate area if we have data to repopulate with
+			if ( isset( $_POST['area_blocks'] ) ) {
+				$area_blocks = $_POST['area_blocks'];
 
-				// if there are no blocks for a given area, skip it
-				if ( empty( $blocks ) ) {
-					continue;
-				}
+				foreach ( (array)$area_blocks as $area => $blocks ) {
+					$display_order = 0;
 
-				foreach ( $blocks as $block ) {
-					$display_order++;
-					DB::query( 'INSERT INTO {blocks_areas} (block_id, area, scope_id, display_order) VALUES (:block_id, :area, :scope_id, :display_order)', array( 'block_id'=>$block, 'area'=>$area, 'scope_id'=>$scope, 'display_order'=>$display_order ) );
+					// if there are no blocks for a given area, skip it
+					if ( empty( $blocks ) ) {
+						continue;
+					}
+
+					foreach ( $blocks as $block ) {
+						$display_order++;
+						DB::query( 'INSERT INTO {blocks_areas} (block_id, area, scope_id, display_order) VALUES (:block_id, :area, :scope_id, :display_order)', array( 'block_id'=>$block, 'area'=>$area, 'scope_id'=>$scope, 'display_order'=>$display_order ) );
+					}
 				}
 			}
 

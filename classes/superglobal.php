@@ -102,7 +102,7 @@ class SuperGlobal extends \ArrayIterator
 	 */
 	public function escape( $index )
 	{
-		return htmletities( $this->raw( $index ), ENT_QUOTES );
+		return htmlentities( $this->raw( $index ), ENT_QUOTES );
 	}
 	
 	/**

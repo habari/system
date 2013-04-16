@@ -4,13 +4,13 @@
 <!--begin content-->
 	<div id="content">
 		<!--begin primary content-->
-		<div id="primaryContent" class="span-15 append-2">
+		<div id="primaryContent">
 			<!--begin loop-->
-			<h2 class="prepend-2"><?php _e('Results for search of'); ?> "<?php echo Utils::htmlspecialchars( $criteria ); ?>"</h2>
+			<h2><?php _e('Results for search of'); ?> "<?php echo Utils::htmlspecialchars( $criteria ); ?>"</h2>
 			<?php if (isset($post)) : ?>
 <?php foreach ( $posts as $post ): ?>
 				<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
-						<h2 class="prepend-2"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
+						<h2><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
 					<div class="entry">
 					<?php /* @locale Date formats according to http://php.net/manual/en/function.date.php */ $post->pubdate->out( _t( 'F j, Y' ) ); ?> -	<?php echo $post->content_excerpt; ?>
 					</div>

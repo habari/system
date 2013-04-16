@@ -13,6 +13,11 @@ class flickrAPI
 		$this->conntimeout = 20;
 	}
 
+	public function set_timeout( $timeout )
+	{
+		$this->conntimeout = $timeout;
+	}
+
 	public function sign( $args )
 	{
 		ksort( $args );
@@ -43,59 +48,42 @@ class flickrAPI
 		$args = array_merge( $args, array ( 'api_sig' => $this->sign( $args ) ) );
 		ksort( $args );
 
+		$call = new RemoteRequest( $this->endpoint, 'POST' );
+
+		$args['api_key'] = $this->key;
 		if ( $method == 'upload' ){
-			$req = curl_init();
-			$args['api_key'] = $this->key;
-			$photo = $args['photo'];
-			$args['photo'] = '@' . $photo;
-			curl_setopt( $req, CURLOPT_URL, $this->uploadendpoint );
-			curl_setopt( $req, CURLOPT_TIMEOUT, 0 );
-			// curl_setopt($req, CURLOPT_INFILESIZE, filesize($photo));
-			// Sign and build request parameters
-			curl_setopt( $req, CURLOPT_POSTFIELDS, $args );
-			curl_setopt( $req, CURLOPT_CONNECTTIMEOUT, $this->conntimeout );
-			curl_setopt( $req, CURLOPT_FOLLOWLOCATION, 1 );
-			curl_setopt( $req, CURLOPT_HEADER, 0 );
-			curl_setopt( $req, CURLOPT_RETURNTRANSFER, 1 );
-			$this->_http_body = curl_exec( $req );
+			$call = new RemoteRequest( $this->uploadendpoint, 'POST' );
+			if ( is_file( $args['photo'] ) ){
+				// we have a valid file and filename
+				$call->set_file( 'photo', $args['photo'] );
+				unset( $args['photo'] );
+			} 
+		}
 
-			if ( curl_errno( $req ) ){
-				throw new Exception( curl_error( $req ) );
-			}
-
-			curl_close( $req );
-			$xml = simplexml_load_string( $this->_http_body );
-			$this->xml = $xml;
+		$call->set_timeout( $this->conntimeout );
+		$call->set_postdata( $args );
+		
+		try {
+			$result = $call->execute();
+		}
+		catch ( RemoteRequest_Timeout $t ) {
+			Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
+			return false;
+		}
+		catch ( \Exception $e ) {
+			// at the moment we're using the same error message, though this is more catastrophic
+			Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
+			return false;
+		}
+			
+		$response = $call->get_response_body();
+		try{
+			$xml = new SimpleXMLElement( $response );
 			return $xml;
 		}
-		else{
-			$url = $this->endpoint . implode( '&', $this->encode( $args ) );
-
-			$call = new RemoteRequest( $url );
-			$call->set_timeout( 5 );
-			
-			try {
-				$result = $call->execute();
-			}
-			catch ( RemoteRequest_Timeout $t ) {
-				Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
-				return false;
-			}
-			catch ( Exception $e ) {
-				// at the moment we're using the same error message, though this is more catastrophic
-				Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
-				return false;
-			}
-			
-			$response = $call->get_response_body();
-			try{
-				$xml = new SimpleXMLElement( $response );
-				return $xml;
-			}
-			catch( Exception $e ) {
-				Session::error( 'Unable to process Flickr response.', 'flickr API' );
-				return false;
-			}
+		catch( \Exception $e ) {
+			Session::error( 'Unable to process Flickr response.', 'flickr API' );
+			return false;
 		}
 	}
 }
@@ -110,19 +98,34 @@ class Flickr extends flickrAPI
 		$this->user_id = ( isset( $params['user_id'] ) ) ? $params['user_id'] : User::identify()->id;
 	}
 
-	// URL building
-	function getPhotoURL( $p, $size = '', $ext = 'jpg' )
+	/**
+	 * get a URL for a photo
+	 * @param mixed $photo object, array, or integer
+	 *	object: a SimpleXMLElement as returned by photosGetInfo()
+	 *	array: the 'photo' element of the XML from photosGetInfo
+	 *	int: a Flickr photo ID
+	 * @param string $size the size of the photo to fetch
+	 * @return string the URL of the requested photo
+	*/
+	function getPhotoURL( $photo, $size = '' )
 	{
+		if ( is_int( $photo ) ) {
+			$photo = $this->photosGetInfo( $photo );
+		} 
+		if ( $photo instanceof SimpleXMLElement ) {
+			$p = (array) $photo->photo->attributes();
+			$photo = $p['@attributes'];
+		}
 		$markup = 'http://farm';
-		$markup .= $p['farm'];
+		$markup .= $photo['farm'];
 		$markup .= '.staticflickr.com/';
-		$markup .= $p['server'];
+		$markup .= $photo['server'];
 		$markup .= '/';
-		$markup .= $p['id'];
+		$markup .= $photo['id'];
 		$markup .= '_';
-		$markup .= $p['secret'];
+		$markup .= $photo['secret'];
 		$markup .= $size;
-		$markup .= '.jpg"';
+		$markup .= '.jpg';
 		return $markup;
 	}
 
@@ -230,6 +233,13 @@ class Flickr extends flickrAPI
 			throw $xml;
 		}
 		return $xml;
+	}
+
+	function photosetsAddPhoto( $photoset_id, $photo_id )
+	{
+		$params = array( 'photoset_id' => $photoset_id,
+				'photo_id' => $photo_id );
+		return $this->call( 'flickr.photosets.addPhoto', $params );
 	}
 
 	function photosRecentlyUpdated()
@@ -346,7 +356,7 @@ class Flickr extends flickrAPI
 
 	/**
 	 * upload an image to Flickr
-	 * @param String path to the file to upload
+	 * @param mixed path to the file to upload, or the raw data itself
 	 * @param String title of the file
 	 * @param String description of the file
 	 * @param String a comma-separated list of tags
@@ -361,7 +371,11 @@ class Flickr extends flickrAPI
 
 		if ( $title ){
 			$params['title'] = $title;
-		}
+		} elseif( is_file( $photo ) ) {
+			$params['title'] = basename( $photo );
+		} else {
+			$params['title'] = date( 'Y-m-d' );
+		} 
 
 		if ( $description ){
 			$params['description'] = $description;
@@ -403,6 +417,7 @@ class Flickr extends flickrAPI
 
 	function photosUploadCheckTickets( $tickets )
 	{
+		$params = array();
 		if ( is_array( $tickets ) ){
 			foreach( $tickets as $key => $value ){
 				if ( $key ){
@@ -704,14 +719,32 @@ class FlickrSilo extends Plugin implements MediaSilo
 		foreach( $photo->attributes() as $name => $value ) {
 			$props[$name] = (string)$value;
 		}
-		$props = array_merge( $props, self::element_props( $photo, "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}", $size ) );
-		$result = new MediaAsset(
+		$props = array_merge( $props, self::element_props( $photo, (string) $xml->photo->urls[0]->url[0], $size ) );
+		$asset = new MediaAsset(
 			self::SILO_NAME . '/photos/' . $photo['id'],
 			false,
 			$props
 		);
+		// now get the actual image data
+		$url = $flickr->getPhotoURL( $xml );
+		$call = new RemoteRequest( $url );
+		try {
+			$result = $call->execute();
+		}
+		catch ( RemoteRequest_Timeout $t ) {
+			Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
+			return false;
+		}
+		catch ( \Exception $e ) {
+			// at the moment we're using the same error message, though this is more catastrophic
+			Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
+			return false;
+		}
 
-		return $result;
+		if ( $result ) {
+			$asset->content = $result;
+		}
+		return $asset;
 	}
 
 	/**
@@ -847,7 +880,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 			$_SESSION['flickr_frob'] = '' . $flickr->getFrob();
 			$auth_url = $flickr->authLink( $_SESSION['flickr_frob'] );
 			$confirm_url = URL::get( 'admin', array( 'page' => 'plugins', 'configure' => $this->plugin_id(), 'configaction' => 'confirm' ) ) . '#plugin_options';
-			echo '<p>' . _t( 'To use this plugin, you must <a href="%1$s">authorized Habari to have access to your Flickr account</a>.', array( $auth_url ) ) . '</p>';
+			echo '<p>' . _t( 'To use this plugin, you must <a href="%1$s">authorize Habari to access your Flickr account</a>.', array( $auth_url ) ) . '</p>';
 			echo '<p>' . _t( 'When you have completed the authorization on Flickr, return here and <a href="%1$s">confirm that the authorization was successful</a>.', array( $confirm_url ) ) . '</p>';
 		}
 	}
@@ -862,7 +895,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 		$flickr = new Flickr(  $this->params );
 		if ( !isset( $_SESSION['flickr_frob'] ) ){
 			$auth_url = URL::get( 'admin', array( 'page' => 'plugins', 'configure' => $this->plugin_id(), 'configaction' => 'authorize' ) ) . '#plugin_options';
-			echo '<p>' . _t( 'Either you have already authorized Habari to access your flickr account, or you have not yet done so.  Please <a href="%1$s">try again</a>.', array( $auth_url ) ) . '</p>';
+			echo '<p>' . _t( 'Data submission was unsuccessful and it could not be determined if you have already authorized Habari to access your flickr account, or you have not yet done so. Please <a href="%1$s">try again</a>.', array( $auth_url ) ) . '</p>';
 		}
 		else{
 			$token = $flickr->getToken( $_SESSION['flickr_frob'] );
@@ -900,7 +933,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 		$ui->append( 'select', 'flickr_size','option:flickrsilo__flickr_size', _t( 'Default size for images in Posts:' ) );
 		$ui->flickr_size->options = array( '_s' => _t( 'Square' ) . ' (75x75)', '_t' => _t( 'Thumbnail' ) . ' (100px)', '_m' => _t( 'Small' ) . ' (240px)', '' => _t( 'Medium' ) . ' (500px)', '_b' => _t( 'Large') . ' (1024px)', '_o' => _t( 'Original Size' ) );
 		$ui->append('submit', 'save', _t( 'Save' ) );
-		$ui->set_option('success_message', _t( 'Options saved' ) );
+		$ui->set_settings(array('success_message' => _t( 'Options saved' )));
 		$ui->out();
 	}
 	
@@ -938,19 +971,25 @@ class FlickrSilo extends Plugin implements MediaSilo
 
 			echo <<< FLICKR
 			<script type="text/javascript">
-				habari.media.output.flickr = {
-					{$embed_photo}: function(fileindex, fileobj) {
-						habari.editor.insertSelection('<a href="' + fileobj.flickr_url + '"><img alt="' + fileobj.title + '" src="' + fileobj.url + '"></a>');
-					}
+				if(habari.media.output.flickr === undefined) {
+					habari.media.output.flickr = {};
 				}
-				habari.media.output.flickrvideo = {
+				if(habari.media.output.flickrvideo === undefined) {
+					habari.media.output.flickrvideo = {};
+				}
+				$.extend(habari.media.output.flickr, {
+					{$embed_photo}: function(fileindex, fileobj) {
+						habari.editor.insertSelection('<figure><img alt="' + fileobj.title + '" src="' + fileobj.url + '"><figcaption><a href="' + fileobj.flickr_url + '">' + fileobj.title + '</a></figcaption></figure>');
+					}
+				});
+				$.extend(habari.media.output.flickrvideo, {
 					{$embed_video}: function(fileindex, fileobj) {
 						habari.editor.insertSelection('<object type="application/x-shockwave-flash" width="{$vsizex}" height="{$vsizey}" data="http://www.flickr.com/apps/video/stewart.swf?v=49235" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"> <param name="flashvars" value="intl_lang=en-us&amp;photo_secret=' + fileobj.secret + '&amp;photo_id=' + fileobj.id + '&amp;show_info_box=true"></param> <param name="movie" value="http://www.flickr.com/apps/video/stewart.swf?v=49235"></param> <param name="bgcolor" value="#000000"></param> <param name="allowFullScreen" value="true"></param><embed type="application/x-shockwave-flash" src="http://www.flickr.com/apps/video/stewart.swf?v=49235" bgcolor="#000000" allowfullscreen="true" flashvars="intl_lang=en-us&amp;photo_secret=' + fileobj.secret + '&amp;photo_id=' + fileobj.id + '&amp;flickr_show_info_box=true" height="{$vsizey}" width="{$vsizex}"></embed></object>');
 					},
 					{$thumbnail}: function(fileindex, fileobj) {
 						habari.editor.insertSelection('<a href="' + fileobj.flickr_url + '"><img alt="' + fileobj.title + '" src="' + fileobj.url + '"></a>');
 					}
-				}
+				});
 				habari.media.preview.flickr = function(fileindex, fileobj) {
 					var stats = '';
 					return '<div class="mediatitle"><a href="' + fileobj.flickr_url + '" class="medialink" onclick="$(this).attr(\'target\',\'_blank\');" title="{$title}">media</a>' + fileobj.title + '</div><div class="mediathumb"><img src="' + fileobj.thumbnail_url + '"></div><div class="mediastats"> ' + stats + '</div>';
@@ -1026,59 +1065,46 @@ FLICKR;
 		
 		$info = "flickr$id";
 		$flickr = $post->info->$info;
+		$f = new Flickr ( array( 'user_id' => $post->author->id ) );
 		if ( ! $flickr ) {
 			// this photo's details aren't cached on this post. Let's grab 'em
-			$f = new Flickr ( array( 'user_id' => $post->author->id ) );
 			$xml = $f->photosGetInfo( $id );
 			if ( ! $xml->photo ) {
 				return $code_to_replace;
 			}
-			$secret = $xml->photo['secret'];
-			$url = $xml->photo->urls[0]->url[0];
-			$media = $xml->photo['media'];
-			$flickr = "$media|$url|$secret";
-			if ( 'photo' == $media ) {
-				$server = $xml->photo['server'];
-				$farm = $xml->photo['farm'];
-				$flickr .= "|$farm|$server";
-			} elseif ( 'video' == $xml->photo['media'] ) {
+			// get an array of the 'photo' element from the XML
+			$p = (array) $xml->photo->attributes();
+			$flickr = $p['@attributes'];
+			// stuff in the URL to the photopage
+			$flickr['photopage'] = (string) $xml->photo->urls[0]->url[0];
+			// and if it's a video, we want its dimensions
+			if ( 'video' == $flickr['media'] ) {
 				if ( 0 == $xml->photo->video['ready'] ) {
 					return $code_to_replace;
 				}
-				$height = $xml->photo->video['height'];
-				$width = $xml->photo->video['width'];
-				$flickr .= "|$width|$height";
+				$flickr['height'] = (string) $xml->photo->video->attributes()->height;
+				$flickr['width'] = (string) $xml->photo->video->attributes()->width;
 			}
-			// cache the info on this post
+			// cache this array on this post
 			$post->info->$info = $flickr;
 			$post->update();
-		} else {
-			list( $media, $url, $secret, $other ) = explode( '|', $flickr, 4 );
-			if ( 'photo' == $media ) {
-				list( $farm, $server ) = explode( '|', $other );
-			} else {
-				list ( $height, $width ) = explode( '|', $other );
-			}
 		}
-		if ( 'photo' == $media ) {
-			$markup = '<a href="' . $url . '">';
-			$markup .= '<img src="http://farm';
-			$markup .= $farm;
-			$markup .= '.staticflickr.com/';
-			$markup .= $server;
-			$markup .= '/';
-			$markup .= $id;
-			$markup .= '_';
-			$markup .= $secret;
-			$markup .= $size;
-			$markup .= '.jpg"';
+		if ( 'photo' == $flickr['media'] ) {
+			$markup = '<a href="' . $flickr['photopage'] . '">';
+			$markup .= '<img src="';
+			$markup .= $f->getPhotoURL( $flickr, $size );
+			$markup .= '"';
 			if ( $post->author->info->pbem_class ) {
 				$markup .= ' class="' . $post->author->info->pbem_class . '"';
 			}
 			$markup .= '></a>';
 		} else {
+			$photo_id = $flickr['id'];
+			$secret = $flickr['secret'];
+			$height = $flickr['height'];
+			$width = $flickr['width'];
 			$markup = <<<EOF
-<object type="application/x-shockwave-flash" width="$width" height="$height" data="http://www.flickr.com/apps/video/stewart.swf?v=109786"  classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"> <param name="flashvars" value=""intl_lang=en-us&photo_secret=$secret&photo_id=$id&flickr_show_info_box=true&hd_default=false"></param> <param name="movie" value="http://www.flickr.com/apps/video/stewart.swf?v=109786"></param><param name="bgcolor" value="#000000"></param><param name="allowFullScreen" value="true"></param><embed type="application/x-shockwave-flash" src="http://www.flickr.com/apps/video/stewart.swf?v=109786" bgcolor="#000000" allowfullscreen="true" flashvars="intl_lang=en-us&photo_secret=$secret&photo_id=$id&flickr_show_info_box=true&hd_default=false" height="$height" width="$width"></embed></object>
+<object type="application/x-shockwave-flash" width="$width" height="$height" data="http://www.flickr.com/apps/video/stewart.swf?v=109786"  classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"> <param name="flashvars" value="intl_lang=en-us&photo_secret=$secret&photo_id=$id&flickr_show_info_box=true&hd_default=false"></param> <param name="movie" value="http://www.flickr.com/apps/video/stewart.swf?v=109786"></param><param name="bgcolor" value="#000000"></param><param name="allowFullScreen" value="true"></param><embed type="application/x-shockwave-flash" src="http://www.flickr.com/apps/video/stewart.swf?v=109786" bgcolor="#000000" allowfullscreen="true" flashvars="intl_lang=en-us&photo_secret=$secret&photo_id=$id&flickr_show_info_box=true&hd_default=false" height="$height" width="$width"></embed></object>
 EOF;
 		}
 		return $markup;

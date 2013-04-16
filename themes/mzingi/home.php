@@ -4,11 +4,11 @@
 <!--begin content-->
 	<div id="content">
 		<!--begin primary content-->
-		<div id="primaryContent" class="span-15 append-2">
+		<div id="primaryContent">
 			<!--begin loop-->
 			<?php foreach ( $posts as $post ) { ?>
 				<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
-						<h2 class="prepend-2"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
+						<h2><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
 							<div class="cal"><?php echo $post->pubdate_out; ?></div>
 					<!--display content-->
 					<div class="entry">

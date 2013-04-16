@@ -92,6 +92,73 @@ TEEHEE;
 		echo Plugins::filter('locale_js', $js);
 	}
 
+	/**
+	 * Register a lambda/closure as an ajax dispatch function
+	 * @param string $name The context of the ajax URL
+	 * @param callable $fn The function to dispatch to
+	 */
+	public static function register_ajax($name, $fn)
+	{
+		Plugins::register($fn, 'action', 'ajax_' . $name);
+	}
+
+	/**
+	 * Register a lambda/closure as an auth_ajax dispatch function
+	 * @param string $name The context of the ajax URL
+	 * @param callable $fn The function to dispatch to
+	 */
+	public static function register_auth_ajax($name, $fn)
+	{
+		Plugins::register($fn, 'action', 'auth_ajax_' . $name);
+	}
+
+
+	/**
+	 * Register plugin hooks
+	 * @static
+	 */
+	public static function __static()
+	{
+		/*
+		 * These registration functions are here rather than the classes that directly provide
+		 * their data (like Tags for tag_list or Posts for post_list) because putting them in
+		 * their respective classes would require that they be autoloaded on every page load
+		 * so that these functions could register their ajax endpoints.
+		 */
+		// Registers an auth_ajax endpoint for tag autocompletion
+		self::register_auth_ajax('tag_list', function(){
+			$tags = Tags::search($_GET['q']);
+			$results = array();
+			foreach($tags as $tag) {
+				$results[] = array('id' => $tag->term_display, 'text' => $tag->term_display);
+			}
+			$ar = new AjaxResponse();
+			$ar->data = array(
+				'results' => $results,
+				'more' => false,
+				'context' => array()
+			);
+			$ar->out();
+		});
+
+		// Registers an auth_ajax endpoint for post autocompletion
+		self::register_auth_ajax('post_list', function(){
+			$posts = Posts::get(array('title_search' => $_GET['q']));
+			$results = array();
+			foreach($posts as $post) {
+				$results[] = array('id' => $post->id, 'text' => $post->title);
+			}
+			$ar = new AjaxResponse();
+			$ar->data = array(
+				'results' => $results,
+				'more' => false,
+				'context' => array()
+			);
+			$ar->out();
+		});
+
+	}
+
 }
 
 ?>

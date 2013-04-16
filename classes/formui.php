@@ -25,8 +25,6 @@ namespace Habari;
  */
 class FormUI extends FormContainer implements IsContent
 {
-	protected $on_success = array();
-	protected $on_save = array();
 
 	public $success = false;
 	public $submitted = false;
@@ -65,8 +63,9 @@ class FormUI extends FormContainer implements IsContent
 		}
 		if(isset(self::$registered_forms[$formtype])) {
 			$callback = self::$registered_forms[$formtype];
-			$callback($this, $name, $formtype);
+			$callback($this, $name, $formtype, $extra_data);
 		}
+		$this->set_settings(array('data' => $extra_data));
 
 		// Add WSSE validator so that it can be altered in form-building code
 		$this->add_validator('validate_wsse');
@@ -88,11 +87,33 @@ class FormUI extends FormContainer implements IsContent
 	 * @param string $formtype
 	 * @return FormUI
 	 */
-	public static function build($name, $formtype = null)
+	public static function build($name, $formtype = null, $extra_data = array())
 	{
 		$class = get_called_class();
 		$r_class = new \ReflectionClass($class);
-		return $r_class->newInstanceArgs( compact('name', 'formtype') );
+		return $r_class->newInstanceArgs( compact('name', 'formtype', 'extra_data') );
+	}
+
+	/**
+	 * Produce a form "duplicate" that does not process the form, display output, or include one-time-javascripts
+	 *
+	 * @param Theme $theme The theme to render the controls into
+	 * @return string HTML form generated from all controls assigned to this form
+	 */
+	public function dupe( Theme $theme = null )
+	{
+		static $dupe_count = 0;
+		$dupe_count++;
+		$this->settings['is_dupe'] = true;
+		$this->each(function(FormControl $control) use ($dupe_count) {
+			$control->settings['id_prefix'] = 'dupe_' . $dupe_count . '_';
+		});
+		$result = $this->get($theme);
+		$this->each(function(FormControl $control) use ($dupe_count) {
+			unset($control->settings['id_prefix']);
+		});
+		$this->settings['is_dupe'] = false;
+		return $result;
 	}
 
 	/**
@@ -135,48 +156,54 @@ class FormUI extends FormContainer implements IsContent
 		// If there was an error submitting this form before, set the values of the controls to the old ones to retry
 		$this->set_from_error_values();
 
-		// Was the form submitted?
-		if( isset( $_POST['_form_id'] ) && $_POST['_form_id'] == $this->control_id() ) {
-			$this->submitted = true;
+		// Is this form not a same-page duplicate?
+		if(!$this->get_setting('is_dupe', false)) {
+			// Was the form submitted?
+			if( isset( $_POST['_form_id'] ) && $_POST['_form_id'] == $this->control_id()) {
+				$this->submitted = true;
 
-			// Process all of the submitted values into the controls
-			$this->process();
+				// Process all of the submitted values into the controls
+				$this->process();
 
-			// Do any of the controls fail validation?  This call alters the wrap
-			$validation_errors = $this->validate();
-			if(count($validation_errors) == 0) {
-				// All of the controls validate
-				$this->success = true;
-				// If do_success() returns anything, it should be output instead of the form.
-				$this->success_render = $this->do_success();
-			}
-			else {
-				if(isset($this->settings['use_session_errors']) && $this->settings['use_session_errors']) {
-					$this->each(function($control) {
-						$control->errors = array();
-					});
-					foreach($validation_errors as $error) {
-						Session::error($error);
+				// Do any of the controls fail validation?  This call alters the wrap
+				$validation_errors = $this->validate();
+				if(count($validation_errors) == 0) {
+					// All of the controls validate
+					$this->success = true;
+					// If do_success() returns anything, it should be output instead of the form.
+					$this->success_render = $this->do_success($this);
+				}
+				else {
+					if(isset($this->settings['use_session_errors']) && $this->settings['use_session_errors']) {
+						$this->each(function($control) {
+							$control->errors = array();
+						});
+						foreach($validation_errors as $error) {
+							Session::error($error);
+						}
 					}
 				}
 			}
+			else {
+				// Store the location at which this form was loaded, so we can potentially redirect to it later
+				if ( !$this->has_session_data() || !isset( $_SESSION['forms'][$this->control_id()]['url'] ) ) {
+					$_SESSION['forms'][$this->control_id()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . '#' . $this->get_id(false);
+				}
+			}
 
-			// Save the values submitted into this form
-			// $this->store_submission();
-		}
-		else {
-			// Store the location at which this form was loaded, so we can potentially redirect to it later
-			if ( !$this->has_session_data() || !isset( $_SESSION['forms'][$this->control_id()]['url'] ) ) {
-				$_SESSION['forms'][$this->control_id()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . '#' . $this->get_id(false);
+			$output = $this->pre_out_controls();
+			if($this->success_render) {
+				$output .= $this->success_render;
+			}
+			else {
+				$output .= parent::get($theme);
+			}
+			if($this->success && isset($this->settings['success_message'])) {
+				$output .= $this->settings['success_message'];
 			}
 		}
-
-		$output = $this->pre_out_controls();
-		if($this->success_render) {
-			$output .= $this->success_render;
-		}
 		else {
-			$output .= parent::get($theme);
+			$output = parent::get($theme);
 		}
 
 
@@ -196,6 +223,27 @@ class FormUI extends FormContainer implements IsContent
 	{
 		$args = func_get_args();
 		echo call_user_func_array( array( $this, 'get' ), $args );
+	}
+
+	/**
+	 * Process a form, then redirect, saving control values on errors for redisplay
+	 * @param string $url The URL to redirect to, presumably with the original form on it
+	 * @return string The form output, if needed
+	 */
+	public function post_redirect($url = null)
+	{
+		$result = $this->get();
+		if($this->submitted) {
+			if(!$this->success) {
+				// Store the form values in the session prior to redirection so that they can be re-displayed
+				$_SESSION['forms'][$this->control_id()]['error_data'] = $this->get_values();
+			}
+			if(empty($url)) {
+				$url = $_SESSION['forms'][$this->control_id()]['url'];
+			}
+			Utils::redirect($url);
+		}
+		return $result;
 	}
 
 	/**
@@ -254,86 +302,6 @@ class FormUI extends FormContainer implements IsContent
 	}
 
 	/**
-	 * Set a function to call on form submission success
-	 *
-	 * @param mixed $callback A callback function or a plugin filter name (FormUI $form)
-	 */
-	public function on_success( $callback )
-	{
-		$this->on_success[] = func_get_args();
-	}
-
-	/**
-	 * Set a function to call on form submission success
-	 *
-	 * @param mixed $callback A callback function or a plugin filter name.
-	 */
-	public function on_save( $callback )
-	{
-		$this->on_save[] = func_get_args();
-	}
-
-	/**
-	 * Calls the success callback for the form, and optionally saves the form values
-	 * to the options table.
-	 * @return boolean|string A string to replace the rendering of the form with, or false
-	 */
-	public function do_success()
-	{
-		$output = false;
-		foreach ( $this->on_success as $success ) {
-			$callback = array_shift( $success );
-			array_unshift($success, $this);
-			$result = Method::dispatch_array($callback, $success);
-			if(is_string($result)) {
-				$output = $result;
-			}
-		}
-		$this->save();
-		return $output;
-	}
-
-	/**
-	 * Save all controls to their storage locations
-	 */
-	public function save()
-	{
-		/** @var FormControl $control */
-		foreach ( $this->controls as $control ) {
-			$control->save();
-		}
-		foreach ( $this->on_save as $save ) {
-			$callback = array_shift( $save );
-			array_unshift($save, $this);
-			Method::dispatch_array($callback, $save);
-		}
-	}
-
-
-	/**
-	 * Set a form option
-	 * Defaults for options are stored in the $this->options array
-	 *
-	 * @param string $option The name of the option to set
-	 * @param mixed $value The value of the option
-	 */
-	public function set_option( $option, $value )
-	{
-		$this->options[$option] = $value;
-	}
-
-	/**
-	 * Get a form option
-	 *
-	 * @param string $option The name of the option to get
-	 * @return mixed The value of the named option if set, null if not set
-	 */
-	public function get_option( $option )
-	{
-		return isset( $this->options[$option] ) ? $this->options[$option] : null;
-	}
-
-	/**
 	 * Configure all the options necessary to make this form work inside a media bar panel
 	 * @param string $path Identifies the silo
 	 * @param string $panel The panel in the silo to submit to
@@ -373,6 +341,12 @@ class FormUI extends FormContainer implements IsContent
 		return $this->get();
 	}
 
+	/**
+	 * Create a form with controls from HTML
+	 * @param string $name Name of the form
+	 * @param string $html HTML of a form
+	 * @return FormUI The form created from the supplied HTML
+	 */
 	public static function from_html($name, $html)
 	{
 		$dom = new HTMLDoc($html);
@@ -396,7 +370,7 @@ class FormUI extends FormContainer implements IsContent
 		// Add synthetic controls for any found inputs
 		foreach($dom->find('input') as $input) {
 			/** @var FormControl $control */
-			$form->append($control = FormControlSynthetic::create($input->name)->set_node($input));
+			$form->append($control = FormControlDom::create($input->name)->set_node($input));
 			if($input->data_validators) {
 				foreach(explode(' ', $input->data_validators) as $validator) {
 					$control->add_validator($validator);
@@ -405,7 +379,7 @@ class FormUI extends FormContainer implements IsContent
 		}
 		foreach($dom->find('textarea') as $input) {
 			/** @var FormControl $control */
-			$form->append($control = FormControlSynthetic::create($input->name)->set_node($input));
+			$form->append($control = FormControlDom::create($input->name)->set_node($input));
 			if(!empty($input->data_validators)) {
 				foreach(explode(' ', $input->data_validators) as $validator) {
 					$control->add_validator($validator);
@@ -438,6 +412,17 @@ class FormUI extends FormContainer implements IsContent
 			unset( $_SESSION['forms'][$this->control_id()]['error_data'] );
 		}
 	}
+
+	/**
+	 * Get a string that will be used to generate a component of a control's HTML id
+	 * @return string
+	 */
+	public function get_id_component()
+	{
+		return $this->name;
+	}
+
+
 }
 
 ?>

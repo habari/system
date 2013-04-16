@@ -6,7 +6,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 <html lang="<?php echo $locale; ?>">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>">
-	<title><?php Options::out( 'title' ) ?><?php if ($request->display_entry && isset($post)) { echo " :: {$post->title}"; } ?></title>
+	<title><?php echo $page_title; ?></title>
 	<meta name="generator" content="Habari">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo $theme->get_url( 'style.css' ); ?>">
 	<!--[if lt IE 7]>

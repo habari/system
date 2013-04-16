@@ -3,9 +3,10 @@
 namespace Habari;
 
 /**
- * This control is not rendered to the page, but retains data from when it is defined to when the form is processed for success
+ * This control represents a DOM-based input field, and is not rendered to the page,
+ * but retains data from when it is defined to when the form is processed for success
  */
-class FormControlSynthetic extends FormControl
+class FormControlDom extends FormControl
 {
 	/** @var HTMLNode $node */
 	public $node = null;
@@ -47,7 +48,7 @@ class FormControlSynthetic extends FormControl
 	/**
 	 * Set the HTMLNode that this control associates with
 	 * @param HTMLNode $node The node that this control is associated with
-	 * @return FormControlSynthetic $this
+	 * @return FormControlDom $this
 	 */
 	public function set_node($node)
 	{

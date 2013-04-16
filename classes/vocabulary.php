@@ -380,12 +380,12 @@ class Vocabulary extends QueryRecord
 
 	/**
 	 * Gets the term object by id. No parameter returns the root Term object.
-	 * @param mixed $term A Term object, null (for the first node in the tree), a string (for a term slug or display), or an integer (for a Term ID).
+	 * @param Term|integer|string|null $term A Term object, null (for the first node in the tree), a string (for a term slug or display), or an integer (for a Term ID).
 	 * @param string $term_class The class of the returned term object.
 	 * @return Term The Term object requested
 	 * @todo improve selective fetching by term slug vs term_display
 	 **/
-	public function get_term( $term = null, $term_class = 'Term' )
+	public function get_term( $term = null, $term_class = '\Habari\Term' )
 	{
 		$params = array( 'vocab_id' => $this->id );
 		$query = '';
@@ -410,11 +410,26 @@ class Vocabulary extends QueryRecord
 	}
 
 	/**
+	 * Search for matching term objects.
+	 * Wildcards (eg "%term%") must be passed in; They're not added automatically.
+	 * @param string $term The string to search for as a term slug or text
+	 * @param string $term_class The class of the returned term object.
+	 * @return Terms The matching Term objects
+	 **/
+	public function search_term( $term, $term_class = '\Habari\Term' )
+	{
+		$params = array( 'vocab_id' => $this->id );
+		$params[ 'term' ] = $term;
+		$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND (term LIKE :term OR term_display LIKE :term)';
+		return new Terms(DB::get_results( $query, $params, $term_class ));
+	}
+
+	/**
 	 * Gets the Term objects associated to that type of object with that id in this vocabulary
 	 * For example, return all terms in this vocabulary that are associated with a particular post
 	 *
-	 * @param String the name of the object type
-	 * @param integer The id of the object for which you want the terms
+	 * @param String $object_type the name of the object type
+	 * @param integer $id The id of the object for which you want the terms
 	 * @return Array The Term objects requested
 	 **/
 	public function get_object_terms( $object_type, $id )
@@ -476,6 +491,7 @@ class Vocabulary extends QueryRecord
 	/**
 	 * Remove the term from the vocabulary.  Convenience method to ->get_term('foo')->delete().
 	 *
+	 * @param Term|int|string $term The term to delete
 	 **/
 	public function delete_term( $term )
 	{

@@ -198,6 +198,11 @@ class User extends QueryRecord implements FormStorage, IsContent
 	 */
 	public function delete()
 	{
+		// Check if the currently logged-in user is allowed to delete users.
+		if(!( User::identify()->id == $this->id || User::identify()->can( 'manage_users' ) ) ) {
+			return;
+		}
+		
 		$allow = true;
 		$allow = Plugins::filter( 'user_delete_allow', $allow, $this );
 		if ( ! $allow ) {
@@ -266,7 +271,7 @@ class User extends QueryRecord implements FormStorage, IsContent
 		Session::destroy();
 
 		if ( $redirect ) {
-			Utils::redirect( Site::get_url( 'habari' ) );
+			Utils::redirect( Site::get_url( 'site' ) );
 		}
 	}
 
@@ -722,8 +727,19 @@ class User extends QueryRecord implements FormStorage, IsContent
 		}
 		else {
 			$this->info->$key = $value;
-			$this->info->commit();
 		}
+		$self = $this;
+		Session::queue(
+			function() use($self) {
+				if($self->id == 0) {
+					$self->insert();
+				}
+				else {
+					$self->update();
+				}
+			},
+			$this
+		);
 	}
 
 	/**

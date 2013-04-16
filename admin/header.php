@@ -64,7 +64,9 @@ header( 'X-Frame-Options: DENY' );
 			</ul>
 		</div>
 	</div>
-	<a href="<?php Site::out_url( 'habari' ); ?>" id="site" title="<?php _e( 'Go to Site' ); ?>"><?php Options::out( 'title' ); ?></a>
+
+	<a href="<?php Site::out_url( 'site' ); ?>" id="site" title="<?php _e( 'Go to Site' ); ?>"><?php Options::out( 'title' ); ?></a>
+
 </div>
 <div id="spinner"></div>
 <div id="page">

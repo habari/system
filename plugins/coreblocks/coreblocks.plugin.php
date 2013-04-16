@@ -76,7 +76,9 @@ class CoreBlocks extends Plugin
 	 */
 	public function action_block_form_recent_comments( $form, $block )
 	{
-		$content = $form->append('text', 'quantity', $block, _t( 'Comments to show:' ) );
+		$form->append( FormControlLabel::wrap( _t( 'Comments to show:' ),
+			FormControlText::create( 'quantity', $block ) 
+		));
 	}
 
 	/**
@@ -134,7 +136,9 @@ class CoreBlocks extends Plugin
 	 */
 	public function action_block_form_recent_posts( $form, $block )
 	{
-		$content = $form->append('text', 'quantity', $block, _t( 'Posts to show:' ) );
+		$form->append( FormControlLabel::wrap( _t( 'Posts to show:' ), 
+			FormControlText::create( 'quantity', $block )
+		));
 
 		$content_types = Post::list_active_post_types();
 
@@ -144,7 +148,9 @@ class CoreBlocks extends Plugin
 			$content_types[ $k ] = Plugins::filter( 'post_type_display', $k, 'plural' );
 		}
 
-		$form->append('checkboxes', 'content_types', $block, _t( 'Content Types to Include:' ), $content_types );
+		$form->append( FormControlLabel::wrap( _t( 'Content Types to Include:' ),
+			FormControlCheckboxes::create( 'content_type', $block )->set_options( $content_types ) 
+		));
 
 	}
 
@@ -184,10 +190,15 @@ class CoreBlocks extends Plugin
 	 */
 	public function action_block_form_monthly_archives( $form, $block )
 	{
-		$content = $form->append( 'checkbox', 'full_names', $block, _t( 'Display full month names:' ) );
-		$content = $form->append( 'checkbox', 'show_counts', $block, _t( 'Append post count:' ) );
-		$content = $form->append( 'select', 'style', $block, _t( 'Preferred Output Style:' ),
-			array('dropdown' => _t( 'Dropdown' ), 'list' => _t( 'List' ) ) );
+		$form->append( FormControlLabel::wrap( _t( 'Display full month names:' ), 
+			FormControlCheckbox::create( 'full_names', $block )
+		));
+		$form->append( FormControlLabel::wrap( _t( 'Append post count:' ), 
+			FormControlCheckbox::create( 'show_counts', $block )
+		));
+		$form->append( FormControlLabel::wrap( _t( 'Preferred Output Style:' ), 
+			FormControlSelect::create( 'style', $block )->set_options( array('dropdown' => _t( 'Dropdown' ), 'list' => _t( 'List' ) ) )
+		));
 	}
 
 	/**
@@ -258,9 +269,12 @@ class CoreBlocks extends Plugin
 	 */
 	public function action_block_form_tag_archives( $form, $block )
 	{
-		$content = $form->append( 'checkbox', 'show_counts', $block, _t( 'Append post count:' ) );
-		$content = $form->append( 'select', 'style', $block, _t( 'Preferred Output Style:' ),
-			array('dropdown' => _t( 'Dropdown' ), 'list' => _t( 'List' ) ) );
+		$form->append( FormControlLabel::wrap( _t( 'Append post count:' ),
+			FormControlCheckbox::create( 'show_counts', $block )
+		));
+		$form->append( FormControlLabel::wrap( _t( 'Preferred Output Style:' ),
+			FormControlSelect::create( 'style', $block )->set_options( array('dropdown' => _t( 'Dropdown' ), 'list' => _t( 'List' ) ) )
+		));
 	}
 
 	/**
@@ -319,7 +333,9 @@ class CoreBlocks extends Plugin
 	 */
 	public function action_block_form_meta_links( $form, $block )
 	{
-		$content = $form->append('checkboxes', 'links', $block, _t( 'Links to show:' ), array_flip( $this->meta_urls() ) );
+		$form->append( FormControlLabel::wrap( _t( "Links to show:" ), 
+			FormControlCheckboxes::create( 'links', $block )->set_options( array_flip( $this->meta_urls() ) )
+		));
 	}
 
 	/**
@@ -359,7 +375,9 @@ class CoreBlocks extends Plugin
 	 */
 	public function action_block_form_search_form( $form, $block )
 	{
-		$content = $form->append( 'text', 'button', $block, _t( 'Button:' ) );
+		$form->append( FormControlLabel::wrap( _t( 'Button:' ),
+			FormControlText::create( 'button', $block )
+		));
 	}
 
 	/**
@@ -389,8 +407,9 @@ class CoreBlocks extends Plugin
 	 */
 	public function action_block_form_text( $form, $block )
 	{
-		$content = $form->append( 'textarea', 'content', $block, _t( 'Content:' ) );
-		$content->rows = 5;
+		$form->append( FormControlLabel::wrap( _t( 'Content:',
+			FormControlTextArea::create( 'content', $block, array( 'rows' => 5 ) ) )
+		));
 	}
 
 	/**

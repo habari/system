@@ -50,10 +50,49 @@ class HabariSilo extends Plugin implements MediaSilo
 	public function action_plugin_activation( $file )
 	{
 		// Create required tokens
-		ACL::create_token( 'create_directories', _t( 'Create media silo directories' ), 'Administration' );
-		ACL::create_token( 'delete_directories', _t( 'Delete media silo directories' ), 'Administration' );
-		ACL::create_token( 'upload_media', _t( 'Upload files to media silos' ), 'Administration' );
-		ACL::create_token( 'delete_media', _t( 'Delete files from media silos' ), 'Administration' );
+		ACL::create_token( 'create_directories', 'Create media silo directories', 'Administration' );
+		ACL::create_token( 'delete_directories', 'Delete media silo directories', 'Administration' );
+		ACL::create_token( 'upload_media', 'Upload files to media silos', 'Administration' );
+		ACL::create_token( 'delete_media', 'Delete files from media silos', 'Administration' );
+	}
+	
+	/**
+	 * function filter_plugin_config
+	 * Add configuration options
+	 */
+	public function filter_plugin_config( $actions )
+	{
+		$actions['configure'] = _t('Configure');
+		return $actions;
+	}
+	
+	public function action_plugin_ui_configure()
+	{
+		$ui = new FormUI( strtolower( get_class( $this ) ) );
+		$ui->append( FormControlLabel::wrap( _t('Max thumbnail width:'), FormControlText::create( 'max_thumbnail_width', __CLASS__ . '__max_thumbnail_width' ) ) );
+		$ui->max_thumbnail_width->add_validator('validate_regex', '/^[0-9]*$/', _t('Only numbers may be entered for thumbnail width.'));
+		$ui->append( FormControlLabel::wrap( _t('Max thumbnail height:'), FormControlText::create( 'max_thumbnail_height', __CLASS__ . '__max_thumbnail_height' ) ) );
+		$ui->max_thumbnail_height->add_validator('validate_regex', '/^[0-9]*$/', _t('Only numbers may be entered for thumbnail height.'));
+		$ui->append( FormControlLabel::wrap( _t('Always create square thumbnails (pad with black if not high enough):' ), FormControlCheckbox::create( 'force_square', __CLASS__ . '__force_square_thumbnail' ) ) );
+		$ui->append(FormControlSubmit::create('save')->set_caption('Save'));
+		$ui->out();
+	}
+
+	/**
+	 * function filter_token_description_display
+	 * Plugin filter to localize token descriptions
+	 * @param string Token to get the description of
+	 * @return string The localized token description
+	 */
+	public function filter_token_description_display( $token )
+	{
+		$desc = array(
+		    'create_directories' => _t( 'Create media silo directories' ),
+		    'delete_directories' => _t( 'Delete media silo directories' ),
+		    'upload_media' => _t( 'Upload files to media silos' ),
+		    'delete_media' => _t( 'Delete files from media silos' ),
+		);
+		return isset( $desc[$token] ) ? $desc[$token] : $token;
 	}
 
 	/**
@@ -176,7 +215,10 @@ class HabariSilo extends Plugin implements MediaSilo
 		$mtime = '';
 
 		if ( !file_exists( dirname( $realfile ) . '/' . $thumbnail_suffix ) ) {
-			if ( !$this->create_thumbnail( $realfile ) ) {
+			// Attempt to create thumbnail
+			$max_thumbnail_width = Options::get( __CLASS__ . '__max_thumbnail_width', Media::THUMBNAIL_WIDTH );
+			$max_thumbnail_height = Options::get( __CLASS__ . '__max_thumbnail_height', Media::THUMBNAIL_HEIGHT );
+			if ( !$this->create_thumbnail( $realfile, $max_thumbnail_width, $max_thumbnail_height ) ) {
 				// there is no thumbnail so use icon based on mimetype.
 				$icon_path = Plugins::filter( 'habarisilo_icon_base_path', dirname( $this->get_file() ) . '/icons' );
 				$icon_url = Plugins::filter( 'habarisilo_icon_base_url', $this->get_url() . '/icons' );
@@ -243,7 +285,14 @@ class HabariSilo extends Plugin implements MediaSilo
 		}
 
 		// Get information about the image
-		list( $src_width, $src_height, $type, $attr )= getimagesize( $src_filename );
+		$isize = @getimagesize( $src_filename );
+		if(is_array($isize)) {
+			list( $src_width, $src_height, $type, $attr )= $isize;
+		}
+		else {
+			$type = '';
+			$src_img = '';
+		}
 
 		// Load the image based on filetype
 		switch ( $type ) {
@@ -266,13 +315,16 @@ class HabariSilo extends Plugin implements MediaSilo
 
 		// Calculate the output size based on the original's aspect ratio
 		$y_displacement = 0;
+		$displace = Options::get( __CLASS__ . '__force_square_thumbnail', true );
 		if ( $src_width / $src_height > $max_width / $max_height ) {
 			$thumb_w = $max_width;
 			$thumb_h = $src_height * $max_width / $src_width;
 
-		// thumbnail is not full height, position it down so that it will be padded on the
-		// top and bottom with black
-		$y_displacement = ( $max_height - $thumb_h ) / 2;
+			if($displace) {
+				// thumbnail is not full height, position it down so that it will be padded on the
+				// top and bottom with black
+				$y_displacement = ( $max_height - $thumb_h ) / 2;
+			}
 		}
 		else {
 			$thumb_w = $src_width * $max_height / $src_height;
@@ -280,7 +332,7 @@ class HabariSilo extends Plugin implements MediaSilo
 		}
 
 		// Create the output image and copy to source to it
-		$dst_img = ImageCreateTrueColor( $thumb_w, $max_height );
+		$dst_img = ImageCreateTrueColor( $thumb_w, ($displace) ? $max_height : $thumb_h );
 		imagecopyresampled( $dst_img, $src_img, 0, $y_displacement, 0, 0, $thumb_w, $thumb_h, $src_width, $src_height );
 
 		/* Sharpen before save?
@@ -325,7 +377,9 @@ class HabariSilo extends Plugin implements MediaSilo
 
 		$result = $filedata->save( $file );
 		if ( $result ) {
-			$this->create_thumbnail( $file );
+			$max_thumbnail_width = Options::get( __CLASS__ . '__max_thumbnail_width', Media::THUMBNAIL_WIDTH );
+			$max_thumbnail_height = Options::get( __CLASS__ . '__max_thumbnail_height', Media::THUMBNAIL_HEIGHT );
+			$this->create_thumbnail( $file, $max_thumbnail_width, $max_thumbnail_height );
 		}
 
 		return $result;

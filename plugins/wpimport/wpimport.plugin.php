@@ -240,7 +240,7 @@ WP_IMPORT_AJAX;
 				
 				return $wpdb;
 			}
-			catch ( Exception $e ) {
+			catch ( \Exception $e ) {
 				// just hide connection errors, it's enough that we errored out
 				return false;
 			}
@@ -321,7 +321,7 @@ WP_IMPORT_AJAX;
 						EventLog::log( _t( 'Created new user %1$s. Their old ID was %2$d.', array( $u->username, $wp_user->id ) ) );
 						
 					}
-					catch ( Exception $e ) {
+					catch ( \Exception $e ) {
 						
 						// no idea why we might error out, but catch it if we do
 						EventLog::log( $e->getMessage, 'err' );
@@ -527,7 +527,7 @@ WP_IMPORT_AJAX;
 					}
 					
 				}
-				catch ( Exception $e ) {
+				catch ( \Exception $e ) {
 					
 					EventLog::log( $e->getMessage(), 'err' );
 					
@@ -731,7 +731,7 @@ WP_IMPORT_AJAX;
 				try {
 					$c->insert();
 				}
-				catch ( Exception $e ) {
+				catch ( \Exception $e ) {
 					
 					EventLog::log( $e->getMessage(), 'err' );
 					

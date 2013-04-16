@@ -1354,9 +1354,9 @@ class Utils
 	public static function setup_wsse() {
 		$wsse = self::WSSE();
 		$inputs = array();
-		$inputs[] = array('type' => 'hidden', 'value' => $wsse['nonce'], 'name' => 'nonce', 'id' => 'nonce');
-		$inputs[] = array('type' => 'hidden', 'value' => $wsse['digest'], 'name' => 'digest', 'id' => 'digest');
-		$inputs[] = array('type' => 'hidden', 'value' => $wsse['timestamp'], 'name' => 'timestamp', 'id' => 'timestamp');
+		$inputs[] = array('type' => 'hidden', 'value' => $wsse['nonce'], 'name' => 'nonce', 'class' => 'wsse nonce');
+		$inputs[] = array('type' => 'hidden', 'value' => $wsse['digest'], 'name' => 'digest', 'class' => 'wsse digest');
+		$inputs[] = array('type' => 'hidden', 'value' => $wsse['timestamp'], 'name' => 'timestamp', 'class' => 'wsse timestamp');
 		return self::html_inputs( $inputs );
 	}
 

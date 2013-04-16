@@ -100,7 +100,7 @@ class InstallHandler extends ActionHandler
 				// write new config file
 				if ( $this->write_config_file( true ) ) {
 					// successful, so redirect:
-					Utils::redirect( Site::get_url( 'habari' ) );
+					Utils::redirect( Site::get_url( 'site' ) );
 				}
 			}
 
@@ -195,7 +195,7 @@ class InstallHandler extends ActionHandler
 		}
 
 		EventLog::log( _t( 'Habari successfully installed.' ), 'info', 'default', 'habari' );
-		Utils::redirect( Site::get_url( 'habari' ) );
+		Utils::redirect( Site::get_url( 'site' ) );
 	}
 
 	/**
@@ -552,7 +552,7 @@ class InstallHandler extends ActionHandler
 			$connect = DB::connect( $pdo, $this->handler_vars['db_user'], html_entity_decode( $this->handler_vars['db_pass'] ) );
 			return true;
 		}
-		catch( PDOException $e ) {
+		catch( \PDOException $e ) {
 			if ( strpos( $e->getMessage(), '[1045]' ) ) {
 				$this->theme->assign( 'form_errors', array( 'mysql_db_pass' => _t( 'Access denied. Make sure these credentials are valid.' ) ) );
 			}
@@ -585,7 +585,7 @@ class InstallHandler extends ActionHandler
 			$connect = DB::connect( $pdo, $this->handler_vars['db_user'], html_entity_decode( $this->handler_vars['db_pass'] ) );
 			return true;
 		}
-		catch( PDOException $e ) {
+		catch( \PDOException $e ) {
 			if ( strpos( $e->getMessage(), '[1045]' ) ) {
 				$this->theme->assign( 'form_errors', array( 'pgsql_db_pass' => _t( 'Access denied. Make sure these credentials are valid.' ) ) );
 			}
@@ -659,7 +659,7 @@ class InstallHandler extends ActionHandler
 				DB::connect();
 				return true;
 			}
-			catch( PDOException $e ) {
+			catch( \PDOException $e ) {
 				$this->theme->assign( 'form_errors', array( 'db_user'=>_t( 'Problem connecting to supplied database credentials' ) ) );
 				return false;
 
@@ -1049,9 +1049,7 @@ class InstallHandler extends ActionHandler
 			$id = Plugins::id_from_file( $file );
 			if ( in_array( $id, $plugin_ids ) ) {
 				Plugins::activate_plugin( $file );
-				echo 'ACTIVATED:';
 			}
-			var_dump($file, $id);
 		}
 
 		// unset the user_id session variable
@@ -1078,7 +1076,7 @@ class InstallHandler extends ActionHandler
 		);
 		$rewrite_base = trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
 		if ( $rewrite_base != '' ) {
-			$htaccess['rewrite_base'] = 'RewriteBase /' . $rewrite_base;
+			$htaccess['rewrite_base'] = 'RewriteBase "/' . $rewrite_base . '"';
 		}
 
 		return $htaccess;
@@ -1126,12 +1124,12 @@ class InstallHandler extends ActionHandler
 			// the Habari block exists, but we need to make sure
 			// it is correct.
 			// Check that the rewrite rules actually do the job.
-			$test_ajax_url = Site::get_url( 'habari' ) . '/check_mod_rewrite';
+			$test_ajax_url = Site::get_url( 'site' ) . '/check_mod_rewrite';
 			$rr = new RemoteRequest( $test_ajax_url, 'POST', 5 );
 			try {
 				$rr_result = $rr->execute();
 			}
-			catch ( Exception $e ) {
+			catch ( \Exception $e ) {
 				$result = $this->write_htaccess( true, true, true );
 			}
 		}
@@ -1150,7 +1148,7 @@ class InstallHandler extends ActionHandler
 		$htaccess = $this->htaccess();
 		if ( $rewritebase ) {
 			$rewrite_base = trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
-			$htaccess['rewrite_base'] = 'RewriteBase /' . $rewrite_base;
+			$htaccess['rewrite_base'] = 'RewriteBase "/' . $rewrite_base . '"';
 		}
 		$file_contents = "\n" . implode( "\n", $htaccess ) . "\n";
 
@@ -1401,12 +1399,10 @@ class InstallHandler extends ActionHandler
 				$db_name = '';
 				break;
 			case 'mysql':
-				list( $host,$name ) = explode( ';', $remainder );
-				list( $discard, $db_name ) = explode( '=', $name );
-				break;
 			case 'pgsql':
-				list( $host,$name ) = explode( ' ', $remainder );
-				list( $discard, $db_name ) = explode( '=', $name );
+				$pairs = $this->parse_dsn( $remainder );
+				
+				$db_name = $pairs['dbname'];
 				break;
 		}
 
@@ -1872,7 +1868,7 @@ class InstallHandler extends ActionHandler
 				$connect = DB::connect( $pdo, $_POST['user'], $_POST->raw( 'pass' ) );
 				$xml->addChild( 'status', 1 );
 			}
-			catch( Exception $e ) {
+			catch( \Exception $e ) {
 				$xml->addChild( 'status', 0 );
 				$xml_error = $xml->addChild( 'error' );
 				if ( strpos( $e->getMessage(), '[1045]' ) ) {
@@ -1943,7 +1939,7 @@ class InstallHandler extends ActionHandler
 				$connect = DB::connect( $pdo, $_POST['user'], $_POST->raw( 'pass' ) );
 				$xml->addChild( 'status', 1 );
 			}
-			catch( Exception $e ) {
+			catch( \Exception $e ) {
 				$xml->addChild( 'status', 0 );
 				$xml_error = $xml->addChild( 'error' );
 				if ( strpos( $e->getMessage(), '[1045]' ) ) {
@@ -2052,19 +2048,45 @@ class InstallHandler extends ActionHandler
 				$this->handler_vars['db_file'] = $remainder;
 				break;
 			case 'mysql':
-				list( $host,$name ) = explode( ';', $remainder );
-				list( $discard, $this->handler_vars['db_host'] ) = explode( '=', $host );
-				list( $discard, $this->handler_vars['db_schema'] ) = explode( '=', $name );
-				break;
 			case 'pgsql':
-				list( $host,$name )= explode( ' ', $remainder );
-				list( $discard, $this->handler_vars['db_host'] ) = explode( '=', $host );
-				list( $discard, $this->handler_vars['db_schema'] ) = explode( '=', $name );
+				$pairs = $this->parse_dsn( $remainder );
+				
+				$host = $pairs['host'];
+				
+				if ( isset( $pairs['port'] ) ) {
+					$host .= ';port=' . $pairs['port'];
+				}
+				
+				$this->handler_vars['db_host'] = $host;
+				$this->handler_vars['db_schema'] = $pairs['dbname'];
+				
 				break;
 		}
 		$this->handler_vars['db_user'] = Config::get( 'db_connection' )->username;
 		$this->handler_vars['db_pass'] = Config::get( 'db_connection' )->password;
 		$this->handler_vars['table_prefix'] = Config::get( 'db_connection' )->prefix;
+	}
+	
+	private function parse_dsn ( $dsn ) {
+		
+		// before we replace spaces, which may give us double semicolons if there's one after a semicolon, condense it down
+		$dsn = str_replace( '; ', ';', $dsn );
+		
+		// spaces are also allowed in the dsn, but let's unify everything with a semicolon for parsing
+		$dsn = str_replace( ' ', ';', $dsn );
+		
+		// now to split them apart
+		$temp_pairs = explode( ';', $dsn );
+		
+		// and then by =
+		$pairs = array();
+		foreach ( $temp_pairs as $temp_pair ) {
+			list( $k, $v ) = explode( '=', $temp_pair );
+			$pairs[ $k ] = $v;
+		}
+		
+		return $pairs;
+		
 	}
 
 	/**

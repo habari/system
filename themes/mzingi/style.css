@@ -60,6 +60,18 @@ body {
 	font: 108% "Lucida Grande", Lucida, Verdana, sans-serif;
 	color: #666;
 	background: #EEEEEE;
+	width: 100%;
+  	*zoom: 1;
+}
+
+body:before,
+body:after {
+  content: "";
+  display: table;
+}
+
+body:after {
+  clear: both;
 }
 
 /* =Structure
@@ -68,12 +80,17 @@ body {
 #wrapper {
 	margin: 0 auto;
 	background: #fff;
+	width: 960px;
+  	overflow: hidden;
 }
 
 #masthead {
-	margin: 20px 0 40px 0;
 	border-bottom: 2px dashed #41670F;
-	padding-bottom: 5px;
+  	padding-bottom: 5px;
+  	display: inline;
+  	float: left;
+  	width: 940px;
+  	margin: 0 10px;
 }
 
 #content {
@@ -81,14 +98,25 @@ body {
 }
 
 #primaryContent {
-	margin-bottom: 10px;
+  display: inline;
+  float: left;
+  width: 620px;
+  margin: 0 10px;
+  margin-right: 90px;
+  margin-bottom: 10px;
 }
-
 #secondaryContent {
-
+  display: inline;
+  float: left;
+  width: 220px;
+  margin: 0 10px;
 }
 
 #footer {
+	display: inline;
+  	float: left;
+  	width: 940px;
+  	margin: 0 10px;
 	height: 60px;
 	border-top: 2px dotted #41670F;
 	padding-top: 5px;
@@ -121,6 +149,7 @@ h3 {
 
 #primaryContent h2 {
 	font-size: 159%;
+	margin-left: 90px;
 }
 
 #page #content #primaryContent h2 {

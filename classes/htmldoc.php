@@ -82,10 +82,20 @@ class HTMLDoc
 		$body_content = $this->query('//body/*');
 		$output = '';
 		foreach($body_content as $node) {
-			$output .= $this->dom->saveHTML($node->node);
+			$output .= $this->dom->saveXML($node->node);
 		}
 		return $output;
 	}
+
+	/**
+	 * Render this DOM as a string
+	 * @return string the string representation of the DOM
+	 */
+	function __toString()
+	{
+		return $this->get();
+	}
+
 }
 
 /**
@@ -260,6 +270,15 @@ class HTMLNode
 		}
 	}
 
+	/**
+	 * Get this node's string representation
+	 * @return string The node's string representation
+	 */
+	function get()
+	{
+		return $this->node->ownerDocument->saveXML($this->node);
+	}
+
 }
 
 /**
@@ -286,10 +305,11 @@ class HTMLSelector
 	 */
 	public function toXPath()
 	{
-		$parts = preg_split('#\s+#', $this->selector);
+		preg_match_all('/[:\.\w#]+|>|\+|,/sim', $this->selector, $parts);
 		$xpath = '';
 		$rooting = '//'; // This is XPath for "any descndant of"
-		foreach($parts as $part) {
+		$stack = array();
+		foreach($parts[0] as $part) {
 			switch($part) {
 				case '>': // Direct descendant of
 					$rooting = '/';
@@ -297,24 +317,28 @@ class HTMLSelector
 				case '+': // Sibling of, not sure how to handle that yet
 					break;
 				case ',': // OR...
-					$xpath .= '|';
+					$stack[] = '|';
 					$rooting = '//';
 					break;
 				default:
-					$xpath .= $rooting . $this->get_part_xpath($part);
+					$xpath_part = $this->get_part_xpath($part, $stack);
+					$stack[] = $rooting;
+					$stack[] = $xpath_part;
 					$rooting = '//';
 					break;
 			}
 		}
+		$xpath = implode('', $stack);
 		return $xpath;
 	}
 
 	/**
 	 * Interal method for parsing the CSS parts into XPath parts
 	 * @param string $part Some atomic part of a CSS selector
+	 * @param array $stack An array of previous xpath parts
 	 * @return string The equivalent XPath part
 	 */
-	private function get_part_xpath($part)
+	private function get_part_xpath($part, $stack)
 	{
 		// For "[name=value]" $2 = "name", $3 = "=", $5 = "value"
 		preg_match_all('/\[(([^\]]+?)(([~\-!]?=)([^\]]+))?)\]|\W?\w+/', $part, $matches, PREG_SET_ORDER);
@@ -329,6 +353,8 @@ class HTMLSelector
 			}
 			elseif($match[0][0] == ':') { // it's a pseudo-selector, oh noes!
 				// @todo Ack!  Do something!
+				$last = end($stack);
+
 			}
 			elseif($match[0][0] == '[') { // it's a property-based selector
 				if(empty($match[5])) { // Just checking if the element has the name

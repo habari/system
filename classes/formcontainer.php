@@ -11,7 +11,7 @@ class FormContainer extends FormControl
 	 * Append a control to the end of this container
 	 *
 	 * @param FormControl $control A control to append to the end of this container
-	 * @return FormControl The provided FormControl object, fluid
+	 * @return FormControl|FormContainer The provided FormControl object, fluid
 	 */
 	public function append($control)
 	{
@@ -268,6 +268,16 @@ class FormContainer extends FormControl
 	 */
 	function __get( $name )
 	{
+		return $this->get_control($name);
+	}
+
+	/**
+	 * Get a control from this container by name.
+	 * @param string $name The name of the control
+	 * @return FormControl|null The control object requested, or null if not found
+	 */
+	function get_control( $name )
+	{
 		if ( isset( $this->controls[$name] ) ) {
 			return $this->controls[$name];
 		}
@@ -279,6 +289,7 @@ class FormContainer extends FormControl
 				}
 			}
 		}
+		return null;
 	}
 
 	/**
@@ -360,11 +371,25 @@ class FormContainer extends FormControl
 	}
 
 	/**
+	 * Calls the success callback for the form, and optionally saves the form values
+	 * to the options table.
+	 * @return boolean|string A string to replace the rendering of the form with, or false
+	 */
+	public function do_success($form)
+	{
+		/** @var FormControl $control */
+		foreach ( $this->controls as $control ) {
+			$control->do_success($form);
+		}
+		return parent::do_success($form);
+	}
+
+	/**
 	 * Store each contained control's value under the control's specified key.
 	 *
 	 * @param string $key (optional) The Options table key to store this option in
 	 */
-	function save()
+	public function save()
 	{
 		/** @var FormControl $control */
 		foreach ( $this->controls as $control ) {
@@ -455,5 +480,6 @@ class FormContainer extends FormControl
 		$this->each(function($control) { $control->clear(); });
 		parent::clear();
 	}
+
 
 }

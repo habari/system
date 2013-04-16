@@ -221,7 +221,7 @@ class AdminPluginsHandler extends AdminHandler
 						if ( Plugins::activate_plugin( $file ) ) {
 							$plugins = Plugins::get_active();
 							Session::notice(
-								_t( "Activated plugin '%s'", array( $plugins[Plugins::id_from_file( $file )]->info->name ) ),
+								_t( "Activated plugin '@plugin'", array( '@plugin' => $plugins[Plugins::id_from_file( $file )]->info->name ) ),
 								$plugins[Plugins::id_from_file( $file )]->plugin_id
 							);
 						}
@@ -230,7 +230,7 @@ class AdminPluginsHandler extends AdminHandler
 						if ( Plugins::deactivate_plugin( $file ) ) {
 							$plugins = Plugins::get_active();
 							Session::notice(
-								_t( "Deactivated plugin '%s'", array( $plugins[Plugins::id_from_file( $file )]->info->name ) ),
+								_t( "Deactivated plugin '@plugin'", array( '@plugin' => $plugins[Plugins::id_from_file( $file )]->info->name ) ),
 								$plugins[Plugins::id_from_file( $file )]->plugin_id
 							);
 						}

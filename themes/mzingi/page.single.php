@@ -5,7 +5,7 @@
 	<div id="page">
 	<div id="content">
 		<!--begin primary content-->
-		<div id="primaryContent" class="span-16 append-1">
+		<div id="primaryContent">
 			<!--begin loop-->
 
 				<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">

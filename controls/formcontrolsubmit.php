@@ -8,6 +8,7 @@ namespace Habari;
 class FormControlSubmit extends FormControl
 {
 	public $caption;
+	public $on_success = array();
 
 	/**
 	 * Called upon construct.  Sets control properties
@@ -39,6 +40,31 @@ class FormControlSubmit extends FormControl
 		$this->properties['value'] = $this->caption;
 		return parent::get($theme);
 	}
+
+	/**
+	 * This control only executes its on_success callbacks when it was clicked
+	 * @return bool|string A string to replace the rendering of the form with, or false
+	 */
+	public function do_success($form)
+	{
+		if(isset($_POST[$this->input_name()])) {
+			return parent::do_success($form);
+		}
+		return false;
+	}
+
+	/**
+	 * This control only validates if it's clicked
+	 * @return array If empty, no errors.  One string element describing each error
+	 */
+	public function validate()
+	{
+		if(isset($_POST[$this->input_name()])) {
+			return parent::validate();
+		}
+		return array();
+	}
+
 
 }
 

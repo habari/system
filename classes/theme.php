@@ -111,8 +111,10 @@ class Theme extends Pluggable
 		}
 		if ( $xml_content = file_get_contents( $xml_file ) ) {
 			$theme_data = new \SimpleXMLElement( $xml_content );
+			$theme_data['filename'] = $xml_file;
 			return $theme_data;
 		}
+		return null;
 	}
 
 	/**
@@ -129,16 +131,20 @@ class Theme extends Pluggable
 			$this->charset = MultiByte::hab_encoding();
 		}
 		
-		if ( !$this->template_engine->assigned( 'user' ) ) {
-			$this->assign( 'user', User::identify() );
+		if ( !isset($this->user) ) {
+			$this->user = User::identify();
 		}
 
-		if ( !$this->template_engine->assigned( 'loggedin' ) ) {
-			$this->assign( 'loggedin', User::identify()->loggedin );
+		if ( !isset($this->loggedin) ) {
+			$this->loggedin = User::identify()->loggedin;
 		}
 
-		if ( !$this->template_engine->assigned( 'page' ) ) {
-			$this->assign( 'page', isset( $this->page ) ? $this->page : 1 );
+		if ( !isset($this->page) ) {
+			$this->page = isset( $this->page ) ? $this->page : 1;
+		}
+
+		if ( !isset($this->page_title) ) {
+			$this->page_title = $this->page_title();  // This calls theme_page_title via the theme_* plugin hook.
 		}
 
 		$handler = Controller::get_handler();
@@ -577,10 +583,10 @@ class Theme extends Pluggable
 			$this->add_template_vars();
 		}
 		$this->template_engine->clear();
-		for ( $z = 0; $z <= $this->current_var_stack; $z++ ) {
-			foreach ( $this->var_stack[$z] as $key => $value ) {
-				$this->template_engine->assign( $key, $value );
-			}
+
+		$stack = call_user_func_array('array_merge', $this->var_stack);
+		foreach ( $stack as $key => $value ) {
+			$this->template_engine->assign( $key, $value );
 		}
 	}
 
@@ -988,16 +994,18 @@ class Theme extends Pluggable
 	 * Detects if a variable is assigned to the template engine for use in
 	 * constructing the template's output.
 	 *
-	 * @param key name of variable
-	 * @returns boolean true if name is set, false if not set
+	 * @param string $key name of variable
+	 * @return bool true if name is set, false if not set
 	 */
 	public function __isset( $key )
 	{
-		return isset( $this->var_stack[$this->current_var_stack][$key] );
+		$stack = call_user_func_array('array_merge', $this->var_stack);
+		return isset( $stack[$key] );
 	}
 
 	/**
 	 * Set a template variable, a property alias for assign()
+	 * This can only affect the current stack level!
 	 *
 	 * @param string $key The template variable to set
 	 * @param mixed $value The value of the variable
@@ -1015,14 +1023,16 @@ class Theme extends Pluggable
 	 */
 	public function __get( $key )
 	{
-		if ( isset( $this->var_stack[$this->current_var_stack][$key] ) ) {
-			return $this->var_stack[$this->current_var_stack][$key];
+		$stack = call_user_func_array('array_merge', $this->var_stack);
+		if ( isset( $stack[$key] ) ) {
+			return $stack[$key];
 		}
 		return '';
 	}
 
 	/**
 	 * Remove a template variable value
+	 * This can only affect the current stack level!
 	 *
 	 * @param string $key The template variable name to unset
 	 */
@@ -1287,17 +1297,19 @@ class Theme extends Pluggable
 			unset( $block->_last );
 		}
 
-		// This is the area fallback template list
-		$fallback = array(
-			$context . '.area.' . $area,
-			$context . '.area',
-			'area.' . $area,
-			'area',
-		);
-		$this->content = $output;
-		$newoutput = $this->display_fallback( $fallback, 'fetch' );
-		if ( $newoutput !== false ) {
-			$output = $newoutput;
+		if(trim($output) != '') {
+			// This is the area fallback template list
+			$fallback = array(
+				$context . '.area.' . $area,
+				$context . '.area',
+				'area.' . $area,
+				'area',
+			);
+			$this->content = $output;
+			$newoutput = $this->display_fallback( $fallback, 'fetch' );
+			if ( $newoutput !== false ) {
+				$output = $newoutput;
+			}
 		}
 
 		$this->area = '';
@@ -1325,6 +1337,27 @@ class Theme extends Pluggable
 		$body_class = array_unique( array_merge( $body_class, Stack::get_named_stack( 'body_class' ), Utils::single_array( $args ) ) );
 		$body_class = Plugins::filter( 'body_class', $body_class, $theme );
 		return implode( ' ', $body_class );
+	}
+
+	/**
+	 * A Theme function to provide a page title
+	 * @param Theme $theme The current theme
+	 *
+	 */
+	function theme_page_title( $theme )
+	{
+		$component = array();
+		if(isset($this->request)) {
+			if($this->request->display_post && isset($theme->post)) {
+				$component['post'] = $theme->post->title_title;
+			}
+			if($this->request->display_entries_by_tag && isset($theme->post)) {
+				$component['tag'] = _t('Posts tagged with "%s"', array(implode(',', $theme->include_tag)));
+			}
+		}
+		$component['site'] = Options::get('title');
+		$component = Plugins::filter('page_titles', $component, $theme);
+		return implode(' - ', $component);
 	}
 	
 	/**

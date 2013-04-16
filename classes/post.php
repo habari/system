@@ -696,6 +696,11 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			}
 		}
 
+		// If content has changed, update cached_content with prerendered content
+		if(isset($this->newfields['content']) && $this->fields['content'] != $this->newfields['content']) {
+			$this->newfields['cached_content'] = Plugins::filter( 'post_prerender_content', $this->newfields['content'], $this );
+		}
+
 		// invoke plugins for all fields which have been changed
 		// For example, a plugin action "post_update_status" would be
 		// triggered if the post has a new status value
@@ -742,6 +747,11 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function delete()
 	{
+		// Check if the currently logged-in user is allowed to delete this post.
+		if( !ACL::access_check( $this->get_access(), 'delete' ) ) {
+			return false;
+		}
+		
 		$allow = true;
 		$allow = Plugins::filter( 'post_delete_allow', $allow, $this );
 		if ( ! $allow ) {
@@ -829,6 +839,19 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		}
 
 		switch ( $name ) {
+			case 'content':
+				if($filter == 'internal') {
+					$out = parent::__get( 'content' );
+				}
+				else {
+					$out = parent::__get( 'cached_content' );
+					// Didn't bother to store a cached version? Run the prerender filter on the raw version.
+					if(empty($out)) {
+						$out = Plugins::filter( "post_prerender_content", parent::__get( 'content' ), $this );
+						// Queue rendered content for writing to cached_content field?
+					}
+				}
+				break;
 			case 'statusname':
 				$out = self::status_name( $this->status );
 				break;
@@ -970,17 +993,19 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 		// Create the Content field
 		$form->append( FormControlLabel::wrap( _t('Content'), FormControlTextArea::create('content', null, array('class' => array('resizable', 'check-change'), 'tabindex' => 2))->set_value($this->content_internal)) );
-		$form->content->raw = true;  // What does this do?
+		$form->content->raw = true;  // @todo What does this do?
 
 		// Create the tags field
-		$form->append( FormControlLabel::wrap( _t( 'Tags, separated by, commas' ), $tags_control = FormControlText::create('tags', null, array('class' => 'check-change', 'tabindex' => 3))));
+		/** @var FormControlAutocomplete $tags_control */
+		$form->append( FormControlLabel::wrap( _t( 'Tags, separated by, commas' ), $tags_control = FormControlAutocomplete::create('tags', null, array('style' => 'width:90%;', 'class' => 'check-change', 'tabindex' => 3), array('allow_new' => true, 'init_selection' => true))));
 
 		$tags = (array)$this->get_tags();
 		array_walk($tags, function(&$element, $key) {
 			$element->term_display = MultiByte::strpos( $element->term_display, ',' ) === false ? $element->term_display : $element->tag_text_searchable;
 		});
 
-		$tags_control->set_value(implode( ', ', $tags ));
+		$tags_control->set_value(implode( ',', $tags ));
+		$tags_control->set_ajax(URL::auth_ajax('tag_list'));
 
 		// Create the splitter
 		/** @var FormControlTabs $publish_controls  */
@@ -993,17 +1018,17 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$statuses = Plugins::filter( 'admin_publish_list_post_statuses', $statuses );
 
 		/** @var FormControlFieldset $settings */
-		$settings = $publish_controls->append( FormControlFieldset::create('settings')->set_caption(_t( 'Settings' )) );
+		$settings = $publish_controls->append( FormControlFieldset::create('post_settings')->set_caption(_t( 'Settings' )) );
 
 		$settings->append( FormControlLabel::wrap(_t( 'Content State' ), FormControlSelect::create('status')->set_options(array_flip( $statuses ))->set_value($this->status)));
 
 		// hide the minor edit checkbox if the post is new
 		if ( $newpost ) {
-			$settings->append( FormControlHidden::create('minor_edit')->set_value(false));
+			$settings->append( FormControlData::create('minor_edit')->set_value(false));
 		}
 		else {
 			$settings->append( FormControlLabel::wrap( _t( 'Minor Edit' ), FormControlCheckbox::create('minor_edit')->set_value(true)));
-			$form->append( FormControlHidden::create('modified')->set_value($this->modified));
+			$form->append( FormControlData::create('modified')->set_value($this->modified));
 		}
 
 		$settings->append( FormControlLabel::wrap(_t( 'Comments Allowed' ), FormControlCheckbox::create('comments_enabled')->set_value($this->info->comments_disabled ? false : true)));
@@ -1011,7 +1036,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$settings->append( FormControlLabel::wrap(_t( 'Publication Time' ), FormControlText::create('pubdate')->set_value($this->pubdate->format( 'Y-m-d H:i:s' ))));
 		//$settings->pubdate->helptext = _t( 'YYYY-MM-DD HH:MM:SS' );  // @todo figure out a clean way to do help text on a control -- a new FormControlLabel-like wrapper?
 
-		$settings->append( FormControlHidden::create('updated')->set_value($this->updated->int) );
+		$settings->append( FormControlData::create('updated')->set_value($this->updated->int) );
 
 		$settings->append( FormControlLabel::wrap(_t( 'Content Address' ), FormControlText::create('newslug')->set_value($this->slug) ));
 
@@ -1025,9 +1050,9 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		}
 
 		// Add required hidden controls
-		$form->append( FormControlHidden::create('content_type', null, array('id' => 'content_type'))->set_value($this->content_type) );
-		$form->append( FormControlHidden::create('post_id', null, array('id' => 'id'))->set_value($this->id) );
-		$form->append( FormControlHidden::create('slug', null, array('id' => 'originalslug'))->set_value($this->slug) );
+		$form->append( FormControlData::create('content_type', null, array('id' => 'content_type'))->set_value($this->content_type) );
+		$form->append( FormControlData::create('post_id', null, array('id' => 'id'))->set_value($this->id) );
+		$form->append( FormControlData::create('slug', null, array('id' => 'originalslug'))->set_value($this->slug) );
 
 		$form->on_success(array($this, 'form_publish_success'));
 
@@ -1203,22 +1228,22 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		if(Options::get('comments_disabled')) {
 			$form->append(new FormControlStatic('message', _t('Comments are disabled site-wide.')));
 			$form->class[] = 'comments_disabled';
-			$form->set_option( 'form_action', '/' );
+			$form->set_properties( array('action' => '/') );
 		}
 		elseif($this->info->comments_disabled) {
 			$form->append(new FormControlStatic('message', _t('Comments for this post are disabled.')));
 			$form->class[] = 'comments_disabled';
-			$form->set_option( 'form_action', '/' );
+			$form->set_properties( array('action' => '/') );
 		}
 		elseif(Options::get('comments_require_logon') && !$user->loggedin) {
 			$form->append(new FormControlStatic('message', _t('Commenting on this site requires authentication.')));
 			$form->class[] = 'comments_require_logon';
-			$form->set_option( 'form_action', '/' );
+			$form->set_properties( array('action' => '/') );
 		}
 		elseif(!$user->can('comment')) {
 			$form->append(new FormControlStatic('message', _t('You do not have permission to comment on this site.')));
 			$form->class[] = 'comments_require_permission';
-			$form->set_option( 'form_action', '/' );
+			$form->set_properties( array('action' => '/') );
 		}
 		else {
 
@@ -1431,7 +1456,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			$arr = array( 'content_type_name' => Post::type_name( $this->content_type ) );
 			$author = URL::extract_args( $this->author, 'author_' );
 			$info = URL::extract_args( $this->info, 'info_' );
-			$this->url_args = array_merge( $author, $info, $arr, $this->pubdate->getdate() );
+			$url_args = array_merge( $author, $info, $arr, $this->pubdate->getdate() );
+			$this->url_args = Plugins::filter('post_url_args', $url_args, $this);
 		}
 		return array_merge($this->url_args, parent::get_url_args());
 	}
@@ -1733,8 +1759,19 @@ LIST_REVISIONS;
 		}
 		else {
 			$this->info->$key = $field_value;
-			$this->info->commit();
 		}
+		$self = $this;
+		Session::queue(
+			function() use($self) {
+				if($self->id == 0) {
+					$self->insert();
+				}
+				else {
+					$self->update();
+				}
+			},
+			$this
+		);
 	}
 
 

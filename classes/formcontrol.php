@@ -32,6 +32,8 @@ abstract class FormControl
 	public $value_set_manually = false;
 	/** @var bool|string $helptext This is help text for the control, if it is set */
 	public $helptext = false;
+	protected $on_success = array();
+	protected $on_save = array();
 
 
 	/**
@@ -200,6 +202,11 @@ abstract class FormControl
 		if($this->storage instanceof FormStorage) {
 			$this->storage->field_save($this->name, $this->value);
 		}
+		foreach ( $this->on_save as $save ) {
+			$callback = array_shift( $save );
+			array_unshift($save, $this);
+			Method::dispatch_array($callback, $save);
+		}
 	}
 
 	/**
@@ -264,7 +271,10 @@ abstract class FormControl
 			$properties = array_merge(array('name' => $this->name), $properties);
 		}
 		if(!isset($this->settings['internal_value'])) {
-			$properties = array_merge(array('value' => $this->value), $properties);
+			$properties = array_merge(array('value' => $this->get_setting('html_value', $this->value)), $properties);
+		}
+		if($id = $this->get_id(false)) {
+			$properties['id'] = $id;
 		}
 		$theme->_attributes = Utils::html_attr($properties);
 
@@ -436,9 +446,25 @@ abstract class FormControl
 	public function get_id($force_set = true)
 	{
 		if(!isset($this->properties['id']) && $force_set) {
-			$this->properties['id'] = $this->name;
+			$id_stack = array($this->name);
+			$c = $this->container;
+			while(!empty($c)) {
+				array_unshift($id_stack, $c->get_id_component());
+				$c = $c->container;
+			}
+			$id_stack = array_filter($id_stack);
+			$this->properties['id'] = Utils::slugify(implode('_', $id_stack), '_');
 		}
-		return isset($this->properties['id']) ? $this->properties['id'] : null;
+		return isset($this->properties['id']) ? $this->get_setting('id_prefix', '') . $this->properties['id'] : null;
+	}
+
+	/**
+	 * Get a string that will be used to generate a component of a control's HTML id
+	 * @return bool|string False if this component doesn't contribute to id creation, or the string component
+	 */
+	public function get_id_component()
+	{
+		return false;
 	}
 
 	/**
@@ -636,6 +662,54 @@ abstract class FormControl
 	public function clear()
 	{
 		$this->set_value($this->initial_value);
+	}
+
+	/**
+	 * Calls the success callback for the form, and optionally saves the form values
+	 * to the options table.
+	 * @return boolean|string A string to replace the rendering of the form with, or false
+	 */
+	public function do_success($form)
+	{
+		$output = false;
+		foreach ($this->on_success as $success) {
+			$callback = array_shift($success);
+			array_unshift($success, $this->get_form(), $this);
+			$result = Method::dispatch_array($callback, $success);
+			if ( is_string($result) ) {
+				$output = $result;
+			}
+		}
+		$this->save();
+		return $output;
+	}
+
+	/**
+	 * Set a function to call on form submission success
+	 *
+	 * @param mixed $callback A callback function or a plugin filter name (FormUI $form)
+	 */
+	public function on_success($callback)
+	{
+		$this->on_success[] = func_get_args();
+	}
+
+	/**
+	 * Set a function to call on form submission success
+	 *
+	 * @param mixed $callback A callback function or a plugin filter name.
+	 */
+	public function on_save($callback)
+	{
+		$this->on_save[] = func_get_args();
+	}
+
+	/**
+	 * Returns the HTML id of the element that the control exposes as a target, for example, for labels
+	 */
+	public function get_visualizer()
+	{
+		return $this->get_id();
 	}
 
 }

@@ -48,6 +48,20 @@ class Menus extends Plugin
 	}
 
 	/**
+	 * function filter_token_description_display
+	 * Plugin filter to localize token descriptions
+	 * @param string Token to get the description of
+	 * @return string The localized token description
+	 */
+	public function filter_token_description_display( $token )
+	{
+		$desc = array(
+		    'manage_menus' => _t( 'Manage menus' ),
+		);
+		return isset( $desc[$token] ) ? $desc[$token] : $token;
+	}
+
+	/**
 	 * Register the templates - one for the admin page, the other for the block.
 	 */
 	public function action_init()
@@ -394,7 +408,11 @@ class Menus extends Plugin
 					$form->append( FormControlHidden::create('term')->set_value($term->id) );
 				}
 				else {
-					$post_ids = $form->append( FormControlAutocomplete::create('post_ids')->set_properties(array('data-autocomplete-config'=>'{}'))->label( _t( 'Posts' ) ) );
+					$post_ids = $form->append(
+						FormControlAutocomplete::create('post_ids', null, array('style' => 'width:90%;'), array())
+							->set_ajax(URL::auth_ajax('post_list' ))
+							->label( _t( 'Posts' ) )->set_template('control.label.outsideleft')
+					);
 //					$post_ids->template = 'text_tokens';
 //					$post_ids->ready_function = "$('#{$post_ids->field}').tokenInput( habari.url.ajaxPostTokens )";
 				}
@@ -828,7 +846,7 @@ LINKS;
 			$config[ 'wrapper' ] = sprintf($config[ 'linkwrapper' ], $title);
 		}
 		else {
-			$config[ 'wrapper' ] = sprintf( $config[ 'linkwrapper' ], "<a href=\"{$link}\">{$title}</a>" );
+			$config[ 'wrapper' ] = str_replace('%', '%%', sprintf( $config[ 'linkwrapper' ], "<a href=\"{$link}\">{$title}</a>" ));
 		}
 		if ( $active ) {
 			$config[ 'itemattr' ][ 'class' ] = 'active';
@@ -861,29 +879,6 @@ LINKS;
 			// Add the menu administration javascript
 			Stack::add( 'admin_header_javascript', $this->get_url('/menus_admin.js'), 'menus_admin', 'admin-js');
 		}
-	}
-
-	/**
-	 * Respond to Javascript callbacks for autocomplete when creating items linking to posts
-	 */
-	public function action_auth_ajax_post_tokens( $handler )
-	{
-		// Get the data that was sent
-		$response = $handler->handler_vars[ 'q' ];
-
-		$final_response = array();
-
-		$new_response = Posts::get( array( "title_search" => $response, "status" => Post::status( 'published' ) ) );
-		foreach ( $new_response as $post ) {
-
-			$final_response[] = array(
-				'id' => $post->id,
-				'name' => $post->title,
-			);
-		}
-
-		// Send the response
-		echo json_encode( $final_response );
 	}
 }
 ?>

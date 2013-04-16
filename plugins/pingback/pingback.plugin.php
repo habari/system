@@ -146,7 +146,7 @@ class Pingback extends Plugin
 				// catch our special type of exception and re-throw it
 				throw $e;
 			}
-			catch ( Exception $e ) {
+			catch ( \Exception $e ) {
 				throw new XMLRPCException( -32300 );
 			}
 
@@ -273,7 +273,7 @@ class Pingback extends Plugin
 				return false;
 			}
 		}
-		catch ( Exception $e ) {
+		catch ( \Exception $e ) {
 			// log the pingback error
 			EventLog::log( _t( 'Unable to retrieve target, can\'t detect pingback endpoint. (Source: %1$s | Target: %2$s)', array( $source_uri, $target_uri ) ), 'err', 'Pingback' );
 			return false;
@@ -297,7 +297,7 @@ class Pingback extends Plugin
 		try {
 			$response = XMLRPCClient::open( $pingback_endpoint )->pingback->ping( $source_uri, $target_uri );
 		}
-		catch ( Exception $e ) {
+		catch ( \Exception $e ) {
 			EventLog::log( _t( 'Invalid Pingback endpoint - %1$s (Source: %2$s | Target: %3$s)', array( $pingback_endpoint, $source_uri, $target_uri ) ), 'err', 'Pingback' );
 			return false;
 		}

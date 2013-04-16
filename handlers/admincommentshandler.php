@@ -24,68 +24,47 @@ class AdminCommentsHandler extends AdminHandler
 		$user = User::identify();
 
 		// Create the top description
-		$top = $form->append( 'wrapper', 'buttons_1' );
-		$top->class = 'container buttons comment overview';
-
-		$top->append( 'static', 'overview', $this->theme->fetch( 'comment.overview' ) );
-
-		$buttons_1 = $top->append( 'wrapper', 'buttons_1' );
-		$buttons_1->class = 'item buttons';
-
+		$top = $form->append( FormControlWrapper::create( 'buttons_1', null, array( 'class' => array( 'container', 'buttons', 'comment', 'overview' ) ) ) );
+		$top->append( FormControlStatic::create( 'overview', null )->set_static( $this->theme->fetch( 'comment.overview' ) ) );
+		$buttons_1 = $top->append( FormControlWrapper::create( 'buttons_1', null, array( 'class' => array( 'item', 'buttons' ) ) ) );
 
 		foreach ( $actions as $status => $action ) {
 			$id = $action . '_1';
-			$buttons_1->append( 'submit', $id, _t( ucfirst( $action ) ) );
-			$buttons_1->$id->class = 'button ' . $action;
+			$buttons_1->append( FormControlSubmit::create( $id , null, array( 'class' => array('status', 'button', $action ) ) )->set_caption( MUltiByte::ucfirst( _t( $action ) ) ) );
 			if ( Comment::status_name( $comment->status ) == $status ) {
-				$buttons_1->$id->class = 'button active ' . $action;
-				$buttons_1->$id->disabled = true;
+				$buttons_1->$id->add_class( 'active' );
+				$buttons_1->$id->set_properties( array( 'disabled' => true ) );
 			}
 			else {
-				$buttons_1->$id->disabled = false;
+				$buttons_1->$id->set_properties( array( 'disabled' => false ) );
 			}
 		}
 
 		// Content
-		$form->append( 'wrapper', 'content_wrapper' );
-		$content = $form->content_wrapper->append( 'textarea', 'content', 'null:null', _t( 'Comment' ), 'admincontrol_textarea' );
-		$content->class = 'resizable';
-		$content->value = $comment->content;
+		$form->append( FormControlWrapper::create( 'content_wrapper' ) );
+		$form->content_wrapper->append( FormControlLabel::wrap( _t( 'Comment' ), FormControlTextArea::create( 'content', null, array( 'class' => 'resizable' ) )->set_value( $comment->content ) ) );
 
 		// Create the splitter
-		$comment_controls = $form->append( 'tabs', 'comment_controls' );
+		$comment_controls = $form->append( FormControlTabs::create( 'comment_controls' ) );
 
 		// Create the author info
-		$author = $comment_controls->append( 'fieldset', 'authorinfo', _t( 'Author' ) );
+		$author = $comment_controls->append( FormControlFieldset::create( 'authorinfo' )->set_caption( _t( 'Author' ) ) );
 
-		$author->append( 'text', 'author_name', 'null:null', _t( 'Author Name' ), 'tabcontrol_text' );
-		$author->author_name->value = $comment->name;
-
-		$author->append( 'text', 'author_email', 'null:null', _t( 'Author Email' ), 'tabcontrol_text' );
-		$author->author_email->value = $comment->email;
-
-		$author->append( 'text', 'author_url', 'null:null', _t( 'Author URL' ), 'tabcontrol_text' );
-		$author->author_url->value = $comment->url;
-
-		$author->append( 'text', 'author_ip', 'null:null', _t( 'IP Address:' ), 'tabcontrol_text' );
-		$author->author_ip->value = $comment->ip;
+		$author->append( FormControlLabel::wrap( _t( 'Author Name' ), FormControlText::create( 'author_name' )->set_value( $comment->name ) ) );
+		$author->append( FormControlLabel::wrap( _t( 'Author Email' ), FormControlText::create( 'author_email' )->set_value( $comment->email ) ) );
+		$author->append( FormControlLabel::wrap( _t( 'Author URL' ), FormControlText::create( 'author_url' )->set_value( $comment->url ) ) );
+		$author->append( FormControlLabel::wrap( _t( 'IP Address:' ), FormControlText::create( 'author_ip' )->set_value( $comment->ip ) ) );
 
 
 		// Create the advanced settings
-		$settings = $comment_controls->append( 'fieldset', 'settings', _t( 'Settings' ) );
+		$settings = $comment_controls->append( FormControlFieldset::create( 'settings' )->set_caption( _t( 'Settings' ) ) );
 
-		$settings->append( 'text', 'comment_date', 'null:null', _t( 'Date:' ), 'tabcontrol_text' );
-		$settings->comment_date->value = $comment->date->get( 'Y-m-d H:i:s' );
-
-
-
-		$settings->append( 'text', 'comment_post', 'null:null', _t( 'Post ID:' ), 'tabcontrol_text' );
-		$settings->comment_post->value = $comment->post->id;
+		$settings->append( FormControlLabel::wrap( _t( 'Date:' ), FormControlText::create( 'comment_date' )->set_value( $comment->date->get( 'Y-m-d H:i:s' ) ) ) );
+		$settings->append( FormControlLabel::wrap( _t( 'Post ID:' ), FormControlText::create( 'comment_post' )->set_value( $comment->post->id ) ) );
 
 		$statuses = Comment::list_comment_statuses( false );
 		$statuses = Plugins::filter( 'admin_publish_list_comment_statuses', $statuses );
-		$settings->append( 'select', 'comment_status', 'null:null', _t( 'Status' ), $statuses, 'tabcontrol_select' );
-		$settings->comment_status->value = $comment->status;
+		$settings->append( FormControlLabel::wrap( _t( 'Status' ), FormControlSelect::create( 'comment_status' )->set_options( $statuses)->set_value( $comment->status ) ) );
 
 		// // Create the stats
 		// $comment_controls->append('fieldset', 'stats_tab', _t('Stats'));
@@ -98,19 +77,17 @@ class AdminCommentsHandler extends AdminHandler
 		// $stats->append('static', 'url_count', '<div class="container"><p class="pct25">'._t('Comments with this URL:').'</p><p><strong>' . Comments::count_by_url($comment->url) . '</strong></p></div><hr />');
 
 		// Create the second set of action buttons
-		$buttons_2 = $form->append( 'wrapper', 'buttons_2' );
-		$buttons_2->class = 'container buttons comment';
+		$buttons_2 = $form->append( FormControlWrapper::create( 'buttons_2', null, array( 'class'=> array( 'container', 'buttons', 'comment' ) ) ) );
 
 		foreach ( $actions as $status => $action ) {
 			$id = $action . '_2';
-			$buttons_2->append( 'submit', $id, _t( ucfirst( $action ) ) );
-			$buttons_2->$id->class = 'button ' . $action;
+			$buttons_2->append( FormControlSubmit::create( $id , null, array( 'class' => array('status', 'button', $action ) ) )->set_caption( MUltiByte::ucfirst( _t( $action ) ) ) );
 			if ( Comment::status_name( $comment->status ) == $status ) {
-				$buttons_2->$id->class = 'button active ' . $action;
-				$buttons_2->$id->disabled = true;
+				$buttons_2->$id->add_class( 'active' );
+				$buttons_2->$id->set_properties( array( 'disabled' => true ) );
 			}
 			else {
-				$buttons_2->$id->disabled = false;
+				$buttons_2->$id->set_properties( array( 'disabled' => false ) );
 			}
 		}
 
@@ -140,6 +117,9 @@ class AdminCommentsHandler extends AdminHandler
 			$form = $this->form_comment( $comment, $actions );
 
 			if ( $update ) {
+				// Get the $_POSTed values
+				$form->process();
+
 				foreach ( $actions as $key => $action ) {
 					$id_one = $action . '_1';
 					$id_two = $action . '_2';
@@ -159,14 +139,14 @@ class AdminCommentsHandler extends AdminHandler
 					}
 				}
 
-				$comment->content = $form->content;
-				$comment->name = $form->author_name;
-				$comment->url = $form->author_url;
-				$comment->email = $form->author_email;
-				$comment->ip = $form->author_ip;
+				$comment->content = $form->content->value;
+				$comment->name = $form->author_name->value;
+				$comment->url = $form->author_url->value;
+				$comment->email = $form->author_email->value;
+				$comment->ip = $form->author_ip->value;
 
-				$comment->date = DateTime::create( $form->comment_date );
-				$comment->post_id = $form->comment_post;
+				$comment->date = DateTime::create( $form->comment_date->value );
+				$comment->post_id = $form->comment_post->value;
 
 				if ( ! isset( $set_status ) ) {
 					$comment->status = $form->comment_status->value;

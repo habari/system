@@ -4,13 +4,13 @@
 <!--begin content-->
 	<div id="content">
 		<!--begin primary content-->
-		<div id="primaryContent" class="span-15 append-2">
+		<div id="primaryContent">
 			<!--begin loop-->
 			<!--returns tag name in heading-->
-			<h2 class="prepend-2"><?php echo $tags_msg; ?></h2>
+			<h2><?php echo $tags_msg; ?></h2>
 			<?php foreach ( $posts as $post ) { ?>
 				<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
-						<h2 class="prepend-2"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
+						<h2><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
 					<div class="entry">
 					<?php /* @locale Date formats according to http://php.net/manual/en/function.date.php */ echo $post->pubdate->out( _t( 'F j, Y' ) ); ?> -	<?php echo $post->content_excerpt; ?>
 					</div>

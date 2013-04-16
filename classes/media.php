@@ -33,13 +33,8 @@ class Media
 			$dirs = array();
 			foreach ( self::$silos as $siloname => $silo ) {
 				$info = $silo->silo_info();
-				if ( isset( $info['icon'] ) ) {
-					$dirs[] = new MediaAsset( $siloname, true, array(), $info['icon'] );
-				}
-				else {
-					$dirs[] = new MediaAsset( $siloname, true, array(), null );
-				}
-				
+				$icon = isset( $info['icon'] ) ? $info['icon'] : null;
+				$dirs[] = new MediaAsset( $siloname, true, array(), $icon );
 			}
 			return $dirs;
 		}

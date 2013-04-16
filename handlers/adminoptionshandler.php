@@ -27,8 +27,9 @@ class AdminOptionsHandler extends AdminHandler
 		parent::__construct();
 
 		// Let's register the options page form so we can use it with ajax
+		$self = $this;
 
-		FormUI::register('admin_options', function($form, $name, $extra_data) use($self) {
+		FormUI::register('admin_options', function($form, $name, $extra_data) use ($self) {
 			$option_items = array();
 			$timezones = \DateTimeZone::listIdentifiers();
 			$timezones = array_merge( array( ''=>'' ), array_combine( array_values( $timezones ), array_values( $timezones ) ) );

@@ -39,7 +39,7 @@
 		?>
 		</div>
 		<?php if ( $plugin['core'] ): ?>
-			<span class="core">core</span>
+			<span class="core"><?php _e('core'); ?></span>
 		<?php endif; ?>
 
 		<?php if ( isset($plugin['help']) ): ?>
@@ -57,7 +57,7 @@
 			<li><a href="#"><?php _e('v1.1 Update Available Now'); ?></a></li>
 		</ul>
 		<?php endif; ?>
-		
+
 		<p class="description"><?php echo $plugin['info']->description; ?></p>
 
 	</div>
@@ -107,7 +107,7 @@
 		elseif ( isset($plugin['info']->help) ) {
 			foreach ( $plugin['info']->help as $help ) {
 				if ( (string)$help['name'] == '' ) {
-					echo  '<div class="help">' . $help->value . '</div>';
+					echo  '<div class="help">' . Pluggable::get_xml_text($plugin['info']['filename'], $help) . '</div>';
 				}
 			}
 		} ?>

@@ -14,9 +14,9 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 	<script type="text/javascript">
 	var habari = {
 		url:{
-			check_mysql_credentials: '<?php Site::out_url('habari', '/'); ?>ajax/check_mysql_credentials',
-			check_pgsql_credentials: '<?php Site::out_url('habari', '/'); ?>ajax/check_pgsql_credentials',
-			check_sqlite_credentials: '<?php Site::out_url('habari', '/'); ?>ajax/check_sqlite_credentials'
+			check_mysql_credentials: '<?php Site::out_url('site', '/'); ?>ajax/check_mysql_credentials',
+			check_pgsql_credentials: '<?php Site::out_url('site', '/'); ?>ajax/check_pgsql_credentials',
+			check_sqlite_credentials: '<?php Site::out_url('site', '/'); ?>ajax/check_sqlite_credentials'
 		}
 	};
 	</script>

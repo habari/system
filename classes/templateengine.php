@@ -26,7 +26,7 @@ abstract class TemplateEngine
 	 * A function which outputs the result of a transposed
 	 * template to the output stream
 	 *
-	 * @param template  Name of template to display
+	 * @param string $template  Name of template to display
 	 */
 	abstract function display( $template ); // virtual - implement in derived class
 
@@ -40,7 +40,7 @@ abstract class TemplateEngine
 	/**
 	 * Returns the existance of the specified template name
 	 *
-	 * @param template $template Name of template to detect
+	 * @param string $template Name of template to detect
 	 * @returns boolean True if the template exists, false if not
 	 */
 	abstract function template_exists( $template ); // virtual - implement in derived class
@@ -49,7 +49,7 @@ abstract class TemplateEngine
 	 * A function which returns the content of the transposed
 	 * template as a string
 	 *
-	 * @param template  Name of template to fetch
+	 * @param string $template  Name of template to fetch
 	 */
 	abstract function fetch( $template ); // virtual - implement in derived class
 
@@ -57,7 +57,7 @@ abstract class TemplateEngine
 	 * Tries to retrieve a variable from the internal array engine_vars.
 	 * Method returns the value if succesful, returns false otherwise.
 	 *
-	 * @param key name of variable
+	 * @param string $key name of variable
 	 */
 	abstract function __get( $key ); // virtual - implement in derived class
 
@@ -65,15 +65,15 @@ abstract class TemplateEngine
 	 * Assigns a variable to the template engine for use in
 	 * constructing the template's output.
 	 *
-	 * @param key name of variable
-	 * @param value value of variable
+	 * @param string $key name of variable
+	 * @param mixed $value value of variable
 	 */
 	abstract function __set( $key, $value ); // virtual - implement in derived class
 
 	/**
 	 * Unassigns a variable to the template engine.
 	 *
-	 * @param key name of variable
+	 * @param string $key name of variable
 	 */
 	abstract function __unset( $key );
 
@@ -81,7 +81,7 @@ abstract class TemplateEngine
 	 * Detects if a variable is assigned to the template engine for use in
 	 * constructing the template's output.
 	 *
-	 * @param key name of variable
+	 * @param string $key name of variable
 	 * @returns boolean true if key is set, false if not set
 	 */
 	abstract function __isset( $key ); // virtual - implement in derived class
@@ -90,8 +90,8 @@ abstract class TemplateEngine
 	 * Assigns a variable to the template engine for use in
 	 * constructing the template's output.
 	 *
-	 * @param key name of variable
-	 * @param value value of variable
+	 * @param string $key name of variable
+	 * @param mixed $value value of variable
 	 */
 	abstract function assign( $key, $value = '' ); // virtual - implement in derived class
 
@@ -113,8 +113,8 @@ abstract class TemplateEngine
 	/**
 	 * Appends to an existing variable more values
 	 *
-	 * @param key name of variable
-	 * @param value value of variable
+	 * @param string $key name of variable
+	 * @param mixed $value value of variable
 	 */
 	abstract function append( $key, $value = '' ); // virtual - implement in derived class
 

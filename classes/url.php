@@ -146,7 +146,8 @@ class URL extends Singleton
 	 */
 	public static function get( $rule_names = '', $args = array(), $useall = true, $noamp = false, $prepend_site = true )
 	{
-		$args = self::extract_args( $args );
+		$f_args = self::extract_args( $args );
+		$f_args = Plugins::filter('url_args', $f_args, $args, $rule_names);
 
 		$url = URL::instance();
 		if ( $rule_names == '' ) {
@@ -160,10 +161,10 @@ class URL extends Singleton
 
 			// For each argument, check if the handler_vars array has that argument and if it does, use it.
 			foreach ( $rr_args as $rr_arg ) {
-				if ( !isset( $args[$rr_arg] ) ) {
+				if ( !isset( $f_args[$rr_arg] ) ) {
 					$rr_arg_value = Controller::get_var( $rr_arg );
 					if ( $rr_arg_value != '' ) {
-						$args[$rr_arg] = $rr_arg_value;
+						$f_args[$rr_arg] = $rr_arg_value;
 					}
 				}
 			}
@@ -180,7 +181,7 @@ class URL extends Singleton
 				if ( $rules = $url->rules->by_name( $rule_name ) ) {
 					$rating = null;
 					foreach ( $rules as $rule ) {
-						$newrating = 0;// $rule->arg_match( $args ); // This was removed in b5fa3c998bb9fe754ab25061e5d4dd36f4ce3868#L13L151, see if it works.
+						$newrating = $rule->arg_match( $f_args );
 						// Is the rating perfect?
 						if ( $rating == 0 ) {
 							$selectedrule = $rule;
@@ -199,9 +200,9 @@ class URL extends Singleton
 		}
 
 		if ( $selectedrule instanceOf RewriteRule ) {
-			$return_url = $selectedrule->build( $args, $useall, $noamp );
+			$return_url = $selectedrule->build( $f_args, $useall, $noamp );
 			if ( $prepend_site ) {
-				return Site::get_url( 'habari', true ) . $return_url;
+				return Site::get_url( 'site', true ) . $return_url;
 			}
 			else {
 				return $return_url;
@@ -288,6 +289,31 @@ class URL extends Singleton
 			$args = $args_out;
 		}
 		return $args;
+	}
+
+	/**
+	 * Helper method for auth_ajax rule
+	 * @param string $context The context of the ajax rule
+	 * @param array|string|object $args The arguments to pass to the rule's builder
+	 * @return string The resultant URL
+	 */
+	public static function auth_ajax($context, $args = array())
+	{
+		$args['context'] = $context;
+		return URL::get('auth_ajax', $args);
+	}
+
+
+	/**
+	 * Helper method for ajax rule
+	 * @param string $context The context of the ajax rule
+	 * @param array|string|object $args The arguments to pass to the rule's builder
+	 * @return string The resultant URL
+	 */
+	public static function ajax($context, $args = array())
+	{
+		$args['context'] = $context;
+		return URL::get('ajax', $args);
 	}
 
 }
