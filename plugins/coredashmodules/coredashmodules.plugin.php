@@ -106,7 +106,7 @@ class CoreDashModules extends Plugin
 		$query = '
 select
 	{posts}.*,
-	count( {comments}.id ) as comments_count
+	max( {comments}.date) as newest_comment_date
 from
 	{posts},
 	{comments}
@@ -119,7 +119,7 @@ where
 group by
 	{posts}.id
 order by
-	{comments}.date desc
+	newest_comment_date desc
 ';
 
 		$query_args = array_merge( array( Post::status( 'published' ), Comment::STATUS_APPROVED ), $comment_types );
