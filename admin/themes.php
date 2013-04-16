@@ -114,7 +114,7 @@ foreach ( $all_themes as $inactive_theme ):
 	if ( $inactive_theme['path'] != $active_theme_dir ) : ?>
 	<div class="item <?php if ($previewed == $inactive_theme['dir']) echo " previewing"; ?>"> 
 		<div class="head theme_credits"> 
-			<a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?> ><?php echo $inactive_theme['info']->version; ?></a> <?php _e('by'); ?> 
+			<a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?> <?php echo $inactive_theme['info']->version; ?></a> <?php _e('by'); ?> 
 			<?php
 			$authors = array();
 			foreach ( $inactive_theme['info']->author as $author ) {
