@@ -2,8 +2,8 @@
 namespace Habari;
 if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 ?>
-<div class="group item clear" id="item-<?php echo $group->id; ?>">
-	<div class="head">
+<div class="group" id="item-<?php echo $group->id; ?>">
+	<div>
 		<h4><a href="<?php echo URL::get('admin', 'page=group&id=' . $group->id) ?>" title="<?php _e('Edit group'); ?>"><?php echo $group->name; ?></a></h4>
 		<ul class="dropbutton">
 			<?php $actions = array(
