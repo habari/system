@@ -89,8 +89,10 @@ class CoreDashModules extends Plugin
 	 */
 	public function action_block_form_latest_log_activity($form, $block)
 	{
-		$form->append( 'text', 'logs_number_display', $block, _t('Number of items') );
-		$form->append( 'submit', 'submit', _t('Submit') );
+		$form->append( FormControlLabel::wrap( _t('Number of items'),
+			FormControlText::create( 'logs_number_display', $block )
+		));
+		$form->append( FormControlSubmit::create( 'submit' )->set_caption( _t( 'Submit' ) ) );
 	}
 
 	/**
@@ -104,7 +106,7 @@ class CoreDashModules extends Plugin
 		$query = '
 select
 	{posts}.*,
-	max( {comments}.date) as newest_comment_date
+	count( {comments}.id ) as comments_count
 from
 	{posts},
 	{comments}
@@ -117,7 +119,7 @@ where
 group by
 	{posts}.id
 order by
-	newest_comment_date desc
+	{comments}.date desc
 ';
 
 		$query_args = array_merge( array( Post::status( 'published' ), Comment::STATUS_APPROVED ), $comment_types );
