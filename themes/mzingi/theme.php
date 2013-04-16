@@ -51,7 +51,7 @@ class Mzingi extends Theme
 	 *  template.  So the values here, unless checked, will overwrite any existing
 	 *  values.
 	 */
-	public function add_template_vars()
+	public function action_add_template_vars($theme)
 	{
 		if ( !$this->template_engine->assigned( 'pages' ) ) {
 			$this->assign( 'pages', Posts::get( 'page_list' ) );
@@ -71,7 +71,9 @@ class Mzingi extends Theme
 			}
 		}
 
-		parent::add_template_vars();
+		// Load the stylesheet
+		Stack::add('template_stylesheet', array(Site::get_url( 'theme', '/style.css' )), 'theme');
+
 		
 	}
 

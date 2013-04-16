@@ -7,7 +7,7 @@ Stack::add('template_header_javascript', Site::get_url('scripts') . '/jquery.js'
 <!--begin content-->
 	<div id="content">
 		<!--begin primary content-->
-		<div id="primaryContent" class="span-15 append-2">
+		<div id="primaryContent">
 			<?php include 'loginform.php'; ?>
 			</div>
 		<!--end primary content-->

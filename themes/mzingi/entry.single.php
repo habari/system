@@ -4,7 +4,7 @@
 <!--begin content-->
 	<div id="content">
 		<!--begin primary content-->
-		<div id="primaryContent" class="span-15 append-2">
+		<div id="primaryContent">
 			<!--begin single post navigation-->
 			<div id="post-nav">
 				<?php if ( $previous = $post->ascend() ): ?>
@@ -16,7 +16,7 @@
 			</div>
 			<!--begin loop-->
 				<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
-						<h2 class="prepend-2"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
+						<h2><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
 						<div class="cal"><?php echo $post->pubdate_out; ?></div>
 						<div class="entry">
 						<?php echo $post->content_out; ?>
