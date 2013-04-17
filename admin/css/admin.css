@@ -618,8 +618,16 @@ h2.lead  {
 		float:left;;
 	}
 
-  .title a, .theme_credits a {
+  .currenttheme .item .title, .availablethemes .item .title {
+    float: none;
+  }
+
+  .title a {
     font-weight: bold;
+  }
+
+  .currenttheme .container, .availablethemes .container {
+    margin-top: 15px;
   }
 	
 	.item .dropbutton {
