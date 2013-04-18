@@ -50,12 +50,18 @@ class CURLRequestProcessor extends RequestProcessor
 			$options[CURLOPT_FOLLOWLOCATION] = true; // Follow 302's and the like.
 		}
 
-		if ( $method === 'POST' ) {
-			$options[CURLOPT_POST] = true; // POST mode.
-			$options[CURLOPT_POSTFIELDS] = $body;
-		}
-		else {
-			$options[CURLOPT_CRLF] = true; // Convert UNIX newlines to \r\n
+		switch($method) {
+			case 'POST':
+				$options[CURLOPT_POST] = true; // POST mode.
+				$options[CURLOPT_POSTFIELDS] = $body;
+				break;
+			case 'HEAD':
+				$options[CURLOPT_HEADER] = true;
+				$options[CURLOPT_NOBODY] = true;
+				break;
+			default:
+				$options[CURLOPT_CRLF] = true; // Convert UNIX newlines to \r\n
+				break;
 		}
 
 		// set proxy, if needed
