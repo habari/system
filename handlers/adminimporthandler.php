@@ -18,27 +18,23 @@ class AdminImportHandler extends AdminHandler
 	 */
 	public function get_import()
 	{
-		// First check for troublesome plugins
+		// First check for plugins that provide troublseome features
+		$features_present = Plugins::provided();
+		$troublemakers = array();
 		$bad_features = array(
 		    'ping',
 		    'pingback',
 		    'spamcheck',
 		);
-		$troublemakers = array();
-		$plugins = Plugins::list_active();
-		foreach( $plugins as $plugin ) {
-			$info = Plugins::load_info( $plugin );
-			$provides = array();
-			if( isset($info->provides ) ) {
-				foreach( $info->provides->feature as $feature ) {
-					$provides[] = $feature;
+		$unwanted_features = array_intersect_key($features_present, array_flip($bad_features));
+		array_walk( $unwanted_features, function($item, $key ) use(&$troublemakers) {
+			foreach( $item as $current ) {
+				if( !in_array( $current, $troublemakers ) ) {
+					$troublemakers[] = $current;
 				}
 			}
-			$has_bad = array_intersect( $bad_features, $provides );
-			if( count( $has_bad ) ) {
-				$troublemakers[] = $info->name;
-			}
-		}
+		});
+
 		if( count( $troublemakers ) ) {
 			$troublemakers = implode( ', ', $troublemakers );
 			$msg = _t( 'Plugins that conflict with importing are active. To prevent undesirable consequences, please de-activate the following plugins until the import is finished: ' ) . '<br>';
