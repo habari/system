@@ -21,7 +21,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 			<th class="severity"><?php _e('Severity'); ?></th>
 			<th class="message"><?php _e('Message'); ?></th>
 		</tr>
-		<tr>
+		<!-- tr>
 			<th>&nbsp;</th>
 			<th><?php echo Utils::html_select('date', $dates, $date, array( 'class'=>'')); ?></th>
 			<th><?php echo Utils::html_select('user', $users, $user, array( 'class'=>'')); ?></th>
@@ -30,7 +30,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 			<th><?php echo Utils::html_select('type', $types, $type, array( 'class'=>'')); ?></th>
 			<th><?php echo Utils::html_select('severity', $severities, $severity, array( 'class'=>'')); ?></th>
 			<th><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></th>
-		</tr>
+		</tr -->
 	</thead>
 
 	<?php if (isset($years)) { ?>
