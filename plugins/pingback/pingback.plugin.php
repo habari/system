@@ -263,7 +263,7 @@ class Pingback extends Plugin
 	{
 		// RemoteRequest makes it easier to retrieve the headers.
 		try {
-			$rr = new RemoteRequest( $target_uri );
+			$rr = new RemoteRequest( $target_uri, 'HEAD', 5 );
 			$rr->execute();
 			if ( ! $rr->executed() ) {
 				return false;
@@ -276,14 +276,31 @@ class Pingback extends Plugin
 		}
 
 		$headers = $rr->get_response_headers();
-		$body = $rr->get_response_body();
 
 		// Find a Pingback endpoint.
 		if ( isset( $headers['X-Pingback'] ) ) {
 			$pingback_endpoint = $headers['X-Pingback'];
 		}
-		elseif ( preg_match( '/<link rel="pingback" href="([^"]+)" ?\/?'.'>/is', $body, $matches ) ) {
-			$pingback_endpoint = $matches[1];
+		elseif(isset($headers['Content-Type']) && $headers['Content-Type'] == 'text/html' ) {
+			try {
+				$rr = new RemoteRequest( $target_uri, 'GET', 5 );
+				$rr->execute();
+				if ( ! $rr->executed() ) {
+					return false;
+				}
+			}
+			catch ( \Exception $e ) {
+				// log the pingback error
+				EventLog::log( _t( 'Unable to retrieve target, can\'t detect pingback endpoint. (Source: %1$s | Target: %2$s)', array( $source_uri, $target_uri ) ), 'err', 'Pingback' );
+				return false;
+			}
+			$body = $rr->get_response_body();
+			if ( preg_match( '/<link rel="pingback" href="([^"]+)" ?\/?'.'>/is', $body, $matches ) ) {
+				$pingback_endpoint = $matches[1];
+			}
+			else {
+				return false;
+			}
 		}
 		else {
 			// No Pingback endpoint found.
