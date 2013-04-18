@@ -356,7 +356,7 @@ class DateTime extends \DateTime
 	 */
 	public function __toString()
 	{
-		return $this->format( 'U' );
+		return is_string($result = $this->format( 'U' )) ? $result : '0';
 	}
 
 	/**
