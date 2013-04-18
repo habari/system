@@ -53,10 +53,10 @@ class AdminImportHandler extends AdminHandler
 		$step = isset( $_POST['step'] ) ? $_POST['step'] : '1';
 
 //		$this->theme->enctype = Plugins::filter( 'import_form_enctype', 'application/x-www-form-urlencoded', $importer, $stage, $step );
-		
+
 		// filter to get registered importers
 		$importers = Plugins::filter( 'import_names', array() );
-		
+
 		// filter to get the output of the current importer, if one is running
 		if ( $importer == '' ) {
 			$output = $this->get_form( $importers, $importer );
@@ -70,7 +70,7 @@ class AdminImportHandler extends AdminHandler
 		$this->theme->step = $step;
 		$this->theme->importers = $importers;
 		$this->theme->output = $output;
-		
+
 		$this->display( 'import' );
 
 	}
@@ -88,6 +88,13 @@ class AdminImportHandler extends AdminHandler
 		$this->get_import();
 	}
 
+	/**
+	 * Builds and returns the form for the first stage of the importer
+	 * @param array The list of importers the plugin contains
+	 * @param string The name of the current importer
+	 *
+	 * @return FormUI The FormUI element used to chose the importer
+	 */
 	public function get_form( $importers, $importer )
 	{
 		$form = new FormUI( 'import' );
@@ -103,7 +110,7 @@ class AdminImportHandler extends AdminHandler
 			$form->append( FormControlSubmit::create( 'import' )->set_caption(  _t( 'Select' ) ) );
 		}
 
-		return $form;
+		return $form->get();
 	}
 
 }
