@@ -261,6 +261,12 @@ class FormUI extends FormContainer implements IsContent
 				$_POST[$key] = $value;
 			}
 		}
+		/** @var FormControl $control */
+		foreach($this->controls as $control) {
+			if($value = $control->value) {
+				$_POST[$control->input_name()] = $value;
+			}
+		}
 		foreach($data as $key => $value) {
 			$_POST[$key] = $value;
 		}
