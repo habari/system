@@ -97,7 +97,18 @@ abstract class FormControl
 		}
 
 		if(is_string($properties)) {
-			Utils::debug($arglist); die();
+			$bt = debug_backtrace(false, 4);
+			$x = reset($bt);
+			while($x['function'] != 'append' && count($bt) > 0) {
+				array_shift($bt);
+				$x = reset($bt);
+			}
+			$params = implode("\n\t", $arglist);
+			$err = <<< ERR
+<div class="error">Fixup for {$x['file']}[{$x['line']}]:<br/><code style="font-family:monospace;color:#c00;">{$type}::create('{$name}', '$storage')->label('{$properties}');</code></div>
+	<!-- $params -->
+ERR;
+			return FormControlStatic::create(uniqid('fc', true))->set_static($err);
 		}
 		return new $type($name, $storage, $properties, $settings);
 	}
@@ -547,6 +558,7 @@ abstract class FormControl
 		foreach ( $this->validators as $validator ) {
 			$validator_fn = array_shift( $validator );
 			if ( is_callable( $validator_fn ) ) {
+				// Passed to validator function:  $value, $control, $form, $validator_params...
 				$params = array_merge( array( $this->value, $this, $this->get_form() ), $validator );
 				$valid = array_merge( $valid, call_user_func_array( $validator_fn, $params ) );
 			}
@@ -672,8 +684,8 @@ abstract class FormControl
 	}
 
 	/**
-	 * Calls the success callback for the form, and optionally saves the form values
-	 * to the options table.
+	 * Calls the success callback for the form, and saves the form value to the control's storage location
+	 * @param FormUI $form The form this control belongs to
 	 * @return boolean|string A string to replace the rendering of the form with, or false
 	 */
 	public function do_success($form)
@@ -682,9 +694,11 @@ abstract class FormControl
 		foreach ($this->on_success as $success) {
 			$callback = array_shift($success);
 			array_unshift($success, $this->get_form(), $this);
-			$result = Method::dispatch_array($callback, $success);
-			if ( is_string($result) ) {
-				$output = $result;
+			if(!$form->get_setting('found_success', false)) {
+				$result = Method::dispatch_array($callback, $success);
+				if ( is_string($result) ) {
+					$output = $result;
+				}
 			}
 		}
 		$this->save();
@@ -695,20 +709,24 @@ abstract class FormControl
 	 * Set a function to call on form submission success
 	 *
 	 * @param mixed $callback A callback function or a plugin filter name (FormUI $form)
+	 * @return FormControl $this Fluent interface
 	 */
 	public function on_success($callback)
 	{
 		$this->on_success[] = func_get_args();
+		return $this;
 	}
 
 	/**
 	 * Set a function to call on form submission success
 	 *
 	 * @param mixed $callback A callback function or a plugin filter name.
+	 * @return FormControl $this Fluent interface
 	 */
 	public function on_save($callback)
 	{
 		$this->on_save[] = func_get_args();
+		return $this;
 	}
 
 	/**

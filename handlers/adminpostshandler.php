@@ -75,39 +75,6 @@ class AdminPostsHandler extends AdminHandler
 	}
 
 	/**
-	 * Deletes a post from the database.
-	 */
-	public function post_delete_post()
-	{
-		$extract = $this->handler_vars->filter_keys( 'id', 'nonce', 'timestamp', 'digest' );
-		foreach ( $extract as $key => $value ) {
-			$$key = $value;
-		}
-
-		$okay = true;
-		if ( empty( $id ) || empty( $nonce ) || empty( $timestamp ) || empty( $digest ) ) {
-			$okay = false;
-		}
-		$wsse = Utils::WSSE( $nonce, $timestamp );
-		if ( $digest != $wsse['digest'] ) {
-			$okay = false;
-		}
-
-		$post = Post::get( array( 'id' => $id, 'status' => Post::status( 'any' ) ) );
-		if ( ! ACL::access_check( $post->get_access(), 'delete' ) ) {
-			$okay = false;
-		}
-
-		if ( !$okay ) {
-			Utils::redirect( URL::get( 'admin', 'page=posts&type=' . $post->content_type ) );
-		}
-
-		$post->delete();
-		Session::notice( _t( 'Deleted the %1$s titled "%2$s".', array( Post::type_name( $post->content_type ), Utils::htmlspecialchars( $post->title ) ) ) );
-		Utils::redirect( URL::get( 'admin', 'page=posts&type=' . $post->content_type ) );
-	}
-
-	/**
 	 * Assign values needed to display the posts page to the theme based on handlervars and parameters
 	 *
 	 */

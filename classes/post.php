@@ -976,7 +976,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		}
 
 		// Store this post instance into a hidden field for later use when saving data
-		$form->append( FormControlData::create('post', $this) );
+		$form->append( FormControlData::create('post')->set_value($this) );
 
 		// Create the Title field
 		$form->append( FormControlLabel::wrap(_t('Title'), FormControlText::create('title', null, array('class' => array('check-change full-width'), 'tabindex' => 1))->set_value($this->title_internal)) );
@@ -1048,10 +1048,52 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		// Create the button area
 		$buttons = $form->append( FormControlFieldset::create('buttons', null, array('class' => array('container', 'buttons', 'publish'))) );
 
-		// Create the Save button
+		// What buttons should we have?
 		$require_any = array( 'own_posts' => 'create', 'post_any' => 'create', 'post_' . Post::type_name( $this->content_type ) => 'create' );
-		if ( ( $newpost && User::identify()->can_any( $require_any ) ) || ( !$newpost && ACL::access_check( $this->get_access(), 'edit' ) ) ) {
-			$buttons->append( FormControlSubmit::create('save', null, array('tabindex' => 4, 'class'=>'three columns'))->set_caption( _t( 'Save' ) ) );
+		$show_buttons = array();
+		if($newpost) {
+			if(User::identify()->can_any( $require_any )) {
+				$show_buttons['save'] = true;
+				$show_buttons['publish'] = true;
+			}
+		}
+		else {
+			if(ACL::access_check( $this->get_access(), 'edit' )) {
+				if($this->status == Post::status('draft')) {
+					$show_buttons['publish'] = true;
+				}
+				$show_buttons['save'] = true;
+			}
+			if(ACL::access_check( $this->get_access(), 'delete' )) {
+				$show_buttons['delete'] = true;
+			}
+		}
+		$show_buttons = Plugins::filter('publish_form_buttons', $show_buttons, $this);
+
+		if(isset($show_buttons['delete'])) {
+			// Create the Delete button
+			$buttons->append(
+				FormControlSubmit::create('delete', null, array('tabindex' => 4, 'class'=>'three columns'))
+					->set_caption( _t( 'Delete' ) )
+					->on_success(array($this, 'form_publish_delete'))
+			);
+		}
+		if(isset($show_buttons['save'])) {
+			// Create the Save button
+			$buttons->append(
+				FormControlSubmit::create('save', null, array('tabindex' => 4, 'class'=>'three columns'))
+					->set_caption( _t( 'Save' ) )
+			);
+		}
+		if(isset($show_buttons['publish'])) {
+			// Create the Publish button
+			$buttons->append(
+				FormControlSubmit::create('publish', null, array('tabindex' => 4, 'class'=>'three columns'))
+					->set_caption( _t( 'Publish' ) )
+					->add_validator(function($value, FormControlSubmit $control, FormUI $form){
+						$form->status->set_value(Post::status('published'));
+					})
+			);
 		}
 
 		// Add required hidden controls
@@ -1070,13 +1112,17 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		return $form;
 	}
 
+	/**
+	 * Called when the publish form is successfully submitted
+	 * @param FormUI $form
+	 */
 	public function form_publish_success( FormUI $form )
 	{
 		$user = User::identify();
 
 		// Get the Post object from the hidden 'post' control on the form
 		/** @var Post $post */
-		$post = $form->post->storage;
+		$post = $form->post->value;
 
 		// Do some permission checks
 		// @todo REFACTOR: These probably don't work and should be refactored to use validators on the form fields instead
@@ -1191,6 +1237,19 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$status = Post::status_name( $post->status );
 		Session::notice( _t( 'The post !postname has been saved as !status.', array( '!postname' => $postname, '!status' => $status ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
+	}
+
+	/**
+	 * The on_success handler for the delete button on the post editing form
+	 * @param FormUI $form The submitted post editing form
+	 */
+	public function form_publish_delete(FormUI $form) {
+		$post = $form->post->value;
+		if ( ACL::access_check( $post->get_access(), 'delete' ) ) {
+			$post->delete();
+			Session::notice( _t( 'Deleted the %1$s titled "%2$s".', array( Post::type_name( $post->content_type ), Utils::htmlspecialchars( $post->title ) ) ) );
+		}
+		Utils::redirect( URL::get( 'admin', 'page=posts&type=' . $post->content_type ) );
 	}
 
 

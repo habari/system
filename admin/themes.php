@@ -16,7 +16,7 @@
 				// @locale The string used between the last two items in the list of authors of a theme on the admin page (one, two, three *and* four).
 				echo Format::and_list( $authors,  _t( ' and ' ));
 				?>
-			</div>	
+			</div>
 			<?php
 				if ( isset( $active_theme['info']->help ) ):
 					if( Controller::get_var('help') == $active_theme['dir'] ):
@@ -81,33 +81,18 @@
 
 	<?php if ( isset($active_theme['info']->areas) ): ?>
 	<div id="blocksconfigure" class="item container">
-		
-			<h3><?php _e( "Areas" ); ?></h3>
-				<div id="block_add" class="columns ten">
-					<?php $this->display('block_instances'); ?>
-				</div>
-				<div class="columns four">
-					<div id="scope_container">
-					<?php $this->display('block_areas'); ?>
-					</div>
-					<div class="formcontrol"><button id="save_areas" disabled="disabled"><?php _e('Save'); ?></button>
-					</div>
-				</div>
-			<?php endif; ?>
-
-
-
-<?php /* hide this until Scope is implemented
-		<div class="item">
-		<h3>Scopes</h3>
-
-
-			<div id="tab_config_scopes" class="zsplitter">
-				<div class="splitterinside">Scope config goes here</div>
+		<h3 class="lead"><?php _e( "Areas" ); ?></h3>
+			<div id="block_add" class="columns ten">
+				<?php $this->display('block_instances'); ?>
 			</div>
-
-		</div>
-*/ ?>
+			<div class="columns four">
+				<div id="scope_container">
+				<?php $this->display('block_areas'); ?>
+				</div>
+				<div class="formcontrol"><button id="save_areas" disabled="disabled"><?php _e('Save'); ?></button>
+				</div>
+			</div>
+		<?php endif; ?>
 	</div>
 
 <div class="container main availablethemes">
