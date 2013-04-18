@@ -320,10 +320,14 @@ class FormUI extends FormContainer implements IsContent
 	/**
 	 * Redirect the user back to the stored URL value in session
 	 */
-	public function bounce()
+	public function bounce($keep_hash = true)
 	{
 		$_SESSION['forms'][$this->control_id()]['error_data'] = $this->get_values();
-		Utils::redirect( $_SESSION['forms'][$this->control_id()]['url'] );
+		$url = $_SESSION['forms'][$this->control_id()]['url'];
+		if(!$keep_hash) {
+			$url = preg_replace('/#.+$/', '', $url);
+		}
+		Utils::redirect( $url );
 	}
 
 	/**
