@@ -83,7 +83,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 				
 				case 1:
 				default:
-					$output = $this->stage1( $inputs );
+					$output = $this->stage1( $inputs, $import_name );
 					break;
 					
 				case 2:
@@ -97,7 +97,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 			
 		}
 		
-		private function stage1 ( $inputs ) {
+		private function stage1 ( $inputs, $import_name ) {
 			
 			$inputs = array_merge( $this->default_values, $inputs );
 			
@@ -114,39 +114,39 @@ if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); }
 			$output .= $error;
 			
 			// get the FormUI form
-			//$form = $this->get_form( $inputs );
+			$form = $this->get_form( $inputs, $import_name );
 			
 			// append the output of the form
-			//$output .= $form->get();
-			
-			$output .= '<div class="item clear">';
-			$output .= 	'<span class="pct25"><label for="db_name">' . _t( 'Database Name' ) . '</label></span><span class="pct40"><input type="text" name="db_name" id="db_name" value="' . $inputs['db_name'] . '"></span>';
-			$output .= '</div>';
-			
-			$output .= '<div class="item clear">';
-			$output .= 	'<span class="pct25"><label for="db_host">' . _t( 'Database Host' ) . '</label></span><span class="pct40"><input type="text" name="db_host" id="db_host" value="' . $inputs['db_host'] . '"></span>';
-			$output .= '</div>';
-			
-			$output .= '<div class="item clear">';
-			$output .= 	'<span class="pct25"><label for="db_user">' . _t( 'Database User' ) . '</label></span><span class="pct40"><input type="text" name="db_user" id="db_user" value="' . $inputs['db_user'] . '"></span>';
-			$output .= '</div>';
-			
-			$output .= '<div class="item clear">';
-			$output .= 	'<span class="pct25"><label for="db_pass">' . _t( 'Database Password' ) . '</label></span><span class="pct40"><input type="text" name="db_pass" id="db_pass" value="' . $inputs['db_pass'] . '"></span>';
-			$output .= '</div>';
-			
-			$output .= '<div class="item clear">';
-			$output .= 	'<span class="pct25"><label for="db_prefix">' . _t( 'Table Prefix' ) . '</label></span><span class="pct40"><input type="text" name="db_prefix" id="db_prefix" value="' . $inputs['db_prefix'] . '"></span>';
-			$output .= '</div>';
-			
-			$output .= '<div class="item clear">';
-			$output .= 	'<span class="pct25"><label for="category_import">' . _t( 'Import Categories as Tags' ) . '</label></span><span class="pct40"><input type="checkbox" name="category_import" id="category_import" value="true" ' . ( ( $inputs['category_import'] == true ) ? 'checked="checked"' : '' ) . '></span>';
-			$output .= '</div>';
-			
-			$output .= '<div class="item clear transparent">';
-			$output .=	'<input type="submit" class="button" name="wpimport" value="' . _t( 'Import' ) . '">';
-			$output .= '</div>';
-			
+			$output .= $form->get();
+
+//			$output .= '<div class="item clear">';
+//			$output .= 	'<span class="pct25"><label for="db_name">' . _t( 'Database Name' ) . '</label></span><span class="pct40"><input type="text" name="db_name" id="db_name" value="' . $inputs['db_name'] . '"></span>';
+//			$output .= '</div>';
+
+//			$output .= '<div class="item clear">';
+//			$output .= 	'<span class="pct25"><label for="db_host">' . _t( 'Database Host' ) . '</label></span><span class="pct40"><input type="text" name="db_host" id="db_host" value="' . $inputs['db_host'] . '"></span>';
+//			$output .= '</div>';
+
+//			$output .= '<div class="item clear">';
+//			$output .= 	'<span class="pct25"><label for="db_user">' . _t( 'Database User' ) . '</label></span><span class="pct40"><input type="text" name="db_user" id="db_user" value="' . $inputs['db_user'] . '"></span>';
+//			$output .= '</div>';
+
+//			$output .= '<div class="item clear">';
+//			$output .= 	'<span class="pct25"><label for="db_pass">' . _t( 'Database Password' ) . '</label></span><span class="pct40"><input type="text" name="db_pass" id="db_pass" value="' . $inputs['db_pass'] . '"></span>';
+//			$output .= '</div>';
+
+//			$output .= '<div class="item clear">';
+//			$output .= 	'<span class="pct25"><label for="db_prefix">' . _t( 'Table Prefix' ) . '</label></span><span class="pct40"><input type="text" name="db_prefix" id="db_prefix" value="' . $inputs['db_prefix'] . '"></span>';
+//			$output .= '</div>';
+
+//			$output .= '<div class="item clear">';
+//			$output .= 	'<span class="pct25"><label for="category_import">' . _t( 'Import Categories as Tags' ) . '</label></span><span class="pct40"><input type="checkbox" name="category_import" id="category_import" value="true" ' . ( ( $inputs['category_import'] == true ) ? 'checked="checked"' : '' ) . '></span>';
+//			$output .= '</div>';
+
+//			$output .= '<div class="item clear transparent">';
+//			$output .=	'<input type="submit" class="button" name="wpimport" value="' . _t( 'Import' ) . '">';
+//			$output .= '</div>';
+
 			return $output;
 			
 		}
@@ -198,31 +198,44 @@ WP_IMPORT_AJAX;
 			
 		}
 		
-		private function get_form ( $inputs ) {
+		private function get_form ( $inputs, $import_name ) {
 			// this isn't used right now because we can't use formui in an importer, there's already a form
 			$form = new FormUI('wp_importer');
-			
-			$db_name = $form->append( 'text', 'db_name', 'null:null', _t( 'Database Name') );
-			$db_name->value = $inputs['db_name'];
-			
-			$db_host = $form->append( 'text', 'db_host', 'null:null', _t( 'Database Host' ) );
-			$db_host->value = $inputs['db_host'];
-			
-			$db_user = $form->append( 'text', 'db_user', 'null:null', _t( 'Database User' ) );
-			$db_user->value = $inputs['db_user'];
-			
-			$db_pass = $form->append( 'text', 'db_pass', 'null:null', _t( 'Database Password' ) );
-			$db_pass->value = $inputs['db_pass'];
-			
-			$db_prefix = $form->append( 'text', 'db_prefix', 'null:null', _t( 'Table Prefix' ) );
-			$db_prefix->value = $inputs['db_prefix'];
-			
-			$category_import = $form->append( 'checkbox', 'category_import', 'null:null', _t( 'Import Categories as Tags' ) );
-			$category_import->value = ( $inputs['category_import'] ) ? true : false;
-			
-			$submit = $form->append( 'submit', 'submit', _t( 'Import' ) );
-			
-			
+
+			$form->append( FormControlStatic::create( '<p>' . _t( 'Habari will attempt to import from a WordPress database.') . '</p>' ) );
+
+			$form->append( FormControlLabel::wrap( _t( 'Database Name'), 
+				FormControlText::create( 'db_name' )->set_value( $inputs['db_name'] )
+			));
+
+			$form->append( FormControlLabel::wrap( _t( 'Database Host'), 
+				FormControlText::create( 'db_host' )->set_value( $inputs['db_host'] )
+			));
+
+			$form->append( FormControlLabel::wrap( _t( 'Database User'), 
+				FormControlText::create( 'db_user' )->set_value( $inputs['db_user'] )
+			));
+
+			$form->append( FormControlLabel::wrap( _t( 'Database Password'), 
+				FormControlText::create( 'db_pass' )->set_value( $inputs['db_pass'] )
+			));
+
+			$form->append( FormControlLabel::wrap( _t( 'Table Prefix'), 
+				FormControlText::create( 'db_prefix' )->set_value( $inputs['db_prefix'] )
+			));
+
+			$form->append( FormControlLabel::wrap( _t( 'Import Categories as Tags' ), 
+				FormControlCheckbox::create( 'category_import' )->set_value( $inputs['category_import'] )
+			));
+
+			$form->append( FormControlData::create( 'stage' )->set_value( 1 ) );
+
+			$form->append( FormControlHidden::create( 'importer' )->set_value( $import_name ) );
+
+			$form->append( FormControlSubmit::create( 'wpimport' )->set_caption( _t( 'Import' ) )->add_class( 'button' ) );
+
+			$form->set_wrap_each( '<div>%s</div>' );
+
 			return $form;
 			
 		}
