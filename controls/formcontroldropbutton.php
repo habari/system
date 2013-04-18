@@ -30,7 +30,8 @@ class FormControlDropbutton extends FormControl
 			else {
 				$href = $fn;
 			}
-			$actions[] = array(
+			$key = Utils::slugify($caption);
+			$actions[$key] = array(
 				'caption' => $caption,
 				'fn' => $fn,
 				'href' => $href,
