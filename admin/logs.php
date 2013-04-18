@@ -8,7 +8,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 
 <?php echo $form; ?>
 
-<table class="container">
+<table class="container" id="log_data">
 
 	<thead>
 		<tr>

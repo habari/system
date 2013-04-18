@@ -20,7 +20,8 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 		<td class="module"><?php echo $log->module; ?></td>
 		<td class="type"><?php echo $log->type; ?></td>
 		<td class="severity"><?php echo $log->severity; ?></td>
-		<td class="message <?php if( MultiByte::strlen( $log->message ) > 40 ) { echo ' less'; } ?>"><?php echo Utils::truncate(Utils::htmlspecialchars($log->message), 40, false); ?>
-		<td class="message more"><?php echo Utils::htmlspecialchars($log->message); ?>
+		<td class="message more">
+			<?php echo Utils::htmlspecialchars($log->message); ?>
+		</td>
 	</tr>
 <?php endforeach; ?>

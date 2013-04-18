@@ -140,7 +140,7 @@ class AdminLogsHandler extends AdminHandler
 		$form = new FormUI('logs_batch', 'logs_batch');
 		$form->append(FormControlAggregate::create('entries')->set_selector('.log_entry')->label('None Selected'));
 		$form->append(FormControlDropbutton::create('action')->set_actions(array(
-			_t('Delete Selected') => function($form){
+			_t('Delete Selected') => function(FormUI $form){
 				$ids = $form->entries->value;
 				$count = 0;
 				/** @var LogEntry $log */
@@ -152,14 +152,16 @@ class AdminLogsHandler extends AdminHandler
 					}
 				}
 				Session::notice( _t( 'Deleted %d logs.', array( $count ) ) );
+				$form->bounce(false);
 			},
-			_t('Purge Logs') => function($form){
+			_t('Purge Logs') => function(FormUI $form){
 				if(EventLog::purge()) {
 					Session::notice( _t( 'Logs purged.' ) );
 				}
 				else {
 					Session::notice( _t( 'There was a problem purging the event logs.' ) );
 				}
+				$form->bounce(false);
 			},
 		)));
 
