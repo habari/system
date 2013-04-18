@@ -52,6 +52,11 @@
 		 */
 		static function add_cron( $paramarray )
 		{
+			// Delete any existing job with this same name
+			if($job = CronTab::get_cronjob($paramarray['name'])) {
+				$job->delete();
+			}
+
 			$cron = new CronJob( $paramarray );
 			$result = $cron->insert();
 
@@ -60,7 +65,7 @@
 			if ( intval( Options::get( 'next_cron' ) ) > intval( $next_cron ) ) {
 				Options::set( 'next_cron', $next_cron );
 			}
-			return $result;
+			return $result ? $cron : false;
 		}
 
 		/**
