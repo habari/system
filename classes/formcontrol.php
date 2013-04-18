@@ -4,7 +4,7 @@ namespace Habari;
 
 abstract class FormControl
 {
-	/** @var string $name The name of the conrol for the purposes of manipulating it from the container object */
+	/** @var string $name The name of the control for the purposes of manipulating it from the container object */
 	public $name;
 	/** @var FormStorage|null $storage The storage object for this form */
 	public $storage;
@@ -268,7 +268,7 @@ abstract class FormControl
 		$theme->_properties = $this->properties;
 		$properties = is_array($this->properties) ? $this->properties: array();
 		if(!isset($this->settings['ignore_name'])) {
-			$properties = array_merge(array('name' => $this->name), $properties);
+			$properties = array_merge(array('name' => $this->input_name()), $properties);
 		}
 		if(!isset($this->settings['internal_value'])) {
 			$properties = array_merge(array('value' => $this->get_setting('html_value', $this->value)), $properties);
@@ -473,10 +473,11 @@ abstract class FormControl
 	 */
 	public function input_name()
 	{
-		return $this->get_setting(
+		$name = $this->get_setting(
 			'input_name',
 			$this->name
 		);
+		return $name;
 	}
 
 	/**
