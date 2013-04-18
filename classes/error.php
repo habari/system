@@ -104,7 +104,7 @@ class Error extends \Exception
 			return;
 		}
 
-		if ( !function_exists( '_t' ) ) {
+		if ( !function_exists( '\Habari\_t' ) ) {
 			function _t( $v )
 			{
 				return $v;
@@ -114,6 +114,10 @@ class Error extends \Exception
 			{
 				return ( $count == 1 ? $singular : $plural );
 			}
+		}
+
+		if(!defined('DEBUG')) {
+			define('DEBUG', false);
 		}
 
 		// Don't be fooled, we can't actually handle most of these.
