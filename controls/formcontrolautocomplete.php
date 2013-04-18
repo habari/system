@@ -72,7 +72,9 @@ controls.init(function(){
 				}
 			});
 		}
-
+		$.extend(autocomplete_config, {
+			width: 'resolve'
+		});
 		console.log(autocomplete_config);
 		self.select2(autocomplete_config);
 	});

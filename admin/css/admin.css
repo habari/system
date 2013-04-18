@@ -411,6 +411,13 @@ body, html {
 	margin-right: 15px;
 }
 
+textarea.full-width,
+input.full-width {
+	width: 100%;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
 #welcome {
 	margin-top: 85px;
 	margin-bottom: 20px;

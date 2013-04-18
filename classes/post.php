@@ -984,7 +984,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$form->append( FormControlData::create('post', $this) );
 
 		// Create the Title field
-		$form->append( FormControlLabel::wrap(_t('Title'), FormControlText::create('title', null, array('class' => array('important', 'check-change'), 'tabindex' => 1))->set_value($this->title_internal)) );
+		$form->append( FormControlLabel::wrap(_t('Title'), FormControlText::create('title', null, array('class' => array('check-change full-width'), 'tabindex' => 1))->set_value($this->title_internal)) );
 
 		// Create the silos
 		if ( count( Plugins::get_by_interface( 'MediaSilo' ) ) ) {
@@ -992,12 +992,22 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		}
 
 		// Create the Content field
-		$form->append( FormControlLabel::wrap( _t('Content'), FormControlTextArea::create('content', null, array('class' => array('resizable', 'check-change'), 'tabindex' => 2))->set_value($this->content_internal)) );
+		$form->append( FormControlLabel::wrap( _t('Content'), FormControlTextArea::create('content', null, array('class' => array('resizable', 'check-change full-width rte'), 'tabindex' => 2))->set_value($this->content_internal)) );
 		$form->content->raw = true;  // @todo What does this do?
 
 		// Create the tags field
 		/** @var FormControlAutocomplete $tags_control */
-		$form->append( FormControlLabel::wrap( _t( 'Tags, separated by, commas' ), $tags_control = FormControlAutocomplete::create('tags', null, array('style' => 'width:90%;', 'class' => 'check-change', 'tabindex' => 3), array('allow_new' => true, 'init_selection' => true))));
+		$form->append(
+			FormControlLabel::wrap(
+				_t( 'Tags, separated by, commas' ),
+				$tags_control = FormControlAutocomplete::create(
+					'tags',
+					null,
+					array('style' => 'width:100%;margin:0px 0px 20px;', 'class' => 'check-change full-width', 'tabindex' => 3),
+					array('allow_new' => true, 'init_selection' => true)
+				)
+			)->set_properties(array('style' => 'width:100%;margin:0px 0px 20px;'))
+		);
 
 		$tags = (array)$this->get_tags();
 		array_walk($tags, function(&$element, $key) {
@@ -1046,7 +1056,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		// Create the Save button
 		$require_any = array( 'own_posts' => 'create', 'post_any' => 'create', 'post_' . Post::type_name( $this->content_type ) => 'create' );
 		if ( ( $newpost && User::identify()->can_any( $require_any ) ) || ( !$newpost && ACL::access_check( $this->get_access(), 'edit' ) ) ) {
-			$buttons->append( FormControlSubmit::create('save', null, array('tabindex' => 4))->set_caption( _t( 'Save' ) ) );
+			$buttons->append( FormControlSubmit::create('save', null, array('tabindex' => 4, 'class'=>'three columns'))->set_caption( _t( 'Save' ) ) );
 		}
 
 		// Add required hidden controls
