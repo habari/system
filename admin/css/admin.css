@@ -596,15 +596,23 @@ input.full-width {
 
 /* Common */
 
-h2.lead  {
-    font-family: "Montserrat";
-    font-weight: normal;
-    font-size: 15px;
-    margin: -10px -20px 0px;
-    padding-left: 20px;
-    color: #fff;
-    background: #333;
-  }
+.lead  {
+	font-family: "Montserrat";
+	font-weight: normal;
+	font-size: 15px;
+	margin: -10px -20px 0px;
+	padding-left: 20px;
+	color: #fff;
+	background: #333;
+}
+	h2.lead {
+		color: #fff;
+		background: #333;
+	}
+	h3.lead {
+		color: #fff;
+		background: #B4AD9C;
+	}
 	
 .main {
 	margin-top: 10px;

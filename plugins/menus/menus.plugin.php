@@ -147,7 +147,7 @@ class Menus extends Plugin
 		}
 
 		$settings = $form->publish_controls->append( FormControlFieldset::create('menu_set')->set_caption(_t( 'Menus' ) ) );
-		$settings->append( FormControlLabel::wrap(_t( 'Menus' ), FormControlCheckboxes::create('menus')->set_options($menulist) ) );
+		$settings->append( FormControlCheckboxes::create('menus')->set_options($menulist) );
 
 		// If this is an existing post, see if it has categories already
 		if ( 0 != $post->id ) {
@@ -175,7 +175,7 @@ class Menus extends Plugin
 		// might not hurt to turn this into a function to be more DRY
 		$term_title = $post->title;
 		$selected_menus = $form->menus->value;
-		foreach( $this->get_menus() as $menu ) {
+/*		foreach( $this->get_menus() as $menu ) {
 			$terms = $menu->get_object_terms( 'post', $post->id );
 			if ( in_array( $menu->id, $selected_menus ) ) {
 				if ( count( $terms ) == 0 ) {
@@ -195,7 +195,7 @@ class Menus extends Plugin
 					$term->delete();
 				}
 			}
-		}
+		}*/
 	}
 
 	/**
