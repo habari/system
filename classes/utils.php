@@ -163,6 +163,17 @@ class Utils
 	}
 
 	/**
+	 * Escape the ampersands in a URL for ouptut
+	 * @param string $value A URL for output
+	 * @return string The URL with escaped ampersands
+	 */
+	public static function amp( $value )
+	{
+		$value = preg_replace('/&(?!amp;)/im', '&amp;', $value);
+		return $value;
+	}
+
+	/**
 	 * Reverts magicquotes_gpc behavior
 	 */
 	public static function revert_magic_quotes_gpc()
@@ -606,7 +617,7 @@ class Utils
 			if(!isset($option['id']) && isset($option['name'])) {
 				$option['id'] = $option['name'];
 			}
-			
+
 			$output .= '<input ' . self::html_attr($option) . ' />';  // This XML/XHTML looks spurious, but PHP's appendXML requires it elsewhere
 		}
 		
