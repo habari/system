@@ -21,7 +21,7 @@
 			}
 			?>
 			</p>
-		<?php
+		<p><?php
 		$content_type_msg = array();
 		$user = User::identify();
 		if ( !empty( $stats['post_count'] ) ) {
