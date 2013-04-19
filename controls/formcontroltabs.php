@@ -22,6 +22,7 @@ class FormControlTabs extends FormContainer
 	 */
 	function get( Theme $theme )
 	{
+		$this->settings['ignore_name'] = true;
 		foreach ( $this->controls as $control ) {
 			if ( $control instanceof FormContainer ) {
 				$content = '';
