@@ -104,7 +104,7 @@ class Error extends \Exception
 			return;
 		}
 
-		if ( !function_exists( '\Habari\_t' ) ) {
+		if ( !function_exists( '\Habari\_t' ) &&  !function_exists( '_t' ) ) {
 			function _t( $v )
 			{
 				return $v;
