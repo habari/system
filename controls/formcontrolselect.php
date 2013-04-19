@@ -29,6 +29,7 @@ class FormControlSelect extends FormControl
 	public function get( Theme $theme )
 	{
 		$this->vars['options'] = $this->options;
+		$this->settings['internal_value'] = true;
 		return parent::get($theme);
 	}
 }
