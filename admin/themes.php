@@ -43,8 +43,8 @@
 
 		</div>
 
-		<div class="container">
-			<div class="thumb columns four"><img src="<?php echo $active_theme['screenshot']; ?>">
+		<div class="clearfix">
+			<div class="thumb columns four"><img class="colmuns four" src="<?php echo $active_theme['screenshot']; ?>">
 			</div>
 			<div class="themeinfo columns ten">
 				<p class="description"><?php echo $active_theme['info']->description; ?></p>
@@ -146,9 +146,9 @@ foreach ( $all_themes as $inactive_theme ):
 			</ul>
 		    <?php endif; ?>
 		</div>
-		<div class="container">
+		<div class="clearfix">
 		    <div class="thumb columns four">
-				<img src="<?php echo $inactive_theme['screenshot']; ?>" class="themethumb">
+				<img class="themethumb columns four" src="<?php echo $inactive_theme['screenshot']; ?>">
 			</div>
 			<div class="themeinfo columns ten">
 				<div class="pointer"></div>
