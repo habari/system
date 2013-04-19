@@ -148,6 +148,10 @@ class FormUI extends FormContainer implements IsContent
 		if(!isset($this->settings['template'])) {
 			$this->set_template('control.form');
 		}
+		// If the action of this form wasn't explicitly set, unset it to avoid validation errors in output
+		if(empty($this->properties['action'])) {
+			unset($this->properties['action']);
+		}
 
 		// Add the control ID to the template output for the form
 		$this->vars['_control_id'] = $this->control_id();
