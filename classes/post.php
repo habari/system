@@ -747,11 +747,6 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function delete()
 	{
-		// Check if the currently logged-in user is allowed to delete this post.
-		if( !ACL::access_check( $this->get_access(), 'delete' ) ) {
-			return false;
-		}
-		
 		$allow = true;
 		$allow = Plugins::filter( 'post_delete_allow', $allow, $this );
 		if ( ! $allow ) {
