@@ -27,6 +27,7 @@ namespace Habari;
  * </code>
  *
  * @property UserInfo $info Metadata stored about this user in the userinfo table
+ * @property integer $id The id of the user
  *
  */
 class User extends QueryRecord implements FormStorage, IsContent

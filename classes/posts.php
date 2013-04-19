@@ -38,7 +38,8 @@ class Posts extends \ArrayObject implements IsContent
 	 * global $url object for the request.  The difference would occur when
 	 * the data returned doesn't necessarily match the request, such as when
 	 * several posts are requested, but only one is available to return.
-	 * @param string The name of the property to return.
+	 * @param string $name The name of the property to return.
+	 * @return array|bool|mixed The requested property value
 	 */
 	public function __get( $name )
 	{
@@ -116,6 +117,8 @@ class Posts extends \ArrayObject implements IsContent
 	{
 		static $presets;
 
+		$select_distinct = array();
+
 		// If $paramarray is a string, use it as a Preset
 		if(is_string($paramarray)) {
 			$paramarray = array('preset' => $paramarray);
@@ -123,7 +126,7 @@ class Posts extends \ArrayObject implements IsContent
 
 		// If $paramarray is a querystring, convert it to an array
 		$paramarray = Utils::get_params( $paramarray );
-		if($paramarray instanceof ArrayIterator) {
+		if($paramarray instanceof \ArrayIterator) {
 			$paramarray = $paramarray->getArrayCopy();
 		}
 
@@ -255,7 +258,7 @@ class Posts extends \ArrayObject implements IsContent
 
 						// this causes no posts to match if combined with 'any' below and should be re-thought... somehow
 						$groupby = implode( ',', $select_distinct );
-						$having = 'count(*) = ' . count( $terms );
+						$having = 'count(*) = ' . count( $terms );  // @todo this seems like it's in the wrong place
 
 					}
 				}
@@ -285,7 +288,7 @@ class Posts extends \ArrayObject implements IsContent
 							$andwhere->in( $join_group . "_t.{$field}", $terms );
 							$andwhere->in( $join_group . '_ot.object_type_id', $object_id );
 						}
-						$orwhere->add( $andwhere );
+						$orwhere->add( $andwhere );  // @todo this seems like it's in the wrong place
 
 					}
 					$where->add( $orwhere );
@@ -825,7 +828,7 @@ class Posts extends \ArrayObject implements IsContent
 	/**
 	 * function by_status
 	 * select all posts of a given status
-	 * @param int a status value
+	 * @param int $status a status value
 	 * @return array an array of Comment objects with the same status
 	 */
 	public static function by_status ( $status )
@@ -837,7 +840,7 @@ class Posts extends \ArrayObject implements IsContent
 	/**
 	 * function by_slug
 	 * select all post content by slug
-	 * @param string a post slug
+	 * @param string $slug a post slug
 	 * @return array an array of post content
 	 */
 	public static function by_slug ( $slug = '' )
@@ -848,7 +851,7 @@ class Posts extends \ArrayObject implements IsContent
 	/**
 	 * static count_total
 	 * return a count for the total number of posts
-	 * @param mixed a status value to filter posts by; if false, then no filtering will be performed
+	 * @param mixed $status a status value to filter posts by; if false, then no filtering will be performed
 	 * @return int the number of posts of specified type ( published or draft )
 	 */
 	public static function count_total( $status = false )
@@ -883,8 +886,8 @@ class Posts extends \ArrayObject implements IsContent
 	/**
 	 * static count_by_author
 	 * return a count of the number of posts by the specified author
-	 * @param int an author ID
-	 * @param mixed a status value to filter posts by; if false, then no filtering will be performed
+	 * @param int $user_id an author ID
+	 * @param mixed $status a status value to filter posts by; if false, then no filtering will be performed
 	 * @return int the number of posts by the specified author
 	 */
 	public static function count_by_author( $user_id, $status = false )
@@ -899,8 +902,8 @@ class Posts extends \ArrayObject implements IsContent
 	/**
 	 * static count_by_tag
 	 * return a count of the number of posts with the assigned tag
-	 * @param string A tag
-	 * @param mixed a status value to filter posts by; if false, then no filtering will be performed
+	 * @param string $tag A tag
+	 * @param mixed $status a status value to filter posts by; if false, then no filtering will be performed
 	 * @return int the number of posts with the specified tag
 	 */
 	public static function count_by_tag( $tag, $status = false )
@@ -914,8 +917,8 @@ class Posts extends \ArrayObject implements IsContent
 
 	/**
 	 * Reassigns the author of a specified set of posts
-	 * @param mixed a user ID or name
-	 * @param mixed an array of post IDs, an array of Post objects, or an instance of Posts
+	 * @param int|User|string $user a user ID or name
+	 * @param array|Posts $posts an array of post IDs, an array of Post objects, or an instance of Posts
 	 * @return bool Whether the rename operation succeeded or not
 	 */
 	public static function reassign( $user, $posts )
@@ -965,7 +968,7 @@ class Posts extends \ArrayObject implements IsContent
 	 *
 	 * Callback function to publish scheduled posts
 	 */
-	public static function publish_scheduled_posts( $params )
+	public static function publish_scheduled_posts( )
 	{
 		$select = array();
 		// Default fields to select, everything by default
@@ -974,6 +977,7 @@ class Posts extends \ArrayObject implements IsContent
 		}
 		$select = implode( ',', $select );
 		$posts = DB::get_results( 'SELECT ' . $select . ' FROM {posts} WHERE {posts}.status = ? AND {posts}.pubdate <= ? ORDER BY {posts}.pubdate DESC', array( Post::status( 'scheduled' ), DateTime::create() ), 'Post' );
+		/** @var Post $post */
 		foreach ( $posts as $post ) {
 			$post->publish();
 		}
@@ -1000,14 +1004,13 @@ class Posts extends \ArrayObject implements IsContent
 	/**
 	 * Returns an ascending post
 	 *
-	 * @param The Post from which to start
-	 * @param The params by which to work out what is the next ascending post
+	 * @param Post $post The Post from which to start
+	 * @param array $userparams The params by which to work out what is the next ascending post
 	 * @return Post The ascending post
 	 */
 	public static function ascend( $post, $userparams = null )
 	{
 		$posts = null;
-		$ascend = false;
 		if ( $userparams instanceof Posts ) {
 			$posts = $userparams;
 		}
@@ -1034,14 +1037,13 @@ class Posts extends \ArrayObject implements IsContent
 	/**
 	 * Returns a descending post
 	 *
-	 * @param The Post from which to start
-	 * @param The params by which to work out what is the next descending post
+	 * @param Post $post The Post from which to start
+	 * @param array $userparams The params by which to work out what is the next descending post
 	 * @return Post The descending post
 	 */
 	public static function descend( $post, $userparams = null )
 	{
 		$posts = null;
-		$ascend = false;
 		if ( $userparams instanceof Posts ) {
 			$posts = $userparams;
 		}
@@ -1087,8 +1089,6 @@ class Posts extends \ArrayObject implements IsContent
 	 */
 	public static function search_to_get( $search_string )
 	{
-		// if adding to this array, make sure you update the consequences of a search on this below in the switch.
-		$keywords = array( 'author' => 1, 'status' => 1, 'type' => 1, 'tag' => 1, 'info' => 1 );
 		$statuses = Post::list_post_statuses();
 		$types = Post::list_active_post_types();
 		$arguments = array(
@@ -1098,7 +1098,6 @@ class Posts extends \ArrayObject implements IsContent
 			'vocabulary' => array(),
 			'info' => array(),
 		);
-		$criteria = '';
 
 		// this says, find stuff that has the keyword at the start, and then some term straight after.
 		// the terms should have no whitespace, or if it does, be ' delimited.
@@ -1175,9 +1174,12 @@ class Posts extends \ArrayObject implements IsContent
 	/**
 	 * Check if the requested post is of the type specified, to see if a rewrite rule matches.
 	 *
+	 * @param RewriteRule $rule The rewrite rule we're matching against
+	 * @param string $stub The URL stub request that triggered the rule
+	 * @param array $parameters The included parameters on this rule
 	 * @return Boolean Whether the requested post matches the content type of the rule.
 	 */
-	public static function rewrite_match_type( $rule, $slug, $parameters )
+	public static function rewrite_match_type( $rule, $stub, $parameters )
 	{
 		$args = $rule->named_arg_values;
 		$args['count'] = true;
@@ -1207,6 +1209,7 @@ class Posts extends \ArrayObject implements IsContent
 	 * Accepts a set of term query qualifiers and converts it into a multi-dimensional array
 	 * of vocabulary (ie: tags), matching method (any, all, not), matching field (id, term, term_display), and list of terms
 	 *
+	 * @param array $params An array of parameters provided to Posts::get() as a vocabulary criteria
 	 * @return array An array of parsed term-matching conditions
 	 */
 	private static function vocabulary_params( $params )
@@ -1304,6 +1307,7 @@ class Posts extends \ArrayObject implements IsContent
 	 */
 	public function delete()
 	{
+		/** @var Post $post */
 		foreach( $this as $post ) {
 			$post->delete();
 		}
@@ -1315,7 +1319,7 @@ class Posts extends \ArrayObject implements IsContent
 	 */
 	public function to_json()
 	{
-		$posts = array_map(function($e){return $e->to_json();}, $this->getArrayCopy());
+		$posts = array_map(function(Post $e){return $e->to_json();}, $this->getArrayCopy());
 		return '[' . implode(',', $posts) . ']';
 	}
 }

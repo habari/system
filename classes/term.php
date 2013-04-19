@@ -16,6 +16,10 @@
 
 namespace Habari;
 
+/**
+ * @property Vocabulary vocabulary The vocabulary this term belongs to
+ * @property integer id The id of this term in the database
+ */
 class Term extends QueryRecord
 {
 	protected $inforecords = null;

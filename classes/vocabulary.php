@@ -11,6 +11,9 @@
 
 namespace Habari;
 
+/**
+ * @property string $name
+ */
 class Vocabulary extends QueryRecord
 {
 	/**
