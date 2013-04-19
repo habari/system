@@ -198,11 +198,6 @@ class User extends QueryRecord implements FormStorage, IsContent
 	 */
 	public function delete()
 	{
-		// Check if the currently logged-in user is allowed to delete users.
-		if(!( User::identify()->id == $this->id || User::identify()->can( 'manage_users' ) ) ) {
-			return;
-		}
-		
 		$allow = true;
 		$allow = Plugins::filter( 'user_delete_allow', $allow, $this );
 		if ( ! $allow ) {
