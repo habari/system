@@ -27,7 +27,7 @@
 
 	<span class="buttons"><input type="button" value="<?php _e('Rename'); ?>" class="rename button"></span>
 
-	<span class="or><?php _e('or'); ?></span>
+	<span class="or"><?php _e('or'); ?></span>
 
 	<span class="buttons"><input type="button" value="<?php _e('Delete Selected'); ?>" class="delete button"></span>
 </div>
