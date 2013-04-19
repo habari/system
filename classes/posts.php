@@ -195,15 +195,15 @@ class Posts extends \ArrayObject implements IsContent
 				$where->in('{posts}.id', $paramset['not:id'], 'posts_not_id', 'intval', false);
 			}
 
-			if ( isset( $paramset['status'] ) && ( $paramset['status'] != 'any' ) && ( 0 !== $paramset['status'] ) ) {
+			if ( isset( $paramset['status'] ) && !self::empty_param( $paramset['status'] ) ) {
 				$where->in('{posts}.status', $paramset['status'], 'posts_status', function($a) {return Post::status( $a );} );
 			}
 
-			if ( isset( $paramset['not:status'] ) && ( $paramset['not:status'] != 'any' ) && ( 0 !== $paramset['not:status'] ) ) {
+			if ( isset( $paramset['not:status'] ) && !self::empty_param( $paramset['not:status'] ) ) {
 				$where->in('{posts}.status', $paramset['not:status'], 'posts_not_status', function($a) {return Post::status( $a );}, null, false );
 			}
 
-			if ( isset( $paramset['content_type'] ) && ( $paramset['content_type'] != 'any' ) && ( 0 !== $paramset['content_type'] ) ) {
+			if ( isset( $paramset['content_type'] ) && !self::empty_param( $paramset['content_type'] ) ) {
 				$where->in('{posts}.content_type', $paramset['content_type'], 'posts_content_type', function($a) {return Post::type( $a );} );
 			}
 			if ( isset( $paramset['not:content_type'] ) ) {
@@ -799,6 +799,22 @@ class Posts extends \ArrayObject implements IsContent
 		}
 
 		return $paramarray;
+	}
+
+	/**
+	 * Determine whether a parameter supplied to Posts::get() is empty and should be ignored based on its value being comprised only of empty values
+	 * @param string|array $param The parameter values supplied to Posts::get()
+	 * @param array $empty_values An array defining what values are considered empty and ignorable
+	 * @return bool True if the parameter values contain only empty values, false otherwise
+	 */
+	public static function empty_param($param, $empty_values = array(0, 'any')) {
+		if(is_array($param)) {
+			$intersection = array_intersect($param, $empty_values);
+			return count($intersection) == count($param);
+		}
+		else {
+			return in_array($param, $empty_values, true);
+		}
 	}
 
 	/**
