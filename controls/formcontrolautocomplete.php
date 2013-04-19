@@ -14,7 +14,7 @@ class FormControlAutocomplete extends FormControl
 	 */
 	public function _extend()
 	{
-		$this->properties['type'] = 'hidden';
+		$this->properties['type'] = 'text';
 		$this->properties['class'] = 'autocomplete_control';
 
 
