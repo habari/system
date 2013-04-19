@@ -1192,7 +1192,9 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$form->save();
 
 		$permalink = ( $post->status != Post::status( 'published' ) ) ? $post->permalink . '?preview=1' : $post->permalink;
-		Session::notice( _t( 'The post %1$s has been saved as %2$s.', array( sprintf( '<a href="%1$s">\'%2$s\'</a>', $permalink, Utils::htmlspecialchars( $post->title ) ), Post::status_name( $post->status ) ) ) );
+		$postname = sprintf( '<a href="%1$s">\'%2$s\'</a>', $permalink, Utils::htmlspecialchars( $post->title ) );
+		$status = Post::status_name( $post->status );
+		Session::notice( _t( 'The post !postname has been saved as !status.', array( '!postname' => $postname, '!status' => $status ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
 	}
 
