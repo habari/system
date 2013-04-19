@@ -614,10 +614,6 @@ class Utils
 	{
 		$output = '';
 		foreach ( $options as $option ) {
-			if(!isset($option['id']) && isset($option['name'])) {
-				$option['id'] = $option['name'];
-			}
-
 			$output .= '<input ' . self::html_attr($option) . ' />';  // This XML/XHTML looks spurious, but PHP's appendXML requires it elsewhere
 		}
 		
