@@ -28,6 +28,7 @@ class FormControlFieldset extends FormContainer
 	 */
 	function get(Theme $theme)
 	{
+		$this->settings['ignore_name'] = true;
 		$this->vars['caption'] = $this->caption;
 		return parent::get($theme);
 	}

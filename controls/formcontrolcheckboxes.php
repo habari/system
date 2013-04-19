@@ -26,6 +26,7 @@ class FormControlCheckboxes extends FormControlSelect
 			}
 		);
 		$this->vars['checkboxes'] = $checkboxes;
+		$this->settings['ignore_name'] = true;
 		return parent::get($theme);
 	}
 
