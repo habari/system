@@ -31,7 +31,7 @@ $(document).ready(function(){
 	?>
 	$('.container.buttons').prepend($('<input type="button" id="publish" class="button publish" tabindex="5" value="<?php _e('Publish'); ?>">'));
 	$('#publish').click( function() {
-		$('#status').val(<?php echo $statuses['published']; ?>);
+		$('#create_content_post_settings_status').val(<?php echo $statuses['published']; ?>);
 	});
 	<?php endif; ?>
 
