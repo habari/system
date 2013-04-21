@@ -17,7 +17,7 @@
 		<div id="masthead">
 			<div id="branding">
 				<h1><a href="<?php Site::out_url( 'site'); ?>" title="<?php Options::out( 'title' ); ?>"> <?php Options::out( 'title' ); ?></a></h1>
-				<h3 class="prepend-1"><em><?php Options::out( 'tagline' ); ?></em></h3>
+				<h3><em><?php Options::out( 'tagline' ); ?></em></h3>
 			</div>
 		</div>
 	<!--end masthead-->
