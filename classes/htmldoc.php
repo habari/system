@@ -279,6 +279,23 @@ class HTMLNode
 		return $this->node->ownerDocument->saveXML($this->node);
 	}
 
+	/**
+	 * Get the HTML of all child elements of this node
+	 * @return string The requested HTML
+	 */
+	function inner_html()
+	{
+		$inner_html = '';
+		foreach($this->node->childNodes as $child) {
+			$tmp_dom = new \DOMDocument();
+			$tmp_dom->appendChild($tmp_dom->importNode($child, true));
+			$inner_html .= trim($tmp_dom->saveXML());
+		}
+		// Kludgey hack to remove doctype spec
+		$inner_html = preg_replace('#^\s*<\?xml(\s.*)?\?>\s*#', '', $inner_html);
+		return $inner_html;
+	}
+
 }
 
 /**
