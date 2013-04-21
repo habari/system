@@ -1206,17 +1206,21 @@ class Utils
 
 	/**
 	 * Create a list of html element attributes from an associative array
-	 * 
+	 *
 	 * @param array $attrs An associative array of parameters
+	 * @param integer $quote_flag Sets what quotes and doublequotes are escaped
+	 * @param string $encoding The encoding of the passed string
+	 * @param boolean $decode Whether or not to unescape any html entities first
+	 * @param boolean $double_encode Whether or not to double escape any html entities
 	 * @return string The parameters turned into a string of tag attributes
 	 */
-	public static function html_attr($attrs)
+	public static function html_attr($attrs, $quote_flag = ENT_COMPAT, $encoding = 'UTF-8', $decode = true, $double_encode = true)
 	{
 		$out = '';
 		foreach($attrs as $key => $value) {
 			$value = is_array($value) ? implode(' ', $value) : $value;
 			if($value != '') {
-				$out .= ($out == '' ? '' : ' ') . $key . '="' . Utils::htmlspecialchars($value) . '"';
+				$out .= ($out == '' ? '' : ' ') . $key . '="' . Utils::htmlspecialchars($value, $quote_flag, $encoding, $decode, $double_encode) . '"';
 			}
 		}
 		return $out;

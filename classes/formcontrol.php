@@ -254,7 +254,13 @@ abstract class FormControl
 			$theme->assign($k, $v);
 		}
 		// Put the value of the control into the theme
-		$theme->value = $this->value;
+		if($this->get_setting('escape_value', true)) {
+			$use_value = Utils::htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8', false);
+		}
+		else {
+			$use_value = $this->value;
+		}
+		$theme->value = $use_value;
 
 		// If there are errors, add an error class to the control
 		if($this->has_errors) {
@@ -271,12 +277,12 @@ abstract class FormControl
 			$properties = array_merge(array('name' => $this->input_name()), $properties);
 		}
 		if(!isset($this->settings['internal_value'])) {
-			$properties = array_merge(array('value' => $this->get_setting('html_value', $this->value)), $properties);
+			$properties = array_merge(array('value' => $this->get_setting('html_value', $use_value)), $properties);
 		}
 		if($id = $this->get_id(false)) {
 			$properties['id'] = $id;
 		}
-		$theme->_attributes = Utils::html_attr($properties);
+		$theme->_attributes = Utils::html_attr($properties, ENT_COMPAT, 'UTF-8', false, false);
 
 		// Do rendering
 		$output = $this->get_setting('prefix_html', '');
