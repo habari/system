@@ -605,6 +605,14 @@ h2.lead  {
     color: #fff;
     background: #333;
   }
+
+h1, h2, h3 {
+    font-family: "Montserrat";
+    font-weight: normal;
+}
+	h3 {
+		font-size: 20px;
+	}
 	
 .main {
 	margin-top: 10px;
@@ -710,7 +718,12 @@ h2.lead  {
 			.pluginhelp ul li {
 				margin:0px;
 			}
-
+			
+	.themeoptions {
+		background: rgb( 236, 233, 226 );
+		padding: 20px 20px 10px;
+		margin-top: 10px;
+	}
 /**  Page-specific **/
 
 #log_data {  /* this will do for now */

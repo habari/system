@@ -42,7 +42,7 @@
 			<div class="thumb columns">
 				<img class="" src="<?php echo $active_theme['screenshot']; ?>">
 			</div>
-			<div class="themeinfo columns">
+			<div class="themeinfo columns twelve">
 				<p class="description"><?php echo $active_theme['info']->description; ?></p>
 			<?php if ( $active_theme['info']->license != '' ): ?>
 				<p class="description"><?php printf( _t('%1$s is licensed under the %2$s'), $active_theme['info']->name, '<a href="' . $active_theme['info']->license['url'] . '">' . $active_theme['info']->license . '</a>' ); ?></p>
@@ -56,7 +56,8 @@
 				</div>
 			<?php endif; ?>
 			</div>
-			<div class="themeoptions columns ten">
+			<div class="clear"></div>
+			<div class="themeoptions">
 				<?php
 				// Capture the admin config output.  If nothing is there, don't output the section
 					ob_start();
@@ -71,7 +72,7 @@
 				</div>
 				<?php endif; ?>
 				<?php if ( isset($active_theme['info']->areas) ): ?>
-				<div id="blocksconfigure" class="item container">
+				<div id="blocksconfigure" class="container">
 					<h3><?php _e( "Areas" ); ?></h3>
 					<div id="block_add" class="columns ten">
 						<?php $this->display('block_instances'); ?>
@@ -85,6 +86,7 @@
 				<?php endif; ?>
 			</div>
 		</div>
+	</div>
 	</div>
 </div>
 
