@@ -74,6 +74,25 @@ class Mzingi extends Theme
 		// Load the stylesheet
 		Stack::add('template_stylesheet', array(Site::get_url( 'theme', '/style.css' )), 'theme');
 
+		// Add the extra login form styling on the login page
+		if( is_object( $this->request ) && $this->request->auth ) {
+			Stack::add( 'template_header_javascript', 'jquery' );
+			$login_style = <<< LOGIN_STYLE
+.off_reset {}
+
+.on_reset, input[type=submit].on_reset {
+	display: none;
+}
+.do_reset .on_reset, .do_reset input[type=submit].on_reset {
+	display: block;
+}
+.do_reset .off_reset {
+	display: none;
+}
+LOGIN_STYLE;
+			$this->add_style( 'header', $login_style, 'login_style', 'style' );
+
+		}
 		
 	}
 
@@ -115,6 +134,12 @@ class Mzingi extends Theme
 		$form->cf_submit->set_caption( _t( 'Submit' ) );
 	}
 
+	public function action_form_login( $form )
+	{
+		$form->set_wrap_each( '<div>%s</div>' );
+		$form->habari_username->set_properties( array( 'placeholder' => _t( 'User name' ) ) );
+		$form->habari_password->set_properties( array( 'placeholder' => _t( 'Password' ) ) );
+	}
 }
 
 ?>
