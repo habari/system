@@ -411,6 +411,13 @@ body, html {
 	margin-right: 15px;
 }
 
+textarea.full-width,
+input.full-width {
+	width: 100%;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
 #welcome {
 	margin-top: 85px;
 	margin-bottom: 20px;
@@ -605,6 +612,13 @@ h2.lead  {
 	color: #333;
 	padding: 10px 20px 0px;
 }
+
+.more {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 100%;
+	overflow: hidden;
+}
 	
 .item {
 	padding: 20px 0px;
@@ -615,7 +629,12 @@ h2.lead  {
 	}
 	
 	.item .title {
-		float:left;;
+		float:left;
+		margin-bottom: 10px;
+	}
+
+	.item .thumb {
+		margin-left:0px;
 	}
 
   .currenttheme .item .title, .availablethemes .item .title {
@@ -691,6 +710,19 @@ h2.lead  {
 			.pluginhelp ul li {
 				margin:0px;
 			}
+
+/**  Page-specific **/
+
+#log_data {  /* this will do for now */
+	table-layout: fixed;
+}
+	#log_data .checkbox {
+		width: 30px;
+	}
+	#log_data td {
+		white-space: nowrap;
+	}
+
 
 .login h1 {
 	margin-top: 40px;
