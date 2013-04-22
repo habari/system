@@ -551,7 +551,7 @@ abstract class FormControl
 				$valid = array_merge( $valid, call_user_func_array( $validator_fn, $params ) );
 			}
 			elseif ( FormValidators::have($validator_fn ) ) {
-				$validator_fn = Method::create( 'Habari\FormValidators', $validator_fn );
+				$validator_fn = Method::create( '\Habari\FormValidators', $validator_fn );
 				$params = array_merge( array( $this->value, $this, $this->get_form() ), $validator );
 				$valid = array_merge( $valid, call_user_func_array( $validator_fn, $params ) );
 			}

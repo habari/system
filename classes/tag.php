@@ -31,7 +31,7 @@ class Tag extends Term
 	{
 		$tags = explode( ' ', $rule->named_arg_values['tag'] );
 		$tags = array_map( 'trim', $tags, array_fill( 0, count( $tags ), '-' ) );
-		$tags = array_map( Method::create( 'Habari\\Tags', 'get_one' ), $tags );
+		$tags = array_map( Method::create( '\\Habari\\Tags', 'get_one' ), $tags );
 		$initial_tag_count = count( $tags );
 		$tags = array_filter( $tags );
 		// Are all of the tags we asked for actual tags on this site?

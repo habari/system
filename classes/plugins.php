@@ -424,7 +424,7 @@ class Plugins
 	public static function get_plugin_classes()
 	{
 		$classes = get_declared_classes();
-		return array_filter( $classes, Method::create( 'Habari\Plugins', 'extends_plugin' ) );
+		return array_filter( $classes, Method::create( '\Habari\Plugins', 'extends_plugin' ) );
 	}
 
 	/**

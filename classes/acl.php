@@ -887,9 +887,9 @@ SQL;
 	 */
 	public static function __static()
 	{
-		Plugins::register( array( 'Habari\\ACL', '_filter_token_description_display' ), 'filter', 'token_description_display' );
-		Plugins::register( array( 'Habari\\ACL', '_filter_token_group_display' ), 'filter', 'token_group_display' );
-		Plugins::register( array( 'Habari\\ACL', '_filter_permission_display' ), 'filter', 'permission_display' );
+		Plugins::register( array( '\\Habari\\ACL', '_filter_token_description_display' ), 'filter', 'token_description_display' );
+		Plugins::register( array( '\\Habari\\ACL', '_filter_token_group_display' ), 'filter', 'token_group_display' );
+		Plugins::register( array( '\\Habari\\ACL', '_filter_permission_display' ), 'filter', 'permission_display' );
 	}
 
 	/**
