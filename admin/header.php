@@ -7,6 +7,7 @@ header( 'X-Frame-Options: DENY' );
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title><?php Options::out('title'); ?> &middot; <?php echo $admin_title; ?></title>
+	<link rel="icon" type="image/png" href="<?php echo $theme->get_url('/images/habari.favicon.png'); ?>">
 	<script type="text/javascript">
 	var habari = {
 		url: {
