@@ -90,7 +90,7 @@ class Mzingi extends Theme
 	display: none;
 }
 LOGIN_STYLE;
-			$this->add_style( 'header', $login_style, 'login_style', 'style' );
+			$this->add_style( $login_style, 'header', 'login_style', 'style' );
 
 		}
 		

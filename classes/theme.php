@@ -1363,13 +1363,13 @@ class Theme extends Pluggable
 	/**
 	 * Add javascript to the stack to be output in the theme.
 	 * 
-	 * @param string $where Where should it be output? Options are header and footer.
 	 * @param string $value Either a URL or raw JS to be output inline.
+	 * @param string $where Where should it be output? Options are header and footer.
 	 * @param string $name A name to reference this script by. Used for removing or using in $requires by other scripts.
 	 * @param string|array $requires Either a string or an array of strings of $name's for scripts this script requires.
 	 * @return boolean True if added successfully, false otherwise.
 	 */
-	public function add_script ( $where = 'header', $value, $name = null, $requires = null )
+	public function add_script ( $value, $where = 'header', $name = null, $requires = null )
 	{
 		
 		$result = false;
@@ -1393,13 +1393,13 @@ class Theme extends Pluggable
 	/**
 	 * Add a stylesheet to the stack to be output in the theme.
 	 * 
-	 * @param string $where Where should it be output? Options are header and footer.
 	 * @param string $value Either a URL or raw CSS to be output inline.
+	 * @param string $where Where should it be output? Options are header and footer.
 	 * @param string $name A name to reference this script by. Used for removing or using in $after by other scripts.
 	 * @param string|array $requires Either a string or an array of strings of $name's for scripts this script requires.
 	 * @return boolean True if added successfully, false otherwise.
 	 */
-	public function add_style ( $where = 'header', $value, $name = null, $requires = null )
+	public function add_style ( $value, $where = 'header', $name = null, $requires = null )
 	{
 		
 		$result = false;
