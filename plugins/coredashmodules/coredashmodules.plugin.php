@@ -102,7 +102,7 @@ class CoreDashModules extends Plugin
 	 */
 	public function action_block_content_latest_comments($block, $theme)
 	{
-		$comment_types = array( Comment::COMMENT );
+		$comment_types = array( 'comment' );
 		$query = '
 select
 	{posts}.*,
@@ -122,12 +122,12 @@ order by
 	newest_comment_date desc
 ';
 
-		$query_args = array_merge( array( Post::status( 'published' ), Comment::STATUS_APPROVED ), $comment_types );
+		$query_args = array_merge( array( Post::status( 'published' ), 'approved' ), $comment_types );
 		$posts = DB::get_results( $query, $query_args, 'Post' );
 
 		$latestcomments = array();
 		foreach( $posts as $post ) {
-			$comments = DB::get_results( 'SELECT * FROM {comments} WHERE post_id = ? AND status = ? AND type = ? ORDER BY date DESC LIMIT 5;', array( $post->id, Comment::STATUS_APPROVED, Comment::COMMENT ), 'Comment' );
+			$comments = DB::get_results( 'SELECT * FROM {comments} WHERE post_id = ? AND status = ? AND type = ? ORDER BY date DESC LIMIT 5;', array( $post->id, Comment::status('approved'), Comment::type('comment')), 'Comment' );
 			$latestcomments[$post->id] = $comments;
 		}
 

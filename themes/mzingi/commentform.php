@@ -33,7 +33,7 @@
 		if ( $post->comments->moderated->count ) {
 			foreach ( $post->comments->comments->moderated as $comment ) {
 			$class = 'class="comment';
-			if ( $comment->status == Comment::STATUS_UNAPPROVED ) {
+			if ( $comment->is_unapproved ) {
 				$class.= '-unapproved';
 			}
 			$class.= '"';
@@ -45,7 +45,7 @@
 		       </div>
 			<div class="comment-meta">#<a href="#comment-<?php echo $comment->id; ?>" class="counter" title="<?php _e('Permanent Link to this Comment'); ?>"><?php echo $comment->id; ?></a> |
 		       <span class="commentauthor"><?php _e('Comment by'); ?> <?php echo $theme->comment_author_link($comment); ?></span>
-		       <span class="commentdate"> <?php _e('on'); ?> <a href="#comment-<?php echo $comment->id; ?>" title="<?php _e('Time of this comment'); ?>"><?php /* @locale Date formats according to http://php.net/manual/en/function.date.php */ $comment->date->out( _t( 'M j, Y h:ia' ) ); ?></a></span><h5><?php if ( $comment->status == Comment::STATUS_UNAPPROVED ) : ?> <em><?php _e('In moderation'); ?></em><?php endif; ?></h5></div>
+		       <span class="commentdate"> <?php _e('on'); ?> <a href="#comment-<?php echo $comment->id; ?>" title="<?php _e('Time of this comment'); ?>"><?php /* @locale Date formats according to http://php.net/manual/en/function.date.php */ $comment->date->out( _t( 'M j, Y h:ia' ) ); ?></a></span><h5><?php if ( $comment->is_unapproved ) : ?> <em><?php _e('In moderation'); ?></em><?php endif; ?></h5></div>
 		      </li>
 
 

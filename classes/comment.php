@@ -34,17 +34,6 @@ namespace Habari;
  */
 class Comment extends QueryRecord implements IsContent
 {
-
-	// our definitions for comment types and statuses
-	const STATUS_UNAPPROVED = 0;
-	const STATUS_APPROVED = 1;
-	const STATUS_SPAM = 2;
-	const STATUS_DELETED = 3;
-
-	const COMMENT = 0;
-	const PINGBACK = 1;
-	const TRACKBACK = 2;
-
 	private $post_object = null;
 
 	private $inforecords = null;
@@ -68,9 +57,9 @@ class Comment extends QueryRecord implements IsContent
 			'url' => '',
 			'ip' => 0,
 			'content' => '',
-			'status' => self::STATUS_UNAPPROVED,
+			'status' => self::status('unapproved'),
 			'date' => DateTime::create(),
-			'type' => self::COMMENT
+			'type' => self::type('comment')
 		);
 	}
 
@@ -213,10 +202,15 @@ class Comment extends QueryRecord implements IsContent
 			}
 		}
 
-		if ( $name == 'name' && parent::__get( $name ) == '' ) {
-			return _t( 'Anonymous' );
-		}
 		switch ( $name ) {
+			case 'name':
+				if ( parent::__get( $name ) == '' ) {
+					$out = _t( 'Anonymous' );
+				}
+				else {
+					$out = parent::__get( $name );
+				}
+				break;
 			case 'post':
 				$out = $this->get_post();
 				break;
@@ -233,7 +227,28 @@ class Comment extends QueryRecord implements IsContent
 				$out = $this->get_editlink();
 				break;
 			default:
-				$out = parent::__get( $name );
+				if(preg_match('#^is_(.+)$#i', $name, $matches)) {
+					$ts_field = $matches[1];
+					if($index = array_search($ts_field, Comment::list_comment_statuses())) {
+						$out = $this->status == $index;
+					}
+					if($index = array_search($name, Comment::list_comment_types())) {
+						$out = $this->type == $index;
+					}
+					// Dumb check for plurals
+					$pluralize = function($s) {
+						return $s . 's';
+					};
+					if($index = array_search($name, array_map($pluralize, Comment::list_comment_statuses()))) {
+						$out = $this->status == $index;
+					}
+					if($index = array_search($name, array_map($pluralize, Comment::list_comment_types()))) {
+						$out = $this->type == $index;
+					}
+				}
+				else {
+					$out = parent::__get( $name );
+				}
 				break;
 		}
 		//$out = parent::__get( $name );
@@ -254,7 +269,8 @@ class Comment extends QueryRecord implements IsContent
 	{
 		switch ( $name ) {
 			case 'status':
-				return $this->setstatus( $value );
+				$value = self::status($value);
+				break;
 			case 'date':
 				if ( !( $value instanceOf DateTime ) ) {
 					$value = DateTime::create( $value );
@@ -315,52 +331,16 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
-	 * Sets the status for a comment, given a string or integer.
- 	 * @param integer|string $value The new status value to set.
- 	 * @return integer The integer status set for the comment
- 	 */
-	private function setstatus( $value )
-	{
-		if ( is_numeric( $value ) ) {
-			$this->newfields['status'] = $value;
-		}
-		else {
-			switch ( strtolower( $value ) ) {
-				case "approved":
-				case "approve":
-				case "ham":
-					$this->newfields['status'] = self::STATUS_APPROVED;
-					break;
-				case "unapproved":
-				case "unapprove":
-					$this->newfields['status'] = self::STATUS_UNAPPROVED;
-					break;
-				case "spam":
-					$this->newfields['status'] = self::STATUS_SPAM;
-					break;
-				case "deleted":
-					$this->newfields['status'] = self::STATUS_DELETED;
-					break;
-			}
-		}
-		return $this->newfields['status'];
-	}
-
-	/**
 	 * Obtain an associative array of comment types
 	 * @param boolean $refresh Whether to force a refresh of the cached values
 	 * @return array An array mapping comment type names to integer values
 	 */
 	public static function list_comment_types( $refresh = false )
 	{
-		if ( ( ! $refresh ) && ( ! empty( self::$comment_type_list ) ) ) {
-			return self::$comment_type_list;
+		if ( $refresh || empty( self::$comment_type_list ) ) {
+			self::$comment_type_list = DB::get_keyvalue('SELECT id, name FROM {commenttype} WHERE active = 1;');
 		}
-		self::$comment_type_list = array(
-			self::COMMENT => 'comment',
-			self::PINGBACK => 'pingback',
-			self::TRACKBACK => 'trackback',
-		);
+		self::$comment_type_list = Plugins::filter( 'list_comment_types', self::$comment_type_list );
 		return self::$comment_type_list;
 	}
 
@@ -371,15 +351,9 @@ class Comment extends QueryRecord implements IsContent
 	 */
 	public static function list_comment_statuses( $refresh = false )
 	{
-		if ( ( ! $refresh ) && ( ! empty( self::$comment_status_list ) ) ) {
-			return self::$comment_status_list;
+		if ( $refresh || empty( self::$comment_status_list ) ) {
+			self::$comment_status_list = DB::get_keyvalue('SELECT id, name FROM {commentstatus};');
 		}
-		self::$comment_status_list = array(
-			self::STATUS_UNAPPROVED => 'unapproved',
-			self::STATUS_APPROVED => 'approved',
-			self::STATUS_SPAM => 'spam',
-			// 'STATUS_DELETED' => self::STATUS_DELETED, // Not supported
-		);
 		self::$comment_status_list = Plugins::filter( 'list_comment_statuses', self::$comment_status_list );
 		return self::$comment_status_list;
 	}
@@ -393,18 +367,17 @@ class Comment extends QueryRecord implements IsContent
 	{
 		if ( empty( self::$comment_status_actions ) ) {
 			self::$comment_status_actions = array(
-				self::STATUS_UNAPPROVED => _t( 'Unapprove' ),
-				self::STATUS_APPROVED => _t( 'Approve' ),
-				self::STATUS_SPAM => _t( 'Spam' ),
+				'unapproved' => _t( 'Unapprove' ),
+				'approved' => _t( 'Approve' ),
+				'spam' => _t( 'Spam' ),
 			);
 			self::$comment_status_actions = Plugins::filter( 'list_comment_actions', self::$comment_status_actions );
 		}
-		if ( is_numeric( $status ) && isset( self::$comment_status_actions[$status] ) ) {
+		if ( isset( self::$comment_status_actions[$status] ) ) {
 			return self::$comment_status_actions[$status];
 		}
-		$statuses = array_flip( Comment::list_comment_statuses() );
-		if ( isset( $statuses[$status] ) ) {
-			return self::$comment_status_actions[$statuses[$status]];
+		if ( isset(self::$comment_status_actions[Comment::status_name($status)]) ) {
+			return self::$comment_status_actions[Comment::status_name($status)];
 		}
 
 		return '';

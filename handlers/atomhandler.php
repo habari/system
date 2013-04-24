@@ -514,7 +514,7 @@ class AtomHandler extends ActionHandler
 		else {
 			$self = URL::get( 'atom_feed_comments' );
 			$alternate = URL::get( 'display_home' );
-			$params['status'] = Comment::STATUS_APPROVED;
+			$params['status'] = 'approved';
 			$comments = Comments::get( $params );
 			$comments_count = Comments::count_total( Comment::status( 'approved' ) );
 			if ( $comments_count ) {
