@@ -61,36 +61,22 @@ class MzingiHi extends Theme
 				$this->tags_msg = _t( 'Posts tagged with %s and not with %s', array( Format::tag_and_list( $this->include_tag ), Format::tag_and_list( $this->exclude_tag ) ) );
 			}
 		}
+	}
 
+	public function action_template_header($theme) {
 		// Add the stylesheet to the stack for output
 		$this->add_style( array( $this->get_url( 'style.css' ), 'screen' ), 'header', 'style' );
 
 		// Add the extra login form styling on the login page
 		if( is_object( $this->request ) && $this->request->auth ) {
-			Stack::add( 'template_header_javascript', 'jquery' );
-			$login_style = <<< LOGIN_STYLE
-.off_reset {}
+			$this->add_style( array( $this->get_url( 'login.css' ), 'screen' ), 'header', 'login_style', 'style' );
+		}
+	}
 
-.on_reset, input[type=submit].on_reset {
-	display: none;
-}
-.do_reset .on_reset, .do_reset input[type=submit].on_reset {
-	display: block;
-}
-.do_reset .off_reset {
-	display: none;
-}
-LOGIN_STYLE;
-			$this->add_style( array( $login_style, 'screen' ), 'header', 'login_style', 'style' );
-
-			$login_js = <<< LOGIN_JS
-$(document).ready( function() {
-	$('.reset_link').click(function(){\$(this).closest('form').toggleClass('do_reset'); return false;});
-});
-LOGIN_JS;
-			// Habari always registers jquery as a loadable stack item, so listing
-			// will automatically load it.
-			$this->add_script( $login_js, 'footer', 'login_js', 'jquery' );
+	public function action_template_footer($theme) {
+		// Add the extra login form styling on the login page
+		if( is_object( $this->request ) && $this->request->auth ) {
+			$this->add_script( $this->get_url( 'login.js' ), 'footer', 'login_js', 'jquery' );
 		}
 	}
 
