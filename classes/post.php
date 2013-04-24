@@ -946,16 +946,6 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	}
 
 	/**
-	 * A field accessor that doesn't filter, for use in plugins that filter field values
-	 * @param string $name Name of the field to get
-	 * @return mixed Value of the field, unfiltered
-	 */
-	public function get_raw_field( $name )
-	{
-		return parent::__get( $name );
-	}
-
-	/**
 	 * Returns a form for editing this post
 	 * @param string $context The context the form is being created in, most often 'admin'
 	 * @return FormUI A form appropriate for creating and updating this post.
