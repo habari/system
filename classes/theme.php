@@ -1524,6 +1524,7 @@ class Theme extends Pluggable
 				HABARI_PATH . '/user/themes/' => Site::get_url( 'habari' ) . '/user/themes/',
 				HABARI_PATH . '/3rdparty/themes/' => Site::get_url( 'habari' ) . '/3rdparty/themes/',
 				HABARI_PATH . '/system/themes/' => Site::get_url( 'habari' ) . '/system/themes/',
+				HABARI_PATH . '/system/admin/' => Site::get_url( 'habari' ) . '/system/admin/',
 			);
 		}
 
