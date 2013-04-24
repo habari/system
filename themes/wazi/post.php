@@ -17,7 +17,7 @@
 	</div>
 
 	<?php if($request->display_entry): ?>
-	<section class="comments" itemprop="comment">
+	<section class="comments">
 		<h1 id="comments">Comments</h1>
 		<?php if($content->comments->moderated->count == 0): ?>
 			<p><?php _e('There are no comments on this post.'); ?>

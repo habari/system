@@ -1,5 +1,5 @@
 <?php namespace Habari; ?>
-<article class="comment<?php if ( $content->status != Comment::STATUS_APPROVED ) : ?> moderated<?php endif; ?>" id="comment-<?php echo $content->id; ?>" itemscope itemtype="http://schema.org/UserComments">
+<article class="comment<?php if ( $content->status != Comment::STATUS_APPROVED ) : ?> moderated<?php endif; ?>" id="comment-<?php echo $content->id; ?>" itemscope itemtype="http://schema.org/Comment">
 	<header class="comment-meta">
 		<h1 itemprop="description">
 			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -15,7 +15,7 @@
 				</span>
 			</span>
 			<a href="<?php echo $content->post->permalink; ?>#comment-<?php echo $content->id; ?>" title="<?php _e('Link to this comment'); ?>" itemprop="url">
-				<time class="comment-date" datetime="<?php echo $content->date->format('Y-m-d H:i:s'); ?>" itemprop="commentTime">
+				<time class="comment-date" datetime="<?php echo $content->date->format('Y-m-d H:i:s'); ?>" itemprop="dateCreated">
 					<?php $content->date->out(Options::get('dateformat') . ' ' . Options::get('timeformat')); ?>
 				</time>
 			</a>
