@@ -127,16 +127,16 @@ class FeedbackHandler extends ActionHandler
 			'url' => $url,
 			'ip' => Utils::get_ip(),
 			'content' => $content,
-			'status' => Comment::STATUS_UNAPPROVED,
+			'status' => 'approved',
 			'date' => DateTime::create(),
-			'type' => Comment::COMMENT,
+			'type' => 'comment',
 		) );
 
 		// Should this really be here or in a default filter?
 		// In any case, we should let plugins modify the status after we set it here.
 		$user = User::identify();
 		if ( ( $user->loggedin ) && ( $comment->email == $user->email ) ) {
-			$comment->status = Comment::STATUS_APPROVED;
+			$comment->status = 'approved';
 		}
 		
 		// Allow themes to work with comment hooks
@@ -149,18 +149,18 @@ class FeedbackHandler extends ActionHandler
 		$spam_rating = Plugins::filter( 'spam_filter', $spam_rating, $comment, $this->handler_vars, $extra );
 		
 		if ( $spam_rating >= Options::get( 'spam_percentage', 100 ) ) {
-			$comment->status = Comment::STATUS_SPAM;
+			$comment->status = 'spam';
 		}
 
 		$comment->insert();
 		$anchor = '';
 
 		// If the comment was saved
-		if ( $comment->id && $comment->status != Comment::STATUS_SPAM ) { 
+		if ( $comment->id && $comment->status != 'spam' ) { 
 			$anchor = '#comment-' . $comment->id;
 
 			// store in the user's session that this comment is pending moderation
-			if ( $comment->status == Comment::STATUS_UNAPPROVED ) {
+			if ( $comment->status == 'unapproved' ) {
 				Session::notice( _t( 'Your comment is pending moderation.' ), 'comment_' . $comment->id );
 			}
 

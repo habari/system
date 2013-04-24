@@ -28,20 +28,12 @@ namespace Habari;
  * @property-read string $statusname The friendly name of the comment's status
  * @property-read string $typename The friendly name of the comment's type
  * @property-read string $editlink Edit URL for the comment
+ * @property integer id The id of this comment in the database
+ * @property integer type The type id of this comment in the database
+ * @property integer post_id The id of the post to which this comment is associated
  */
 class Comment extends QueryRecord implements IsContent
 {
-
-	// our definitions for comment types and statuses
-	const STATUS_UNAPPROVED = 0;
-	const STATUS_APPROVED = 1;
-	const STATUS_SPAM = 2;
-	const STATUS_DELETED = 3;
-
-	const COMMENT = 0;
-	const PINGBACK = 1;
-	const TRACKBACK = 2;
-
 	private $post_object = null;
 
 	private $inforecords = null;
@@ -52,8 +44,8 @@ class Comment extends QueryRecord implements IsContent
 	static $comment_status_actions = array();
 
 	/**
-	 * static function default_fields
 	 * Returns the defined database columns for a comment
+	 * @return array The requested array
 	 */
 	public static function default_fields()
 	{
@@ -65,16 +57,15 @@ class Comment extends QueryRecord implements IsContent
 			'url' => '',
 			'ip' => 0,
 			'content' => '',
-			'status' => self::STATUS_UNAPPROVED,
+			'status' => self::status('unapproved'),
 			'date' => DateTime::create(),
-			'type' => self::COMMENT
+			'type' => self::type('comment')
 		);
 	}
 
 	/**
-	 * constructor __construct
-	 * Constructor for the Post class.
-	 * @param array an associative array of initial Post field values.
+	 * Constructor for the Comment class.
+	 * @param array $paramarray an associative array of initial Post field values.
 	 */
 	public function __construct( $paramarray = array() )
 	{
@@ -82,8 +73,6 @@ class Comment extends QueryRecord implements IsContent
 		$this->fields = array_merge( self::default_fields(), $this->fields );
 		parent::__construct( $paramarray );
 		$this->exclude_fields( 'id' );
-		/* $this->fields['id'] could be null in case of a new comment. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
-
 	}
 
 	/**
@@ -103,7 +92,7 @@ class Comment extends QueryRecord implements IsContent
 	 * $post = Post::get( 10 );
 	 * </code>
 	 *
-	 * @param int An ID
+	 * @param int $id An ID
 	 * @return array A single Comment object
 	 */
 	static function get( $id = 0 )
@@ -115,10 +104,10 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
-	 * static function create
 	 * Creates a comment and saves it
-	 * @param array An associative array of comment fields
+	 * @param array $paramarray An associative array of comment fields
 	 * $return Comment The comment object that was created
+	 * @return \Habari\Comment The new comment
 	 */
 	static function create( $paramarray )
 	{
@@ -128,15 +117,15 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
-	 * function insert
-	 * Saves a new comment to the posts table
+	 * Saves a new comment to the comments table
+	 * @return integer|boolean The inserted record id on success, false if not
 	 */
 	public function insert()
 	{
 		$allow = true;
 		$allow = Plugins::filter( 'comment_insert_allow', $allow, $this );
 		if ( ! $allow ) {
-			return;
+			return false;
 		}
 		Plugins::act( 'comment_insert_before', $this );
 		// Invoke plugins for all fields, since they're all "changed" when inserted
@@ -153,15 +142,15 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
-	 * function update
-	 * Updates an existing comment in the posts table
+	 * Updates an existing comment in the comments table
+	 * @return boolean True on success, false if not
 	 */
 	public function update()
 	{
 		$allow = true;
 		$allow = Plugins::filter( 'comment_update_allow', $allow, $this );
 		if ( ! $allow ) {
-			return;
+			return false;
 		}
 		Plugins::act( 'comment_update_before', $this );
 		// invoke plugins for all fields which have been updated
@@ -177,15 +166,15 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
-	 * function delete
 	 * Deletes this comment
+	 * @return boolean True on success, false if not
 	 */
 	public function delete()
 	{
 		$allow = true;
 		$allow = Plugins::filter( 'comment_delete_allow', $allow, $this );
 		if ( ! $allow ) {
-			return;
+			return false;
 		}
 		Plugins::act( 'comment_delete_before', $this );
 
@@ -198,9 +187,8 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
-	 * function __get
 	 * Overrides QueryRecord __get to implement custom object properties
-	 * @param string Name of property to return
+	 * @param string $name Name of property to return
 	 * @return mixed The requested field value
 	 */
 	public function __get( $name )
@@ -210,14 +198,19 @@ class Comment extends QueryRecord implements IsContent
 		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
 			$field_matches = implode('|', $fieldnames);
 			if(preg_match( '/^(' . $field_matches . ')_(.+)$/', $name, $matches )) {
-				list( $junk, $name, $filter ) = $matches;
+				list( $unused, $name, $filter ) = $matches;
 			}
 		}
 
-		if ( $name == 'name' && parent::__get( $name ) == '' ) {
-			return _t( 'Anonymous' );
-		}
 		switch ( $name ) {
+			case 'name':
+				if ( parent::__get( $name ) == '' ) {
+					$out = _t( 'Anonymous' );
+				}
+				else {
+					$out = parent::__get( $name );
+				}
+				break;
 			case 'post':
 				$out = $this->get_post();
 				break;
@@ -234,7 +227,28 @@ class Comment extends QueryRecord implements IsContent
 				$out = $this->get_editlink();
 				break;
 			default:
-				$out = parent::__get( $name );
+				if(preg_match('#^is_(.+)$#i', $name, $matches)) {
+					$ts_field = $matches[1];
+					if($index = array_search($ts_field, Comment::list_comment_statuses())) {
+						$out = $this->status == $index;
+					}
+					if($index = array_search($name, Comment::list_comment_types())) {
+						$out = $this->type == $index;
+					}
+					// Dumb check for plurals
+					$pluralize = function($s) {
+						return $s . 's';
+					};
+					if($index = array_search($name, array_map($pluralize, Comment::list_comment_statuses()))) {
+						$out = $this->status == $index;
+					}
+					if($index = array_search($name, array_map($pluralize, Comment::list_comment_types()))) {
+						$out = $this->type == $index;
+					}
+				}
+				else {
+					$out = parent::__get( $name );
+				}
 				break;
 		}
 		//$out = parent::__get( $name );
@@ -246,16 +260,17 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
-	 * function __set
 	 * Overrides QueryRecord __set to implement custom object properties
-	 * @param string Name of property to return
-	 * @return mixed The requested field value
+	 * @param string $name Name of property to set
+	 * @param mixed $value Value of the property
+	 * @return mixed The set field value
 	 */
 	public function __set( $name, $value )
 	{
 		switch ( $name ) {
 			case 'status':
-				return $this->setstatus( $value );
+				$value = self::status($value);
+				break;
 			case 'date':
 				if ( !( $value instanceOf DateTime ) ) {
 					$value = DateTime::create( $value );
@@ -276,7 +291,7 @@ class Comment extends QueryRecord implements IsContent
 				}
 				elseif ( is_object( $value ) ) {
 					// a Post object was passed, so just use it directly
-					$this->post_id = $p->id;
+					$this->post_id = $value->id;
 					$this->post_object = $value;
 				}
 				return $value;
@@ -285,9 +300,8 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
-	 * private function get_post()
-	 * returns a Post object for the post of this comment
-	 * @param bool Whether to use the cached version or not.  Default to true
+	 * Obtain the Post object for the post of this comment
+	 * @param bool $use_cache Whether to use the cached version or not.  Default to true
 	 * @return Post a Post object for the post of the current comment
 	 */
 	private function get_post( $use_cache = true )
@@ -299,7 +313,6 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
-	 * function get_info
 	 * Gets the info object for this comment, which contains data from the commentinfo table
 	 * related to this comment.
 	 * @return CommentInfo object
@@ -318,97 +331,53 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
- 	 * function setstatus
- 	 * @param mixed the status to set it to. String or integer.
- 	 * @return integer the status of the comment
- 	 * Sets the status for a comment, given a string or integer.
- 	 */
-	private function setstatus( $value )
-	{
-		if ( is_numeric( $value ) ) {
-			$this->newfields['status'] = $value;
-		}
-		else {
-			switch ( strtolower( $value ) ) {
-				case "approved":
-				case "approve":
-				case "ham":
-					$this->newfields['status'] = self::STATUS_APPROVED;
-					break;
-				case "unapproved":
-				case "unapprove":
-					$this->newfields['status'] = self::STATUS_UNAPPROVED;
-					break;
-				case "spam":
-					$this->newfields['status'] = self::STATUS_SPAM;
-					break;
-				case "deleted":
-					$this->newfields['status'] = self::STATUS_DELETED;
-					break;
-			}
-		}
-		return $this->newfields['status'];
-	}
-
-	/**
-	 * returns an associative array of comment types
-	 * @param bool whether to force a refresh of the cached values
-	 * @return array An array of comment type names => integer values
+	 * Obtain an associative array of comment types
+	 * @param boolean $refresh Whether to force a refresh of the cached values
+	 * @return array An array mapping comment type names to integer values
 	 */
 	public static function list_comment_types( $refresh = false )
 	{
-		if ( ( ! $refresh ) && ( ! empty( self::$comment_type_list ) ) ) {
-			return self::$comment_type_list;
+		if ( $refresh || empty( self::$comment_type_list ) ) {
+			self::$comment_type_list = DB::get_keyvalue('SELECT id, name FROM {commenttype} WHERE active = 1;');
 		}
-		self::$comment_type_list = array(
-			self::COMMENT => 'comment',
-			self::PINGBACK => 'pingback',
-			self::TRACKBACK => 'trackback',
-		);
+		self::$comment_type_list = Plugins::filter( 'list_comment_types', self::$comment_type_list );
 		return self::$comment_type_list;
 	}
 
 	/**
-	 * returns an associative array of comment statuses
-	 * @param bool whether to force a refresh of the cached values
-	 * @return array An array of comment statuses names => interger values
+	 * Obtain an associative array of comment statuses
+	 * @param bool $refresh Whether to force a refresh of the cached values
+	 * @return array An array mapping comment statuses names to interger values
 	 */
 	public static function list_comment_statuses( $refresh = false )
 	{
-		if ( ( ! $refresh ) && ( ! empty( self::$comment_status_list ) ) ) {
-			return self::$comment_status_list;
+		if ( $refresh || empty( self::$comment_status_list ) ) {
+			self::$comment_status_list = DB::get_keyvalue('SELECT id, name FROM {commentstatus};');
 		}
-		self::$comment_status_list = array(
-			self::STATUS_UNAPPROVED => 'unapproved',
-			self::STATUS_APPROVED => 'approved',
-			self::STATUS_SPAM => 'spam',
-			// 'STATUS_DELETED' => self::STATUS_DELETED, // Not supported
-		);
 		self::$comment_status_list = Plugins::filter( 'list_comment_statuses', self::$comment_status_list );
 		return self::$comment_status_list;
 	}
 
 	/**
-	 * returns the action name of the comment status
-	 * @param mixed a comment status value, or name
-	 * @return string a string of the status action, or null
+	 * Obtain the action name of the comment status
+	 * @param integer|string $status A comment status value, or name
+	 * @return string A string of the status action, or null
 	 */
 	public static function status_action( $status )
 	{
 		if ( empty( self::$comment_status_actions ) ) {
 			self::$comment_status_actions = array(
-				self::STATUS_UNAPPROVED => _t( 'Unapprove' ),
-				self::STATUS_APPROVED => _t( 'Approve' ),
-				self::STATUS_SPAM => _t( 'Spam' ),
+				'unapproved' => _t( 'Unapprove' ),
+				'approved' => _t( 'Approve' ),
+				'spam' => _t( 'Spam' ),
 			);
 			self::$comment_status_actions = Plugins::filter( 'list_comment_actions', self::$comment_status_actions );
 		}
-		if ( is_numeric( $status ) && isset( self::$comment_status_actions[$status] ) ) {
+		if ( isset( self::$comment_status_actions[$status] ) ) {
 			return self::$comment_status_actions[$status];
 		}
-		$statuses = array_flip( Comment::list_comment_statuses() );
-		if ( isset( $statuses[$status] ) ) {
-			return self::$comment_status_actions[$statuses[$status]];
+		if ( isset(self::$comment_status_actions[Comment::status_name($status)]) ) {
+			return self::$comment_status_actions[Comment::status_name($status)];
 		}
 
 		return '';
@@ -416,9 +385,9 @@ class Comment extends QueryRecord implements IsContent
 
 
 	/**
-	 * returns the integer value of the specified comment status, or false
-	 * @param mixed a comment status name or value
-	 * @return mixed an integer or boolean false
+	 * Obtain the integer value of the specified comment status, or false
+	 * @param string|integer $name A comment status name or value
+	 * @return integer|boolean The valid integer status value or false if there was no match
 	 */
 	public static function status( $name )
 	{
@@ -434,9 +403,9 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
-	 * returns the friendly name of a comment status, or null
-	 * @param mixed a comment status value, or name
-	 * @return mixed a string of the status name, or null
+	 * Obtain the friendly name of a comment status
+	 * @param integer|string $status A comment status value or name
+	 * @return string The status name, or null
 	 */
 	public static function status_name( $status )
 	{
@@ -452,8 +421,8 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
-	 * returns the integer value of the specified comment type, or false
-	 * @param mixed a comment type name or number
+	 * Obtain the integer value of the specified comment type, or false
+	 * @param integer|string $name a comment type name or number
 	 * @return mixed an integer or boolean false
 	 */
 	public static function type( $name )
@@ -470,9 +439,9 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
-	 * returns the friendly name of a comment type, or null
-	 * @param mixed a comment type number, or name
-	 * @return mixed a string of the comment type, or null
+	 * Obtain the friendly name of a comment type, or null
+	 * @param string|integer A comment type number, or name
+	 * @return string A string of the comment type, or emptystring
 	 */
 	public static function type_name( $type )
 	{
@@ -529,6 +498,8 @@ class Comment extends QueryRecord implements IsContent
 		}
 
 		$tokens = array_merge( $tokens, $this->post->get_tokens() );
+
+		$token_accesses = array();
 
 		// grab the access masks on these tokens
 		foreach ( $tokens as $token ) {
@@ -611,7 +582,7 @@ class Comment extends QueryRecord implements IsContent
 	/**
 	 * How to display the built-in comment statuses.
 	 *
-	 * @param string The name of the status we want to translate
+	 * @param string $status The name of the status we want to translate
 	 * @return string The translated status name. This is always lowercase.
 	 *	It is up to the caller to uppercase it.
 	 */

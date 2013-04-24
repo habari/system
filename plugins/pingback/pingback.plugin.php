@@ -128,7 +128,7 @@ class Pingback extends Plugin
 			}
 
 			// Is this Pingback already registered?
-			if ( Comments::get( array( 'post_id' => $target_post->id, 'url' => $source_uri, 'type' => Comment::PINGBACK ) )->count() > 0 ) {
+			if ( Comments::get( array( 'post_id' => $target_post->id, 'url' => $source_uri, 'type' => 'pingback' ) )->count() > 0 ) {
 				throw new XMLRPCException( 48 );
 			}
 
@@ -241,9 +241,9 @@ class Pingback extends Plugin
 				'url'		=>	$source_uri,
 				'ip'		=>	Utils::get_ip(),
 				'content'	=>	$source_excerpt,
-				'status'	=>	Comment::STATUS_UNAPPROVED,
+				'status'	=>	'unapproved',
 				'date'		=>	DateTime::create(),
-				'type' 		=> 	Comment::PINGBACK,
+				'type' 		=> 	'pingback',
 				) );
 
 			$pingback->insert();

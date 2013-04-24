@@ -41,7 +41,7 @@
 			$message = sprintf( _n( '%d comment', '%d comments', $stats['comment_count'] ), $stats['comment_count'] );
 			$perms = array( 'manage_all_comments' => true, 'manage_own_post_comments' => true );
 			if ( $user->can( 'manage_all_comments' ) ) {
-				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_APPROVED ) ) ) . '">' . $message . '</a>';
+				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'comments', 'status' => 'approved' ) ) ) . '">' . $message . '</a>';
 			}
 			$comment_tag_msg[] = $message;
 		}
@@ -99,14 +99,14 @@
 		}
 		if ( $user->can_any( array( 'manage_all_comments' => true, 'manage_own_post_comments' => true ) ) ) {
 			if ( !empty(  $stats['unapproved_comment_count'] ) ) {
-				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_UNAPPROVED ) ) ) . '">';
+				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'comments', 'status' => 'unapproved' ) ) ) . '">';
 				$message .= sprintf( _n( '%d comment awaiting approval', '%d comments awaiting approval', $stats['unapproved_comment_count'] ), $stats['unapproved_comment_count'] );
 				$message .= '</a>';
 				$message_bits[] = $message;
 			}
 
 			if ( !empty(  $stats['spam_comment_count'] ) && $user->info->dashboard_hide_spam_count != true ) {
-				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_SPAM ) ) ) . '">';
+				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'comments', 'status' => 'spam' ) ) ) . '">';
 				$message .= sprintf( _n( '%d spam comment', '%d spam comments', $stats['spam_comment_count'] ), $stats['spam_comment_count'] );
 				$message .= '</a>';
 				$message_bits[] = $message;

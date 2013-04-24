@@ -104,8 +104,8 @@ class CoreBlocks extends Plugin
 		while ( $published_posts < $limit && $comments_remain ) {
 			$comments = Comments::get( array(
 				'limit' => $limit - $published_posts,
-				'status' => Comment::STATUS_APPROVED,
-				'type' => Comment::COMMENT,
+				'status' => 'approved',
+				'type' => 'comment',
 				'offset' => $offset,
 				'orderby' => 'date DESC',
 			) );

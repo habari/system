@@ -40,7 +40,7 @@ class SpamChecker extends Plugin
 		// first, check the commenter's name
 		// if it's only digits, then we can discard this comment
 		if ( preg_match( "/^\d+$/", $comment->name ) ) {
-			$comment->status = Comment::STATUS_SPAM;
+			$comment->status = Comment::status('spam');
 			$spamcheck[] = _t('Commenters with numeric names are spammy.');
 		}
 
@@ -49,58 +49,58 @@ class SpamChecker extends Plugin
 		$textonly = strip_tags( $comment->content );
 
 		if ( preg_match( "/^\d+$/", $textonly ) ) {
-			$comment->status = Comment::STATUS_SPAM;
+			$comment->status = Comment::status('spam');
 			$spamcheck[] = _t('Comments that are only numeric are spammy.');
 		}
 
 		// is the content whitespaces only?
 		if ( preg_match( "/\A\s+\z/", $textonly ) ) {
-			$comment->status = Comment::STATUS_SPAM;
+			$comment->status = Comment::status('spam');
 			$spamcheck[] = _t('Comments that are only whitespace characters are spammy.');
 		}
 
 		// is the content the single word "array"?
 		if ( 'array' == strtolower( $textonly ) ) {
-			$comment->status = Comment::STATUS_SPAM;
+			$comment->status = Comment::status('spam');
 			$spamcheck[] = _t('Comments that are only "array" are spammy.');
 		}
 
 		// is the content the same as the name?
 		if ( strtolower( $textonly ) == strtolower( $comment->name ) ) {
-			$comment->status = Comment::STATUS_SPAM;
+			$comment->status = Comment::status('spam');
 			$spamcheck[] = _t('Comments that consist of only the commenters name are spammy.');
 		}
 
 		// a lot of spam starts with "<strong>some text...</strong>"
 		if ( preg_match( "#^<strong>[^.]+\.\.\.</strong>#", $comment->content ) )
 		{
-			$comment->status = Comment::STATUS_SPAM;
+			$comment->status = Comment::status('spam');
 			$spamcheck[] = _t('Comments that start with strong text are spammy.');
 		}
 
 		// are there more than 3 URLs posted?  If so, it's almost certainly spam
 		if ( preg_match_all( "#https?://#", strtolower( $comment->content ), $matches, PREG_SET_ORDER ) > 3 ) {
-			$comment->status = Comment::STATUS_SPAM;
+			$comment->status = Comment::status('spam');
 			$spamcheck[] = _t('There is a 3 URL limit in comments.');
 		}
 
 		// are there more than 3 URLencoded characters in the content?
 		if ( preg_match_all( "/%[0-9a-f]{2}/", strtolower( $comment->content ), $matches, PREG_SET_ORDER ) > 3 ) {
-			$comment->status = Comment::STATUS_SPAM;
+			$comment->status = Comment::status('spam');
 			$spamcheck[] = _t('There is a 3 URL-encoded character limit in comments.');
 		}
 
 		// Was the tcount high enough?
 		/* // This only works with special javascript running on comment form
 		if ( empty($handlervars['tcount']) || $handlervars['tcount'] < 10 ) {
-			$comment->status = Comment::STATUS_SPAM;
+			$comment->status = Comment::status('spam');
 			$spamcheck[] = _t('Commenter did not actually type content.');
 		}
 		*/
 
 		// We don't allow bbcode here, silly
 		if ( stripos($comment->content, '[url=') !== false ) {
-			$comment->status = Comment::STATUS_SPAM;
+			$comment->status = Comment::status('spam');
 			$spamcheck[] = _t('We do not accept BBCode here.');
 		}
 
@@ -108,23 +108,23 @@ class SpamChecker extends Plugin
 		$nonacontent = strip_tags(preg_replace('/<a.*?<\/a/i', '', $comment->content));
 		$text_length = strlen( $textonly );
 		if ( strlen($nonacontent) / ( $text_length == 0 ? 1 : $text_length) < 0.5 ) {
-			$comment->status = Comment::STATUS_SPAM;
+			$comment->status = Comment::status('spam');
 			$spamcheck[] = _t('Too much text that is a link compared to that which is not.');
 		}
 
 		// Only do db checks if it's not already spam
-		if ($comment->status != Comment::STATUS_SPAM) {
-			$spams = DB::get_value('SELECT count(*) FROM ' . DB::table('comments') . ' WHERE status = ? AND ip = ?', array(Comment::STATUS_SPAM, $comment->ip));
+		if ($comment->status != Comment::status('spam')) {
+			$spams = DB::get_value('SELECT count(*) FROM ' . DB::table('comments') . ' WHERE status = ? AND ip = ?', array(Comment::status('spam'), $comment->ip));
 			// If you've already got two spams on your IP address, all you ever do is spam
 			if ($spams > 1) {
-				$comment->status = Comment::STATUS_SPAM;
+				$comment->status = Comment::status('spam');
 				$spamcheck[] = _t( 'Too many existing spams from this IP: %s', array( $comment->ip ) );
 			}
 		}
 
 		// Any commenter that takes longer than the session timeout is automatically moderated
 		if (!isset($_SESSION['comments_allowed']) || ! in_array(Controller::get_var('ccode'), $_SESSION['comments_allowed'])) {
-			$comment->status = Comment::STATUS_UNAPPROVED;
+			$comment->status = Comment::status('unapproved');
 			$spamcheck[] = _t("The commenter's session timed out.");
 		}
 
@@ -199,7 +199,7 @@ class SpamChecker extends Plugin
 	function filter_spam_filter( $spam_rating, $comment, $handlervars )
 	{
 		// This plugin ignores non-comments
-		if ($comment->type != Comment::COMMENT) {
+		if (!$comment->is_comment) {
 			return $spam_rating;
 		}
 

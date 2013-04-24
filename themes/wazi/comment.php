@@ -1,5 +1,5 @@
 <?php namespace Habari; ?>
-<article class="comment<?php if ( $content->status != Comment::STATUS_APPROVED ) : ?> moderated<?php endif; ?>" id="comment-<?php echo $content->id; ?>" itemscope itemtype="http://schema.org/Comment">
+<article class="comment <?php echo $content->status_name?>" id="comment-<?php echo $content->id; ?>" itemscope itemtype="http://schema.org/Comment">
 	<header class="comment-meta">
 		<h1 itemprop="description">
 			<span class="comment-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
