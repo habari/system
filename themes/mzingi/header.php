@@ -1,23 +1,21 @@
-<?php namespace Habari; ?>
-<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <!DOCTYPE HTML>
-<html <?php if(isset($locale)): ?>lang="<?php echo $locale; endif; ?>">
+<html lang="{hi:locale}">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; <?php if(isset($charset)): ?>charset=<?php echo $charset; endif; ?>">
-	<title><?php echo $page_title; ?></title>
+	<meta http-equiv="Content-Type" content="text/html; charset={hi:charset}">
+	<title>{hi:page_title}</title>
 	<meta name="generator" content="Habari">
 
-	<link rel="Shortcut Icon" href="<?php Site::out_url( 'theme' ); ?>/favicon.ico">
-	<?php echo $theme->header(); ?>
+	<link rel="Shortcut Icon" href="{hi:siteurl:theme}/favicon.ico">
+	{hi:@header_out}
 </head>
-<body class="<?php echo $theme->body_class(); ?>">
+<body class="{hi:@body_class_out}">
 	<!--begin wrapper-->
 	<div id="wrapper">
 		<!--begin masthead-->
 		<div id="masthead">
 			<div id="branding">
-				<h1><a href="<?php Site::out_url( 'site'); ?>" title="<?php Options::out( 'title' ); ?>"> <?php Options::out( 'title' ); ?></a></h1>
-				<h3><em><?php Options::out( 'tagline' ); ?></em></h3>
+				<h1><a href="{hi:siteurl:site}" title="{hi:option:title}"> {hi:option:title}</a></h1>
+				<h3><em>{hi:option:tagline}</em></h3>
 			</div>
 		</div>
 	<!--end masthead-->

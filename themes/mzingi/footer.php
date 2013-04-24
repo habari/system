@@ -1,9 +1,7 @@
-<?php namespace Habari; ?>
-<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 	<!--begin footer-->
 	<div id="footer" class="clear">
-	<p><?php Options::out('title'); ?> <?php _e('is powered by'); ?> <a href="http://www.habariproject.org/" title="Habari">Habari</a></p>
-	<?php echo $theme->footer(); ?>
+	<p>{hi:option:title} {hi:"is powered by"} <a href="http://www.habariproject.org/" title="Habari">Habari</a></p>
+	{hi:@footer_out}
 	</div>
 	<!--end footer-->
 </div>
