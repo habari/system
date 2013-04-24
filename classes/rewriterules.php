@@ -86,7 +86,6 @@ class RewriteRules extends \ArrayObject
 
 			// User actions
 			array( 'name' => 'auth', 'parse_regex' => '#^auth/(?P<page>[^/]*)$#i', 'build_str' => 'auth/{$page}', 'handler' => 'UserHandler', 'action' => '{$page}', 'priority' => 7, 'description' => 'A user action or display, for instance the login screen' ),
-			array( 'name' => 'user', 'parse_regex' => '#^user/(?P<page>[^/]*)$#i', 'build_str' => 'user/{$page}', 'handler' => 'UserHandler', 'action' => '{$page}', 'priority' => 7, 'description' => 'A user action or display, for instance the login screen' ),
 
 			// AJAX requests
 			array( 'name' => 'ajax', 'parse_regex' => '#^ajax/(?P<context>[^/]+)/?$#i', 'build_str' => 'ajax/{$context}', 'handler' => 'AjaxHandler', 'action' => 'ajax', 'priority' => 8, 'description' => 'Ajax handling' ),

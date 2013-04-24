@@ -34,7 +34,7 @@ class UserHandler extends ActionHandler
 
 					$user->info->password_reset = md5( $hash );
 					$user->info->commit();
-					$message = _t( 'Please visit %1$s to reset your password.', array( URL::get( 'user', array( 'page' => 'password_reset', 'id' => $user->id, 'hash' => $hash ) ) ) );
+					$message = _t( 'Please visit %1$s to reset your password.', array( URL::get( 'auth', array( 'page' => 'password_reset', 'id' => $user->id, 'hash' => $hash ) ) ) );
 
 					Utils::mail( $user->email, _t( '[%1$s] Password reset request for %2$s', array( Options::get( 'title' ), $user->displayname ) ), $message );
 				}
