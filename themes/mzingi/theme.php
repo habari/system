@@ -1,5 +1,5 @@
 <?php namespace Habari; ?>
-<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } 
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 
 /**
  * Mzingi is a custom Theme class for the mzingi theme.
@@ -7,15 +7,7 @@
  * @package Habari
  */
 
-/**
- * @todo This stuff needs to move into the custom theme class:
- */
-
-
-/**
- * A custom theme for mzingi output
- */
-class Mzingi extends Theme
+class MzingiHi extends Theme
 {
 
 	public function action_init_theme()
@@ -31,6 +23,8 @@ class Mzingi extends Theme
 		Format::apply_with_hook_params( 'more', 'post_content_excerpt', 'more',60, 1 );
 		// Format the calendar like date for home, entry.single and entry.multiple templates
 		Format::apply( 'format_date', 'post_pubdate_out','<span class="calyear">{Y}</span><br><span class="calday">{j}</span><br><span  class="calmonth">{F}</span>' );
+		Format::apply( 'nice_date', 'post_pubdate_nice', 'F j, Y' );
+		Format::apply( 'nice_date', 'comment_date_out', 'M j, Y h:ia' );
 	}
 
 	/**
@@ -38,14 +32,11 @@ class Mzingi extends Theme
 	 *
 	 *  You can assign additional output values in the template here, instead of
 	 *  having the PHP execute directly in the template.  The advantage is that
-	 *  you would easily be able to switch between template types (RawPHP/Smarty)
+	 *  you would easily be able to switch between template types (RawPHP/HiEngine)
 	 *  without having to port code from one to the other.
 	 *
 	 *  You could use this area to provide "recent comments" data to the template,
 	 *  for instance.
-	 *
-	 *  Note that the variables added here should possibly *always* be added,
-	 *  especially 'user'.
 	 *
 	 *  Also, this function gets executed *after* regular data is assigned to the
 	 *  template.  So the values here, unless checked, will overwrite any existing
@@ -53,11 +44,11 @@ class Mzingi extends Theme
 	 */
 	public function action_add_template_vars($theme)
 	{
-		if ( !$this->template_engine->assigned( 'pages' ) ) {
-			$this->assign( 'pages', Posts::get( 'page_list' ) );
+		if ( !isset( $this->pages ) ) {
+			$this->pages = Posts::get( 'page_list' );
 		}
 		//For Asides loop in sidebar.php
-		$this->assign( 'asides', Posts::get( 'asides' ) );
+		$this->asides = Posts::get( array( 'vocabulary' => array( 'tags:term' => 'asides') ) );
 
 		if ( is_object($this->request) && $this->request->display_entries_by_tag ) {
 			if ( count( $this->include_tag ) && count( $this->exclude_tag ) == 0 ) {
@@ -71,8 +62,8 @@ class Mzingi extends Theme
 			}
 		}
 
-		// Load the stylesheet
-		Stack::add('template_stylesheet', array(Site::get_url( 'theme', '/style.css' )), 'theme');
+		// Add the stylesheet to the stack for output
+		$this->add_style( array( $this->get_url( 'style.css' ), 'screen' ), 'header', 'style' );
 
 		// Add the extra login form styling on the login page
 		if( is_object( $this->request ) && $this->request->auth ) {
@@ -90,20 +81,101 @@ class Mzingi extends Theme
 	display: none;
 }
 LOGIN_STYLE;
-			$this->add_style( $login_style, 'header', 'login_style', 'style' );
+			$this->add_style( array( $login_style, 'screen' ), 'header', 'login_style', 'style' );
 
+			$login_js = <<< LOGIN_JS
+$(document).ready( function() {
+	$('.reset_link').click(function(){\$(this).closest('form').toggleClass('do_reset'); return false;});
+});
+LOGIN_JS;
+			// Habari always registers jquery as a loadable stack item, so listing
+			// will automatically load it.
+			$this->add_script( $login_js, 'footer', 'login_js', 'jquery' );
 		}
-		
 	}
 
 	public function act_display_home( $user_filters = array() )
 	{
-		//To exclude aside tag from main content loop
+		//To exclude posts with the aside tag from the main content loop
 		parent::act_display_home( array( 'vocabulary' => array( 'tags:not:term' => 'aside' ) ) );
 	}
 
+	public function theme_next_post_link( $theme )
+	{
+		$next_link = '';
+		if( isset( $theme->post ) ) {
+			$next_post = $theme->post->ascend();
+			if( ( $next_post instanceOf Post ) ) {
+				$next_link = '<a href="' . $next_post->permalink. '" title="' . $next_post->title .'" >' . '&laquo; ' .$next_post->title . '</a>';
+			}
+		}
+
+		return $next_link;
+	}
+
+	public function theme_prev_post_link( $theme )
+	{
+		$prev_link = '';
+
+		if( isset( $theme->post ) ) {
+		$prev_post = $theme->post->descend();
+		if( ( $prev_post instanceOf Post) ) {
+			$prev_link= '<a href="' . $prev_post->permalink. '" title="' . $prev_post->title .'" >' . $prev_post->title . ' &raquo;' . '</a>';
+		}
+		}
+		return $prev_link;
+	}
+
+	public function theme_feed_site( $theme )
+	{
+		return URL::get( 'atom_feed', array( 'index' => '1' ) );
+	}
+
+	public function theme_prevpage_link( $theme )
+	{
+		return parent::theme_prev_page_link( $theme, '&laquo; ' . _t('Newer Posts') );
+	}
+
+	public function theme_nextpage_link( $theme )
+	{
+		return parent::theme_next_page_link( $theme, '&raquo; ' . _t('Older Posts') );
+	}
+
+	public function theme_prevpage_results( $theme )
+	{
+		return parent::theme_prev_page_link( $theme, '&laquo; ' . _t('Newer Reults') );
+	}
+
+	public function theme_nextpage_results( $theme )
+	{
+		return parent::theme_next_page_link( $theme, '&raquo; ' . _t('Older Reults') );
+	}
+
+	public static function theme_pageselector( $theme )
+	{
+		return parent::theme_page_selector( $theme, null, array( 'leftSide' => 2, 'rightSide' => 2 ) );
+	}
+
+	public function theme_comment_form( $theme )
+	{
+		return $theme->post->comment_form();
+	}
+
+	public function theme_search_form( $theme )
+	{
+		$form = new FormUI( 'searchform');
+		$form->set_properties( array( 'action' => Url::get( 'display_search' ), 'method' => 'GET' ) );
+		$form->append( FormControlText::create( 'criteria' )-> set_properties(
+			array( 'type'  => 'search', 'id' => 's', 'placeholder' => _t( "Search" )
+			 ))->set_value(
+				isset( $theme->criteria ) ? htmlentities($theme->criteria, ENT_COMPAT, 'UTF-8') : '' )
+		);
+		$form->append( FormControlSubmit::create( 'searchsubmit' )->set_caption( _t( 'Go!' ) ) );
+		return $form;
+	}
+
 	/**
-	 * Customize comment form layout with fieldsets.
+	 * Customize the comment form layout with fieldsets.
 	 */
 	public function action_form_comment( FormUI $form ) {
 		//Create a fieldset for Name, Email and URL before Name

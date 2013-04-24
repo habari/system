@@ -1,37 +1,29 @@
-<?php namespace Habari; ?>
-<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-<?php $theme->display ( 'header' ); ?>
-<!--begin content-->
+{hi:display:header}
 	<div id="content">
 		<!--begin primary content-->
 		<div id="primaryContent">
 			<!--begin loop-->
-			<?php foreach ( $posts as $post ) { ?>
-				<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
-						<h2><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
-							<div class="cal"><?php echo $post->pubdate_out; ?></div>
-					<div class="entry">
-						<?php echo $post->content_out; ?>
-					</div>
+			{hi:posts}
+				<div id="post-{hi:id}" class="{hi:statusname}">
+					<h2><a href="{hi:permalink}" title="{hi:title}">{hi:title_out}</a></h2>
+					<div class="cal">{hi:pubdate_out}</div>
+					<div class="entry">{hi:content_out}</div>
 					<div class="entryMeta">
-						<?php if ( count( $post->tags ) ) { ?>
-						<div class="tags"><?php _e('Tagged:'); ?> <?php echo $post->tags_out; ?></div>
-						<?php } ?>
-						<div class="commentCount"><?php echo $theme->comments_link($post,'%d Comments','%d Comment','%d Comments'); ?></div>
+						{hi:?count(tags)}
+						<div class="tags">{hi:"Tagged"} {hi:tags_out}</div>
+						{/hi:?}
+						<div class="commentCount"><a href="{hi:permalink}#comments" title="{hi:"Comments on this post"}">{hi:"{hi:comments.approved.count} Comment" "{hi:comments.approved.count} Comments" comments.approved.count}</a></div>
 					</div><br>
-					<?php if ( $loggedin ) { ?>
-					<a href="<?php echo $post->editlink; ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a>
-					<?php } ?>
+					{hi:?loggedin}
+					<a href="{hi:editlink}" title="{hi:"Edit post"}">{hi:"Edit"}</a>
+					{/hi:?}
 				</div>
-			<?php } ?>
+			{/hi:posts}
 			<!--end loop-->
-			<div id="pagenav">
-				<?php echo $theme->prev_page_link('&laquo; ' . _t('Newer Posts')); ?> <?php echo $theme->page_selector( null, array( 'leftSide' => 2, 'rightSide' => 2 ) ); ?> <?php echo $theme->next_page_link('&raquo; ' . _t('Older Posts')); ?>
-			</div>
-			</div>
-
-		<!--end primary content-->
-		<?php $theme->display ( 'sidebar' ); ?>
+			<div id="pagenav">{hi:@prevpage_link_out} {hi:@pageselector_out} {hi:@nextpage_link_out}</div>
+		</div> <!--end primary content-->
+		{hi:display:sidebar}
 	</div>
 	<!--end content-->
-	<?php $theme->display ( 'footer' ); ?>
+{hi:display:footer}
+	

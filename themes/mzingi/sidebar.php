@@ -1,37 +1,26 @@
-<?php namespace Habari; ?>
-<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-<?php Plugins::act( 'theme_sidebar_top' ); ?>
+{hi:@sidebar_top_out}
 	<!--begin secondary content-->
 	<div id="secondaryContent">
-	<h3><a id="rss" href="<?php echo $theme->feed_alternate(); ?>" class="block"><?php _e('Subscribe to Feed'); ?></a></h3>
-	<h2 id="site"><?php _e('Navigation'); ?></h2>
-	<ul id="nav">
-		<li><a href="<?php Site::out_url( 'habari' ); ?>"><?php _e('Home'); ?></a></li>
-		<?php
-		// List Pages
-		if( isset( $pages ) && !empty( $pages ) ) {
-			foreach ( $pages as $page ) {
-				echo '<li><a href="' . $page->permalink . '" title="' . $page->title . '">' . $page->title . '</a></li>' . "\n";
-			}
-		}
-		?>
-	</ul>
+		<h3><a id="rss" href="{hi:@feed_alternate_out}" class="block">{hi:"Subscribe to Feed"}</a></h3>
+		<h2 id="site">{hi:"Navigation"}</h2>
+		<ul id="nav">
+			<li><a href="{hi:siteurl:habari}">{hi:"Home"}</a></li>
+			{hi:?isset(pages) && !empty(pages)}
+				{hi:pages}
+					<li><a href="{hi:permalink}" title="{hi:title}">{hi:title}</a></li>
+				{/hi:pages}
+			{/hi:?}
+		</ul>
 
-	<h2 id="aside"><?php _e('Asides'); ?></h2>
-	<ul id="asides">
-		<?php
-			if( isset( $asides ) && !empty( $asides ) ) {
-	          foreach($asides as $post):
-              echo '<li><span class="date">';
-	      // @locale Date formats according to http://php.net/manual/en/function.date.php
-              echo $post->pubdate->out( _t( 'F j, Y' ) ) . ' - ' . '</span>';
-              echo '<a href="' . $post->permalink .'">' . $post->title_out . '</a>'. $post->content_out;
-              echo '</li>';
- 		?>
-	<?php endforeach; } ?>
-   </ul>
-	<?php echo $theme->area( 'sidebar' ); ?>
-
+		<h2 id="aside">{hi:"Asides"}</h2>
+		<ul id="asides">
+			{hi:?isset(asides) && !empty(asides)}
+				{hi:asides}
+					<li><span class="date">{hi:pubdate_nice} - </span><a href="{hi:permalink}">{hi:title_out}</a> {hi:content_out}</li>
+				{/hi:asides}
+			{/hi:?}
+		</ul>
+		{hi:area:sidebar}
 	</div>
 	<!--end secondary content-->
-<?php Plugins::act( 'theme_sidebar_bottom' ); ?>
+{hi:@sidebar_bottom_out}

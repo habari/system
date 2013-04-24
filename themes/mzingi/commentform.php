@@ -1,68 +1,49 @@
-<?php namespace Habari; ?>
-<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-<?php if ( Session::has_messages() ) {
-		Session::messages_out();
-	}
-?>
+{hi:session:messages}
 
 <div id="comments">
-	<h3><?php echo $theme->comments_count($post,'%d Responses','%d Response','%d Responses'); ?> <?php _e('to'); ?> <?php echo $post->title; ?></h3>
-<a href="<?php echo $post->comment_feed_link; ?>"><?php _e('Feed for this Entry'); ?></a>
-	<?php if ( $post->comments->pingbacks->count ) : ?>
-			<div id="pings">
-			<h4><?php echo $theme->pingback_count($post); ?></h4>
-				<ul id="pings-list">
-					<?php foreach ( $post->comments->pingbacks->approved as $pingback ) : ?>
-						<li id="ping-<?php echo $pingback->id; ?>">
-
-								<div class="comment-content">
-								<?php echo $pingback->content; ?>
-								</div>
-								<div class="ping-meta"><a href="<?php echo $pingback->url; ?>" title=""><?php echo $pingback->name; ?></a></div>
-						</li>
-					<?php endforeach; ?>
-				</ul>
-			</div>
-		<?php endif; ?>
+	<h3>{hi:"{hi:post.comments.approved.count} Response" "{hi:post.comments.approved.count} Responses" post.comments.approved.count} {hi:"to"} {hi:post.title}</h3>
+	<a href="{hi:post.comment_feed_link}"> {hi:"Feed for this Entry"}</a>
+	{hi:?post.comments.pingbacks.count}
+		<div id="pings">
+		<h4>{hi:"{hi:post.comments.pingbacks.approved.count} Pingback" "{hi:post.comments.pingbacks.approved.count} Pingbacks" post.comments.pingbacks.approved.count} {hi:"to"} {hi:post.title}</h4>
+			<ul id="pings-list">
+				{hi:post.comments.pingbacks.approved}
+					<li id="ping-{hi:id}">
+							<div class="comment-content">{hi:content}</div>
+							<div class="ping-meta"><a href="{hi:url}" title="">{hi:name}</a></div>
+					</li>
+				{/hi:post.comments.pingbacks.approved}
+			</ul>
+		</div>
+	{/hi:?}
 
 
-	<h4 class="commentheading"><?php echo $post->comments->comments->approved->count; ?> <?php echo _n( 'Comment', 'Comments', $post->comments->comments->approved->count ); ?></h4>
+	<h4 class="commentheading">{hi:"{hi:post.comments.comments.approved.count} Response" "{hi:post.comments.comments.approved.count} Responses" post.comments.comments.approved.count}</h4>
 	<ul id="commentlist">
 
-		<?php
-		if ( $post->comments->moderated->count ) {
-			foreach ( $post->comments->comments->moderated as $comment ) {
-			$class = 'class="comment';
-			if ( $comment->status == Comment::STATUS_UNAPPROVED ) {
-				$class.= '-unapproved';
-			}
-			$class.= '"';
-		?>
+		{hi:?post.comments.moderated.count}
+			{hi:post.comments.moderated}
+				{hi:?status == Comment::STATUS_UNAPPROVED}
+					<li id="comment-{hi:id}" class="comment{hi:'-unapproved"}>
+				{hi:?else?}
+					<li id="comment-{hi:id}" class="comment">
+				{/hi:?}
 
-			<li id="comment-<?php echo $comment->id; ?>" <?php echo $class; ?>>
- 				<div class="comment-content">
-		        <?php echo $comment->content_out; ?>
-		       </div>
-			<div class="comment-meta">#<a href="#comment-<?php echo $comment->id; ?>" class="counter" title="<?php _e('Permanent Link to this Comment'); ?>"><?php echo $comment->id; ?></a> |
-		       <span class="commentauthor"><?php _e('Comment by'); ?> <?php echo $theme->comment_author_link($comment); ?></span>
-		       <span class="commentdate"> <?php _e('on'); ?> <a href="#comment-<?php echo $comment->id; ?>" title="<?php _e('Time of this comment'); ?>"><?php /* @locale Date formats according to http://php.net/manual/en/function.date.php */ $comment->date->out( _t( 'M j, Y h:ia' ) ); ?></a></span><h5><?php if ( $comment->status == Comment::STATUS_UNAPPROVED ) : ?> <em><?php _e('In moderation'); ?></em><?php endif; ?></h5></div>
+ 			<div class="comment-content">{hi:content_out}</div>
+			<div class="comment-meta">#<a href="#comment-{hi:id}" class="counter" title="{hi:"Permanent Link to this Comment"}">{hi:id}</a> |
+			<span class="commentauthor">{hi:"Comment by"} <a href="{hi:url}">{hi:name}</a></span>
+			<span class="commentdate"> {hi:"on"} <a href="#comment-{hi:id}" title="{hi:"Time of this comment"}">{hi:date_out}</a></span>
+			{hi:?status == Comment::STATUS_UNAPPROVED}<h5> <em>{hi:"In moderation"}</em></h5>{/hi:?}</div>
 		      </li>
-
-
-
-
-		<?php
-			}
-		}
-		else {
-			_e('<li>There are currently no comments.</li>');
-		}
-		?>
+			{/hi:post.comments.moderated}
+		{hi:?else?}
+			<li>{hi:"There are currently no comments."}</li>
+		{/hi:?}
 	</ul>
 	<div class="comments">
 
 		<br>
-<?php $post->comment_form()->out(); ?>
+{hi:@comment_form_out}
 	</div>
 
 
