@@ -49,7 +49,7 @@
 					<li><?php echo $comment->ip; ?></li>
 				<?php endif; ?>
 			</ul>
-			<?php if ( $comment->status == Comment::STATUS_SPAM ) :?>
+			<?php if ( $comment->is_spam ) :?>
 				<p><?php _e('Marked as spam'); ?></p>
 			<?php endif; ?>
 

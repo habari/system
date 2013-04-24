@@ -125,6 +125,16 @@ class QueryRecord implements URLProperties
 	}
 
 	/**
+	 * A field accessor that doesn't filter, for use in plugins that filter field values
+	 * @param string $name Name of the field to get
+	 * @return mixed Value of the field, unfiltered
+	 */
+	public function get_raw_field($name)
+	{
+		return self::__get($name);
+	}
+
+	/**
 	 * function insertRecord(
 	 * Inserts this record's fields as a new row
 	 * @param string $table Table to update, use table name without prefix and without braces

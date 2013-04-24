@@ -31,6 +31,8 @@ class DatabaseConnection
 		'blocks_areas',
 		'commentinfo',
 		'comments',
+		'commentstatus',
+		'commenttype',
 		'crontab',
 		'groups',
 		'group_token_permissions',
@@ -547,11 +549,7 @@ class DatabaseConnection
 	public function get_keyvalue( $query, $args = array() )
 	{
 		if ( $this->query( $query, $args ) ) {
-			$result = $this->pdo_statement->fetchAll( \PDO::FETCH_NUM );
-			$output = array();
-			foreach ( $result as $item ) {
-				$output[$item[0]] = $item[1];
-			}
+			$output = $this->pdo_statement->fetchAll( \PDO::FETCH_KEY_PAIR );
 			return $output;
 		}
 		else {

@@ -11,6 +11,10 @@ namespace Habari;
  *
  * @property integer $value The internal numeric value of the Bitmask
  * @property integer $full The internal value of a fully-on Bitmask
+ * @property-read boolean $read A typical CRUD flag, true if this bitmask has the assciated flag set
+ * @property-read boolean $create A typical CRUD flag, true if this bitmask has the assciated flag set
+ * @property-read boolean $edit A typical CRUD flag, true if this bitmask has the assciated flag set
+ * @property-read boolean $delete A typical CRUD flag, true if this bitmask has the assciated flag set
  */
 class Bitmask
 {
@@ -24,7 +28,7 @@ class Bitmask
 	 *
 	 * @param array $flags An array of flag names
 	 * @param integer $value (optional) a combined bitmask value
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
 	public function __construct( $flags = null, $value = null )
 	{
@@ -70,7 +74,7 @@ class Bitmask
 	 *
 	 * @param string $bit The name of the Bitmask part to set
 	 * @param mixed $on The value to set the bit to
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 * @return mixed The set value
 	 */
 	public function __set( $bit, $on )
@@ -144,7 +148,7 @@ class Bitmask
 	 * Magic getter method for flag status
 	 *
 	 * @param int $bit representing the mask bit to test
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 * @return boolean
 	 */
 	public function __get( $bit )

@@ -251,18 +251,18 @@ class AdminCommentsHandler extends AdminHandler
 		}
 
 		// Setting these mass_delete options prevents any other processing.  Desired?
-		if ( isset( $mass_spam_delete ) && $status == Comment::STATUS_SPAM ) {
+		if ( isset( $mass_spam_delete ) && $status == 'spam' ) {
 			// Delete all comments that have the spam status.
-			Comments::delete_by_status( Comment::STATUS_SPAM );
+			Comments::delete_by_status( 'spam' );
 			// let's optimize the table
 			$result = DB::query( 'OPTIMIZE TABLE {comments}' );
 			Session::notice( _t( 'Deleted all spam comments' ) );
 			EventLog::log( _t( 'Deleted all spam comments' ), 'info' );
 			Utils::redirect();
 		}
-		elseif ( isset( $mass_delete ) && $status == Comment::STATUS_UNAPPROVED ) {
+		elseif ( isset( $mass_delete ) && $status == 'unapproved' ) {
 			// Delete all comments that are unapproved.
-			Comments::delete_by_status( Comment::STATUS_UNAPPROVED );
+			Comments::delete_by_status( 'unapproved' );
 			Session::notice( _t( 'Deleted all unapproved comments' ) );
 			EventLog::log( _t( 'Deleted all unapproved comments' ), 'info' );
 			Utils::redirect();
@@ -318,7 +318,7 @@ class AdminCommentsHandler extends AdminHandler
 					case 'spam':
 						// This comment was marked as spam
 						$to_update = $this->comment_access_filter( $to_update, 'edit' );
-						Comments::moderate_these( $to_update, Comment::STATUS_SPAM );
+						Comments::moderate_these( $to_update, 'spam' );
 						$modstatus[_t( 'Marked %d comments as spam' )] = count( $to_update );
 						break;
 
@@ -326,7 +326,7 @@ class AdminCommentsHandler extends AdminHandler
 					case 'approved':
 						// Comments marked for approval
 						$to_update = $this->comment_access_filter( $to_update, 'edit' );
-						Comments::moderate_these( $to_update, Comment::STATUS_APPROVED );
+						Comments::moderate_these( $to_update, 'approved' );
 						$modstatus[_t( 'Approved %d comments' )] = count( $to_update );
 						foreach ( $to_update as $comment ) {
 									$modstatus[_t( 'Approved comments on these posts: %s' )] = ( isset( $modstatus[_t( 'Approved comments on these posts: %s' )] )? $modstatus[_t( 'Approved comments on these posts: %s' )] . ' &middot; ' : '' ) . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
@@ -337,7 +337,7 @@ class AdminCommentsHandler extends AdminHandler
 					case 'unapproved':
 						// This comment was marked for unapproval
 						$to_update = $this->comment_access_filter( $to_update, 'edit' );
-						Comments::moderate_these( $to_update, Comment::STATUS_UNAPPROVED );
+						Comments::moderate_these( $to_update, 'unapproved' );
 						$modstatus[_t( 'Unapproved %d comments' )] = count( $to_update );
 						break;
 
@@ -544,11 +544,11 @@ class AdminCommentsHandler extends AdminHandler
 
 		switch ( $handler_vars['action'] ) {
 			case 'delete_spam':
-				Comments::delete_by_status( Comment::STATUS_SPAM );
+				Comments::delete_by_status( 'spam' );
 				$status_msg = _t( 'Deleted all spam comments' );
 				break;
 			case 'delete_unapproved':
-				Comments::delete_by_status( Comment::STATUS_UNAPPROVED );
+				Comments::delete_by_status( 'unapproved' );
 				$status_msg = _t( 'Deleted all unapproved comments' );
 				break;
 			case 'delete':
@@ -558,19 +558,19 @@ class AdminCommentsHandler extends AdminHandler
 				break;
 			case 'spam':
 				// Comments marked as spam
-				Comments::moderate_these( $comments, Comment::STATUS_SPAM );
+				Comments::moderate_these( $comments, 'spam' );
 				$status_msg = sprintf( _n( 'Marked %d comment as spam', 'Marked %d comments as spam', count( $ids ) ), count( $ids ) );
 				break;
 			case 'approve':
 			case 'approved':
 				// Comments marked for approval
-				Comments::moderate_these( $comments, Comment::STATUS_APPROVED );
+				Comments::moderate_these( $comments, 'approved' );
 				$status_msg = sprintf( _n( 'Approved %d comment', 'Approved %d comments', count( $ids ) ), count( $ids ) );
 				break;
 			case 'unapprove':
 			case 'unapproved':
 				// Comments marked for unapproval
-				Comments::moderate_these( $comments, Comment::STATUS_UNAPPROVED );
+				Comments::moderate_these( $comments, 'unapproved' );
 				$status_msg = sprintf( _n( 'Unapproved %d comment', 'Unapproved %d comments', count( $ids ) ), count( $ids ) );
 				break;
 			default:

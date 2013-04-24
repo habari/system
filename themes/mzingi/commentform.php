@@ -23,7 +23,7 @@
 
 		{hi:?post.comments.moderated.count}
 			{hi:post.comments.moderated}
-				{hi:?status == Comment::STATUS_UNAPPROVED}
+				{hi:?is_unapproved}
 					<li id="comment-{hi:id}" class="comment{hi:'-unapproved"}>
 				{hi:?else?}
 					<li id="comment-{hi:id}" class="comment">
@@ -33,7 +33,7 @@
 			<div class="comment-meta">#<a href="#comment-{hi:id}" class="counter" title="{hi:"Permanent Link to this Comment"}">{hi:id}</a> |
 			<span class="commentauthor">{hi:"Comment by"} <a href="{hi:url}">{hi:name}</a></span>
 			<span class="commentdate"> {hi:"on"} <a href="#comment-{hi:id}" title="{hi:"Time of this comment"}">{hi:date_out}</a></span>
-			{hi:?status == Comment::STATUS_UNAPPROVED}<h5> <em>{hi:"In moderation"}</em></h5>{/hi:?}</div>
+			{hi:?is_unapproved}<h5> <em>{hi:"In moderation"}</em></h5>{/hi:?}</div>
 		      </li>
 			{/hi:post.comments.moderated}
 		{hi:?else?}
