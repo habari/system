@@ -494,6 +494,12 @@ class InstallHandler extends ActionHandler
 			return false;
 		}
 
+		if ( ! $this->create_base_comment_types() ) {
+			$this->theme->assign( 'form_errors', array( 'options'=>_t( 'Problem creating base comment types and statuses' ) ) );
+			DB::rollback();
+			return false;
+		}
+
 		// Let's setup the admin user and group now.
 		// But first, let's make sure that no users exist
 		$all_users = Users::get_all();
@@ -1828,6 +1834,35 @@ class InstallHandler extends ActionHandler
 		CronTab::add_hourly_cron( 'session_gc', Method::create( '\Habari\Session', 'gc' ), _t( 'Perform session garbage collection.' ) );
 
 	}
+
+	public function upgrade_db_post_5112 ( ) {
+
+		$this->create_base_comment_types();
+
+		// Throw the existing values out far to avoid collisions
+		DB::exec('UPDATE {Comments} SET {Comments}.status = {Comments}.status + 30, {Comments}.type = {Comments}.type + 30');
+
+		// Update statuses
+		$updates = array('unapproved' => 0, 'approved' => 1, 'spam' => 2, 'deleted' => 3);
+		foreach($updates as $name => $oldvalue) {
+			DB::update(
+				DB::table('comments'),
+				array('status' => Post::status($name)),
+				array('status' => 30 + $oldvalue)
+			);
+		}
+
+		// Update types
+		$updates = array('comment' => 0, 'pingback' => 1, 'trackback' => 2);
+		foreach($updates as $name => $oldvalue) {
+			DB::update(
+				DB::table('comments'),
+				array('type' => Post::type($name)),
+				array('type' => 30 + $oldvalue)
+			);
+		}
+
+	}
 	
 	/**
 	 * Validate database credentials for MySQL
@@ -2100,6 +2135,23 @@ class InstallHandler extends ActionHandler
 			$output[(string)$feature] = (string)$feature;
 		}
 		return implode(',', $output);
+	}
+
+	/**
+	 * Create the base core comment types and statuses
+	 */
+	private function create_base_comment_types()
+	{
+		Comment::add_type('comment');
+		Comment::add_type('pingback');
+		Comment::add_type('trackback');
+
+		Comment::add_status('unapproved', true);
+		Comment::add_status('approved', true);
+		Comment::add_status('spam', true);
+		Comment::add_status('deleted', true);
+
+		return true;
 	}
 
 }
