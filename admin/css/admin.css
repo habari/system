@@ -731,10 +731,7 @@ input.full-width {
 	margin-top: 40px;
 	text-align: center;
 }
-	.login h1 img {
-		width: 100px;
-	}
-	
+
 .login input[type=text], .login input[type=password] {
 	width: 100%;
 }
