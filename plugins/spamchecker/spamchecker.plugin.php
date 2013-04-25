@@ -28,7 +28,7 @@ class SpamChecker extends Plugin
 	function action_comment_insert_before ( $comment )
 	{
 		// This plugin ignores non-comments
-		if ($comment->type != Comment::COMMENT) {
+		if (!$comment->is_comment) {
 			return;
 		}
 
