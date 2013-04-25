@@ -127,9 +127,9 @@ class FeedbackHandler extends ActionHandler
 			'url' => $url,
 			'ip' => Utils::get_ip(),
 			'content' => $content,
-			'status' => 'approved',
+			'status' => Comment::status('approved'),
 			'date' => DateTime::create(),
-			'type' => 'comment',
+			'type' => Comment::type('comment'),
 		) );
 
 		// Should this really be here or in a default filter?
