@@ -588,6 +588,38 @@ class Comments extends \ArrayObject
 	}
 
 	/**
+	 * Filter Comments using a callback function
+	 * @param Callable|array $filter A callback function that returns true if the item passed in should be kept
+	 * @return Comments The filtered comments
+	 */
+	public function filter($filter)
+	{
+		if(is_callable($filter)) {
+			$output = array();
+			foreach($this as $comment) {
+				if($filter($comment)) {
+					$output[] = $comment;
+				}
+			}
+			return new Comments($output);
+		}
+		elseif(is_array($filter)){
+			$filters = $filter;
+			$filter = function($item) use($filters) {
+				$output = false;
+				foreach($filters as $filter) {
+					$output = $output || $item->$filter;
+				}
+				return $output;
+			};
+			return $this->filter($filter);
+		}
+		else {
+			return $this;
+		}
+	}
+
+	/**
 	 * Implements custom object properties
 	 * @param string $name Name of property to return
 	 * @return mixed The requested field value
