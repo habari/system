@@ -1847,7 +1847,7 @@ class InstallHandler extends ActionHandler
 		foreach($updates as $name => $oldvalue) {
 			DB::update(
 				DB::table('comments'),
-				array('status' => Post::status($name)),
+				array('status' => Comment::status($name)),
 				array('status' => 30 + $oldvalue)
 			);
 		}
@@ -1857,7 +1857,7 @@ class InstallHandler extends ActionHandler
 		foreach($updates as $name => $oldvalue) {
 			DB::update(
 				DB::table('comments'),
-				array('type' => Post::type($name)),
+				array('type' => Comment::type($name)),
 				array('type' => 30 + $oldvalue)
 			);
 		}
