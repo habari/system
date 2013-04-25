@@ -142,6 +142,102 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
+	 * Register a new comment type
+	 * @param string $type The name of the new comment type
+	 * @return integer The id of the new comment type
+	 */
+	public static function add_type($type)
+	{
+		DB::insert(
+			DB::table('commenttype'),
+			array(
+				'name' => $type,
+				'active' => 1,
+			)
+		);
+		return DB::last_insert_id();
+	}
+
+	/**
+	 * Register a new comment status
+	 * @param string $status The name of the new comment status
+	 * @param bool $internal True if the status is one that was added by core
+	 * @return integer The id of the new comment type
+	 */
+	public static function add_status($status, $internal = false)
+	{
+		DB::insert(
+			DB::table('commentstatus'),
+			array(
+				'name' => $status,
+				'internal' => $internal ? 1 : 0,
+			)
+		);
+		return DB::last_insert_id();
+	}
+
+	/**
+	 * Remove a comment type from the database
+	 * @param integer|string $type The type of the comment
+	 * @param bool $delete If true, delete the type and all comments of that type instead of deactivating it
+	 */
+	public static function remove_type($type, $delete = false)
+	{
+		if($delete) {
+			// Delete comments of this type, delete type
+			$type_id = Comment::type($type);
+			DB::delete(
+				DB::table('comments'),
+				array('type' => $type_id)
+			);
+			DB::exec('DELETE FROM {commentinfo} WHERE comment_id IN (SELECT {commentinfo}.comment_id FROM {commentinfo} LEFT JOIN {comments} ON {commentinfo}.comment_id = {comments}.id WHERE {comments}.id IS NULL)');
+			DB::delete(
+				DB::table('commenttype'),
+				array('name' => Comment::type_name($type))
+			);
+		}
+		else {
+			DB::update(
+				DB::table('commenttype'),
+				array(
+					'name' => Comment::type_name($type),
+					'active' => 0,
+				),
+				array('name')
+			);
+		}
+	}
+
+	/**
+	 * Remove a comment type from the database
+	 * @param integer|string $status The type of the comment
+	 * @param null|integer|string $newstatus If provided, the new status to change all of the comments with the deleted status to
+	 */
+	public static function remove_status($status, $newstatus = null)
+	{
+		// Delete comments of this status, delete status
+		$status_id = Comment::status($status);
+		if(is_null($newstatus)) {
+			DB::delete(
+				DB::table('comments'),
+				array('status' => $status_id)
+			);
+			DB::exec('DELETE FROM {commentinfo} WHERE comment_id IN (SELECT {commentinfo}.comment_id FROM {commentinfo} LEFT JOIN {comments} ON {commentinfo}.comment_id = {comments}.id WHERE {comments}.id IS NULL)');
+		}
+		else {
+			DB::update(
+				DB::table('comments'),
+				array('status' => Comment::status($newstatus)),
+				array('status' => $status_id)
+			);
+		}
+		DB::delete(
+			DB::table('commentstatus'),
+			array('name' => Comment::status_name($status))
+		);
+	}
+
+	/**
 	 * Updates an existing comment in the comments table
 	 * @return boolean True on success, false if not
 	 */
@@ -232,17 +328,17 @@ class Comment extends QueryRecord implements IsContent
 					if($index = array_search($ts_field, Comment::list_comment_statuses())) {
 						$out = $this->status == $index;
 					}
-					if($index = array_search($name, Comment::list_comment_types())) {
+					if($index = array_search($ts_field, Comment::list_comment_types())) {
 						$out = $this->type == $index;
 					}
 					// Dumb check for plurals
 					$pluralize = function($s) {
 						return $s . 's';
 					};
-					if($index = array_search($name, array_map($pluralize, Comment::list_comment_statuses()))) {
+					if($index = array_search($ts_field, array_map($pluralize, Comment::list_comment_statuses()))) {
 						$out = $this->status == $index;
 					}
-					if($index = array_search($name, array_map($pluralize, Comment::list_comment_types()))) {
+					if($index = array_search($ts_field, array_map($pluralize, Comment::list_comment_types()))) {
 						$out = $this->type == $index;
 					}
 				}
