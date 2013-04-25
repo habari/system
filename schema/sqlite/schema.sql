@@ -84,13 +84,13 @@ CREATE TABLE {$prefix}comments (
 );
 CREATE INDEX IF NOT EXISTS comments_post_id ON {$prefix}comments(post_id);
 
-CREATE TABLE  {$prefix}commenttype (
+CREATE TABLE {$prefix}commenttype (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
   active SMALLINTEGER NOT NULL DEFAULT 1
 );
 
-CREATE TABLE  {$prefix}commentstatus (
+CREATE TABLE {$prefix}commentstatus (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
   internal SMALLINTEGER NOT NULL
