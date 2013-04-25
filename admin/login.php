@@ -36,7 +36,6 @@
 <body class="login">
 	<div id="page" class="container">
 		<div class="columns six offset-by-five">
-			<h1><a href="<?php Site::out_url('habari'); ?>" title="<?php _e('Go to Site'); ?>"><?php Options::out('title'); ?></a></h1>
 			<?php echo $form; ?>
 			<p class="poweredby"><?php Options::out('title'); ?> is powered by <a href="http://habariproject.org/" title="<?php _e('Go to the Habari site'); ?>">Habari <?php echo Version::get_habariversion(); ?></a>.</p>
 		</div>
