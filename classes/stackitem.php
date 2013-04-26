@@ -51,13 +51,15 @@ class StackItem
 			case 'resource':
 				return Plugins::filter('get_stackitem_resource', $this->resource, $this);
 		}
+		trigger_error(_t('Requested property @name does not exist.', array('@name' => $name)), E_NOTICE);
+		return null;
 	}
 
 	/**
 	 * Add a dependency to this StackItem
 	 * @param string|StackItem $itemname The name of the stack item upon which this item depends
 	 * @param null|string $version Optional PHP-compatible version number string
-	 * @return \StackItem Fluid interface returns $this
+	 * @return StackItem Fluid interface returns $this
 	 */
 	public function add_dependency($itemname, $version = null)
 	{
