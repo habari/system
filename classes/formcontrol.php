@@ -145,6 +145,30 @@ ERR;
 	}
 
 	/**
+	 * Set the HTML-related properties of this control's template
+	 * @param string $target the target element in the template to apply the properties to
+	 * @param array $properties An array of properties that will be associated to this control template's HTML output
+	 * @param bool $override If true, the supplied properties completely replace the existing ones
+	 * @return FormControl $this
+	 */
+	public function set_template_properties($target, $properties, $override = false)
+	{
+		if(!isset($this->settings['template_attributes'])) {
+			$this->settings['template_attributes'] = array();
+		}
+		if(!isset($this->settings['template_attributes'][$target])) {
+			$this->settings['template_attributes'][$target] = array();
+		}
+		if($override) {
+			$this->settings['template_attributes'][$target] = $properties;
+		}
+		else {
+			$this->settings['template_attributes'][$target] = array_merge($this->settings['template_attributes'][$target], $properties);
+		}
+		return $this;
+	}
+
+	/**
 	 * @param array $settings An array of settings that affect the behavior of this control object
 	 * @return FormControl $this
 	 */
@@ -235,7 +259,7 @@ ERR;
 	 */
 	public function process()
 	{
-		$this->set_value($_POST[$this->input_name()], false);
+		$this->set_value($_POST->raw($this->input_name()), false);
 	}
 
 	/**
@@ -294,6 +318,13 @@ ERR;
 			$properties['id'] = $id;
 		}
 		$theme->_attributes = Utils::html_attr($properties, ENT_COMPAT, 'UTF-8', false, false);
+		if(isset($this->settings['template_attributes'])) {
+			$_template_attributes = array();
+			foreach($this->settings['template_attributes'] as $target => $set) {
+				$_template_attributes[$target] = Utils::html_attr($set, ENT_COMPAT, 'UTF-8', false, false);
+			}
+			$theme->_template_attributes = $_template_attributes;
+		}
 
 		// Do rendering
 		$output = $this->get_setting('prefix_html', '');
@@ -597,6 +628,28 @@ ERR;
 			$this->properties['class'] = array();
 		}
 		$this->properties['class'] = array_merge($this->properties['class'], explode(' ', $classes));
+		return $this;
+	}
+
+
+	/**
+	 * Add one or more CSS classes to this control's template
+	 * @param string $target The name of the targeted element in the control template
+	 * @param array|string $classes An array or a string of classes to add to this control's template
+	 * @return FormControl $this
+	 */
+	public function add_template_class($target, $classes)
+	{
+		if(!isset($this->settings['template_attributes'])) {
+			$this->settings['template_attributes'] = array();
+		}
+		if(!isset($this->settings['template_attributes'][$target])) {
+			$this->settings['template_attributes'][$target] = array();
+		}
+		if(!isset($this->settings['template_attributes'][$target]['class'])) {
+			$this->settings['template_attributes'][$target]['class'] = array();
+		}
+		$this->settings['template_attributes'][$target]['class'] = array_merge($this->settings['template_attributes'][$target]['class'], explode(' ', $classes));
 		return $this;
 	}
 

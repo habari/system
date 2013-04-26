@@ -1,4 +1,4 @@
-<ul class="dropbutton dropbutton_control">
+<ul <?= $_template_attributes['ul'] ?> >
 	<?php
 	$first = true;
 	if(count($actions) > 0):

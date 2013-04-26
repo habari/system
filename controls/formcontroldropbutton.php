@@ -12,6 +12,7 @@ class FormControlDropbutton extends FormControl
 
 	public function _extend() {
 		$this->properties['type'] = 'hidden';
+		$this->add_template_class('ul', 'dropbutton dropbutton_control');
 	}
 
 	/**
@@ -88,7 +89,16 @@ CUSTOM_DROPBUTTON_JS;
 	public function get(Theme $theme)
 	{
 		$this->vars['actions'] = $this->get_setting('actions', array());
+		$this->set_template_properties('ul', array('id' => $this->get_visualizer()));
 		return parent::get($theme);
+	}
+
+	/**
+	 * Returns the HTML id of the element that the control exposes as a target, for example, for labels
+	 */
+	public function get_visualizer()
+	{
+		return $this->get_id() . '_visualizer';
 	}
 
 
