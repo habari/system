@@ -14,8 +14,6 @@ class FormControlFacet extends FormControl
 	 */
 	public function _extend()
 	{
-		$this->properties['class'] = 'facet_control';
-
 		Stack::add('template_header_javascript', 'visualsearch' );
 		Stack::add('template_stylesheet', 'visualsearch-css');
 		Stack::add('template_stylesheet', 'visualsearch-datauri-css');
@@ -42,6 +40,7 @@ class FormControlFacet extends FormControl
 				'sausages'
 			));
 		$this->properties['data-facet-config'] = $config;
+		$this->add_template_class('div', 'facet_ui');
 	}
 
 	/**
@@ -56,23 +55,58 @@ class FormControlFacet extends FormControl
 			$out = <<<  CUSTOM_AUTOCOMPLETE_JS
 				<script type="text/javascript">
 controls.init(function(){
-	$('.facet_control').each(function(){
+	$('.facet_ui').each(function(){
 		var self = $(this);
-		var facet_config = self.data('facet-config');
-		var visualsearch = VS.init({
+		var target = $('#' + self.data('target'));
+		var facet_config = target.data('facet-config');
+		self.data('visualsearch', VS.init({
 			container: self,
 			query: '',
 			showFacets: false,
 			callbacks: {
-				search: function(query, searchCollection) {},
-				facetMatches: function(callback) {callback(facet_config.facets)},
-				valueMatches: function(facet, searchTerm, callback) {if(facet_config.values[facet]!=undefined)callback(facet_config.values[facet]);}
+				search: function(query, searchCollection) {
+					console.log(query, searchCollection);
+				},
+				facetMatches: function(callback) {
+					if(facet_config.facetsURL != undefined) {
+						$.post(
+							facet_config.facetsURL,
+							{},
+							function(response) {
+								callback(response);
+							}
+						)
+					}
+					else {
+						callback(facet_config.facets)
+					}
+				},
+				valueMatches: function(facet, searchTerm, callback) {
+					if(facet_config.valuesURL != undefined) {
+						$.post(
+							facet_config.valuesURL,
+							{
+								facet: facet,
+								q: searchTerm
+							},
+							function(response) {
+								callback(response);
+							}
+						)
+					}
+					else {
+						if(facet_config.values[facet]!=undefined){
+							callback(facet_config.values[facet]);
+						}
+					}
+				}
 			}
+		}));
+		self.closest('form').on('submit', function(){
+			target.val(self.data('visualsearch').searchBox.value());
 		});
 	});
 
-	$('.facet_control').closest('form').submit(function(){
-	});
 });
 				</script>
 CUSTOM_AUTOCOMPLETE_JS;
@@ -101,11 +135,48 @@ CUSTOM_AUTOCOMPLETE_JS;
 
 	public function get(Theme $theme)
 	{
+		$this->properties['type'] = 'hidden';
 		$this->properties['data-facet-config'] = json_encode($this->properties['data-facet-config'] );
+		$this->set_template_properties('div', array(
+			'id' => $this->get_visualizer(),
+			'data-target' => $this->get_id(),
+		));
 		return parent::get($theme);
 	}
 
+	/**
+	 * Provide the HTML id of the visualizer element, which is different from the input element that provides a value
+	 */
+	public function get_visualizer() {
+		return $this->get_id() . '_visualizer';
+	}
 
+	/**
+	 * Parse the values of this field and return an array of key/value components.
+	 * Example:
+	 *   $f->value = 'tag: "llamas" tag: feline alpaca';
+	 *   var_dump($f->parsed());  // ['tag' => ['llamas', 'feline'], 'text' => ['alpaca']];
+	 * @return array The array of parsed values
+	 */
+	public function parse() {
+		preg_match_all('/(\w+):\s*"([^"]+)"|(\w+):\s*([\S]+)|"([\w\s]+(?!:))"|([\S]+(?!:))/im', $this->value, $matches, PREG_SET_ORDER);
+		$results = array();
+		foreach($matches as $match) {
+			if(!empty($match[1])) {
+				$results[$match[1]][] = trim($match[2], '"');
+			}
+			if(!empty($match[3])) {
+				$results[$match[3]][] = trim($match[4], '"');
+			}
+			if(!empty($match[5])) {
+				$results['text'][] = trim($match[5], '"');
+			}
+			if(!empty($match[6])) {
+				$results['text'][] = trim($match[6], '"');
+			}
+		}
+		return $results;
+	}
 }
 
 ?>

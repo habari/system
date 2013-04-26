@@ -1,1 +1,1 @@
-<div <?= $_attributes; ?>></div>
+<div <?= $_template_attributes['div'] ?>></div><input <?= $_attributes ?>>
