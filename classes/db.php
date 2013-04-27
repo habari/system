@@ -124,6 +124,14 @@ class DB extends Singleton
 		DB::instance()->connection->set_fetch_class( $class_name );
 	}
 
+	/**
+	 * Execute the given query on the database. Encapsulates PDO::exec.
+	 * WARNING: Make sure you don't call this with a SELECT statement.
+	 * PDO will buffer the results and leave your cursor dangling.
+	 *
+	 * @param string $query the query to run
+	 * @return boolean true on success, false on error
+	 */
 	public static function exec( $query )
 	{
 		return DB::instance()->connection->exec( $query );
