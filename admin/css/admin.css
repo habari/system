@@ -568,30 +568,52 @@ input.full-width {
 .dropbutton {
 	margin-top: 0px;
 	margin-bottom: 0px;
+	display: inline-block;
+	line-height: 11px;
+	font-size: 10px;
 }
 	.dropbutton li {
-		display:none;
 		font-weight: bold;
-		font-size: 10px;
-		line-height: 5px;
-		position: absolute;
 		margin-bottom: 0;
-	}
-	.dropbutton li:first-child {
-		display: block;
-		position: relative;
-	}
-	.dropbutton:hover li {
-		display: block;
+		line-height: 7px;
 	}
 	.dropbutton a {
 		color: #fff;
 		padding: 10px;
-		display: block;
+		display: inline-block;
 		background: #333;
 	}
 	.dropbutton a:hover {
 		background: #666;
+	}
+	.dropbutton > a {
+		border-bottom: 1px solid transparent;
+	}
+	.dropbutton.dropped .dropdown-menu {
+		display: block;
+	}
+		.dropbutton.dropped .primary {
+			border-bottom: 1px solid #666;
+		}
+		.dropbutton.dropped .dropdown {
+			border-bottom: 1px solid #333;
+		}
+	.dropbutton .dropdown-menu {
+		display: none;
+		position: absolute;
+	}
+		.dropbutton .dropdown-menu li {
+			width: 100%
+		}
+		.dropbutton .dropdown-menu a {
+			display: block;
+		}
+	.dropbutton .dropdown {
+		color: #fff;
+		padding: 10px;
+		display: inline-block;
+		background: #333;
+		border-left: 1px solid #666666;
 	}
 
 /* Common */

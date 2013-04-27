@@ -12,7 +12,7 @@ class FormControlDropbutton extends FormControl
 
 	public function _extend() {
 		$this->properties['type'] = 'hidden';
-		$this->add_template_class('ul', 'dropbutton dropbutton_control');
+		$this->add_template_class('div', 'dropbutton dropbutton_control');
 	}
 
 	/**
@@ -59,11 +59,20 @@ class FormControlDropbutton extends FormControl
 controls.init(function(){
 	$('.dropbutton_control').each(function(){
 		var self = $(this);
-		$(self).on('click', 'a', function(){
+		self.find('.dropdown-menu').width(self.find('.primary').outerWidth()+self.find('.dropdown').outerWidth());
+		self.on('click', 'a', function(){
 			var a = $(this);
 			self.find('input').val(a.attr('href').replace(/^.*#/, ''));
 			self.closest('form').submit();
 		});
+		self.find('.dropdown').on('click', function(event){
+			self.toggleClass('dropped');
+			event.preventDefault();
+			return false;
+		});
+	});
+	$('body').on('click', function(){
+		$('.dropbutton').removeClass('dropped');
 	});
 });
 				</script>
@@ -89,7 +98,14 @@ CUSTOM_DROPBUTTON_JS;
 	public function get(Theme $theme)
 	{
 		$this->vars['actions'] = $this->get_setting('actions', array());
-		$this->set_template_properties('ul', array('id' => $this->get_visualizer()));
+		$this->set_template_properties('div', array('id' => $this->get_visualizer()));
+		$this->add_template_class('ul', 'dropdown-menu');
+		if(count($this->settings['actions']) > 1) {
+			$this->add_template_class('div', 'has-drop');
+		}
+		else {
+			$this->add_template_class('div', 'no-drop');
+		}
 		return parent::get($theme);
 	}
 
