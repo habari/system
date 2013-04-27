@@ -1840,12 +1840,12 @@ class InstallHandler extends ActionHandler
 		$this->create_base_comment_types();
 
 		// Throw the existing values out far to avoid collisions
-		DB::exec('UPDATE {Comments} SET status = status + 30, type = type + 30');
+		DB::query('UPDATE {comments} SET status = status + 30, type = type + 30');
 
 		// Update statuses
 		$updates = array('unapproved' => 0, 'approved' => 1, 'spam' => 2, 'deleted' => 3);
 		foreach($updates as $name => $oldvalue) {
-			DB::exec(
+			DB::query(
 				'UPDATE {comments} SET status = :newstatus WHERE status = :oldstatus',
 				array(
 					'newstatus' => Comment::status($name),
@@ -1857,7 +1857,7 @@ class InstallHandler extends ActionHandler
 		// Update types
 		$updates = array('comment' => 0, 'pingback' => 1, 'trackback' => 2);
 		foreach($updates as $name => $oldvalue) {
-			DB::exec(
+			DB::query(
 				'UPDATE {comments} SET type = :newtype WHERE type = :oldtype',
 				array(
 					'newtype' => Comment::type($name),
@@ -1865,7 +1865,6 @@ class InstallHandler extends ActionHandler
 				)
 			);
 		}
-
 	}
 	
 	/**
