@@ -491,16 +491,16 @@ input.full-width {
 			color: #333;
 		}
 		
-		.handle {
+		.modules .handle {
 			background: #333;
 			width: 25%;
 			margin-top: -34px;
 			float:right;
 		}
-			.handle:hover {
-				cursor: move;
-			}
-		
+		.handle {
+			cursor: move;
+		}
+
 		.modulecore h2, .modulecore h2 a {
 			line-height: 10px;
 			font-size: 20px;
@@ -565,6 +565,8 @@ input.full-width {
 		width: 100%;
 	}
 
+/* Drop button */
+
 .dropbutton {
 	margin-top: 0px;
 	margin-bottom: 0px;
@@ -591,6 +593,7 @@ input.full-width {
 	}
 	.dropbutton.dropped .dropdown-menu {
 		display: block;
+		margin: 0px;
 	}
 		.dropbutton.dropped .primary {
 			border-bottom: 1px solid #666;
@@ -615,6 +618,10 @@ input.full-width {
 		background: #333;
 		border-left: 1px solid #666666;
 	}
+
+/* Tree */
+
+ol
 
 /* Common */
 

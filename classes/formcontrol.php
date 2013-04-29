@@ -205,11 +205,25 @@ ERR;
 
 		if ( is_null( $theme_obj ) ) {
 			$theme_obj = Themes::create( ); // Create the current theme instead of: 'admin', 'RawPHPEngine', $theme_dir
-			// Add the templates for the form controls to the current theme,
-			// and allow any matching templates from the current theme to override
-			$control_templates_dir = Plugins::filter( 'control_templates_dir', HABARI_PATH . '/system/controls/templates', $this );
-			$theme_obj->template_engine->queue_dirs($control_templates_dir);
 		}
+		$this->prep_theme($theme_obj);
+		return $theme_obj;
+	}
+
+	/**
+	 * @param Theme $theme_obj
+	 * @return Theme
+	 */
+	public function prep_theme(Theme $theme_obj)
+	{
+		if($theme_obj->_processed_control_templates) {
+			return $theme_obj;
+		}
+		// Add the templates for the form controls to the current theme,
+		// and allow any matching templates from the current theme to override
+		$control_templates_dir = Plugins::filter( 'control_templates_dir', HABARI_PATH . '/system/controls/templates', $this );
+		$theme_obj->template_engine->queue_dirs($control_templates_dir);
+		$theme_obj->_processed_control_templates = true;
 		return $theme_obj;
 	}
 
@@ -281,6 +295,9 @@ ERR;
 	 */
 	public function get(Theme $theme)
 	{
+		// The theme needs to have the control templates added
+		$this->prep_theme($theme);
+
 		// Start a var stack so that we can roll back to prior theme var values
 		$theme->start_buffer();
 
@@ -289,7 +306,7 @@ ERR;
 			$theme->assign($k, $v);
 		}
 		// Put the value of the control into the theme
-		if($this->get_setting('escape_value', true)) {
+		if(is_string($this->value) && $this->get_setting('escape_value', true)) {
 			$use_value = Utils::htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8', false);
 		}
 		else {

@@ -301,14 +301,10 @@ class FormUI extends FormContainer implements IsContent
 	{
 		$out = '';
 		if ( !FormUI::$outpre ) {
-			$out .= '<script type="text/javascript">if(controls==undefined){var controls = {init:function(fn){if(fn!=undefined){controls.inits.push(fn);}else{for(var i in controls.inits){controls.inits[i]();}}},inits:[]};}</script>';
+			$out .= '<script type="text/javascript">if(controls==undefined){var controls = {init:function(fn){if(fn!=undefined){controls.inits.push(fn);}else{for(var i in controls.inits){controls.inits[i]();}console.log("control init",controls.inits)}},inits:[]};}$(function(){controls.init()});</script>';
 		}
 		foreach ( $this->controls as $control ) {
 			$out .= $control->pre_out( );
-		}
-		if ( !FormUI::$outpre ) {
-			FormUI::$outpre = true;
-			$out .= '<script type="text/javascript">window.setTimeout(function(){controls.init();}, 500);</script>';
 		}
 		return $out;
 	}

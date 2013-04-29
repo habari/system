@@ -46,11 +46,14 @@
 		<a class="help" href="<?php echo $plugin['help']['url']; ?>">?</a>
 		<?php endif; ?>
 
-		<ul class="dropbutton">
-			<?php foreach ( $plugin['actions'] as $plugin_action => $action ) : ?>
-			<li><a href="<?php echo Utils::htmlspecialchars( $action['url'] ); ?>"><?php echo $action['caption']; ?></a></li>
-			<?php endforeach; ?>
-		</ul>
+		<?php
+		/** @var FormControlDropbutton $dbtn */
+		if(count($plugin['actions']) > 0):
+			$dbtn = FormControlDropbutton::create('actions')->set_actions($plugin['actions']);
+			echo $dbtn->pre_out();
+			echo $dbtn->get($theme);
+		endif;
+		?>
 
 		<?php if ( isset($plugin['update']) ): ?>
 		<ul class="dropbutton alert">

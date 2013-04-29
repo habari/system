@@ -791,19 +791,19 @@ JAVSCRIPT_RESPONSE;
 
 		// insert them into the wrapper
 		$edit_title = _t('Edit this');
-		$edit_label = _t('edit');
+		$edit_label = _t('Edit');
 		$delete_title = _t('Delete this');
-		$delete_label = _t('delete');
-		
-		$links = <<< LINKS
-<ul class="dropbutton">
-	<li><a title="{$edit_title}" class="modal_popup_form" href="{$edit_link}">{$edit_label}</a></li>
-	<li><a title="{$delete_title}" href="{$delete_link}">{$delete_label}</a></li>
-</ul>
-LINKS;
+		$delete_label = _t('Delete');
+
+		/** @var FormControlDropbutton $dbtn */
+		$dbtn = FormControlDropbutton::create('menu_item')->set_actions(array(
+			'edit' => array('url' => $edit_link, 'caption' => $edit_label),
+			'delete' => array('url' => $delete_link, 'caption' => $delete_label),
+		));
+		$links = $dbtn->pre_out() . $dbtn->get($dbtn->get_theme());
 
 		// Put the dropbutton links for each item at the end of the item's div
-		$config[ 'wrapper' ] = "<div>%s {$links}</div>";
+		$config[ 'wrapper' ] = "<div><i class=\"icon-list handle\"></i>%s {$links}</div>";
 
 		return $config;
 	}

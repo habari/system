@@ -143,8 +143,9 @@ class AdminHandler extends ActionHandler
 					exit;
 				}
 				// If a get_ function doesn't exist, just load the template and display it
+				// @todo Uh, isn't this just an insane idea?  Stop that.
 				if ( $this->theme->template_exists( $page ) ) {
-					$this->display( $page );
+					Utils::debug('Please report that this page doesn\'t work in the Habari issue queue.');die();
 				}
 				else {
 					// The requested console page doesn't exist

@@ -10,6 +10,14 @@ class FormControlTree extends FormControlSelect
 	public static $outpre = false;
 
 	/**
+	 * Add some default properties to this control
+	 */
+	public function _extend()
+	{
+		$this->set_properties(array('style' => 'clear: both;'));
+	}
+
+	/**
 	 * Return the HTML/script required for this control.  Do it only once.
 	 * @return string The HTML/javascript required for this control.
 	 */
@@ -20,11 +28,11 @@ class FormControlTree extends FormControlSelect
 			FormControlTree::$outpre = true;
 			$out = <<<  CUSTOM_TREE_JS
 				<script type="text/javascript">
-controls.init(function(){
+$(function(){
 	$('ol.tree').nestedSortable({
 		disableNesting: 'no-nest',
 		forcePlaceholderSize: true,
-		handle: 'div',
+		handle: '.handle',
 		items: 'li.treeitem',
 		opacity: .6,
 		placeholder: 'placeholder',

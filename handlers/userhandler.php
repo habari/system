@@ -176,7 +176,7 @@ class UserHandler extends ActionHandler
 
 		// Use the dropbutton's visualizer to select the primary action for form submission upon pressing enter
 		$form->set_settings(array(
-			'prefix_html' => '<script>$(function(){$("body").on("keypress", "form[name=' . $form->input_name() . ']", function(k){if(k.charCode==13)$(this).find("#' . $form->submit_button->get_visualizer() . ' li:first-child a").click();});})</script>',
+			'prefix_html' => '<script>$(function(){$("body").on("keypress", "form[name=' . $form->input_name() . ']", function(e){if(e.which==13){$(this).find("#' . $form->submit_button->get_visualizer() . ' .primary").click();return e.preventDefault()&&false;}});})</script>',
 		));
 
 		// Let plugins alter this form
