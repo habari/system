@@ -135,7 +135,7 @@ class LogEntry extends QueryRecord
 		foreach ( $types as $module => $types ) {
 			$modules[] = $module;
 		}
-		return $modules();
+		return $modules;
 	}
 
 	/**
