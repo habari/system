@@ -819,8 +819,28 @@ ERR;
 	public function controls_js($out)
 	{
 		if(FormControl::$controls_js == false) {
-			$js = '<script type="text/javascript">if(controls==undefined){var controls = {init:function(fn){if(fn!=undefined){controls.inits.push(fn);}else{for(var i in controls.inits){controls.inits[i]();}console.log("control init",controls.inits)}},inits:[]};}$(function(){controls.init()});</script>';
+			$js = '
+			<script type="text/javascript">
+			if(controls==undefined){
+				var controls = {
+					init:function(fn){
+						if(fn!=undefined){
+							controls.inits.push(fn);
+						}else{
+							for(var i in controls.inits){
+								controls.inits[i]();
+							}
+						}
+					},
+					inits:[]
+				};
+			}
+			$(function(){
+				controls.init();
+			});
+			</script>';
 			$out = $js . $out;
+			FormControl::$controls_js = true;
 		}
 		return $out;
 	}

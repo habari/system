@@ -10,7 +10,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 	<div class="head">
 		<?php if ( ACL::access_check( $post_permissions, 'delete' ) ) { ?>
 		<span class="checkbox title">
-			<input type="checkbox" class="checkbox" name="checkbox_ids[<?php echo $post->id; ?>]" id="checkbox_ids[<?php echo $post->id; ?>]">
+			<input type="checkbox" class="checkbox post_item" name="checkbox_ids[<?php echo $post->id; ?>]" id="checkbox_ids[<?php echo $post->id; ?>]">
 		</span>
 		<?php } ?>
 		<span class="checkbox title">
@@ -25,20 +25,20 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 		<span class="date"><span><?php _e('on'); ?></span> <a href="<?php URL::out('admin', array('page' => 'posts', 'type' => $post->content_type, 'year_month' => $post->pubdate->get('Y-m') ) ); ?>" title="<?php _e('Search for other items from %s', array( $post->pubdate->get( 'M, Y' ) ) ); ?>"><?php $post->pubdate->out( DateTime::get_default_date_format() ); ?></a></span>
 		<span class="time"><span><?php _e('at'); ?> <?php $post->pubdate->out( DateTime::get_default_time_format()); ?></span></span>
 
-		<ul class="dropbutton">
-			<?php $actions = array(
-				'edit' => array( 'url' => URL::get( 'admin', 'page=publish&id=' . $post->id ), 'title' => _t( 'Edit \'%s\'', array( $post->title ) ), 'label' => _t( 'Edit' ), 'permission' => 'edit' ),
-				'view' => array( 'url' => $post->permalink . '?preview=1', 'title' => _t( 'View \'%s\'', array( $post->title ) ), 'label' => _t( 'View' ) ),
-				'remove' => array( 'url' => 'javascript:itemManage.remove('. $post->id . ', \'post\');', 'title' => _t( 'Delete this item' ), 'label' => _t( 'Delete' ), 'permission' => 'delete' )
-			);
-			$actions = Plugins::filter('post_actions', $actions, $post);
-			foreach( $actions as $action ) :
-			?>
-				<?php if ( !isset( $action['permission'] ) || ACL::access_check( $post_permissions, $action['permission'] ) ) { ?>
-				<li><a href="<?php echo $action['url']; ?>" title="<?php echo $action['title']; ?>"><?php echo $action['label']; ?></a></li>
-				<?php } ?>
-			<?php endforeach; ?>
-		</ul>
+		<?php
+		$actions = array(
+			'edit' => array( 'href' => URL::get( 'admin', 'page=publish&id=' . $post->id ), 'title' => _t( 'Edit \'%s\'', array( $post->title ) ), 'caption' => _t( 'Edit' ), 'permission' => 'edit' ),
+			'view' => array( 'href' => $post->permalink . '?preview=1', 'title' => _t( 'View \'%s\'', array( $post->title ) ), 'caption' => _t( 'View' ) ),
+			'remove' => array( 'href' => 'javascript:itemManage.remove('. $post->id . ', \'post\');', 'title' => _t( 'Delete this item' ), 'caption' => _t( 'Delete' ), 'permission' => 'delete' )
+		);
+		$actions = Plugins::filter('post_actions', $actions, $post);
+		$actions = array_filter($actions, function($item) {
+			return !isset($action['permission']) || ACL::access_check( $post_permissions, $action['permission'] );
+		});
+		$dbtn = FormControlDropbutton::create('post_' . $post->id)->set_actions($actions);
+		echo $dbtn->pre_out();
+		echo $dbtn->get($theme);
+		?>
 	</div>
 
 	<span class="content" ><?php echo MultiByte::substr( strip_tags( $post->content ), 0, 250); ?>&hellip;</span>

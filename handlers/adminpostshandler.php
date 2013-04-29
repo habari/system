@@ -256,6 +256,11 @@ class AdminPostsHandler extends AdminHandler
 		$this->theme->admin_page = _t( 'Manage Posts' );
 		$this->theme->admin_title = _t( 'Manage Posts' );
 		$this->theme->special_searches = Plugins::filter( 'special_searches', $special_searches );
+
+		Stack::add('admin_header_javascript', 'visualsearch' );
+		Stack::add('admin_stylesheet', 'visualsearch-css');
+		Stack::add('admin_stylesheet', 'visualsearch-datauri-css');
+
 		$this->display( 'posts' );
 	}
 

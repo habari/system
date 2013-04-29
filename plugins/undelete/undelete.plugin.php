@@ -67,7 +67,7 @@ class Undelete extends Plugin
 			$restore = array(
 				'url' => 'javascript:unDelete.post('. $post->id . ');',
 				'title' => _t('Restore this item'),
-				'label' => _t('Restore')
+				'caption' => _t('Restore')
 			);
 			array_push($actions, $restore, $remove);
 		}
@@ -84,7 +84,7 @@ class Undelete extends Plugin
 		}
 
 		if ( User::identify()->can_any( $require_any ) ) {
-			$actions[] = array( 'action' => 'itemManage.update(\'restore\');return false;', 'title' => _t( 'Restore Selected Entries' ), 'label' => _t( 'Restore Selected' ) );
+			$actions[] = array( 'href'=>'#restore_selected', 'onclick' => 'itemManage.update(\'restore\');return false;', 'title' => _t( 'Restore Selected Entries' ), 'caption' => _t( 'Restore Selected' ) );
 		}
 		return $actions;
 	}

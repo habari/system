@@ -4,26 +4,27 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 ?>
 <?php include('header.php');?>
 
-<?php include( 'navigator.php' ); ?>
-
 <div class="container transparent item controls">
 
-	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
-	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-	<input type="hidden" name="password_digest" id="password_digest" value="<?php echo $wsse['digest']; ?>">
-	<span class="checkboxandselected">
-		<input type="checkbox" id="master_checkbox" name="master_checkbox">
-		<label class="selectedtext none" for="master_checkbox"><?php _e('None selected'); ?></label>
-	</span>
-	<ul class="dropbutton">
-		<?php $page_actions = array(
-			'delete' => array('action' => 'itemManage.update(\'delete\');return false;', 'title' => _t('Delete Selected'), 'label' => _t('Delete Selected') ),
-		);
-		$page_actions = Plugins::filter('posts_manage_actions', $page_actions);
-		foreach( $page_actions as $page_action ) : ?>
-			<li><a href="*" onclick="<?php echo $page_action['action']; ?>" title="<?php echo $page_action['title']; ?>"><?php echo $page_action['label']; ?></a></li>
-		<?php endforeach; ?>
-	</ul>
+	<?php
+
+	$search = FormControlFacet::create('search');
+	echo $search->pre_out();
+	echo $search->get($theme);
+
+	$aggregate = FormControlAggregate::create('selected_posts')->set_selector('.post_item')->label('None Selected');
+	echo $aggregate->pre_out();
+	echo $aggregate->get($theme);
+
+
+	$page_actions = array(
+		'delete' => array('href' => '#delete_selected', 'onclick' => 'itemManage.update(\'delete\');return false;', 'title' => _t('Delete Selected'), 'caption' => _t('Delete Selected') ),
+	);
+	$page_actions = Plugins::filter('posts_manage_actions', $page_actions);
+	$dbtn = FormControlDropbutton::create('page_actions')->set_actions($page_actions);
+	echo $dbtn->pre_out();
+	echo $dbtn->get($theme);
+	?>
 
 </div>
 
@@ -31,25 +32,6 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 <div class="container posts">
 
 <?php $theme->display('posts_items'); ?>
-
-</div>
-
-
-<div class="container transparent item controls">
-
-	<span class="checkboxandselected">
-		<input type="checkbox" id="master_checkbox_2" name="master_checkbox_2">
-		<label class="selectedtext none" for="master_checkbox_2"><?php _e('None selected'); ?></label>
-	</span>
-	<ul class="dropbutton">
-		<?php $page_actions = array(
-			'delete' => array('action' => 'itemManage.update(\'delete\');return false;', 'title' => _t('Delete Selected'), 'label' => _t('Delete Selected') ),
-		);
-		$page_actions = Plugins::filter('posts_manage_actions', $page_actions);
-		foreach( $page_actions as $page_action ) : ?>
-			<li><a href="*" onclick="<?php echo $page_action['action']; ?>" title="<?php echo $page_action['title']; ?>"><?php echo $page_action['label']; ?></a></li>
-		<?php endforeach; ?>
-	</ul>
 
 </div>
 
