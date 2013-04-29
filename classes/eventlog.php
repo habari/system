@@ -123,43 +123,60 @@ class EventLog extends \ArrayObject
 	 *
 	 * @todo Cache query results.
 	 * @param array $paramarray An associated array of parameters, or a querystring
+	 * The following keys are supported:
+	 * - id => an entry id or array of post ids
+	 * - user_id => id of the logged in user for which to return entries
+	 * - severity => severity level for which to return entries
+	 * - type_id => the numeric id or array of ids for the type of entries for which which to return entries
+	 * - module => a name or array of names of modules for which to return entries
+	 * - type => a single type name or array of type names for which to return entries
+	 * - ip => the IP number for which to return entries
+	 * - criteria => a literal search string to match entry message content or a special search
+	 * - day => a day of entry creation, ignored if month and year are not specified
+	 * - month => a month of entry creation, ignored if year isn't specified
+	 * - year => a year of entry creation
+	 * - orderby => how to order the returned entries
+	 * - fetch_fn => the function used to fetch data, one of 'get_results', 'get_row', 'get_value'
+	 * - count => return the number of entries that would be returned by this request
+	 * - month_cts => return the number of entries created in each month
+	 * - nolimit => do not implicitly set limit
+	 * - limit => the maximum number of entries to return, implicitly set for many queries
+	 * - index => 
+	 * - offset => amount by which to offset returned entries, used in conjunction with limit
+	 * - where => manipulate the generated WHERE clause
+	 * - return_data => set to return the data associated with the entry
+	 * 
 	 * @return array An array of LogEntry objects, or a single LogEntry object, depending on request
 	 */
 	public static function get( $paramarray = array() )
 	{
 		$params = array();
 		$fns = array( 'get_results', 'get_row', 'get_value' );
-		$select = '';
+		$select_ary = array();
+		$select_distinct = array();
 
 		// Put incoming parameters into the local scope
 		$paramarray = Utils::get_params( $paramarray );
+		if($paramarray instanceof \ArrayIterator) {
+			$paramarray = $paramarray->getArrayCopy();
+		}
 
 		$select_fields = LogEntry::default_fields();
 		if ( !isset( $paramarray['return_data'] ) ) {
 			unset( $select_fields['data'] );
 		}
+
 		foreach ( $select_fields as $field => $value ) {
-			$select .= ( '' == $select )
-				? "{log}.$field"
-				: ", {log}.$field";
-		}
-		// Default parameters.
-		$orderby = 'ORDER BY timestamp DESC, id DESC';
-		$limit = Options::get( 'pagination' );
-
-		// Get any full-query parameters
-		$possible = array( 'orderby', 'fetch_fn', 'count', 'month_cts', 'nolimit', 'index', 'limit', 'offset' );
-		foreach ( $possible as $varname ) {
-			if ( isset( $paramarray[$varname] ) ) {
-				$$varname = $paramarray[$varname];
+			if(preg_match('/(?:(?P<table>[\w\{\}]+)\.)?(?P<field>\w+)(?:(?:\s+as\s+)(?P<alias>\w+))?/i', $field, $fielddata)) {
+				if(empty($fielddata['table'])) {
+					$fielddata['table'] = '{log}';
+				}
+				if(empty($fielddata['alias'])) {
+					$fielddata['alias'] = $fielddata['field'];
+				}
 			}
-		}
-
-		foreach ( $paramarray as $key => $value ) {
-			if ( 'orderby' == $key ) {
-				$orderby = ' ORDER BY ' . $value;
-				continue;
-			}
+			$select_ary[$fielddata['alias']] = "{$fielddata['table']}.{$fielddata['field']} AS {$fielddata['alias']}";
+			$select_distinct[$fielddata['alias']] = "{$fielddata['table']}.{$fielddata['field']}";
 		}
 
 		// Transact on possible multiple sets of where information that is to be OR'ed
@@ -170,122 +187,111 @@ class EventLog extends \ArrayObject
 			$wheresets = array( array() );
 		}
 
-		$wheres = array();
-		$join = '';
-		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
-			$wheres[] = $paramarray['where'];
-		}
-		else {
-			foreach ( $wheresets as $paramset ) {
-				// Safety mechanism to prevent empty queries
-				$where = array( '1=1' );
-				$paramset = array_merge( ( array ) $paramarray, ( array ) $paramset );
+		$query = Query::create('{log}');
+		$query->select($select_ary);
 
-				if ( isset( $paramset['id'] ) && is_numeric( $paramset['id'] ) ) {
-					$where[] = "id= ?";
-					$params[] = $paramset['id'];
-				}
-				if ( isset( $paramset['user_id'] ) ) {
-					$where[] = "user_id= ?";
-					$params[] = $paramset['user_id'];
-				}
-				if ( isset( $paramset['severity'] ) && ( 'any' != LogEntry::severity_name( $paramset['severity'] ) ) ) {
-					$where[] = "severity_id= ?";
-					$params[] = LogEntry::severity( $paramset['severity'] );
-				}
-				if ( isset( $paramset['type_id'] ) ) {
-					if ( is_array( $paramset['type_id'] ) ) {
-						$types = array_filter( $paramset['type_id'], 'is_numeric' );
-						if ( count( $types ) ) {
-							$where[] = 'type_id IN (' . implode( ',', $types ) . ')';
-						}
+		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
+			$query->where()->add($paramarray['where']);
+		}
+		foreach ( $wheresets as $paramset ) {
+			$where = new QueryWhere();
+			$paramset = array_merge( (array) $paramarray, (array) $paramset );
+
+			if ( isset( $paramset['id'] ) ) {
+				$where->in( '{log}.id', $paramset['id'], 'log_id', 'intval' );
+			}
+
+			if ( isset( $paramset['user_id'] ) ) {
+				$where->in( '{log}.user_id', $paramset['user_id'], 'log_user_id', 'intval' );
+			}
+
+			if ( isset( $paramset['severity'] ) && ( 'any' != LogEntry::severity_name( $paramset['severity'] ) ) ) {
+				$where->in( '{log}.severity_id', $paramset['severity'], 'log_severity_id', function($a) {return LogEntry::severity( $a );} );
+			}
+
+			if ( isset( $paramset['type_id'] ) ) {
+				$where->in( '{log}.type_id', $paramset['type_id'], 'log_type_id', 'intval' );
+			}
+
+			if ( isset( $paramset['module'] ) ) {
+
+				$paramset['module'] = Utils::single_array( $paramset['module'] );
+
+				$qry = Query::create( '{log_types}' );
+				$qry->select( '{log_types}.id')->distinct();
+				$qry->where()->in( '{log_types}.module', $paramset['module'], 'log_subquery_module' );
+
+				$where->in( '{log}.type_id', $qry, 'log_module' );
+
+			}
+
+			if ( isset( $paramset['type'] ) ) {
+
+				$paramset['type'] = Utils::single_array( $paramset['type'] );
+
+				$qry = Query::create( '{log_types}' );
+				$qry->select( '{log_types}.id')->distinct();
+				$qry->where()->in( '{log_types}.type', $paramset['type'], 'log_subquery_type' );
+
+				$where->in( '{log}.type_id', $qry, 'log_type' );
+			}
+
+			if ( isset( $paramset['ip'] ) ) {
+				$where->in( '{log}.ip', $paramset['ip'] );
+			}
+
+			/* do searching */
+			if ( isset( $paramset['criteria'] ) ) {
+				// this regex matches any unicode letters (\p{L}) or numbers (\p{N}) inside a set of quotes (but strips the quotes) OR not in a set of quotes
+				preg_match_all( '/(?<=")(\w[^"]*)(?=")|([:\w]+)/u', $paramset['criteria'], $matches );
+				foreach ( $matches[0] as $word ) {
+					if( preg_match( '%^id:(\d+)$%i', $word, $special_crit ) ) {
+						$where->in( '{log}.id', $special_crit[1], 'log_special_criteria' );
 					}
 					else {
-						$where[] = 'type_id = ?';
-						$params[] = $paramset['type_id'];
+						$crit_placeholder = $query->new_param_name('criteria');
+						$where->add("( LOWER( {log}.message ) LIKE :{$crit_placeholder}", array($crit_placeholder => '%' . MultiByte::strtolower( $word ) . '%') );
 					}
 				}
-
-				if ( isset( $paramset['module'] ) ) {
-
-					if ( !is_array( $paramset['module'] ) ) {
-						$paramset['module'] = array( $paramset['module'] );
-					}
-
-					$where[] = 'type_id IN ( SELECT DISTINCT id FROM {log_types} WHERE module IN ( ' . implode( ', ', array_fill( 0, count( $paramset['module'] ), '?' ) ) . ' ) )';
-					$params = array_merge( $params, $paramset['module'] );
-
-				}
-
-				if ( isset( $paramset['type'] ) ) {
-
-					if ( !is_array( $paramset['type'] ) ) {
-						$paramset['type'] = array( $paramset['type'] );
-					}
-
-					$where[] = 'type_id IN ( SELECT DISTINCT id FROM {log_types} WHERE type IN ( ' . implode( ', ', array_fill( 0, count( $paramset['type'] ), '?' ) ) . ' ) )';
-					$params = array_merge( $params, $paramset['type'] );
-
-				}
-
-				if ( isset( $paramset['ip'] ) ) {
-					$where[] = 'ip = ?';
-					$params[] = $paramset['ip'];
-				}
-
-				/* do searching */
-				if ( isset( $paramset['criteria'] ) ) {
-					preg_match_all( '/(?<=")(\w[^"]*)(?=")|([:\w]+)/u', $paramset['criteria'], $matches );
-					foreach ( $matches[0] as $word ) {
-						if ( preg_match( '%^id:(\d+)$%i', $word, $special_crit ) ) {
-							$where[] .= '(id = ?)';
-							$params[] = $special_crit[1];
-						}
-						else {
-							$where[] .= "( LOWER( message ) LIKE ? )";
-							$params[] = '%' . MultiByte::strtolower( $word ) . '%';
-						}
-					}
-				}
-
-				/**
-				 * Build the pubdate
-				 * If we've got the day, then get the date.
-				 * If we've got the month, but no date, get the month.
-				 * If we've only got the year, get the whole year.
-				 *
-				 * @todo Ensure that we've actually got all the needed parts when we query on them
-				 */
-				if ( isset( $paramset['day'] ) ) {
-					$where[] = 'timestamp BETWEEN ? AND ?';
-					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
-					$start_date = DateTime::create( $start_date );
-					$params[] = $start_date->sql;
-					$params[] = $start_date->modify( '+1 day' )->sql;
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
-				}
-				elseif ( isset( $paramset['month'] ) ) {
-					$where[] = 'timestamp BETWEEN ? AND ?';
-					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
-					$start_date = DateTime::create( $start_date );
-					$params[] = $start_date->sql;
-					$params[] = $start_date->modify( '+1 month' )->sql;
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
-				}
-				elseif ( isset( $paramset['year'] ) ) {
-					$where[] = 'timestamp BETWEEN ? AND ?';
-					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
-					$start_date = DateTime::create( $start_date );
-					$params[] = $start_date->sql;
-					$params[] = $start_date->modify( '+1 year' )->sql;
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
-					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
-				}
-
-				$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
 			}
+
+			/**
+			 * Build the pubdate
+			 * If we've got the day, then get the date.
+			 * If we've got the month, but no date, get the month.
+			 * If we've only got the year, get the whole year.
+			 *
+			 * @todo Ensure that we've actually got all the needed parts when we query on them
+			 */
+			if ( isset( $paramset['day'] ) && isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
+				$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
+				$start_date = DateTime::create( $start_date );
+				$where->add('timestamp BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 day -1 second' )->sql));
+			}
+			elseif ( isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
+				$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
+				$start_date = DateTime::create( $start_date );
+				$where->add('timestamp BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 month -1 second' )->sql));
+			}
+			elseif ( isset( $paramset['year'] ) ) {
+				$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
+				$start_date = DateTime::create( $start_date );
+				$where->add('timestamp BETWEEN :start_date AND :end_date', array('start_date' => $start_date->sql, 'end_date' => $start_date->modify( '+1 year -1 second' )->sql));
+			}
+
+			// Concatenate the WHERE clauses
+			$query->where()->add($where);
+		}
+
+		// Default parameters.
+		$orderby = 'timestamp DESC, id DESC';
+//		$limit = Options::get( 'pagination' );
+
+		// Get any full-query parameters
+		$paramarray = new SuperGlobal( $paramarray );
+		$extract = $paramarray->filter_keys( 'orderby', 'fetch_fn', 'count', 'month_cts', 'nolimit', 'index', 'limit', 'offset' );
+		foreach ( $extract as $key => $value ) {
+			$$key = $value;
 		}
 
 		if ( isset( $index ) && is_numeric( $index ) ) {
@@ -302,44 +308,55 @@ class EventLog extends \ArrayObject
 		}
 
 		if ( isset( $count ) ) {
-			$select = "COUNT($count)";
-			$fetch_fn = 'get_value';
-			$orderby = '';
+			$query->set_select( "COUNT({$count})" );
+			$fetch_fn = isset($paramarray['fetch_fn']) ? $fetch_fn : 'get_value';
+			$orderby = null;
+			$groupby = null;
+			$having = null;
 		}
-		if ( isset( $limit ) ) {
-			$limit = " LIMIT $limit";
-			if ( isset( $offset ) ) {
-				$limit .= " OFFSET $offset";
-			}
-		}
+
+
 		// If the month counts are requested, replace the select clause
 		if ( isset( $paramset['month_cts'] ) ) {
 			// @todo shouldn't this hand back to habari to convert to DateTime so it reflects the right timezone?
-			$select = 'MONTH(FROM_UNIXTIME(timestamp)) AS month, YEAR(FROM_UNIXTIME(timestamp)) AS year, COUNT(*) AS ct';
+			$query->set_select ( 'MONTH(FROM_UNIXTIME(timestamp)) AS month, YEAR(FROM_UNIXTIME(timestamp)) AS year, COUNT(*) AS ct' );
 			$groupby = 'year, month';
-			$orderby = ' ORDER BY year, month';
+			if( !isset( $paramarray['orderby'] ) ) {
+				$orderby = 'year, month';
+			}
 		}
 		if ( isset( $nolimit ) || isset( $month_cts ) ) {
-			$limit = '';
+			$limit = null;
 		}
 
-		$query = '
-			SELECT ' . $select . '
-			FROM {log} ' . $join;
-
-		if ( count( $wheres ) > 0 ) {
-			$query .= ' WHERE ' . implode( " \nOR\n ", $wheres );
+		// Define the LIMIT, OFFSET, ORDER BY, GROUP BY if they exist
+		if(isset($limit)) {
+			$query->limit($limit);
 		}
-		$query .= ( ! isset( $groupby ) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
-		$query .= $orderby . $limit;
-		// Utils::debug( $paramarray, $fetch_fn, $query, $params );
-
+		if(isset($offset)) {
+			$query->offset($offset);
+		}
+		if(isset($orderby)) {
+			$query->orderby($orderby);
+		}
+		if(isset($groupby)) {
+			$query->groupby($groupby);
+		}
+/*
+if(isset($paramarray['type'])) {
+	print_r($query->params());
+	print_r($query->get());die();
+}
+*/
+		/* All SQL parts are constructed, on to real business! */
 		DB::set_fetch_mode( \PDO::FETCH_CLASS );
 		DB::set_fetch_class( 'LogEntry' );
-		$results = DB::$fetch_fn( $query, $params, 'LogEntry' );
+		$results = DB::$fetch_fn( $query->get(), $query->params(), 'LogEntry' );
+		//Utils::debug($results, $query->get(), $query->params());
+		//Utils::debug( $paramarray, $fetch_fn, $query->get(), $query->params(), $results );
 
-			// If the fetch callback function is not get_results,
-			// return an EventLog ArrayObject filled with the results as LogEntry objects.
+		// If the fetch callback function is not get_results,
+		// return an EventLog ArrayObject filled with the results as LogEntry objects.
 		if ( 'get_results' != $fetch_fn ) {
 			return $results;
 		}
