@@ -774,7 +774,7 @@ class Utils
 		$replacements = array(
 			'#^<\?(php)?\s#A' => '',
 			'#\?>$#' => '',
-			'#namespace [^;]+;#' => 'namespace HabariSandBox\Plugin;'
+			'#(?<!\w)namespace [^;]+;#' => 'namespace HabariSandBox\Plugin;'
 		);
 		foreach($replacements as $search => $replacement) {
 			if(preg_match($search, $plugin_code)) {
