@@ -121,8 +121,10 @@ CUSTOM_DROPBUTTON_JS;
 				$primary = false;
 			}
 			$action['class'] = implode(' ', $class);
+			$attributes = $action;
+			unset($attributes['fn']);
 			$action = array(
-				'attributes' => Utils::html_attr($action, ENT_COMPAT, 'UTF-8', false, false),
+				'attributes' => Utils::html_attr($attributes, ENT_COMPAT, 'UTF-8', false, false),
 				'caption' => $caption,
 			);
 		}
