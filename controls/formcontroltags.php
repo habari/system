@@ -59,7 +59,7 @@ $(function(){
 </script>
 TAGS_PRE_OUT;
 		}
-		return $out;
+		return $this->controls_js($out);
 	}
 }
 

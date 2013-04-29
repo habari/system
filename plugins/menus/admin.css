@@ -1,10 +1,20 @@
-div#tree > ol li div {
-	position: relative;
+#tree_tree, #tree_tree ol {
+	list-style: none;
+	margin: 0px 0px 0px 20px;
 }
-div#tree > ol li ul.dropbutton {
-	top: 2px;
-	right: 10px;
+#tree_tree li {
+	margin: 0;
 }
+#tree_tree li > div{
+	height: 33px;
+	box-sizing: border-box;
+	background-color: #999;
+}
+#tree_tree .dropbutton {
+	float: right;
+	clear: both;
+}
+
 a.menu_button_dark,
 a.menu_button_dark:active
  {

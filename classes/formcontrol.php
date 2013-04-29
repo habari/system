@@ -32,8 +32,12 @@ abstract class FormControl
 	public $value_set_manually = false;
 	/** @var bool|string $helptext This is help text for the control, if it is set */
 	public $helptext = false;
+	/** @var array An array of success handlers for this control */
 	protected $on_success = array();
+	/** @var array An array of save handlers for this control */
 	protected $on_save = array();
+	/** @var bool True if the controls.init script has been output, false if not */
+	static $controls_js = false;
 
 
 	/**
@@ -805,6 +809,20 @@ ERR;
 	public function get_visualizer()
 	{
 		return $this->get_id();
+	}
+
+	/**
+	 * Render the controls.init script prior to the supplied script only if it hasn't already been rendered
+	 * @param string $out An existing script that depends on controls.init
+	 * @return string The script with the controls.init script prepended, if needed
+	 */
+	public function controls_js($out)
+	{
+		if(FormControl::$controls_js == false) {
+			$js = '<script type="text/javascript">if(controls==undefined){var controls = {init:function(fn){if(fn!=undefined){controls.inits.push(fn);}else{for(var i in controls.inits){controls.inits[i]();}console.log("control init",controls.inits)}},inits:[]};}$(function(){controls.init()});</script>';
+			$out = $js . $out;
+		}
+		return $out;
 	}
 
 }

@@ -62,7 +62,7 @@ $(function(){
 				</script>
 CUSTOM_TREE_JS;
 		}
-		return $out;
+		return $this->controls_js($out);
 	}
 
 	/**

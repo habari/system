@@ -584,6 +584,7 @@ input.full-width {
 		padding: 10px;
 		display: inline-block;
 		background: #333;
+		line-height: 11px;
 	}
 	.dropbutton a:hover {
 		background: #666;
@@ -604,6 +605,7 @@ input.full-width {
 	.dropbutton .dropdown-menu {
 		display: none;
 		position: absolute;
+		z-index: 4000;
 	}
 		.dropbutton .dropdown-menu li {
 			width: 100%

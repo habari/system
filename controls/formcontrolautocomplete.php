@@ -85,7 +85,7 @@ controls.init(function(){
 				</script>
 CUSTOM_AUTOCOMPLETE_JS;
 		}
-		return $out;
+		return $this->controls_js($out);
 	}
 
 	/**

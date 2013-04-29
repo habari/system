@@ -55,7 +55,7 @@ class AdminPluginsHandler extends AdminHandler
 							'action' => $plugin_action,
 						);
 						$urlparams = array( 'page' => 'plugins', 'configure'=>$plugin_id);
-						$action['url'] = URL::get( 'admin', $urlparams );
+						$action['href'] = URL::get( 'admin', $urlparams );
 
 						// @locale Displayed as an icon indicating there is help text available for a plugin.
 						if ( $action['caption'] == _t( '?' ) ) {
@@ -78,7 +78,7 @@ class AdminPluginsHandler extends AdminHandler
 						}
 					}
 					$plugin['actions']['deactivate'] = array(
-						'url' =>  URL::get( 'admin', 'page=plugin_toggle&plugin_id=' . $plugin['plugin_id'] . '&action=deactivate' ),
+						'href' =>  URL::get( 'admin', 'page=plugin_toggle&plugin_id=' . $plugin['plugin_id'] . '&action=deactivate' ),
 						'caption' => _t( 'Deactivate' ),
 						'action' => 'Deactivate',
 					);
@@ -96,7 +96,7 @@ class AdminPluginsHandler extends AdminHandler
 					$plugin['verb'] = _t( 'Activate' );
 					$plugin['actions'] = array(
 						'activate' => array(
-							'url' =>  URL::get( 'admin', 'page=plugin_toggle&plugin_id=' . $plugin['plugin_id'] . '&action=activate' ),
+							'href' =>  URL::get( 'admin', 'page=plugin_toggle&plugin_id=' . $plugin['plugin_id'] . '&action=activate' ),
 							'caption' => _t( 'Activate' ),
 							'action' => 'activate',
 						),

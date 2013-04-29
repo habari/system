@@ -300,13 +300,11 @@ class FormUI extends FormContainer implements IsContent
 	public function pre_out_controls()
 	{
 		$out = '';
-		if ( !FormUI::$outpre ) {
-			$out .= '<script type="text/javascript">if(controls==undefined){var controls = {init:function(fn){if(fn!=undefined){controls.inits.push(fn);}else{for(var i in controls.inits){controls.inits[i]();}console.log("control init",controls.inits)}},inits:[]};}$(function(){controls.init()});</script>';
-		}
+		/** @var FormControl $control */
 		foreach ( $this->controls as $control ) {
 			$out .= $control->pre_out( );
 		}
-		return $out;
+		return $this->controls_js($out);
 	}
 
 	/**

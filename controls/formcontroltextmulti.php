@@ -41,7 +41,7 @@ class FormControlTextMulti extends FormControl
 				</script>
 			';
 		}
-		return $out;
+		return $this->controls_js($out);
 	}
 
 }

@@ -25,22 +25,23 @@ class FormControlDropbutton extends FormControl
 	{
 		$actions = array();
 		foreach($new_actions as $caption => $fn) {
+			$key = Utils::slugify($caption);
 			if(is_callable($fn)) { // Passed in a callback
 				$href = '#' . Utils::slugify($caption);
 			}
 			elseif(is_array($fn)) { // Passed in a plugin array actionlist?
-				//var_dump($caption, $fn);die();
-				$href = $fn['url'];
-				$caption = $fn['caption'];
+				$actions[$key] = $fn;
+				continue;
 			}
 			elseif(is_string($fn)) { // Passed in a URL
 				$href = $fn;
 			}
 			else { // Don't know what this is!
 				// Aaaiieeeeee!!!!
+				$href = 'Aaaiieeeeee!!!!';
 			}
-			$key = Utils::slugify($caption);
 			$actions[$key] = array(
+				'class' => $key,
 				'caption' => $caption,
 				'fn' => $fn,
 				'href' => $href,
@@ -87,7 +88,7 @@ controls.init(function(){
 				</script>
 CUSTOM_DROPBUTTON_JS;
 		}
-		return $out;
+		return $this->controls_js($out);
 	}
 
 
@@ -106,7 +107,26 @@ CUSTOM_DROPBUTTON_JS;
 
 	public function get(Theme $theme)
 	{
-		$this->vars['actions'] = $this->get_setting('actions', array());
+		$actions = $this->get_setting('actions', array());
+		$primary = true;
+		foreach($actions as $key => &$action) {
+			$caption = $action['caption'];
+			unset($action['caption']);
+			$class = array($key, 'dropbutton_action');
+			if(isset($action['class'])) {
+				$class[] = $action['class'];
+			}
+			if($primary) {
+				$class[] = 'primary';
+				$primary = false;
+			}
+			$action['class'] = implode(' ', $class);
+			$action = array(
+				'attributes' => Utils::html_attr($action, ENT_COMPAT, 'UTF-8', false, false),
+				'caption' => $caption,
+			);
+		}
+		$this->vars['actions'] = $actions;
 		$this->set_template_properties('div', array('id' => $this->get_visualizer()));
 		$this->add_template_class('ul', 'dropdown-menu');
 		if(count($this->settings['actions']) > 1) {

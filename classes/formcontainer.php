@@ -325,7 +325,7 @@ class FormContainer extends FormControl
 		foreach ( $this->controls as $control ) {
 			$preout .= $control->pre_out();
 		}
-		return $preout;
+		return $this->controls_js($preout);
 	}
 
 	/**

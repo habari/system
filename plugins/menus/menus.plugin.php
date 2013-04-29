@@ -796,10 +796,11 @@ JAVSCRIPT_RESPONSE;
 		$delete_label = _t('Delete');
 
 		/** @var FormControlDropbutton $dbtn */
-		$dbtn = FormControlDropbutton::create('menu_item')->set_actions(array(
-			'edit' => array('url' => $edit_link, 'caption' => $edit_label),
-			'delete' => array('url' => $delete_link, 'caption' => $delete_label),
-		));
+		$dbtn = FormControlDropbutton::create('menu_item')
+			->set_actions(array(
+				'edit' => array('url' => $edit_link, 'caption' => $edit_label),
+				'delete' => array('url' => $delete_link, 'caption' => $delete_label),
+			));
 		$links = $dbtn->pre_out() . $dbtn->get($dbtn->get_theme());
 
 		// Put the dropbutton links for each item at the end of the item's div
