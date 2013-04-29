@@ -575,7 +575,6 @@ input.full-width {
 	font-size: 10px;
 }
 	.dropbutton li {
-		font-weight: bold;
 		margin-bottom: 0;
 		line-height: 7px;
 	}
@@ -585,6 +584,7 @@ input.full-width {
 		display: inline-block;
 		background: #333;
 		line-height: 11px;
+		font-weight: bold;
 	}
 	.dropbutton a:hover {
 		background: #666;
