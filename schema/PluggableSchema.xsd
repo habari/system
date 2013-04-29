@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" xmlns:xsd="undefined">
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2009/01/xml.xsd"/>
+  <xs:element name="pluggable">
+    <xs:complexType>
+	  	<xs:choice minOccurs="1" maxOccurs="unbounded">
+	        <xs:element ref="name" minOccurs="1"/>
+    	    <xs:element ref="license"/>
+	        <xs:element maxOccurs="unbounded" ref="author"/>
+	        <xs:element maxOccurs="unbounded" ref="tag"/>
+	        <xs:element ref="copyright"/>
+	        <xs:element ref="version"/>
+	        <xs:element ref="guid" minOccurs="0"/>
+	        <xs:element ref="downloadurl" minOccurs="0"/>
+	        <xs:element ref="url" minOccurs="0"/>
+	        <xs:element maxOccurs="unbounded" ref="description"/>
+	        <xs:element ref="requires" maxOccurs="1" minOccurs="0"/>
+	        <xs:element ref="recommends" maxOccurs="1" minOccurs="0"/>
+	        <xs:element ref="provides" maxOccurs="1" minOccurs="0"/>
+	        <xs:element ref="conflicts" maxOccurs="1" minOccurs="0"/>
+	        <xs:element maxOccurs="unbounded" ref="config" minOccurs="0"/>
+	        <xs:element maxOccurs="unbounded" ref="help" minOccurs="0"/>
+	        <xs:element ref="template_engine" minOccurs="0"/>
+	        <xs:element ref="areas" minOccurs="0"/>
+	        <xs:element ref="presets" minOccurs="0"/>
+			<xs:element ref="parent" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="stack"/>
+		</xs:choice>
+      <xs:attribute name="type" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="name" type="xs:string"/>
+  <xs:element name="author">
+    <xs:complexType mixed="true">
+      <xs:attribute name="url" use="optional" type="xs:anyURI"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="tag">
+  </xs:element>
+  <xs:element name="license">
+    <xs:complexType mixed="true">
+      <xs:attribute name="url" use="required" type="xs:anyURI"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="copyright" type="xs:string"/>
+  <xs:element name="version" type="xs:string"/>
+  <xs:element name="guid" type="xs:string"/>
+  <xs:element name="downloadurl" type="xs:anyURI"/>
+  <xs:element name="url" type="xs:anyURI"/>
+  <xs:element name="requires">
+    <xs:complexType>
+      <xs:sequence minOccurs="1" maxOccurs="unbounded">
+        <xs:element ref="feature"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="recommends">
+    <xs:complexType>
+      <xs:sequence maxOccurs="unbounded" minOccurs="1">
+        <xs:element ref="feature"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="provides">
+    <xs:complexType>
+      <xs:sequence maxOccurs="unbounded" minOccurs="1">
+        <xs:element maxOccurs="unbounded" ref="feature"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="conflicts">
+    <xs:complexType>
+      <xs:sequence minOccurs="1" maxOccurs="unbounded">
+        <xs:element ref="feature"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="config">
+    <xs:complexType>
+      <xs:choice minOccurs="1" maxOccurs="unbounded">
+        <xs:element ref="caption" minOccurs="0" maxOccurs="1"/>
+		<xs:choice>
+          <xs:element ref="container"/>
+          <xs:element ref="control"/>
+		</xs:choice>
+      </xs:choice>
+      <xs:attribute name="load" type="xs:integer"/>
+      <xs:attribute name="name" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="caption">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="value"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="container">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="attribute"/>
+        <xs:element ref="control"/>
+      </xs:choice>
+      <xs:attribute name="type" use="optional" type="xs:NCName" default="fieldset"/>
+      <xs:attribute name="name" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="help">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="value"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="optional" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="template_engine" type="xs:NCName"/>
+  <xs:element name="areas">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="area"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="area">
+    <xs:complexType>
+      <xs:sequence minOccurs="1" maxOccurs="1">
+        <xs:element maxOccurs="unbounded" ref="description"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" type="xs:NCName"/>
+      <xs:attribute name="title" use="optional" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="presets">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="preset"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="preset">
+    <xs:complexType>
+      <xs:sequence minOccurs="1" maxOccurs="unbounded">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" ref="description"/>
+        </xs:sequence>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="description">
+    <xs:complexType mixed="true">
+      <xs:attribute ref="xml:lang"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="feature">
+  	<xs:complexType mixed="true">
+		<xs:attribute name="url" type="xs:anyURI"/>
+	</xs:complexType>
+  </xs:element>
+  <xs:element name="value">
+    <xs:complexType mixed="true">
+      <xs:attribute ref="xml:lang"/>
+      <xs:attribute name="href" type="xs:anyURI"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="attribute">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element maxOccurs="unbounded" ref="value"/>
+        <xs:element maxOccurs="unbounded" ref="option"/>
+      </xs:choice>
+      <xs:attribute name="name" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="option">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="value"/>
+      </xs:sequence>
+      <xs:attribute name="default" type="xs:integer"/>
+      <xs:attribute name="value" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="control">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="attribute"/>
+        <xs:element minOccurs="0" ref="validator"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" type="xs:NCName"/>
+      <xs:attribute name="storage" type="xs:NMTOKEN" default="null:null"/>
+      <xs:attribute name="type" use="optional" type="xs:NCName" default="text"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="validator">
+    <xs:complexType>
+      <xs:attribute name="type" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="parent" type="xs:string"/>
+  <xs:element name="stack">
+      <xs:complexType>
+          <xs:sequence minOccurs="1" maxOccurs="unbounded">
+              <xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+                  <xs:complexType>
+                      <xs:sequence>
+                          <xs:element ref="value" minOccurs="0" maxOccurs="unbounded"/>
+                      </xs:sequence>
+                      <xs:attribute name="name" type="xs:string" use="optional"/>
+                      <xs:attribute name="after" type="xs:string"/>
+                      <xs:attribute name="value" type="xs:string" use="optional"/>
+                  </xs:complexType>
+              </xs:element>
+              <xs:element name="remove" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+          <xs:attribute name="name" type="xs:string"/>
+      </xs:complexType>
+  </xs:element>
+  <xs:element name="criteria">
+      <xs:complexType>
+          <xs:sequence maxOccurs="1" minOccurs="0">
+              <xs:element ref="value" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+          <xs:attribute name="name" use="required" type="xs:string"/>
+          <xs:attribute name="value" type="xs:string"/>
+      </xs:complexType>
+  </xs:element>
+</xs:schema>
