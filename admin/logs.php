@@ -4,9 +4,13 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 ?>
 <?php include_once( 'header.php' ); ?>
 
+<div class="container transparent item controls">
+
 <?php include( 'navigator.php' ); ?>
 
 <?php echo $form; ?>
+
+</div>
 
 <table class="container" id="log_data">
 
@@ -51,7 +55,10 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 
 </table>
 
+<div class="container transparent item controls">
+
 <?php echo $form->dupe(); ?>
+</div>
 
 <script type="text/javascript">
 
