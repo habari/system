@@ -130,10 +130,12 @@ class LogEntry extends QueryRecord
 	**/
 	public static function list_modules( $refresh = false )
 	{
+		$modules = array();
 		$types = self::list_logentry_types( $refresh );
 		foreach ( $types as $module => $types ) {
 			$modules[] = $module;
 		}
+		return $modules();
 	}
 
 	/**
