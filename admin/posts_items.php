@@ -10,7 +10,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 	<div class="head">
 		<?php if ( ACL::access_check( $post_permissions, 'delete' ) ) { ?>
 		<span class="checkbox title">
-			<input type="checkbox" class="checkbox post_item" name="checkbox_ids[<?php echo $post->id; ?>]" id="checkbox_ids[<?php echo $post->id; ?>]">
+			<input type="checkbox" class="checkbox post_item" name="checkbox_ids[<?php echo $post->id; ?>]" value="<?php echo $post->id; ?>">
 		</span>
 		<?php } ?>
 		<span class="checkbox title">
