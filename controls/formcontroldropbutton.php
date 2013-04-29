@@ -100,7 +100,12 @@ CUSTOM_DROPBUTTON_JS;
 	{
 		$actions = $this->get_setting('actions', array());
 		if(isset($actions[$this->value])) {
-			$actions[$this->value]['fn']($form);
+			if(isset($actions[$this->value]['fn']) && is_callable($actions[$this->value]['fn'])) {
+				$actions[$this->value]['fn']($form);
+			}
+			elseif(isset($actions[$this->value]['href']) && is_string(isset($actions[$this->value]['href']))) {
+				Utils::redirect($actions[$this->value]['href'], true);
+			}
 		}
 		return parent::do_success($form);
 	}
