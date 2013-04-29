@@ -101,7 +101,8 @@ CUSTOM_DROPBUTTON_JS;
 		$actions = $this->get_setting('actions', array());
 		if(isset($actions[$this->value])) {
 			if(isset($actions[$this->value]['fn']) && is_callable($actions[$this->value]['fn'])) {
-				$actions[$this->value]['fn']($form);
+				$fn = $actions[$this->value]['fn'];
+				call_user_func($fn, $form);
 			}
 			elseif(isset($actions[$this->value]['href']) && is_string(isset($actions[$this->value]['href']))) {
 				Utils::redirect($actions[$this->value]['href'], true);
