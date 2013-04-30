@@ -76,21 +76,27 @@ CUSTOM_DROPBUTTON_JS;
 	public function get(Theme $theme)
 	{
 		$primary = true;
+		$controls = array();
 		/** @var FormControlSubmit $control */
-		foreach ( $this->controls as $control ) {
-			$control->add_class('dropbutton_action');
-			$control->add_class(Utils::slugify($control->input_name()));
-			if($primary) {
-				$control->add_class('primary');
-				$primary = false;
+		foreach ( $this->controls as $index => $control ) {
+			if($control->is_enabled()) {
+				$control->add_class('dropbutton_action');
+				$control->add_class(Utils::slugify($control->input_name()));
+				if($primary) {
+					$control->add_class('primary');
+					$primary = false;
+				}
+				$controls[$index] = $control;
 			}
 		}
-		$controls = $this->controls;
+		if(count($controls) == 0) {
+			return '';
+		}
 		$this->vars['first'] = array_shift($controls);
 		$this->vars['actions'] = $controls;
 		$this->set_template_properties('div', array('id' => $this->get_visualizer()));
 		$this->add_template_class('ul', 'dropdown-menu');
-		if(count($this->controls) > 1) {
+		if(count($controls) > 0) {  // Remember, these are in the dropmenu, doesn't include the first
 			$this->add_template_class('div', 'has-drop');
 		}
 		else {
