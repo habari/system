@@ -1,5 +1,5 @@
 @import url(http://fonts.googleapis.com/css?family=Quattrocento);
-article,aside,details,figcaption,figure,footer,header,hgroup,nav,section{display:block;}
+article,aside,details,figcaption,figure,footer,header,nav,section{display:block;}
 audio,canvas,video{display:inline-block;*display:inline;*zoom:1;}
 audio:not([controls]){display:none;}
 [hidden]{display:none;}
@@ -83,8 +83,8 @@ ul.messages{border-radius:5px;padding:10px;margin:0 10px;}ul.messages.error{bord
 ul.messages.success{border:1px solid #3496dc;background-color:rgba(226, 240, 250, 0.8);}
 ul.messages li{margin-left:20px;}
 form ul.error li{color:#bf8888;clear:both;font-size:smaller;text-shadow:1px 1px 0px #666;}
-#header hgroup{text-align:right;border-bottom:1px solid #ddd;margin:0 0 5px;}#header hgroup h1{padding:0;margin:0;}
-#header hgroup h2{font-size:1.0em;padding:0;margin:0;color:#999;}
+#header .hgroup{text-align:right;border-bottom:1px solid #ddd;margin:0 0 5px;}#header .hgroup h1{padding:0;margin:0;}
+#header .hgroup .subheading{font-size:1.0em;padding:0;margin:0;color:#999;font-weight:bold;}
 #header nav{margin:0 0 20px;padding:0 0 5px;border-bottom:1px solid #ddd;}#header nav ol{margin:0px;padding:0px;}
 #header nav li{list-style:none;display:block;float:left;margin:0 10px 0 0;}
 #content header{padding-left:20px;border-left:3px solid #195f91;}#content header h1{margin:0;font-size:1.8em;}
