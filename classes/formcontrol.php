@@ -202,6 +202,18 @@ ERR;
 	}
 
 	/**
+	 * Set the value of a single setting
+	 * @param string $name The name of the setting
+	 * @param mixed $value The value of the setting
+	 * @return FormControl $this Fluent interface
+	 */
+	public function set_setting($name, $value)
+	{
+		$this->settings[$name] = $value;
+		return $this;
+	}
+
+	/**
 	 * @param string $helptext Help text to appear for the control
 	 * @return FormControl $this
 	 */
