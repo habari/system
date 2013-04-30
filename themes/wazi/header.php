@@ -14,10 +14,10 @@
 <div id="wrapper">
 
 	<header id="header">
-		<hgroup>
+		<div class="hgroup">
 			<h1 itemprop="name"><a href="<?php Site::out_url( 'site' ); ?>/" itemprop="url"><?php echo Options::get('title'); ?></a></h1>
-			<h2 itemprop="description"><?php echo Options::get('tagline'); ?></h2>
-		</hgroup>
+			<p itemprop="description" class="subheading"><?php echo Options::get('tagline'); ?></p>
+		</div>
 		<?php echo $theme->area('nav'); ?>
 		<?php echo $theme->area('header'); ?>
 	</header>
