@@ -701,7 +701,7 @@ ERR;
 		if(!isset($this->properties['class'])) {
 			$this->properties['class'] = array();
 		}
-		$this->properties['class'] = array_merge($this->properties['class'], explode(' ', $classes));
+		$this->properties['class'] = array_merge(Utils::single_array($this->properties['class']), explode(' ', $classes));
 		return $this;
 	}
 
@@ -723,7 +723,7 @@ ERR;
 		if(!isset($this->settings['template_attributes'][$target]['class'])) {
 			$this->settings['template_attributes'][$target]['class'] = array();
 		}
-		$this->settings['template_attributes'][$target]['class'] = array_merge($this->settings['template_attributes'][$target]['class'], explode(' ', $classes));
+		$this->settings['template_attributes'][$target]['class'] = array_merge(Utils::single_array($this->settings['template_attributes'][$target]['class']), explode(' ', $classes));
 		return $this;
 	}
 
