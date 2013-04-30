@@ -58,23 +58,19 @@ class Undelete extends Plugin
 		}
 	}
 
-	public function filter_post_actions($actions, $post)
+	public function action_post_actions(FormControlDropbutton $actions, $post)
 	{
 		if ( $post->status == Post::status('deleted') && ACL::access_check( $post->get_access(), 'delete' ) ) {
-			$actions['remove']['label']= _t('Delete forever');
-			$actions['remove']['title']= _t('Permanently delete this post');
-			$remove = array_pop($actions);
-			$restore = array(
-				'url' => 'javascript:unDelete.post('. $post->id . ');',
-				'title' => _t('Restore this item'),
-				'caption' => _t('Restore')
+			$actions->append(
+				FormControlSubmit::create('restore')->set_caption(_t('Restore'))
+					->set_property('title', _t('Permanently delete this post'))
+					->set_url('javascript:unDelete.post('. $post->id . ');')
 			);
-			array_push($actions, $restore, $remove);
+			$actions->delete->set_caption('Delete Forever')->set_property('title', _t('Permanently delete this post'));
 		}
-		return $actions;
 	}
 
-	public function filter_posts_manage_actions( $actions )
+	public function action_posts_manage_actions( FormControlDropbutton $post_actions )
 	{
 		// get all the post types
 		$require_any = array( 'own_posts' => 'delete' );
@@ -84,9 +80,15 @@ class Undelete extends Plugin
 		}
 
 		if ( User::identify()->can_any( $require_any ) ) {
-			$actions[] = array( 'href'=>'#restore_selected', 'onclick' => 'itemManage.update(\'restore\');return false;', 'title' => _t( 'Restore Selected Entries' ), 'caption' => _t( 'Restore Selected' ) );
+			$post_actions->append(
+				FormControlSubmit::create('restore')
+					->set_caption(_t('Restore Selected Entries'))
+					->set_properties(array(
+						'onclick' => 'itemManage.update(\'restore\');return false;',
+						'title' => _t('Restore Selected Entries'),
+					))
+			);
 		}
-		return $actions;
 	}
 
 	public function filter_admin_entries_action( $status_msg, $action, $posts )

@@ -25,7 +25,18 @@ class FormControlSubmit extends FormControl
 	 */
 	public function set_caption($caption)
 	{
-		$this->caption = $caption;
+		$this->set_settings(array('caption' => $caption));
+		return $this;
+	}
+
+	/**
+	 * Make this submit button go to a URL instead of validating or processing success
+	 * @param string $url The URL to redirect to
+	 * @return FormControlSubmit $this Fluent interface
+	 */
+	public function set_url($url)
+	{
+		$this->set_settings(compact('url'));
 		return $this;
 	}
 
@@ -37,12 +48,21 @@ class FormControlSubmit extends FormControl
 	 */
 	public function get( Theme $theme )
 	{
-		$this->properties['value'] = $this->caption;
+		if($url = $this->get_setting('url', false)) {
+			$url = Utils::addslashes($url);
+			$this->set_properties(
+				array(
+					'onclick' => "location.href='{$url}';return false;"
+				)
+			);
+		}
+		$this->properties['value'] = $this->get_setting('caption', '');
 		return parent::get($theme);
 	}
 
 	/**
 	 * This control only executes its on_success callbacks when it was clicked
+	 * @param FormUI $form The form to which this control belongs
 	 * @return bool|string A string to replace the rendering of the form with, or false
 	 */
 	public function do_success($form)

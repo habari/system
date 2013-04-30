@@ -3,6 +3,7 @@ namespace Habari;
 if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 ?>
 <?php if ( count($posts) != 0 ) :
+	/** @var Post $post */
 	foreach ( $posts as $post ) :
 		$post_permissions = $post->get_access();
 ?>
@@ -26,18 +27,31 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 		<span class="time"><span><?php _e('at'); ?> <?php $post->pubdate->out( DateTime::get_default_time_format()); ?></span></span>
 
 		<?php
-		$actions = array(
-			'edit' => array( 'href' => URL::get( 'admin', 'page=publish&id=' . $post->id ), 'title' => _t( 'Edit \'%s\'', array( $post->title ) ), 'caption' => _t( 'Edit' ), 'permission' => 'edit' ),
-			'view' => array( 'href' => $post->permalink . '?preview=1', 'title' => _t( 'View \'%s\'', array( $post->title ) ), 'caption' => _t( 'View' ) ),
-			'remove' => array( 'href' => 'javascript:itemManage.remove('. $post->id . ', \'post\');', 'title' => _t( 'Delete this item' ), 'caption' => _t( 'Delete' ), 'permission' => 'delete' )
+		$post_actions = FormControlDropbutton::create('post_actions');
+		$post_actions->append(
+			FormControlSubmit::create('edit')->set_caption(_t('Edit'))
+				->set_url(URL::get( 'admin', 'page=publish&id=' . $post->id ))
+				->set_property('title', _t( 'Edit \'%s\'', array( $post->title ) ) )
+				->set_enable(function($control) use($post) {
+					return ACL::access_check( $post->get_access(), 'edit' );
+				})
 		);
-		$actions = Plugins::filter('post_actions', $actions, $post);
-		$actions = array_filter($actions, function($item) {
-			return !isset($action['permission']) || ACL::access_check( $post_permissions, $action['permission'] );
-		});
-		$dbtn = FormControlDropbutton::create('post_' . $post->id)->set_actions($actions);
-		echo $dbtn->pre_out();
-		echo $dbtn->get($theme);
+		$post_actions->append(
+			FormControlSubmit::create('view')->set_caption(_t('View'))
+				->set_url($post->permalink . '?preview=1')
+				->set_property('title', _t( 'View \'%s\'', array( $post->title ) ) )
+		);
+		$post_actions->append(
+			FormControlSubmit::create('delete')->set_caption(_t('Delete'))
+				->set_url('javascript:itemManage.remove('. $post->id . ', \'post\');')
+				->set_property('title', _t( 'Delete this item' ) )
+				->set_enable(function($control) use($post) {
+					return ACL::access_check( $post->get_access(), 'delete' );
+				})
+		);
+		Plugins::act('post_actions', $post_actions, $post);
+		echo $post_actions->pre_out();
+		echo $post_actions->get($theme);
 		?>
 	</div>
 

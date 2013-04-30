@@ -17,13 +17,18 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 	echo $aggregate->get($theme);
 
 
-	$page_actions = array(
-		'delete' => array('href' => '#delete_selected', 'onclick' => 'itemManage.update(\'delete\');return false;', 'title' => _t('Delete Selected'), 'caption' => _t('Delete Selected') ),
+	$page_actions = FormControlDropbutton::create('page_actions');
+	$page_actions->append(
+		FormControlSubmit::create('delete')
+			->set_caption(_t('Delete Selected'))
+			->set_properties(array(
+				'onclick' => 'itemManage.update(\'delete\');return false;',
+				'title' => _t('Delete Selected'),
+			))
 	);
-	$page_actions = Plugins::filter('posts_manage_actions', $page_actions);
-	$dbtn = FormControlDropbutton::create('page_actions')->set_actions($page_actions);
-	echo $dbtn->pre_out();
-	echo $dbtn->get($theme);
+	Plugins::act('posts_manage_actions', $page_actions);
+	echo $page_actions->pre_out();
+	echo $page_actions->get($theme);
 	?>
 
 </div>

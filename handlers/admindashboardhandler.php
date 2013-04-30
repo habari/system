@@ -36,8 +36,8 @@ class AdminDashboardHandler extends AdminHandler
 			'comment_count' => Comments::count_total( 'approved', false ),
 			'tag_count' => Tags::vocabulary()->count_total(),
 			'user_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'any' ), 'status' => Post::status( 'draft' ), 'user_id' => $user->id ) ),
-			'unapproved_comment_count' => User::identify()->can( 'manage_all_comments' ) ? Comments::count_total( 'unapproved', false ) : Comments::count_by_author( User::identify()->id, Comment::STATUS_UNAPPROVED ),
-			'spam_comment_count' => $user->can( 'manage_all_comments' ) ? Comments::count_total( 'spam', false ) : Comments::count_by_author( $user->id, Comment::STATUS_SPAM ),
+			'unapproved_comment_count' => User::identify()->can( 'manage_all_comments' ) ? Comments::count_total( 'unapproved', false ) : Comments::count_by_author( User::identify()->id, Comment::status('unapproved') ),
+			'spam_comment_count' => $user->can( 'manage_all_comments' ) ? Comments::count_total( 'spam', false ) : Comments::count_by_author( $user->id, Comment::status('spam') ),
 			'user_scheduled_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'any' ), 'status' => Post::status( 'scheduled' ), 'user_id' => $user->id ) ),
 		);
 

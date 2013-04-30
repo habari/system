@@ -167,9 +167,8 @@ class UserHandler extends ActionHandler
 			)->set_template('control.label.outsideleft')
 				->set_properties(array('class'=>'off_reset'))
 		);
-		$form->append( FormControlDropbutton::create('submit_button')->add_template_class('ul', 'off_reset')->set_actions(array(
-			_t('Login') => array($this, 'loginform_do_login'),
-		)));
+		$form->append( $drop_button = FormControlDropbutton::create('submit_button')->add_template_class('ul', 'off_reset'));
+		$drop_button->append(FormControlSubmit::create('login')->on_success(array($this, 'loginform_do_login'))->set_caption(_t('Login')));
 		$form->append( FormControlStatic::create('reset_link')->set_static('<a href="#" class="off_reset reset_link">' . _t('Reset password') . '</a>') );
 		$form->append( FormControlStatic::create('login_link')->set_static('<a href="#" class="on_reset reset_link">' . _t('Login') . '</a>') );
 		$form->append( FormControlSubmit::create('reset_button')->set_caption(_t('Reset password'))->set_properties(array('class'=>'on_reset'))->on_success(array($this, 'loginform_do_reset')) );
