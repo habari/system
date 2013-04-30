@@ -1660,12 +1660,22 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function get_access( $user = null )
 	{
+		static $cached_access = array();
+
 		if ( ! $user instanceof User ) {
 			$user = User::identify();
 		}
 
+		if(!isset($access[$this->id])) {
+			$cached_access[$this->id] = array();
+		}
+		if(isset($cached_access[$this->id][$user->id])) {
+			return $cached_access[$this->id][$user->id];
+		}
+
 		if ( $user->can( 'super_user' ) ) {
-			return ACL::get_bitmask( 'full' );
+			$cached_access[$this->id][$user->id] = ACL::get_bitmask( 'full' );
+			return $cached_access[$this->id][$user->id];
 		}
 
 		// Collect a list of applicable tokens
@@ -1691,9 +1701,11 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 		// now that we have all the accesses, loop through them to build the access to the particular post
 		if ( in_array( 0, $token_accesses ) ) {
-			return ACL::get_bitmask( 0 );
+			$cached_access[$this->id][$user->id] = ACL::get_bitmask( 0 );
+			return $cached_access[$this->id][$user->id];
 		}
-		return ACL::get_bitmask( Utils::array_or( $token_accesses ) );
+		$cached_access[$this->id][$user->id] = ACL::get_bitmask( Utils::array_or( $token_accesses ) );
+		return $cached_access[$this->id][$user->id];
 	}
 
 	/**

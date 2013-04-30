@@ -1,4 +1,13 @@
-<?php namespace Habari; ?>
+<?php
+namespace Habari;
+/**
+ * @var string $helpaction
+ * @var array $plugin
+ * @var Theme $theme
+ * @var string $configure
+ * @var string $configaction
+ */
+?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php if ( $plugin['debug'] ): ?>
 <div class="item plugin columns sixteen">
@@ -49,7 +58,10 @@
 		<?php
 		/** @var FormControlDropbutton $dbtn */
 		if(count($plugin['actions']) > 0):
-			$dbtn = FormControlDropbutton::create('actions')->set_actions($plugin['actions']);
+			$dbtn = FormControlDropbutton::create('actions');
+			foreach($plugin['actions'] as $key => $data) {
+				$dbtn->append(FormControlSubmit::create($key)->set_url($data['href'])->set_caption($data['caption']));
+			}
 			echo $dbtn->pre_out();
 			echo $dbtn->get($theme);
 		endif;

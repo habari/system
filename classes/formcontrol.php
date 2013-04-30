@@ -32,10 +32,12 @@ abstract class FormControl
 	public $value_set_manually = false;
 	/** @var bool|string $helptext This is help text for the control, if it is set */
 	public $helptext = false;
-	/** @var array An array of success handlers for this control */
-	protected $on_success = array();
-	/** @var array An array of save handlers for this control */
-	protected $on_save = array();
+	/** @var array $on_success An array of success handlers for this control */
+	public $on_success = array();
+	/** @var array $on_save An array of save handlers for this control */
+	public $on_save = array();
+	/** @var array $on_enable An array of enable handlers for this control */
+	public $on_enable = array();
 	/** @var bool True if the controls.init script has been output, false if not */
 	static $controls_js = false;
 
@@ -145,6 +147,18 @@ ERR;
 		else {
 			$this->properties = array_merge($this->properties, $properties);
 		}
+		return $this;
+	}
+
+	/**
+	 * Set an HTML-related property of this control
+	 * @param string $name The name of the property to set
+	 * @param mixed $value The value to set the property to
+	 * @return FormControl $this
+	 */
+	public function set_property($name, $value)
+	{
+		$this->properties[$name] = $value;
 		return $this;
 	}
 
@@ -335,6 +349,9 @@ ERR;
 		if(!isset($this->settings['internal_value'])) {
 			$properties = array_merge(array('value' => $this->get_setting('html_value', $use_value)), $properties);
 		}
+		if(!$this->is_enabled()) {
+			$properties['disabled'] = 'disabled';
+		}
 		if($id = $this->get_id(false)) {
 			$properties['id'] = $id;
 		}
@@ -486,6 +503,30 @@ ERR;
 	{
 		$this->settings['template_html'] = $template;
 		return $this;
+	}
+
+	/**
+	 * Set a function to use to determine if this control should be enabled or provided in the form
+	 * @param Callable $enabler A function to call to determine if this control should be enabled
+	 * @return FormControl $this
+	 */
+	public function set_enable($enabler)
+	{
+		$this->on_enable[] = $enabler;
+		return $this;
+	}
+
+	/**
+	 * Determine if this controls should be enabled
+	 * @return bool True if enabled, false if not enabled
+	 */
+	public function is_enabled()
+	{
+		$enabled = true;
+		foreach($this->on_enable as $enabler) {
+			$enabled &= $enabler($this);
+		}
+		return $enabled;
 	}
 
 	/**

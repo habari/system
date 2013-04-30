@@ -578,19 +578,26 @@ input.full-width {
 		margin-bottom: 0;
 		line-height: 7px;
 	}
-	.dropbutton a {
+	.dropbutton input[type=submit] {
 		color: #fff;
 		padding: 10px;
 		display: inline-block;
 		background: #333;
 		line-height: 11px;
 		font-weight: bold;
+		margin: 0;
+		border-radius: 3px 0 0 3px;
+		border: 0;
+		text-shadow: none;
 	}
-	.dropbutton a:hover {
+	.dropbutton.no-drop input[type=submit] {
+		border-radius: 3px;
+	}
+	.dropbutton input[type=submit]:hover {
 		background: #666;
 	}
-	.dropbutton > a {
-		border-bottom: 1px solid transparent;
+	.dropbutton > input[type=submit] {
+		/* border-bottom: 1px solid transparent; */
 	}
 	.dropbutton.dropped .dropdown-menu {
 		display: block;
@@ -598,27 +605,38 @@ input.full-width {
 	}
 		.dropbutton.dropped .primary {
 			border-bottom: 1px solid #666;
+			border-bottom-left-radius: 0;
+			border-bottom-right-radius: 0;
 		}
 		.dropbutton.dropped .dropdown {
 			border-bottom: 1px solid #333;
+			border-bottom-left-radius: 0;
+			border-bottom-right-radius: 0;
 		}
 	.dropbutton .dropdown-menu {
 		display: none;
 		position: absolute;
 		z-index: 4000;
+		box-shadow: 0px 1px 1px rgba(200,200,200,0.7);
 	}
 		.dropbutton .dropdown-menu li {
 			width: 100%
 		}
-		.dropbutton .dropdown-menu a {
+		.dropbutton .dropdown-menu input {
 			display: block;
+			border-radius: 0;
+			width: 100%;
 		}
+			.dropbutton .dropdown-menu li:last-child input {
+				border-radius: 0 0 3px 3px;
+			}
 	.dropbutton .dropdown {
 		color: #fff;
 		padding: 10px;
 		display: inline-block;
 		background: #333;
 		border-left: 1px solid #666666;
+		border-radius: 0 3px 3px 0;
 	}
 
 /* Tree */
@@ -778,13 +796,13 @@ ol
 	margin-bottom: 10px;
 }
 
-.login input[type=submit] {
+/*input[type=submit] {
 	border: 0px;
 	background: #333;
 	color: #fff;
 	padding: 10px 20px;
 	text-shadow: none;
-}
+}*/
 
 .login .poweredby {
 	text-align: center;

@@ -5,53 +5,13 @@ namespace Habari;
 /**
  * A submit control based on FormControl for output via FormUI
  */
-class FormControlDropbutton extends FormControl
+class FormControlDropbutton extends FormContainer
 {
 	static $outpre = false;
-	public $on_success = array();
 
 	public function _extend() {
 		$this->properties['type'] = 'hidden';
 		$this->add_template_class('div', 'dropbutton dropbutton_control');
-	}
-
-	/**
-	 * Set the actions of this dropbutton, the first action is the default action
-	 * @param array $new_actions An array of actions to apply to the control
-	 * @param bool $override Defaults to false. If true, override existing actions.  If false, merge with existing actions
-	 * @return FormControlDropbutton $this
-	 */
-	public function set_actions($new_actions, $override = false)
-	{
-		$actions = array();
-		foreach($new_actions as $caption => $fn) {
-			$key = Utils::slugify($caption);
-			if(is_callable($fn)) { // Passed in a callback
-				$href = '#' . Utils::slugify($caption);
-			}
-			elseif(is_array($fn)) { // Passed in a plugin array actionlist?
-				$actions[$key] = $fn;
-				continue;
-			}
-			elseif(is_string($fn)) { // Passed in a URL
-				$href = $fn;
-			}
-			else { // Don't know what this is!
-				// Aaaiieeeeee!!!!
-				$href = 'Aaaiieeeeee!!!!';
-			}
-			$actions[$key] = array(
-				'class' => $key,
-				'caption' => $caption,
-				'fn' => $fn,
-				'href' => $href,
-			);
-		}
-		if(!$override) {
-			$actions = array_merge($this->get_setting('actions', array()), $actions);
-		}
-		$this->set_settings(array('actions' => $actions));
-		return $this;
 	}
 
 	/**
@@ -71,12 +31,14 @@ controls.init(function(){
 	});
 	$('.dropbutton_control').each(function(){
 		var self = $(this);
-		self.find('.dropdown-menu').width(self.find('.primary').outerWidth()+self.find('.dropdown').outerWidth());
-		$('.dropbutton_action', self).on('click', function(){
-			var a = $(this);
-			self.find('input').val(a.attr('href').replace(/^.*#/, ''));
-			self.closest('form').submit();
-		});
+		var needWidth = self.find('.primary').outerWidth()+self.find('.dropdown').outerWidth();
+		var menu = self.find('.dropdown-menu');
+		toWidth = Math.max(needWidth, menu.width());
+		marginleft = Math.min(0, needWidth - menu.width());
+		if(marginleft < -2) {
+			$('li:first-child input', menu).css('border-top-left-radius', '3px');
+		}
+		menu.css('margin-left', marginleft).width(toWidth);
 		self.find('.dropdown').on('click', function(event){
 			$('.dropbutton_control').not(self).removeClass('dropped');
 			self.toggleClass('dropped');
@@ -113,31 +75,22 @@ CUSTOM_DROPBUTTON_JS;
 
 	public function get(Theme $theme)
 	{
-		$actions = $this->get_setting('actions', array());
 		$primary = true;
-		foreach($actions as $key => &$action) {
-			$caption = $action['caption'];
-			unset($action['caption']);
-			$class = array($key, 'dropbutton_action');
-			if(isset($action['class'])) {
-				$class[] = $action['class'];
-			}
+		/** @var FormControlSubmit $control */
+		foreach ( $this->controls as $control ) {
+			$control->add_class('dropbutton_action');
+			$control->add_class(Utils::slugify($control->input_name()));
 			if($primary) {
-				$class[] = 'primary';
+				$control->add_class('primary');
 				$primary = false;
 			}
-			$action['class'] = implode(' ', $class);
-			$attributes = $action;
-			unset($attributes['fn']);
-			$action = array(
-				'attributes' => Utils::html_attr($attributes, ENT_COMPAT, 'UTF-8', false, false),
-				'caption' => $caption,
-			);
 		}
-		$this->vars['actions'] = $actions;
+		$controls = $this->controls;
+		$this->vars['first'] = array_shift($controls);
+		$this->vars['actions'] = $controls;
 		$this->set_template_properties('div', array('id' => $this->get_visualizer()));
 		$this->add_template_class('ul', 'dropdown-menu');
-		if(count($this->settings['actions']) > 1) {
+		if(count($this->controls) > 1) {
 			$this->add_template_class('div', 'has-drop');
 		}
 		else {
