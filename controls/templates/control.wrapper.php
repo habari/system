@@ -1,1 +1,1 @@
-<div <?= $_attributes ?>><?= $content ?></div>
+<<?= $element ?> <?= $_attributes ?>><?= $content ?></<?= $element ?>>
