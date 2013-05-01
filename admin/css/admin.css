@@ -641,11 +641,9 @@ input.full-width {
 
 /* Tree */
 
-ol
+ol {}
 
 /* Common */
-
-.lead  {}
 	h2.lead {
 		font-family: "Montserrat";
 		font-weight: normal;
