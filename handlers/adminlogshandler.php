@@ -138,7 +138,7 @@ class AdminLogsHandler extends AdminHandler
 		$this->theme->years = $years;
 
 		$form = new FormUI('logs_batch', 'logs_batch');
-		$form->append(FormControlAggregate::create('entries')->set_selector('.log_entry')->label('None Selected'));
+		$form->append(FormControlAggregate::create('entries')->set_selector('.log_entry')->set_value(array())->label('None Selected'));
 		$form->append($actions = FormControlDropbutton::create('actions'));
 		$actions->append(FormControlSubmit::create('delete_selected')->on_success(
 			function(FormUI $form){
