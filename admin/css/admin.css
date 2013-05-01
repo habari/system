@@ -572,7 +572,6 @@ input.full-width {
 	margin-bottom: 0px;
 	display: inline-block;
 	line-height: 11px;
-	font-size: 10px;
 }
 	.dropbutton li {
 		margin-bottom: 0;
@@ -633,7 +632,7 @@ input.full-width {
 	.dropbutton .dropdown {
 		color: #fff;
 		padding: 10px;
-		display: inline-block;
+		float:right;
 		background: #333;
 		border-left: 1px solid #666666;
 		border-radius: 0 3px 3px 0;
