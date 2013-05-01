@@ -645,20 +645,20 @@ ol
 
 /* Common */
 
-.lead  {
-	font-family: "Montserrat";
-	font-weight: normal;
-	font-size: 15px;
-	margin: -10px -20px 0px;
-	padding-left: 20px;
-	color: #fff;
-	background: #333;
-}
+.lead  {}
 	h2.lead {
+		font-family: "Montserrat";
+		font-weight: normal;
+		font-size: 15px;
+		margin: -10px -20px 0px;
+		padding-left: 20px;
 		color: #fff;
 		background: #333;
 	}
+	
 	h3.lead {
+		font-family: "Montserrat";
+		font-weight: normal;
 		color: #fff;
 		background: #B4AD9C;
 	}
