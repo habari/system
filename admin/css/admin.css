@@ -413,7 +413,7 @@ body, html {
 
 textarea.full-width,
 input.full-width {
-	width: 100%;
+	width: 99%;
 }
 
 #welcome {
@@ -779,7 +779,6 @@ input[type=text] {
 		font-size: 12px;
 		font-weight: normal;
 		margin: 0px;
-		margin-right: -10px;
 		border-radius: 3px;
 		border: 0px;
 		text-shadow: none;
@@ -820,6 +819,24 @@ input[type=text] {
 			
 			.pagesplitter .splitterinside label select {
 				padding: 5px;
+			}
+			
+			.select2-container-multi .select2-choices {
+				padding: 2px 0px;
+			    background: none repeat scroll 0 0 #FFFFFF;
+			    border: 1px solid #CCCCCC;
+			    border-radius: 2px 2px 2px 2px;
+			    color: #777777;
+			    font: 13px "HelveticaNeue","Helvetica Neue",Helvetica,Arial,sans-serif;
+			    width: 100%;
+			    outline: medium none;
+			}
+			
+			#select2-drop {
+				width: 100%:
+				padding: 2px 0px;
+			    background: none repeat scroll 0 0 #FFFFFF;
+			    border: 1px solid #CCCCCC;
 			}
 			
 	#create_content input[type=submit] {
