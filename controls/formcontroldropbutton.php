@@ -33,12 +33,13 @@ controls.init(function(){
 		var self = $(this);
 		var needWidth = self.find('.primary').outerWidth()+self.find('.dropdown').outerWidth();
 		var menu = self.find('.dropdown-menu');
+		menu.css('margin-left', -200)
 		toWidth = Math.max(needWidth, menu.width());
 		marginleft = Math.min(0, needWidth - menu.width());
 		if(marginleft < -2) {
 			$('li:first-child input', menu).css('border-top-left-radius', '3px');
 		}
-		menu.css('margin-left', marginleft).width(toWidth);
+		menu.width(toWidth).css('margin-left', marginleft);
 		self.find('.dropdown').on('click', function(event){
 			$('.dropbutton_control').not(self).removeClass('dropped');
 			self.toggleClass('dropped');
