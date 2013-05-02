@@ -4,11 +4,8 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 ?>
 <?php include('header.php'); ?>
 
-<div class="container">
-
 	<?php $form->out(); ?>
 
-</div>
 
 <script type="text/javascript">
 $(document).ready(function(){

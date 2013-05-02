@@ -969,7 +969,8 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$form->append( FormControlData::create('post')->set_value($this) );
 
 		// Create the Title field
-		$form->append( FormControlLabel::wrap(_t('Title'), FormControlText::create('title', null, array('class' => array('check-change full-width'), 'tabindex' => 1))->set_value($this->title_internal)) );
+		$title = $form->append( FormControlWrapper::create('title_wrap', null, array('class' => 'container')) );
+		$title->append( FormControlLabel::wrap(_t('Title'), FormControlText::create('title', null, array('class' => array('check-change full-width'), 'tabindex' => 1))->set_value($this->title_internal)) );
 
 		// Create the silos
 		if ( count( Plugins::get_by_interface( 'MediaSilo' ) ) ) {
@@ -977,12 +978,13 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		}
 
 		// Create the Content field
-		$form->append( FormControlLabel::wrap( _t('Content'), FormControlTextArea::create('content', null, array('class' => array('resizable', 'check-change full-width rte'), 'tabindex' => 2))->set_value($this->content_internal)) );
-		$form->content->raw = true;  // @todo What does this do?
+		$content = $form->append( FormControlWrapper::create('content_wrap', null, array('class' => 'container')) );
+		$content->append( FormControlLabel::wrap( _t('Content'), FormControlTextArea::create('content', null, array('class' => array('resizable', 'check-change full-width rte'), 'tabindex' => 2))->set_value($this->content_internal)) );
+		$content->content->raw = true;  // @todo What does this do?
 
 		// Create the tags field
 		/** @var FormControlAutocomplete $tags_control */
-		$form->append(
+		$content->append(
 			FormControlLabel::wrap(
 				_t( 'Tags, separated by, commas' ),
 				$tags_control = FormControlAutocomplete::create(
@@ -1005,7 +1007,6 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		// Create the splitter
 		/** @var FormControlTabs $publish_controls  */
 		$publish_controls = $form->append( FormControlTabs::create('publish_controls') );
-
 		// Create the publishing controls
 		// pass "false" to list_post_statuses() so that we don't include internal post statuses
 		$statuses = Post::list_post_statuses( $this );
@@ -1013,27 +1014,27 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$statuses = Plugins::filter( 'admin_publish_list_post_statuses', $statuses );
 
 		/** @var FormControlFieldset $settings */
-		$settings = $publish_controls->append( FormControlFieldset::create('post_settings')->set_caption(_t( 'Settings' )) );
-
-		$settings->append( FormControlLabel::wrap(_t( 'Content State' ), FormControlSelect::create('status')->set_options(array_flip( $statuses ))->set_value($this->status)));
+		$settings = $publish_controls->append( FormControlFieldset::create('settings_wrapper')->set_caption(_t( 'Settings' )) );
+		$setting_container = $settings->append( FormControlWrapper::create('content_wrap', null, array('class' => 'container')) );
+		$setting_container->append( FormControlLabel::wrap(_t( 'Content State' ), FormControlSelect::create('status')->set_options(array_flip( $statuses ))->set_value($this->status)));
 
 		// hide the minor edit checkbox if the post is new
 		if ( $newpost ) {
-			$settings->append( FormControlData::create('minor_edit')->set_value(false));
+			$setting_container->append( FormControlData::create('minor_edit')->set_value(false));
 		}
 		else {
-			$settings->append( FormControlLabel::wrap( _t( 'Minor Edit' ), FormControlCheckbox::create('minor_edit')->set_value(true)));
+			$setting_container->append( FormControlLabel::wrap( _t( 'Minor Edit' ), FormControlCheckbox::create('minor_edit')->set_value(true)));
 			$form->append( FormControlData::create('modified')->set_value($this->modified));
 		}
 
-		$settings->append( FormControlLabel::wrap(_t( 'Comments Allowed' ), FormControlCheckbox::create('comments_enabled')->set_value($this->info->comments_disabled ? false : true)));
+		$setting_container->append( FormControlLabel::wrap(_t( 'Comments Allowed' ), FormControlCheckbox::create('comments_enabled')->set_value($this->info->comments_disabled ? false : true)));
 
-		$settings->append( FormControlLabel::wrap(_t( 'Publication Time' ), FormControlText::create('pubdate')->set_value($this->pubdate->format( 'Y-m-d H:i:s' ))));
-		//$settings->pubdate->helptext = _t( 'YYYY-MM-DD HH:MM:SS' );  // @todo figure out a clean way to do help text on a control -- a new FormControlLabel-like wrapper?
+		$setting_container->append( FormControlLabel::wrap(_t( 'Publication Time' ), FormControlText::create('pubdate')->set_value($this->pubdate->format( 'Y-m-d H:i:s' ))));
+		//$setting_container->pubdate->helptext = _t( 'YYYY-MM-DD HH:MM:SS' );  // @todo figure out a clean way to do help text on a control -- a new FormControlLabel-like wrapper?
 
-		$settings->append( FormControlData::create('updated')->set_value($this->updated->int) );
+		$setting_container->append( FormControlData::create('updated')->set_value($this->updated->int) );
 
-		$settings->append( FormControlLabel::wrap(_t( 'Content Address' ), FormControlText::create('newslug')->set_value($this->slug) ));
+		$setting_container->append( FormControlLabel::wrap(_t( 'Content Address' ), FormControlText::create('newslug')->set_value($this->slug) ));
 
 		// Create the button area
 		$buttons = $form->append( FormControlFieldset::create('buttons', null, array('class' => array('container', 'buttons', 'publish'))) );

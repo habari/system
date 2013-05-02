@@ -414,12 +414,10 @@ body, html {
 textarea.full-width,
 input.full-width {
 	width: 100%;
-	padding-left: 0 !important;
-	padding-right: 0 !important;
 }
 
 #welcome {
-	margin-top: 85px;
+	margin-top: 35px;
 	margin-bottom: 20px;
 	text-align: center;
 }
@@ -443,9 +441,10 @@ input.full-width {
 
 .dashboard .module {
 	height: 260px;
-	background: rgb(224, 221, 214);
+	background: #fff;
 	overflow:hidden;
 	border-radius: 5px;
+	box-shadow: 0px 0px 2px #aaa;
 }
 	.modulecore {
 		padding: 10px 20px;
@@ -492,7 +491,7 @@ input.full-width {
 		}
 		
 		.modules .handle {
-			background: #333;
+			background: #666;
 			width: 25%;
 			margin-top: -34px;
 			float:right;
@@ -760,8 +759,111 @@ ol {}
 				margin:0px;
 			}
 
+input[type=text] {
+	padding: 5px !important;
+}
+
 /**  Page-specific **/
 
+#create_content {}
+	#create_content #create_content_title {
+		font-size: 18px;
+	}
+	
+	#create_content .viewpost {
+		float:right;
+		color: #fff;
+		padding: 10px;
+		background: #333;
+		line-height: 11px;
+		font-size: 12px;
+		font-weight: normal;
+		margin: 0px;
+		margin-right: -10px;
+		border-radius: 3px;
+		border: 0px;
+		text-shadow: none;
+	}
+		#create_content .viewpost:hover {
+			background:#666;
+		}
+	#create_content label {}
+	
+	#create_content textarea {
+		min-height: 300px;
+	}
+
+	#create_content .pagesplitter {
+		text-align: center;
+		width: 100%;
+	}
+		#create_content .pagesplitter .splitterinside {
+			text-align:left;
+			background: #E0DDD6;
+			padding: 10px 10px 10px;
+			margin: 0px 0px 20px;
+		}
+		.pagesplitter .splitterinside label {
+			padding: 10px;
+			display:inline-block;
+			width: 100%;
+		}
+			.pagesplitter .splitterinside label + label {
+				border-top: 1px solid #eCE9E2;
+			}
+						
+			.pagesplitter .splitterinside label input, .pagesplitter .splitterinside label select {
+				display:inline-block;
+				margin-left: 10px;
+				margin-bottom: 0px;
+			}
+			
+			.pagesplitter .splitterinside label select {
+				padding: 5px;
+			}
+			
+	#create_content input[type=submit] {
+		color: #fff;
+		padding: 10px;
+		background: #333;
+		line-height: 11px;
+		font-size: 12px;
+		font-weight: bold;
+		margin: 0px;
+		border-radius: 3px;
+		border: 0px;
+		text-shadow: none;
+	}
+		#create_content input[type=submit] + input[type=submit] {
+			float:right;
+		}
+		
+		#create_content input[type=submit]:hover {
+			background:#666;
+		}
+		
+	#create_content #mediatabs, #create_content .tabcontrol {
+		display:inline-block;
+		margin-bottom: 0px;
+	}
+		#create_content #mediatabs li, #create_content .tabcontrol li {
+			float:left;		
+			padding: 5px 10px 5px 5px;
+			margin-bottom: 0px;
+		}
+		
+		#create_content #mediatabs li a, #create_content .tabcontrol li a {
+			display:inline-block;
+			background-repeat: no-repeat;
+			background-position: left;
+			text-indent: 20px;
+			font-size: 12px;
+		}
+			#create_content .tabcontrol li a {
+				text-indent: 0px;
+				padding-left: 5px;
+			}
+	
 #log_data {  /* this will do for now */
 	table-layout: fixed;
 }
