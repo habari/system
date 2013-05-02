@@ -483,22 +483,6 @@ var helpToggler = {
 	}
 }
 
-// Plugin Management
-var pluginManage = {
-	init: function() {
-		// Return if we're not on the plugins page
-		if (!$('.page-plugins').length) {return;}
-
-		$('.plugins .item').hover( function() {
-			$(this).find('#pluginconfigure:visible').parent().css('background', '#FAFAFA');
-		}, function() {
-			$(this).find('#pluginconfigure:visible').parent().css('background', '');
-	  	});
-	
-		helpToggler.init();
-	}
-};
-
 // Theme Management
 var themeManage = {
 	area_drop_options: {
@@ -1182,40 +1166,6 @@ var navigationDropdown = {
 };
 
 
-// DROPBUTTON
-var dropButton = {
-	init: function() {
-		var currentDropButton = '';
-		$('.dropbutton').hover( function(e) {
-			dropButton.currentDropButton = $(e.currentTarget);
-
-			// Clear any timers, let the button know it's being hovered
-			clearTimeout(dropButton.t1);
-			dropButton.showMenu();
-		}, function(e) {
-			// After mouse out, wait, then close
-			dropButton.t1 = setTimeout(dropButton.hideMenu, 500);
-		});
-	},
-
-	showMenu: function(element) {
-		// Close all open dropbuttons
-		$('.dropbutton').removeClass('hovering');
-
-		// Open this dropbutton
-		$(dropButton.currentDropButton).addClass('hovering');
-	},
-
-	hideMenu: function(element) {
-		// Fade out and close dropbutton
-		$(dropButton.currentDropButton).removeClass('hovering');
-
-		$('.carrot').removeClass('carrot');
-	}
-};
-
-
-
 // THE MENU
 var theMenu = {
 	init: function() {
@@ -1647,11 +1597,10 @@ $(window).load( function() {
 
 $(document).ready(function(){
 	// Initialize all sub-systems
-	dropButton.init();
 	theMenu.init();
 	dashboard.init();
 	itemManage.init();
-	pluginManage.init();
+	helpToggler.init();
 	themeManage.init();
 	liveSearch.init();
 	findChildren();
