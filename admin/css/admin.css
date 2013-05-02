@@ -417,7 +417,7 @@ input.full-width {
 }
 
 #welcome {
-	margin-top: 35px;
+	margin-top: 25px;
 	margin-bottom: 20px;
 	text-align: center;
 }
@@ -444,6 +444,7 @@ input.full-width {
 	background: #fff;
 	overflow:hidden;
 	border-radius: 5px;
+	margin-bottom: 10px;
 	box-shadow: 0px 0px 2px #aaa;
 }
 	.modulecore {
@@ -496,6 +497,7 @@ input.full-width {
 			margin-top: -34px;
 			float:right;
 		}
+		
 		.handle {
 			cursor: move;
 		}
@@ -1089,5 +1091,46 @@ body.login .humanMsg {
 	height: inherit;
 }
 
-/* import the responsive crap */
-@import url('repsonsive.css');
+/*
+* Skeleton V1.2
+* Copyright 2011, Dave Gamache
+* www.getskeleton.com
+* Free to use under the MIT license.
+* http://www.opensource.org/licenses/mit-license.php
+* 6/20/2012
+*/
+
+/* Smaller than standard 960 (devices and browsers) */
+@media only screen and (max-width: 959px) {
+	.handle { display:none; }
+	.modulecore h2, .modulecore h2 a { font-size: 18px; }
+	#create_content input[type="submit"] { margin-bottom: 10px; }
+}
+
+/* Tablet Portrait size to standard 960 (devices and browsers) */
+@media only screen and (min-width: 768px) and (max-width: 959px) {
+	.handle { display:none; }
+	.modulecore h2, .modulecore h2 a { font-size: 18px; }
+	#create_content input[type="submit"] { margin-bottom: 10px; }
+}
+
+/* All Mobile Sizes (devices and browser) */
+@media only screen and (max-width: 767px) {
+	.handle { display:none; }
+	.modulecore h2, .modulecore h2 a { font-size: 18px; }
+	#create_content input[type="submit"] { margin-bottom: 10px; }
+}
+
+/* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+	.handle { display:none; }
+	.modulecore h2, .modulecore h2 a { font-size: 18px; }
+	#create_content input[type="submit"] { margin-bottom: 10px; }
+}
+
+/* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
+@media only screen and (max-width: 479px) {
+	.handle { display:none; }
+	.modulecore h2, .modulecore h2 a { font-size: 18px; }
+	#create_content input[type="submit"] { margin-bottom: 10px; }
+}

@@ -6,6 +6,7 @@ header( 'X-Frame-Options: DENY' );
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width">
 	<title><?php Options::out('title'); ?> &middot; <?php echo $admin_title; ?></title>
 	<link rel="icon" type="image/png" href="<?php echo $theme->get_url('/images/habari.favicon.png'); ?>">
 	<script type="text/javascript">
