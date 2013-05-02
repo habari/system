@@ -4,8 +4,8 @@
 	</ul>
 
 	<?php $ct =0;foreach($controls as $tabcontent):$ct++;?>
-		<div id="tab_<?= $_control->get_id() ?>_<?= $ct ?>" class="splitter">
-			<div class="splitterinside"><?= $tabcontent ?></div>
+		<div id="tab_<?= $_control->get_id() ?>_<?= $ct ?>" <?= $_template_attributes['tab_div'] ?>>
+			<div <?= $_template_attributes['tab_div_inside'] ?>><?= $tabcontent ?></div>
 		</div>
 	<?php endforeach; ?>
 </div>

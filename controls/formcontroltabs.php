@@ -11,6 +11,8 @@ class FormControlTabs extends FormContainer
 	{
 		$this->properties['class'][] = 'container';
 		$this->properties['class'][] = 'pagesplitter';
+		$this->add_template_class('tab_div_inside', 'splitterinside');
+		$this->add_template_class('tab_div', 'splitter');
 	}
 
 
@@ -23,18 +25,14 @@ class FormControlTabs extends FormContainer
 	function get( Theme $theme )
 	{
 		$this->settings['ignore_name'] = true;
+		$controls = array();
 		foreach ( $this->controls as $control ) {
+			if($class = $this->get_setting('class_each', '')) {
+				$control->add_class($class);
+			}
 			if ( $control instanceof FormContainer ) {
-				$content = '';
-				foreach ( $control->controls as $subcontrol ) {
-					// There should be a better way to know if a control will produce actual output,
-					// but this instanceof is ok for now:
-					if ( $content != '' && !( $subcontrol instanceof FormControlHidden ) ) {
-						$content .= '<hr>';
-					}
-					$content .= $subcontrol->get( $theme );
-				}
-				$controls[$control->caption] = $content;
+				$control->set_template($this->get_setting('tab_template', 'control.fieldset.fortabs'));
+				$controls[$control->caption] = $control->get($theme);
 			}
 		}
 		$this->vars['controls'] = $controls;

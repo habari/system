@@ -9,11 +9,10 @@
  */
 ?>
 <div <?= $_template_attributes['div'] ?>>
-	<?= $first->get($theme); ?><?php if(count($actions) > 0): ?><a href="#" class="dropdown"><span class="arrow icon-circle-arrow-down"></span></a>
 	<ul <?= $_template_attributes['ul'] ?> >
+		<li><?= $first->get($theme); ?></li>
 		<?php foreach($actions as $action): ?>
 			<li><?= $action->get($theme); ?></li>
 		<?php endforeach; ?>
 	</ul>
-	<?php endif; ?>
 </div>
