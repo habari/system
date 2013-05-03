@@ -64,7 +64,9 @@ class Monolith extends Theme
 		if(!isset($available_modules)) {
 			$available_modules = Plugins::filter('dashboard_block_list', array());
 		}
-		$block->_title = $available_modules[$block->type];
+		if( isset( $available_modules[$block->type] ) ) {
+			$block->_title = $available_modules[$block->type];
+		}
 	}
 }
 ?>
