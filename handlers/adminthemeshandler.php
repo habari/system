@@ -207,7 +207,8 @@ class AdminThemesHandler extends AdminHandler
 			$msg = json_encode( _t( 'A new block must first have a name.' ) );
 
 			echo '<script type="text/javascript">
-				alert(' . $msg . ');
+				//alert(' . $msg . ');
+				human_msg.display_msg(' . $msg . ');
 			</script>';
 		}
 		else {
@@ -362,6 +363,18 @@ class AdminThemesHandler extends AdminHandler
 		$all_block_instances = DB::get_results( 'SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block' );
 		$block_instances = array();
 		$invalid_block_instances = array();
+
+		// get dashboard block instances from plugins that may not be active
+		$dash_blocks_instances = array();
+		$scopes = $this->theme->get_scopes( 'dashboard' );
+		foreach( $scopes as $scope ) {
+			$dash_blocks_instances = array_merge( $dash_blocks, $this->theme->get_blocks( 'dashboard', $scope->id, $this->theme ) );
+		}
+		$dash_blocks_instances = array_merge( $dash_blocks_instances, $this->theme->get_blocks( 'dashboard', 0, $this->theme ) );
+		foreach( $dash_blocks_instances as $dash_instance) {
+			$dash_blocks[$dash_instance->type] = $dash_instance->type;
+		}
+
 		foreach($all_block_instances as $instance) {
 			if(isset($block_types[$instance->type])) {
 				$block_instances[] = $instance;
