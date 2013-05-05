@@ -980,9 +980,7 @@ class Posts extends \ArrayObject implements IsContent
 	}
 
 	/**
-	 * function publish_scheduled_posts
-	 *
-	 * Callback function to publish scheduled posts
+	 * Callback function to publish scheduled posts, executed on cron
 	 */
 	public static function publish_scheduled_posts( )
 	{
