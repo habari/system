@@ -1030,7 +1030,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$settings->append( FormControlLabel::wrap(_t( 'Comments Allowed' ), FormControlCheckbox::create('comments_enabled')->set_value($this->info->comments_disabled ? false : true)));
 
 		$settings->append( FormControlLabel::wrap(_t( 'Publication Time' ), FormControlText::create('pubdate')->set_value($this->pubdate->format( 'Y-m-d H:i:s' ))));
-		//$settings->pubdate->helptext = _t( 'YYYY-MM-DD HH:MM:SS' );  // @todo figure out a clean way to do help text on a control -- a new FormControlLabel-like wrapper?
+		$settings->pubdate->set_helptext( _t( 'YYYY-MM-DD HH:MM:SS' ) );
 
 		$settings->append( FormControlData::create('updated')->set_value($this->updated->int) );
 
