@@ -1128,7 +1128,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		if ( $form->content_type->value != $post->content_type && ( $user->cannot( $type ) || ! $user->can_any( array( 'own_posts' => 'edit', 'post_any' => 'edit', $type => 'edit' ) ) ) ) {
 			Session::error( _t( 'Changing content types is not allowed' ) );
 			// @todo This isn't ideal at all, since it loses all of the changes...
-			Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
+			Utils::redirect( URL::get( 'display_publish', $post, false ) );
 			exit;
 		}
 
@@ -1138,7 +1138,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			$type = 'post_'  . Post::type_name( $form->content_type->value );
 			if ( ACL::user_cannot( $user, $type ) || ( ! ACL::user_can( $user, 'post_any', 'create' ) && ! ACL::user_can( $user, $type, 'create' ) ) ) {
 				Session::error( _t( 'Creating that post type is denied' ) );
-				Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
+				Utils::redirect( URL::get( 'display_publish', $post, false) );
 				exit;
 			}
 
@@ -1151,14 +1151,14 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			$type = 'post_'  . Post::type_name( $form->content_type->value );
 			if ( ! ACL::access_check( $post->get_access(), 'edit' ) ) {
 				Session::error( _t( 'Editing that post type is denied' ) );
-				Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
+				Utils::redirect( URL::get( 'display_publish', $post, false) );
 				exit;
 			}
 
 			// Verify that the post hasn't already been updated since the form was loaded
 			if ( $post->modified != $form->modified->value ) {
 				Session::notice( _t( 'The post %1$s was updated since you made changes.  Please review those changes before overwriting them.', array( sprintf( '<a href="%1$s">\'%2$s\'</a>', $post->permalink, Utils::htmlspecialchars( $post->title ) ) ) ) );
-				Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
+				Utils::redirect( URL::get( 'display_publish', $post, false ) );
 				exit;
 			}
 
@@ -1227,7 +1227,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$postname = sprintf( '<a href="%1$s">\'%2$s\'</a>', $permalink, Utils::htmlspecialchars( $post->title ) );
 		$status = Post::status_name( $post->status );
 		Session::notice( _t( 'The post !postname has been saved as !status.', array( '!postname' => $postname, '!status' => $status ) ) );
-		Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
+		Utils::redirect( URL::get( 'display_publish', $post, false) );
 	}
 
 	/**
@@ -1240,7 +1240,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			$post->delete();
 			Session::notice( _t( 'Deleted the %1$s titled "%2$s".', array( Post::type_name( $post->content_type ), Utils::htmlspecialchars( $post->title ) ) ) );
 		}
-		Utils::redirect( URL::get( 'admin', 'page=posts&type=' . $post->content_type ) );
+		Utils::redirect( URL::get( 'display_posts', 'type=' . $post->content_type ) );
 	}
 
 
@@ -1415,7 +1415,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 */
 	private function get_editlink()
 	{
-		return URL::get( 'admin', 'page=publish&id=' . $this->id );
+		return URL::get( 'display_publish', $this, false );
 	}
 
 	/**

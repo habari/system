@@ -624,7 +624,7 @@ class Comment extends QueryRecord implements IsContent
 	 */
 	private function get_editlink()
 	{
-		return URL::get( 'admin', "page=comment&id={$this->id}" );
+		return URL::get( 'edit_comment', $this, false );
 	}
 
 	/**

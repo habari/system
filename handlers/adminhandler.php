@@ -93,9 +93,33 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Dispatches the request to the defined method. (ie: post_{page})
 	 */
-	public function act_admin()
+	public function act($action)
 	{
-		$page = ( isset( $this->handler_vars['page'] ) && !empty( $this->handler_vars['page'] ) ) ? $this->handler_vars['page'] : 'dashboard';
+
+		if ( null === $this->handler_vars ) {
+			$this->handler_vars = new SuperGlobal( array() );
+		}
+		$this->action = $action;
+
+		$action_method = 'act_' . $action;
+		$before_action_method = 'before_' . $action_method;
+		$after_action_method = 'after_' . $action_method;
+
+		if ( method_exists( $this, $before_action_method ) ) {
+			$this->$before_action_method();
+		}
+		/**
+		 * Plugin action to allow plugins to execute before a certain
+		 * action is triggered
+		 *
+		 * @see ActionHandler::$action
+		 * @action before_act_{$action}
+		 */
+		Plugins::act( $before_action_method, $this );
+
+		// The body of this function IS the action method, do it.
+		// If I was smarter, I'd pass this code as a closure to the parent act() via a parameter for DRY, but I'm lazy, ha ha
+		$page = $action;
 		$page = filter_var( $page, FILTER_SANITIZE_STRING );
 		if ( isset( $this->handler_vars['content_type'] ) ) {
 			$type_name = $this->handler_vars['content_type'];
@@ -155,6 +179,18 @@ class AdminHandler extends ActionHandler
 					$this->get_blank( _t( 'The page you were looking for was not found.' ) );
 				}
 				break;
+		}
+
+		/**
+		 * Plugin action to allow plugins to execute after a certain
+		 * action is triggered
+		 *
+		 * @see ActionHandler::$action
+		 * @action before_act_{$action}
+		 */
+		Plugins::act( $after_action_method );
+		if ( method_exists( $this, $after_action_method ) ) {
+			$this->$after_action_method();
 		}
 	}
 
@@ -304,11 +340,11 @@ class AdminHandler extends ActionHandler
 			$singular = Plugins::filter( 'post_type_display', $type, 'singular' );
 
 			$createperm = array( 'post_' . $type => ACL::get_bitmask( 'create' ), 'post_any' => ACL::get_bitmask( 'create' ) );
-			$createmenu['create_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => _t( 'Create a new %s', array( $singular ) ), 'text' => $singular, 'access' => $createperm );
+			$createmenu['create_' . $typeint] = array( 'url' => URL::get( 'display_publish', 'content_type_name=' . $type ), 'title' => _t( 'Create a new %s', array( $singular ) ), 'text' => $singular, 'access' => $createperm );
 			$createperms = array_merge( $createperms, $createperm );
 
 			$manageperm = array( 'post_' . $type => array( ACL::get_bitmask( 'edit' ), ACL::get_bitmask( 'delete' ) ), 'own_posts'=>array( ACL::get_bitmask( 'edit' ), ACL::get_bitmask( 'delete' ) ), 'post_any'=>array( ACL::get_bitmask( 'edit' ), ACL::get_bitmask( 'delete' ) ) );
-			$managemenu['manage_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => _t( 'Manage %s', array( $plural ) ), 'text' => $plural, 'access'=> $manageperm );
+			$managemenu['manage_' . $typeint] = array( 'url' => URL::get( 'display_posts', 'type=' . $typeint ), 'title' => _t( 'Manage %s', array( $plural ) ), 'text' => $plural, 'access'=> $manageperm );
 			$manageperms = array_merge( $manageperms, $manageperm );
 
 			$createmenu['create_' . $typeint]['hotkey'] = $hotkey;
@@ -329,17 +365,17 @@ class AdminHandler extends ActionHandler
 		$adminmenu = array(
 			'create' => array( 'url' => '', 'title' => _t( 'Create content' ), 'text' => _t( 'New' ), 'hotkey' => 'N', 'submenu' => $createmenu ),
 			'manage' => array( 'url' => '', 'title' => _t( 'Manage content' ), 'text' => _t( 'Manage' ), 'hotkey' => 'M', 'submenu' => $managemenu ),
-			'comments' => array( 'url' => URL::get( 'admin', 'page=comments' ), 'title' => _t( 'Manage comments' ), 'text' => _t( 'Comments' ), 'hotkey' => 'C', 'access' => array( 'manage_all_comments' => true, 'manage_own_post_comments' => true ) ),
-			'tags' => array( 'url' => URL::get( 'admin', 'page=tags' ), 'title' => _t( 'Manage tags' ), 'text' => _t( 'Tags' ), 'hotkey' => 'A', 'access'=>array( 'manage_tags'=>true ), 'class' => 'over-spacer' ),
-			'dashboard' => array( 'url' => URL::get( 'admin', 'page=' ), 'title' => _t( 'View your user dashboard' ), 'text' => _t( 'Dashboard' ), 'hotkey' => 'D', 'class' => 'under-spacer' ),
-			'options' => array( 'url' => URL::get( 'admin', 'page=options' ), 'title' => _t( 'View and configure site options' ), 'text' => _t( 'Options' ), 'hotkey' => 'O', 'access'=>array( 'manage_options'=>true ) ),
-			'themes' => array( 'url' => URL::get( 'admin', 'page=themes' ), 'title' => _t( 'Preview and activate themes' ), 'text' => _t( 'Themes' ), 'hotkey' => 'T', 'access'=>array( 'manage_theme'=>true ) ),
-			'plugins' => array( 'url' => URL::get( 'admin', 'page=plugins' ), 'title' => _t( 'Activate, deactivate, and configure plugins' ), 'text' => _t( 'Plugins' ), 'hotkey' => 'P', 'access'=>array( 'manage_plugins'=>true, 'manage_plugins_config' => true ) ),
-			'import' => array( 'url' => URL::get( 'admin', 'page=import' ), 'title' => _t( 'Import content from another site' ), 'text' => _t( 'Import' ), 'hotkey' => 'I', 'access'=>array( 'manage_import'=>true ) ),
-			'users' => array( 'url' => URL::get( 'admin', 'page=users' ), 'title' => _t( 'View and manage users' ), 'text' => _t( 'Users' ), 'hotkey' => 'U', 'access'=>array( 'manage_users'=>true ) ),
-			'profile' => array( 'url' => URL::get( 'admin', 'page=user' ), 'title' => _t( 'Manage your user profile' ), 'text' => _t( 'My Profile' ), 'hotkey' => 'Y', 'access'=>array( 'manage_self'=>true, 'manage_users'=>true ) ),
-			'groups' => array( 'url' => URL::get( 'admin', 'page=groups' ), 'title' => _t( 'View and manage groups' ), 'text' => _t( 'Groups' ), 'hotkey' => 'G', 'access'=>array( 'manage_groups'=>true ) ),
-			'logs' => array( 'url' => URL::get( 'admin', 'page=logs' ), 'title' => _t( 'View system log messages' ), 'text' => _t( 'Logs' ), 'hotkey' => 'L', 'access'=>array( 'manage_logs'=>true ), 'class' => 'over-spacer' ) ,
+			'comments' => array( 'url' => URL::get( 'display_comments' ), 'title' => _t( 'Manage comments' ), 'text' => _t( 'Comments' ), 'hotkey' => 'C', 'access' => array( 'manage_all_comments' => true, 'manage_own_post_comments' => true ) ),
+			'tags' => array( 'url' => URL::get( 'display_tags' ), 'title' => _t( 'Manage tags' ), 'text' => _t( 'Tags' ), 'hotkey' => 'A', 'access'=>array( 'manage_tags'=>true ), 'class' => 'over-spacer' ),
+			'dashboard' => array( 'url' => URL::get( 'display_dashboard' ), 'title' => _t( 'View your user dashboard' ), 'text' => _t( 'Dashboard' ), 'hotkey' => 'D', 'class' => 'under-spacer' ),
+			'options' => array( 'url' => URL::get( 'display_options' ), 'title' => _t( 'View and configure site options' ), 'text' => _t( 'Options' ), 'hotkey' => 'O', 'access'=>array( 'manage_options'=>true ) ),
+			'themes' => array( 'url' => URL::get( 'display_themes' ), 'title' => _t( 'Preview and activate themes' ), 'text' => _t( 'Themes' ), 'hotkey' => 'T', 'access'=>array( 'manage_theme'=>true ) ),
+			'plugins' => array( 'url' => URL::get( 'display_plugins' ), 'title' => _t( 'Activate, deactivate, and configure plugins' ), 'text' => _t( 'Plugins' ), 'hotkey' => 'P', 'access'=>array( 'manage_plugins'=>true, 'manage_plugins_config' => true ) ),
+			'import' => array( 'url' => URL::get( 'display_import' ), 'title' => _t( 'Import content from another site' ), 'text' => _t( 'Import' ), 'hotkey' => 'I', 'access'=>array( 'manage_import'=>true ) ),
+			'users' => array( 'url' => URL::get( 'display_users' ), 'title' => _t( 'View and manage users' ), 'text' => _t( 'Users' ), 'hotkey' => 'U', 'access'=>array( 'manage_users'=>true ) ),
+			'profile' => array( 'url' => URL::get( 'own_user_profile' ), 'title' => _t( 'Manage your user profile' ), 'text' => _t( 'My Profile' ), 'hotkey' => 'Y', 'access'=>array( 'manage_self'=>true, 'manage_users'=>true ) ),
+			'groups' => array( 'url' => URL::get( 'display_groups' ), 'title' => _t( 'View and manage groups' ), 'text' => _t( 'Groups' ), 'hotkey' => 'G', 'access'=>array( 'manage_groups'=>true ) ),
+			'logs' => array( 'url' => URL::get( 'display_logs' ), 'title' => _t( 'View system log messages' ), 'text' => _t( 'Logs' ), 'hotkey' => 'L', 'access'=>array( 'manage_logs'=>true ), 'class' => 'over-spacer' ) ,
 			'logout' => array( 'url' => URL::get( 'auth', 'page=logout' ), 'title' => _t( 'Log out of the administration interface' ), 'text' => _t( 'Logout' ), 'hotkey' => 'X', 'class' => 'under-spacer' ),
 		);
 

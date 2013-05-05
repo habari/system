@@ -6,9 +6,9 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 <div class="container navigation">
 	<span>
 		<select name="navigationdropdown" onchange="navigationDropdown.changePage();" tabindex="1">
-			<option value="<?php echo URL::get('admin', 'page=groups'); ?>"><?php _e('All Groups'); ?></option>
+			<option value="<?php echo URL::get('display_groups'); ?>"><?php _e('All Groups'); ?></option>
 			<?php foreach ( $groups as $group_nav ): ?>
-				<option value="<?php echo URL::get('admin', 'page=group&id=' . $group_nav->id); ?>"<?php if ($group_nav->id == $id): ?> selected="selected"<?php endif; ?>><?php echo $group_nav->name; ?></option>
+				<option value="<?php echo URL::get('display_group', 'id=' . $group_nav->id); ?>"<?php if ($group_nav->id == $id): ?> selected="selected"<?php endif; ?>><?php echo $group_nav->name; ?></option>
 			<?php endforeach; ?>
 		</select>
 	</span>
@@ -24,7 +24,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 <p><?php echo sprintf( _n( 'Group %1$s has <strong>%2$d</strong> member', 'Group %1$s has <strong>%2$d</strong> members', count( $members ) ), "<strong>$group->name</strong>", count( $members ) ); ?></p>
 </div>
 
-<form name="update-group" id="update-group" action="<?php URL::out('admin', 'page=group'); ?>" method="post">
+<form name="update-group" id="update-group" action="" method="post">
 <div class="container settings group groupmembers" id="groupmembers">
 
 	<h2><?php _e('Group Members'); ?></h2>

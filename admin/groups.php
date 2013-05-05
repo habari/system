@@ -8,7 +8,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 		<select name="navigationdropdown" onchange="navigationDropdown.changePage();" tabindex="1">
 			<option value="all"><?php _e('All Groups'); ?></option>
 			<?php foreach($groups as $group): ?>
-				<option value="<?php echo URL::get('admin', 'page=group&id=' . $group->id); ?>"><?php echo $group->name; ?></option>
+				<option value="<?php echo URL::get('display_group', 'id=' . $group->id); ?>"><?php echo $group->name; ?></option>
 			<?php endforeach; ?>
 		</select>
 	</span>
@@ -31,10 +31,10 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 					$users[] = '<strong>' . $user->displayname . '</strong>';
 				}
 				elseif ( $user->username == User::identify()->username ) {
-					$users[] = '<strong><a href="' . URL::get( 'admin', 'page=user' ) . '">' . $user->displayname . '</a></strong>';
+					$users[] = '<strong><a href="' . URL::get( 'own_user_profile' ) . '">' . $user->displayname . '</a></strong>';
 				}
 				else {
-					$users[] = '<strong><a href="' . Url::get( 'user_profile', array( 'page' => 'user', 'user' => $user->username ) ) . '">' . $user->displayname . '</a></strong>';
+					$users[] = '<strong><a href="' . Url::get( 'user_profile', array( 'user' => $user->username ) ) . '">' . $user->displayname . '</a></strong>';
 				}
 			}
 			include('groups_item.php');

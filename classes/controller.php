@@ -91,7 +91,7 @@ class Controller extends Singleton
 
 	/**
 	 * A convenience method for returning a handler variable (handler_var).
-	 * This includes parameters set on the url, and fields submitted by POST.
+	 * This includes only parameters set on the url.
 	 * The alternative to this, while possible to write, is just too long.
 	 * @param string $name The name of the variable to return.
 	 * @param mixed $default A default value to return if the variable is not set.
@@ -191,7 +191,7 @@ class Controller extends Singleton
 
 		/* Also, we musn't forget to add the GET and POST vars into the action's settings array */
 		$handler_vars = new SuperGlobal( $controller->handler->handler_vars );
-		$handler_vars = $handler_vars->merge( $_GET, $_POST );
+		//$handler_vars = $handler_vars->merge( $_GET, $_POST );
 		$controller->handler->handler_vars = $handler_vars;
 		return true;
 	}
