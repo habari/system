@@ -5,7 +5,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 <ul>
 	<?php foreach (Users::get_all() as $user) {
 		if ( $user->username == $currentuser->username ) {
-			$url = Url::get( 'admin', 'page=user' );
+			$url = Url::get( 'own_user_profile' );
 		}
 		else {
 			$url = Url::get( 'user_profile', array( 'page' => 'user', 'user' => $user->username ) );

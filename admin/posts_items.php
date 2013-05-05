@@ -16,7 +16,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 		<?php } ?>
 		<span class="checkbox title">
 			<?php if ( ACL::access_check( $post_permissions, 'edit' ) ) { ?>
-				<a href="<?php echo URL::out('admin', 'page=publish&id=' . $post->id); ?>" class="title" title="<?php _e('Edit \'%s\'', array( Utils::htmlspecialchars( $post->title ) ) ) ?>"><?php echo ($post->title == '') ? '&nbsp;' : Utils::htmlspecialchars( $post->title ); ?></a>
+				<a href="<?php echo URL::out('display_publish', $post, false); ?>" class="title" title="<?php _e('Edit \'%s\'', array( Utils::htmlspecialchars( $post->title ) ) ) ?>"><?php echo ($post->title == '') ? '&nbsp;' : Utils::htmlspecialchars( $post->title ); ?></a>
 			<?php } else { ?>
 				<?php echo ($post->title == '') ? '&nbsp;' : Utils::htmlspecialchars( $post->title ); ?>
 			<?php } ?>
@@ -30,7 +30,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 		$post_actions = FormControlDropbutton::create('post_actions');
 		$post_actions->append(
 			FormControlSubmit::create('edit')->set_caption(_t('Edit'))
-				->set_url(URL::get( 'admin', 'page=publish&id=' . $post->id ))
+				->set_url(URL::get( 'display_publish', $post, false ))
 				->set_property('title', _t( 'Edit \'%s\'', array( $post->title ) ) )
 				->set_enable(function($control) use($post) {
 					return ACL::access_check( $post->get_access(), 'edit' );

@@ -126,7 +126,7 @@ class AdminCommentsHandler extends AdminHandler
 					if ( $form->$id_one->value != null || $form->$id_two->value != null ) {
 						if ( $action == 'delete' ) {
 							$comment->delete();
-							Utils::redirect( URL::get( 'admin', 'page=comments' ) );
+							Utils::redirect( URL::get( 'display_comments' ) );
 						}
 						if ( $action != 'save' ) {
 							foreach ( Comment::list_comment_statuses() as $status ) {
@@ -165,7 +165,7 @@ class AdminCommentsHandler extends AdminHandler
 			$this->display( 'comment' );
 		}
 		else {
-			Utils::redirect( URL::get( 'admin', 'page=comments' ) );
+			Utils::redirect( URL::get( 'display_comments' ) );
 		}
 	}
 
@@ -437,7 +437,7 @@ class AdminCommentsHandler extends AdminHandler
 
 		/* Standard actions */
 		$baseactions['delete'] = array( 'url' => 'javascript:itemManage.update(\'delete\',__commentid__);', 'title' => _t( 'Delete this comment' ), 'label' => _t( 'Delete' ), 'access' => 'delete' );
-		$baseactions['edit'] = array( 'url' => URL::get( 'admin', 'page=comment&id=__commentid__' ), 'title' => _t( 'Edit this comment' ), 'label' => _t( 'Edit' ), 'access' => 'edit' );
+		$baseactions['edit'] = array( 'url' => URL::get( 'edit_comment', 'id=__commentid__' ), 'title' => _t( 'Edit this comment' ), 'label' => _t( 'Edit' ), 'access' => 'edit' );
 
 		/* Allow plugins to apply actions */
 		$actions = Plugins::filter( 'comments_actions', $baseactions, $this->theme->comments );

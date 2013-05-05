@@ -90,8 +90,8 @@ class AdminThemesHandler extends AdminHandler
 	 */
 	public function get_activate_theme()
 	{
-		$theme_name = $this->handler_vars['theme_name'];
-		$theme_dir = $this->handler_vars['theme_dir'];
+		$theme_name = $_GET['theme_name'];
+		$theme_dir = $_GET['theme_dir'];
 		$activated = false;
 		if ( isset( $theme_name ) && isset( $theme_dir ) ) {
 			$activated = Themes::activate_theme( $theme_name, $theme_dir );
@@ -99,7 +99,7 @@ class AdminThemesHandler extends AdminHandler
 		if($activated) {
 			Session::notice( _t( "Activated theme '%s'", array( $theme_name ) ) );
 		}
-		Utils::redirect( URL::get( 'admin', 'page=themes' ) );
+		Utils::redirect( URL::get( 'display_themes' ) );
 	}
 
 	/**
@@ -107,8 +107,8 @@ class AdminThemesHandler extends AdminHandler
 	 */
 	public function get_preview_theme()
 	{
-		$theme_name = $this->handler_vars['theme_name'];
-		$theme_dir = $this->handler_vars['theme_dir'];
+		$theme_name = $_GET['theme_name'];
+		$theme_dir = $_GET['theme_dir'];
 		if ( isset( $theme_name )  && isset( $theme_dir ) ) {
 			if ( Themes::get_theme_dir() == $theme_dir ) {
 				Themes::cancel_preview();
@@ -120,7 +120,7 @@ class AdminThemesHandler extends AdminHandler
 				}
 			}
 		}
-		Utils::redirect( URL::get( 'admin', 'page=themes' ) );
+		Utils::redirect( URL::get( 'display_themes' ) );
 	}
 
 	/**

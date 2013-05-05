@@ -480,13 +480,13 @@ class Menus extends Plugin
 	{
 		$action = isset($_GET[ 'action' ]) ? $_GET[ 'action' ] : 'create';
 		$term = null;
-		if ( isset( $handler->handler_vars[ 'term' ] ) ) {
-			$term = Term::get( intval( $handler->handler_vars[ 'term' ] ) );
+		if ( isset( $_GET[ 'term' ] ) ) {
+			$term = Term::get( intval( $_GET[ 'term' ] ) );
 			$object_types = $term->object_types();
 			$action = $object_types[0]->type; // the 'menu_whatever' we seek should be the only element in the array.
-			$form_action = URL::get( 'admin', array( 'page' => 'menu_iframe', 'menu' => $handler->handler_vars[ 'menu' ], 'term' => $handler->handler_vars[ 'term' ], 'action' => "$action" ) );
+			$form_action = URL::get( 'admin', array( 'page' => 'menu_iframe', 'menu' => $_GET[ 'menu' ], 'term' => $_GET[ 'term' ], 'action' => "$action" ) );
 		} else {
-			$form_action = URL::get( 'admin', array( 'page' => 'menu_iframe', 'menu' => $handler->handler_vars[ 'menu' ], 'action' => "$action" ) );
+			$form_action = URL::get( 'admin', array( 'page' => 'menu_iframe', 'menu' => $_GET[ 'menu' ], 'action' => "$action" ) );
 		}
 		$form = new FormUI(
 			'menu_item_edit',
@@ -498,7 +498,7 @@ class Menus extends Plugin
 			'onsubmit' => "return habari.menu_admin.submit_menu_item_edit(this)",
 		));
 		$form->on_success( array( $this, 'term_form_save' ) );
-		$form->append( FormControlHidden::create('menu') )->set_value($handler->handler_vars[ 'menu' ]);
+		$form->append( FormControlHidden::create('menu') )->set_value($_GET[ 'menu' ]);
 
 		$menu_types = $this->get_menu_type_data();
 
@@ -519,7 +519,7 @@ class Menus extends Plugin
 		if ( isset($form->has_result) ) {
 			switch ( $form->has_result ) {
 				case 'added':
-					$treeurl = URL::get( 'admin', array('page' => 'menus', 'menu' => $handler->handler_vars[ 'menu' ], 'action' => 'edit') ) . ' #edit_menu>*';
+					$treeurl = URL::get( 'admin', array('page' => 'menus', 'menu' => $_GET[ 'menu' ], 'action' => 'edit') ) . ' #edit_menu>*';
 					$msg = _t( 'Menu item added.' ); // @todo: update this to reflect if more than one item has been added, or reword entirely.
 					$theme->page_content .= <<< JAVSCRIPT_RESPONSE
 <script type="text/javascript">
@@ -529,7 +529,7 @@ $('#edit_menu').load('{$treeurl}', habari.menu_admin.init_form);
 JAVSCRIPT_RESPONSE;
 					break;
 				case 'updated':
-					$treeurl = URL::get( 'admin', array('page' => 'menus', 'menu' => $handler->handler_vars[ 'menu' ], 'action' => 'edit') ) . ' #edit_menu>*';
+					$treeurl = URL::get( 'admin', array('page' => 'menus', 'menu' => $_GET[ 'menu' ], 'action' => 'edit') ) . ' #edit_menu>*';
 					$msg = _t( 'Menu item updated.' ); // @todo: update this to reflect if more than one item has been added, or reword entirely.
 					$theme->page_content .= <<< JAVSCRIPT_RESPONSE
 <script type="text/javascript">
@@ -555,7 +555,7 @@ JAVSCRIPT_RESPONSE;
 		$action = isset($_GET[ 'action' ]) ? $_GET[ 'action' ] : 'create';
 		switch ( $action ) {
 			case 'edit':
-				$vocabulary = Vocabulary::get_by_id( intval( $handler->handler_vars[ 'menu' ] ) );
+				$vocabulary = Vocabulary::get_by_id( intval( $_GET[ 'menu' ] ) );
 				if ( $vocabulary == false ) {
 					$theme->page_content = '<h2>' . _t( 'Invalid Menu.' );
 					// that's it, we're done. Maybe we show the list of menus instead?
@@ -597,10 +597,10 @@ JAVSCRIPT_RESPONSE;
 					$form->append( FormControlStatic::create('buttons')->set_static('<div id="menu_item_button_container">' . $edit_items . '</div>') );
 					$form->append( FormControlSubmit::create('save')->set_caption( _t( 'Apply Changes' ) ) );
 				}
-				$delete_link = URL::get( 'admin', Utils::WSSE( array( 'page' => 'menus', 'action' => 'delete_menu', 'menu' => $handler->handler_vars[ 'menu' ] ) ) );
-				//$delete_link = URL::get( 'admin', array( 'page' => 'menus', 'action' => 'delete_menu', 'menu' => $handler->handler_vars[ 'menu' ] ) );
+				$delete_link = URL::get( 'admin', Utils::WSSE( array( 'page' => 'menus', 'action' => 'delete_menu', 'menu' => $_GET[ 'menu' ] ) ) );
+				//$delete_link = URL::get( 'admin', array( 'page' => 'menus', 'action' => 'delete_menu', 'menu' => $_GET[ 'menu' ] ) );
 				$form->append( FormControlStatic::create('deletebutton')->set_static('<a class="a_button" href="' . $delete_link . '">' . _t( 'Delete Menu' ) . '</a>') );
-				$form->append( FormControlHidden::create( 'menu' ) )->set_value($handler->handler_vars[ 'menu' ]);
+				$form->append( FormControlHidden::create( 'menu' ) )->set_value($_GET[ 'menu' ]);
 				$form->on_success( array( $this, 'rename_menu_form_save' ) );
 				$form->set_properties(array('onsubmit' => "return habari.menu_admin.submit_menu_update();"));
 				$theme->page_content .= $form->get();
@@ -621,7 +621,7 @@ JAVSCRIPT_RESPONSE;
 
 			case 'delete_menu':
 				if(Utils::verify_wsse($_GET, true)) {
-					$menu_vocab = Vocabulary::get_by_id( intval( $handler->handler_vars[ 'menu' ] ) );
+					$menu_vocab = Vocabulary::get_by_id( intval( $_GET[ 'menu' ] ) );
 					$menu_vocab->delete();
 					// log that it has been deleted?
 					Session::notice( _t( 'Menu deleted.' ) );
@@ -630,12 +630,12 @@ JAVSCRIPT_RESPONSE;
 				}
 				else {
 					Session::notice( _t( 'Menu deletion failed - please try again.' ) );
-					Utils::redirect(URL::get('admin', array('page' => 'menus', 'action' => 'edit', 'menu' => $handler->handler_vars[ 'menu' ])));
+					Utils::redirect(URL::get('admin', array('page' => 'menus', 'action' => 'edit', 'menu' => $_GET[ 'menu' ])));
 				}
 				break;
 
 			case 'delete_term':
-				$term = Term::get( intval( $handler->handler_vars[ 'term' ] ) );
+				$term = Term::get( intval( $_GET[ 'term' ] ) );
 				$menu_vocab = $term->vocabulary_id;
 				if(Utils::verify_wsse($_GET, true)) {
 					$term->delete();

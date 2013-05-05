@@ -4,10 +4,10 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 ?>
 <div class="item group" id="item-<?php echo $group->id; ?>">
 	<div>
-		<h4><a href="<?php echo URL::get('admin', 'page=group&id=' . $group->id) ?>" title="<?php _e('Edit group'); ?>"><?php echo $group->name; ?></a></h4>
+		<h4><a href="<?php echo URL::get('display_group', 'id=' . $group->id) ?>" title="<?php _e('Edit group'); ?>"><?php echo $group->name; ?></a></h4>
 		<ul class="dropbutton">
 			<?php $actions = array(
-				'edit' => array('url' => URL::get('admin', 'page=group&id=' . $group->id), 'title' => _t('Edit group'), 'label' => _t('Edit')),
+				'edit' => array('url' => URL::get('display_group', 'id=' . $group->id), 'title' => _t('Edit group'), 'label' => _t('Edit')),
 				'remove' => array('url' => 'javascript:itemManage.remove('. $group->id . ', \'group\');', 'title' => _t('Delete this group'), 'label' => _t('Delete'))
 			);
 			$actions = Plugins::filter('group_actions', $actions);
