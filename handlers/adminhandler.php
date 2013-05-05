@@ -98,13 +98,15 @@ class AdminHandler extends ActionHandler
 		$page = ( isset( $this->handler_vars['page'] ) && !empty( $this->handler_vars['page'] ) ) ? $this->handler_vars['page'] : 'dashboard';
 		$page = filter_var( $page, FILTER_SANITIZE_STRING );
 		if ( isset( $this->handler_vars['content_type'] ) ) {
-			$type = Plugins::filter( 'post_type_display', Post::type_name( $this->handler_vars['content_type'] ), 'singular' );
+			$type_name = $this->handler_vars['content_type'];
+			$type = Plugins::filter( 'post_type_display', Post::type_name( $type_name ), 'singular' );
 		}
 		elseif ( $page == 'publish' && isset( $this->handler_vars['id'] ) ) {
-			$type = Post::type_name( Post::get( array( 'status' => Post::status( 'any' ), 'id' => intval( $this->handler_vars['id'] ) ) )->content_type );
-			$type = Plugins::filter( 'post_type_display', $type, 'singular' );
+			$type_name = Post::type_name( Post::get( array( 'status' => Post::status( 'any' ), 'id' => intval( $this->handler_vars['id'] ) ) )->content_type );
+			$type = Plugins::filter( 'post_type_display', $type_name, 'singular' );
 		}
 		else {
+			$type_name = '';
 			$type = '';
 		}
 
@@ -112,7 +114,7 @@ class AdminHandler extends ActionHandler
 
 		// Access check to see if the user is allowed the requested page
 		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
-		if ( !$this->access_allowed( $page, $type ) ) {
+		if ( !$this->access_allowed( $page, $type_name ) ) {
 			Session::error( _t( 'Access to that page has been denied by the administrator.' ) );
 			$this->get_blank();
 		}
