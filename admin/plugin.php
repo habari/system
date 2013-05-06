@@ -128,10 +128,10 @@ namespace Habari;
 		} ?>
 	</div>
 
-	<?php if ( isset($this->engine_vars['configure']) && ($configure == $plugin['plugin_id']) ): ?>
+	<?php if ( isset($config) && ($config == true)): ?>
 	<div id="pluginconfigure">
 		<?php Plugins::plugin_ui( $configure, $configaction ); ?>
-		<a class="link_as_button" href="<?php URL::out( 'admin', 'page=plugins' ); ?>"><?php _e('Close'); ?></a>
+		<a class="link_as_button" href="<?php URL::out( 'display_plugins'); ?>"><?php _e('Close'); ?></a>
 	</div>
 	<?php endif; ?>
 

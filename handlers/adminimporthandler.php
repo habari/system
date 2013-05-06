@@ -78,7 +78,7 @@ class AdminImportHandler extends AdminHandler
 	public function post_import()
 	{
 		if ( !isset( $_POST['importer'] ) ) {
-			Utils::redirect( URL::get( 'admin', 'page=import' ) );
+			Utils::redirect( URL::get( 'display_import' ) );
 		}
 
 		$this->get_import();
@@ -97,7 +97,7 @@ class AdminImportHandler extends AdminHandler
 
 		if( count( $importers ) == 0 ) {
 			$form->append( FormControlStatic(' <p>' . _t( 'You do not currently have any import plugins installed.' ) . '</p>' ) );
-			$form->append( FormControlStatic(' <p>' . _t( 'Please <a href="%1$s">activate an import plugin</a> to enable importing.', array( URL::get( 'admin', 'page=plugins' ) ) ) . '</p>' ) );
+			$form->append( FormControlStatic(' <p>' . _t( 'Please <a href="%1$s">activate an import plugin</a> to enable importing.', array( URL::get( 'display_plugins' ) ) ) . '</p>' ) );
 		}
 		else {
 			$form->append( FormControlLabel::wrap( _t( 'Please choose the type of import to perform:' ),
