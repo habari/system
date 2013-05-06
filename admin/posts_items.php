@@ -44,7 +44,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 		$post_actions->append(
 			FormControlSubmit::create('delete')->set_caption(_t('Delete'))
 				->set_url('javascript:itemManage.remove('. $post->id . ', \'post\');')
-				->set_property('title', _t( 'Delete this item' ) )
+				->set_property('title', _t( 'Delete \'%s\'', array( $post->title ) ) )
 				->set_enable(function($control) use($post) {
 					return ACL::access_check( $post->get_access(), 'delete' );
 				})
