@@ -85,7 +85,7 @@
 
 <div class="container">
 	<h2><?php _e( "All Results" ); ?></h2>
-	<textarea rows = "<?php echo substr_count( $plaintext_output, "\n" ); ?>"><?php echo $plaintext_output; ?></textarea>
+	<textarea class="full-width" rows = "<?php echo substr_count( $plaintext_output, "\n" ); ?>"><?php echo $plaintext_output; ?></textarea>
 </div>
 
 <?php include('footer.php'); ?>
