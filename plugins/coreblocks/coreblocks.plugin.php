@@ -22,7 +22,6 @@ class CoreBlocks extends Plugin
 			'recent_comments' => _t( 'Recent Comments' ),
 			'recent_posts' => _t( 'Recent Posts' ),
 			'monthly_archives' => _t( 'Monthly Archives' ),
-			'category_archives' => _t( 'Category Archives' ),
 			'tag_archives' => _t( 'Tag Archives' ),
 			'meta_links' => _t( 'Meta Links' ),
 			'search_form' => _t( 'Search Form' ),
@@ -32,7 +31,6 @@ class CoreBlocks extends Plugin
 		foreach ( array_keys( $this->allblocks ) as $blockname ) {
 			$this->add_template( "block.$blockname", dirname( __FILE__ ) . "/block.$blockname.php" );
 		}
-		$this->add_template( "block.dropdown.category_archives", dirname( __FILE__ ) . "/block.dropdown.category_archives.php" );
 		$this->add_template( "block.dropdown.tag_archives", dirname( __FILE__ ) . "/block.dropdown.tag_archives.php" );
 		$this->add_template( "block.dropdown.monthly_archives", dirname( __FILE__ ) . "/block.dropdown.monthly_archives.php" );
 	}
