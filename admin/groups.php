@@ -45,7 +45,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 <div class="container addgroup">
 	<h2><?php _e('Add Group'); ?></h2>
 
-	<?php echo $add_group_form; ?>
+	<?php echo $add_group_form->get(); ?>
 
 </div>
 </form>

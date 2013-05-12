@@ -39,7 +39,7 @@ class AdminGroupsHandler extends AdminHandler
 		$groups = UserGroups::get_all();
 		$this->theme->groups = Plugins::filter('admin_groups_visible', $groups);
 
-		$this->theme->add_group_form = FormUI::build('add_group', 'add_group')->get();
+		$this->theme->add_group_form = FormUI::build('add_group', 'add_group');
 
 		$this->display( 'groups' );
 	}
