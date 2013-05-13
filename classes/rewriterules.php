@@ -58,7 +58,7 @@ class RewriteRules extends \ArrayObject
 			array( 'name' => 'display_group', 'parse_regex' => '#^admin/group/(?P<id>[0-9]+)/?$#i', 'build_str' => 'admin/group/{$id}', 'handler' => 'AdminGroupsHandler', 'action' => 'group', 'priority' => 4, 'description' => 'Manage a group' ),
 			array( 'name' => 'display_tags', 'parse_regex' => '#^admin/tags/?$#i', 'build_str' => 'admin/tags', 'handler' => 'AdminTagsHandler', 'action' => 'tags', 'priority' => 4, 'description' => 'Manage tags' ),
 			array( 'name' => 'display_logs', 'parse_regex' => '#^admin/logs/?$#i', 'build_str' => 'admin/logs', 'handler' => 'AdminLogsHandler', 'action' => 'logs', 'priority' => 4, 'description' => 'Manage logs' ),
-			array( 'name' => 'display_import', 'parse_regex' => '#^admin/import/?$#i', 'build_str' => 'admin/import', 'handler' => 'AdminimportHandler', 'action' => 'import', 'priority' => 4, 'description' => 'Manage importing content' ),
+			array( 'name' => 'display_import', 'parse_regex' => '#^admin/import/?$#i', 'build_str' => 'admin/import', 'handler' => 'AdminImportHandler', 'action' => 'import', 'priority' => 4, 'description' => 'Manage importing content' ),
 			array( 'name' => 'get_locale', 'parse_regex' => '#^admin/locale/?$#i', 'build_str' => 'admin/locale', 'handler' => 'AdminLocaleHandler', 'action' => 'locale', 'priority' => 4, 'description' => 'Fetch the locale data as javascript' ),
 			array( 'name' => 'display_sysinfo', 'parse_regex' => '#^admin/sysinfo/?$#i', 'build_str' => 'admin/sysinfo', 'handler' => 'AdminHandler', 'action' => 'sysinfo', 'priority' => 4, 'description' => 'Display system info' ),
 
