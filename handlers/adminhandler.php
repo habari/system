@@ -242,18 +242,6 @@ class AdminHandler extends ActionHandler
 		$sysinfo[ _t( 'Database' ) ] = DB::get_driver_name() . ' - ' . DB::get_driver_version();
 		$sysinfo[ _t( 'PHP Extensions' ) ] = implode( ', ', get_loaded_extensions() );
 		$sysinfo[ _t( 'PHP Configuration Settings' ) ] = implode( "<br>", Utils::get_ini_settings() );
-		if ( defined( 'PCRE_VERSION' ) ) {
-			$sysinfo[ _t( 'PCRE Version' ) ] = PCRE_VERSION;
-		}
-		else {
-			// probably PHP < 5.2.4
-			ob_start();
-			phpinfo( 8 );
-			$phpinfo = ob_get_contents();
-			ob_end_clean();
-			preg_match( '/PCRE Library Version.*class="v">(.*)$/mi', $phpinfo, $matches );
-			$sysinfo[ _t( 'PCRE Version' ) ] = $matches[ 1 ];
-		}
 		$sysinfo[ _t( 'Browser' ) ] = $_SERVER[ 'HTTP_USER_AGENT' ];
 		$this->theme->sysinfo = $sysinfo;
 
