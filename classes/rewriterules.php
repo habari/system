@@ -60,6 +60,7 @@ class RewriteRules extends \ArrayObject
 			array( 'name' => 'display_logs', 'parse_regex' => '#^admin/logs/?$#i', 'build_str' => 'admin/logs', 'handler' => 'AdminLogsHandler', 'action' => 'logs', 'priority' => 4, 'description' => 'Manage logs' ),
 			array( 'name' => 'display_import', 'parse_regex' => '#^admin/import/?$#i', 'build_str' => 'admin/import', 'handler' => 'AdminimportHandler', 'action' => 'import', 'priority' => 4, 'description' => 'Manage importing content' ),
 			array( 'name' => 'get_locale', 'parse_regex' => '#^admin/locale/?$#i', 'build_str' => 'admin/locale', 'handler' => 'AdminLocaleHandler', 'action' => 'locale', 'priority' => 4, 'description' => 'Fetch the locale data as javascript' ),
+			array( 'name' => 'display_sysinfo', 'parse_regex' => '#^admin/sysinfo/?$#i', 'build_str' => 'admin/sysinfo', 'handler' => 'AdminHandler', 'action' => 'sysinfo', 'priority' => 4, 'description' => 'Display system info' ),
 
 			array( 'name' => 'admin', 'parse_regex' => '#^admin(?:/?$|/(?P<page>[^/]*))/?$#i', 'build_str' => 'admin/({$page})', 'handler' => 'AdminHandler', 'action' => 'admin', 'priority' => 6, 'description' => 'An admin action' ),
 
