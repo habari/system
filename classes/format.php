@@ -247,26 +247,42 @@ class Format
 
 	/**
 	 * function and_list
-	 * Turns an array of strings into a friendly delimited string separated by commas and an "and"
-	 * @param array $array An array of strings
+	 * Formatting function (should be in Format class?)
+	 * Turns an array of tag names into a list with commas and an "and".
+	 * @param array $array An array of tag names
 	 * @param string $between Text to put between each element
-	 * @param string $between_last Text to put between the next-to-last element and the last element
-	 * @reutrn string The constructed string
+	 * @param string $between_last Text to put between the next to last element and the last element
+	 * @param boolean $sort_alphabetical Should the tags be sorted alphabetically by `term` first?
+	 * @return string HTML links with specified separators.
 	 */
-	public static function and_list( $array, $between = ', ', $between_last = null )
+	public static function and_list( $terms, $between = ', ', $between_last = null, $sort_alphabetical = false )
 	{
-		if ( ! is_array( $array ) ) {
-			$array = array( $array );
+		$array = array();
+		if ( !$terms instanceof Terms ) {
+			$terms = new Terms( $terms );
+		}
+
+		foreach ( $terms as $term ) {
+			$array[$term->term] = $term->term_display;
+		}
+
+		if ( $sort_alphabetical ) {
+			ksort( $array );
 		}
 
 		if ( $between_last === null ) {
-			// @locale The default string used between the last two items in a series (one, two, three *and* four).
+			// @locale The default string used between the last two items in a series of tags (one, two, three *and* four).
 			$between_last = _t( ' and ' );
 		}
 
+		$fn = function($a, $b) {
+			return $a;
+		};
+		
+		$array = array_map( $fn, $array, array_keys( $array ) );
 		$last = array_pop( $array );
 		$out = implode( $between, $array );
-		$out .= ($out == '') ? $last : $between_last . $last;
+		$out .= ( $out == '' ) ? $last : $between_last . $last;
 		return $out;
 	}
 
