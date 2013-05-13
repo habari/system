@@ -39,25 +39,6 @@
 </div>
 
 <div class="container">
-	<h2><?php _e( "User Classes" ); ?></h2>
-	<?php $plaintext_output .= "\n" . strtoupper( _t( "User Classes" ) ) . "\n"; ?>
-
-	<div class="manage">
-	<?php foreach ( $classinfo as $fullpath ) : ?>
-		<div class="item">
-			<?php echo $fullpath; 
-				$plaintext_output .= "$fullpath\n"; ?>
-		</div>
-
-	<?php endforeach; ?>
-	<?php if ( empty( $fullpath ) ) : ?>
-		<div class="item"><?php _e( "None found" ); 
-			$plaintext_output .= _t( "None found" ) . "\n"; ?></div>
-	<?php endif; ?>
-	</div>
-</div>
-
-<div class="container">
 	<h2><?php _e( "Plugin Information" ); ?></h2>
 	<?php $plaintext_output .= "\n" . strtoupper( _t( "Plugin Information" ) ); ?>
 
@@ -81,6 +62,25 @@
 	<?php endif; ?>
 	</div>
 	<?php endforeach; ?>
+</div>
+
+<div class="container">
+	<h2><?php _e( "User Classes" ); ?></h2>
+	<?php $plaintext_output .= "\n" . strtoupper( _t( "User Classes" ) ) . "\n"; ?>
+
+	<div class="manage">
+	<?php foreach ( $classinfo as $fullpath ) : ?>
+		<div class="item">
+			<?php echo $fullpath; 
+				$plaintext_output .= "$fullpath\n"; ?>
+		</div>
+
+	<?php endforeach; ?>
+	<?php if ( empty( $fullpath ) ) : ?>
+		<div class="item"><?php _e( "None found" ); 
+			$plaintext_output .= _t( "None found" ) . "\n"; ?></div>
+	<?php endif; ?>
+	</div>
 </div>
 
 <div class="container">
