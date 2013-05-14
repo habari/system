@@ -854,7 +854,7 @@ input[type=text] {
 			}
 			
 			#select2-drop {
-				width: 100%:
+				width: 100%;
 				padding: 2px 0px;
 			    background: none repeat scroll 0 0 #FFFFFF;
 			    border: 1px solid #CCCCCC;
