@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-12 00:00+0000\n"
+"POT-Creation-Date: 2013-05-19 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -757,7 +757,7 @@ msgstr ""
 
 #. @locale Displayed as an icon indicating there is help text available for a plugin.
 #: classes/pluggable.php:251 classes/plugin.php:65
-#: handlers/adminpluginshandler.php:61 handlers/adminpluginshandler.php:112
+#: handlers/adminpluginshandler.php:61 handlers/adminpluginshandler.php:113
 msgid "?"
 msgstr ""
 
@@ -947,6 +947,10 @@ msgstr ""
 msgid "Publication Time"
 msgstr ""
 
+#: classes/post.php:1033
+msgid "YYYY-MM-DD HH:MM:SS"
+msgstr ""
+
 #: classes/post.php:1037
 msgid "Content Address"
 msgstr ""
@@ -956,7 +960,7 @@ msgstr ""
 #: plugins/habarisilo/habarisilo.plugin.php:558
 #: handlers/adminusershandler.php:176 handlers/admincommentshandler.php:439
 #: admin/block_instances.php:25 admin/block_instances.php:37
-#: admin/group.php:130 admin/posts_items.php:45 admin/groups_item.php:11
+#: admin/group.php:130 admin/posts_items.php:45 admin/groups_item.php:19
 msgid "Delete"
 msgstr ""
 
@@ -971,8 +975,8 @@ msgstr ""
 msgid "Publish"
 msgstr ""
 
-#: classes/post.php:1122 handlers/adminpostshandler.php:31
-#: handlers/adminpostshandler.php:35
+#: classes/post.php:1122 handlers/adminpostshandler.php:32
+#: handlers/adminpostshandler.php:36
 msgid "You don't have permission to edit that post"
 msgstr ""
 
@@ -1334,7 +1338,7 @@ msgstr ""
 msgid "Manage comments on one's own posts"
 msgstr ""
 
-#: classes/acl.php:908 handlers/adminhandler.php:331
+#: classes/acl.php:908 handlers/adminhandler.php:357
 msgid "Manage tags"
 msgstr ""
 
@@ -1406,7 +1410,7 @@ msgstr ""
 msgid "Administration"
 msgstr ""
 
-#: classes/acl.php:948 handlers/adminhandler.php:330
+#: classes/acl.php:948 handlers/adminhandler.php:356
 msgid "Comments"
 msgstr ""
 
@@ -1656,7 +1660,7 @@ msgstr ""
 
 #: plugins/flickrsilo/flickrsilo.plugin.php:648
 #: plugins/flickrsilo/flickrsilo.plugin.php:1055
-#: plugins/coreblocks/coreblocks.plugin.php:395 themes/mzingi/theme.php:155
+#: plugins/coreblocks/coreblocks.plugin.php:393 themes/mzingi/theme.php:155
 msgid "Search"
 msgstr ""
 
@@ -1672,7 +1676,7 @@ msgstr ""
 msgid "Videos"
 msgstr ""
 
-#: plugins/flickrsilo/flickrsilo.plugin.php:669 handlers/adminhandler.php:331
+#: plugins/flickrsilo/flickrsilo.plugin.php:669 handlers/adminhandler.php:357
 msgid "Tags"
 msgstr ""
 
@@ -1893,7 +1897,7 @@ msgstr ""
 msgid "Import Categories as Tags"
 msgstr ""
 
-#: plugins/wpimport/wpimport.plugin.php:295 handlers/adminhandler.php:336
+#: plugins/wpimport/wpimport.plugin.php:295 handlers/adminhandler.php:362
 #: admin/import.php:11
 msgid "Import"
 msgstr ""
@@ -2062,7 +2066,7 @@ msgid "M j"
 msgstr ""
 
 #: plugins/coredashmodules/dashboard.block.latest_entries.php:11
-#: admin/posts_items.php:19 admin/posts_items.php:34
+#: admin/posts_items.php:19 admin/posts_items.php:34 admin/groups_item.php:13
 #, php-format
 msgid "Edit '%s'"
 msgstr ""
@@ -2245,7 +2249,7 @@ msgstr ""
 #: plugins/menus/menus.plugin.php:794 handlers/admincommentshandler.php:440
 #: themes/charcoal/page.single.php:23 themes/charcoal/entry.single.php:41
 #: themes/charcoal/home.php:35 admin/posts_items.php:32
-#: admin/groups_item.php:10
+#: admin/groups_item.php:11
 msgid "Edit"
 msgstr ""
 
@@ -2266,87 +2270,83 @@ msgid "Monthly Archives"
 msgstr ""
 
 #: plugins/coreblocks/coreblocks.plugin.php:25
-msgid "Category Archives"
-msgstr ""
-
-#: plugins/coreblocks/coreblocks.plugin.php:26
 msgid "Tag Archives"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:27
+#: plugins/coreblocks/coreblocks.plugin.php:26
 msgid "Meta Links"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:28
+#: plugins/coreblocks/coreblocks.plugin.php:27
 msgid "Search Form"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:29
+#: plugins/coreblocks/coreblocks.plugin.php:28
 msgid "Text"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:47
+#: plugins/coreblocks/coreblocks.plugin.php:45
 msgid "Site Feed"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:48
+#: plugins/coreblocks/coreblocks.plugin.php:46
 msgid "Comments Feed"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:79
+#: plugins/coreblocks/coreblocks.plugin.php:77
 msgid "Comments to show:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:139
+#: plugins/coreblocks/coreblocks.plugin.php:137
 msgid "Posts to show:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:151
+#: plugins/coreblocks/coreblocks.plugin.php:149
 msgid "Content Types to Include:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:193
+#: plugins/coreblocks/coreblocks.plugin.php:191
 msgid "Display full month names:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:196
-#: plugins/coreblocks/coreblocks.plugin.php:272
+#: plugins/coreblocks/coreblocks.plugin.php:194
+#: plugins/coreblocks/coreblocks.plugin.php:270
 msgid "Append post count:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:199
-#: plugins/coreblocks/coreblocks.plugin.php:275
+#: plugins/coreblocks/coreblocks.plugin.php:197
+#: plugins/coreblocks/coreblocks.plugin.php:273
 msgid "Preferred Output Style:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:200
-#: plugins/coreblocks/coreblocks.plugin.php:276
+#: plugins/coreblocks/coreblocks.plugin.php:198
+#: plugins/coreblocks/coreblocks.plugin.php:274
 msgid "Dropdown"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:200
-#: plugins/coreblocks/coreblocks.plugin.php:276
+#: plugins/coreblocks/coreblocks.plugin.php:198
+#: plugins/coreblocks/coreblocks.plugin.php:274
 msgid "List"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:336
+#: plugins/coreblocks/coreblocks.plugin.php:334
 msgid "Links to show:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:353 handlers/adminhandler.php:341
+#: plugins/coreblocks/coreblocks.plugin.php:351 handlers/adminhandler.php:367
 msgid "Logout"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:356 handlers/userhandler.php:171
+#: plugins/coreblocks/coreblocks.plugin.php:354 handlers/userhandler.php:171
 #: handlers/userhandler.php:173 themes/charcoal/header.php:44
 msgid "Login"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:378
+#: plugins/coreblocks/coreblocks.plugin.php:376
 msgid "Button:"
 msgstr ""
 
-#: plugins/coreblocks/coreblocks.plugin.php:410
+#: plugins/coreblocks/coreblocks.plugin.php:408
 msgid "Content:"
 msgstr ""
 
@@ -2575,7 +2575,7 @@ msgstr ""
 msgid "Regional Settings"
 msgstr ""
 
-#: handlers/adminusershandler.php:80 handlers/adminhandler.php:332
+#: handlers/adminusershandler.php:80 handlers/adminhandler.php:358
 msgid "Dashboard"
 msgstr ""
 
@@ -2628,7 +2628,7 @@ msgstr ""
 msgid "Hide Spam Count"
 msgstr ""
 
-#: handlers/adminusershandler.php:154 handlers/adminhandler.php:339
+#: handlers/adminusershandler.php:154 handlers/adminhandler.php:365
 msgid "Groups"
 msgstr ""
 
@@ -2649,11 +2649,11 @@ msgstr ""
 msgid "No such user!"
 msgstr ""
 
-#: handlers/adminusershandler.php:220 handlers/adminhandler.php:116
+#: handlers/adminusershandler.php:220 handlers/adminhandler.php:142
 msgid "Access to that page has been denied by the administrator."
 msgstr ""
 
-#: handlers/adminusershandler.php:230 handlers/adminhandler.php:338
+#: handlers/adminusershandler.php:230 handlers/adminhandler.php:364
 msgid "My Profile"
 msgstr ""
 
@@ -2761,7 +2761,7 @@ msgstr ""
 
 #: handlers/admintagshandler.php:41 handlers/admintagshandler.php:67
 #: handlers/admingroupshandler.php:175 handlers/admingroupshandler.php:284
-#: handlers/admincommentshandler.php:521 handlers/adminpostshandler.php:427
+#: handlers/admincommentshandler.php:521 handlers/adminpostshandler.php:428
 msgid "WSSE authentication failed."
 msgstr ""
 
@@ -2798,159 +2798,155 @@ msgstr ""
 msgid "We saved the last form you posted. Log back in to continue its submission."
 msgstr ""
 
-#: handlers/adminhandler.php:131
+#: handlers/adminhandler.php:157
 #, php-format
 msgid "%1$s->%2$s() does not exist."
 msgstr ""
 
-#: handlers/adminhandler.php:153
+#: handlers/adminhandler.php:179
 msgid "The page you were looking for was not found."
 msgstr ""
 
-#: handlers/adminhandler.php:189 handlers/adminhandler.php:191
+#: handlers/adminhandler.php:227 handlers/adminhandler.php:229
 msgid "Habari Version"
 msgstr ""
 
-#: handlers/adminhandler.php:194
+#: handlers/adminhandler.php:232
 msgid "Habari API Version"
 msgstr ""
 
-#: handlers/adminhandler.php:195
+#: handlers/adminhandler.php:233
 msgid "Habari DB Version"
 msgstr ""
 
-#: handlers/adminhandler.php:196
+#: handlers/adminhandler.php:234
 msgid "Active Theme"
 msgstr ""
 
-#: handlers/adminhandler.php:197 handlers/adminoptionshandler.php:106
+#: handlers/adminhandler.php:235 handlers/adminoptionshandler.php:106
 msgid "System Locale"
 msgstr ""
 
-#: handlers/adminhandler.php:198
+#: handlers/adminhandler.php:236
 msgid "Cache Class"
 msgstr ""
 
-#: handlers/adminhandler.php:202
+#: handlers/adminhandler.php:240
 msgid "PHP Version"
 msgstr ""
 
-#: handlers/adminhandler.php:203
+#: handlers/adminhandler.php:241
 msgid "Server Software"
 msgstr ""
 
-#: handlers/adminhandler.php:204
+#: handlers/adminhandler.php:242
 msgid "Database"
 msgstr ""
 
-#: handlers/adminhandler.php:205
+#: handlers/adminhandler.php:243
 msgid "PHP Extensions"
 msgstr ""
 
-#: handlers/adminhandler.php:206
+#: handlers/adminhandler.php:244
 msgid "PHP Configuration Settings"
 msgstr ""
 
-#: handlers/adminhandler.php:208 handlers/adminhandler.php:217
-msgid "PCRE Version"
-msgstr ""
-
-#: handlers/adminhandler.php:219
+#: handlers/adminhandler.php:245
 msgid "Browser"
 msgstr ""
 
-#: handlers/adminhandler.php:250 admin/sysinfo.php:3 admin/sysinfo.php:8
+#: handlers/adminhandler.php:276 admin/sysinfo.php:3 admin/sysinfo.php:8
 #: admin/sysinfo.php:9 admin/footer.php:22
 msgid "System Information"
 msgstr ""
 
-#: handlers/adminhandler.php:305
+#: handlers/adminhandler.php:331
 #, php-format
 msgid "Create a new %s"
 msgstr ""
 
-#: handlers/adminhandler.php:309
+#: handlers/adminhandler.php:335
 #, php-format
 msgid "Manage %s"
 msgstr ""
 
-#: handlers/adminhandler.php:328
+#: handlers/adminhandler.php:354
 msgid "Create content"
 msgstr ""
 
-#: handlers/adminhandler.php:328
+#: handlers/adminhandler.php:354
 msgid "New"
 msgstr ""
 
-#: handlers/adminhandler.php:329
+#: handlers/adminhandler.php:355
 msgid "Manage content"
 msgstr ""
 
-#: handlers/adminhandler.php:329
+#: handlers/adminhandler.php:355
 msgid "Manage"
 msgstr ""
 
-#: handlers/adminhandler.php:330
+#: handlers/adminhandler.php:356
 msgid "Manage comments"
 msgstr ""
 
-#: handlers/adminhandler.php:332
+#: handlers/adminhandler.php:358
 msgid "View your user dashboard"
 msgstr ""
 
-#: handlers/adminhandler.php:333
+#: handlers/adminhandler.php:359
 msgid "View and configure site options"
 msgstr ""
 
-#: handlers/adminhandler.php:333
+#: handlers/adminhandler.php:359
 msgid "Options"
 msgstr ""
 
-#: handlers/adminhandler.php:334
+#: handlers/adminhandler.php:360
 msgid "Preview and activate themes"
 msgstr ""
 
-#: handlers/adminhandler.php:334
+#: handlers/adminhandler.php:360
 msgid "Themes"
 msgstr ""
 
-#: handlers/adminhandler.php:335
+#: handlers/adminhandler.php:361
 msgid "Activate, deactivate, and configure plugins"
 msgstr ""
 
-#: handlers/adminhandler.php:335
+#: handlers/adminhandler.php:361
 msgid "Plugins"
 msgstr ""
 
-#: handlers/adminhandler.php:336
+#: handlers/adminhandler.php:362
 msgid "Import content from another site"
 msgstr ""
 
-#: handlers/adminhandler.php:337
+#: handlers/adminhandler.php:363
 msgid "View and manage users"
 msgstr ""
 
-#: handlers/adminhandler.php:337
+#: handlers/adminhandler.php:363
 msgid "Users"
 msgstr ""
 
-#: handlers/adminhandler.php:338
+#: handlers/adminhandler.php:364
 msgid "Manage your user profile"
 msgstr ""
 
-#: handlers/adminhandler.php:339
+#: handlers/adminhandler.php:365
 msgid "View and manage groups"
 msgstr ""
 
-#: handlers/adminhandler.php:340
+#: handlers/adminhandler.php:366
 msgid "View system log messages"
 msgstr ""
 
-#: handlers/adminhandler.php:340
+#: handlers/adminhandler.php:366
 msgid "Logs"
 msgstr ""
 
-#: handlers/adminhandler.php:341
+#: handlers/adminhandler.php:367
 msgid "Log out of the administration interface"
 msgstr ""
 
@@ -3010,8 +3006,8 @@ msgstr ""
 msgid "Habari successfully installed."
 msgstr ""
 
-#: handlers/installhandler.php:228 handlers/adminpluginshandler.php:96
-#: handlers/adminpluginshandler.php:100 admin/themes.php:130
+#: handlers/installhandler.php:228 handlers/adminpluginshandler.php:97
+#: handlers/adminpluginshandler.php:101 admin/themes.php:130
 msgid "Activate"
 msgstr ""
 
@@ -3391,7 +3387,7 @@ msgstr ""
 msgid "No comments selected."
 msgstr ""
 
-#: handlers/admincommentshandler.php:543 handlers/adminpostshandler.php:447
+#: handlers/admincommentshandler.php:543 handlers/adminpostshandler.php:448
 #, php-format
 msgid "Unknown action \"%s\""
 msgstr ""
@@ -3563,51 +3559,51 @@ msgstr ""
 msgid "Select"
 msgstr ""
 
-#: handlers/adminpluginshandler.php:42 handlers/adminpluginshandler.php:82
+#: handlers/adminpluginshandler.php:42 handlers/adminpluginshandler.php:83
 msgid "Deactivate"
 msgstr ""
 
-#: handlers/adminpluginshandler.php:132 installer/db_setup.php:14
+#: handlers/adminpluginshandler.php:134 installer/db_setup.php:14
 #: installer/db_setup.php:169 installer/db_setup.php:223
 #: installer/db_setup.php:251 admin/themes.php:24 admin/themes.php:26
 msgid "Help"
 msgstr ""
 
-#: handlers/adminpluginshandler.php:224
+#: handlers/adminpluginshandler.php:226
 msgid "Activated plugin '@plugin'"
 msgstr ""
 
-#: handlers/adminpluginshandler.php:233
+#: handlers/adminpluginshandler.php:235
 msgid "Deactivated plugin '@plugin'"
 msgstr ""
 
-#: handlers/adminpostshandler.php:50
+#: handlers/adminpostshandler.php:51
 #, php-format
 msgid "Access to create posts of type %s is denied"
 msgstr ""
 
-#: handlers/adminpostshandler.php:55 handlers/adminpostshandler.php:56
+#: handlers/adminpostshandler.php:56 handlers/adminpostshandler.php:57
 #, php-format
 msgid "Publish %s"
 msgstr ""
 
-#: handlers/adminpostshandler.php:254
+#: handlers/adminpostshandler.php:255
 msgid "My Posts"
 msgstr ""
 
-#: handlers/adminpostshandler.php:256 handlers/adminpostshandler.php:257
+#: handlers/adminpostshandler.php:257 handlers/adminpostshandler.php:258
 msgid "Manage Posts"
 msgstr ""
 
-#: handlers/adminpostshandler.php:293
+#: handlers/adminpostshandler.php:294
 msgid "Root"
 msgstr ""
 
-#: handlers/adminpostshandler.php:458
+#: handlers/adminpostshandler.php:459
 msgid "You did not have permission to delete some posts."
 msgstr ""
 
-#: handlers/adminpostshandler.php:461
+#: handlers/adminpostshandler.php:462
 #, php-format
 msgid "Deleted %d post"
 msgid_plural "Deleted %d posts"
@@ -4362,16 +4358,16 @@ msgid "Site Information"
 msgstr ""
 
 #: admin/sysinfo.php:42 admin/sysinfo.php:43
-msgid "User Classes"
+msgid "Plugin Information"
 msgstr ""
 
-#: admin/sysinfo.php:54 admin/sysinfo.php:55 admin/sysinfo.php:79
-#: admin/sysinfo.php:80
+#: admin/sysinfo.php:60 admin/sysinfo.php:61 admin/sysinfo.php:80
+#: admin/sysinfo.php:81
 msgid "None found"
 msgstr ""
 
-#: admin/sysinfo.php:61 admin/sysinfo.php:62
-msgid "Plugin Information"
+#: admin/sysinfo.php:68 admin/sysinfo.php:69
+msgid "User Classes"
 msgstr ""
 
 #: admin/sysinfo.php:87
@@ -4648,8 +4644,9 @@ msgstr ""
 msgid "View '%s'"
 msgstr ""
 
-#: admin/posts_items.php:47
-msgid "Delete this item"
+#: admin/posts_items.php:47 admin/groups_item.php:21
+#, php-format
+msgid "Delete '%s'"
 msgstr ""
 
 #: admin/posts_items.php:64
@@ -4872,19 +4869,15 @@ msgstr ""
 msgid "Preview"
 msgstr ""
 
-#: admin/groups_item.php:7 admin/groups_item.php:10
+#: admin/groups_item.php:7
 msgid "Edit group"
 msgstr ""
 
-#: admin/groups_item.php:11
-msgid "Delete this group"
-msgstr ""
-
-#: admin/groups_item.php:21
+#: admin/groups_item.php:33
 msgid "Members: "
 msgstr ""
 
-#: admin/groups_item.php:23
+#: admin/groups_item.php:35
 msgid "No members"
 msgstr ""
 
