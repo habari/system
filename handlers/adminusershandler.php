@@ -204,7 +204,7 @@ class AdminUsersHandler extends AdminHandler
 		// Redirect to the users management page if we're trying to edit a non-existent user
 		if ( !$edit_user ) {
 			Session::error( _t( 'No such user!' ) );
-			Utils::redirect( URL::get( 'admin', 'page=users' ) );
+			Utils::redirect( URL::get( 'display_users' ) );
 		}
 
 		// Check permissions to see this page

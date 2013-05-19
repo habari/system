@@ -39,7 +39,7 @@ class AdminGroupsHandler extends AdminHandler
 		$groups = UserGroups::get_all();
 		$this->theme->groups = Plugins::filter('admin_groups_visible', $groups);
 
-		$this->theme->add_group_form = FormUI::build('add_group', 'add_group')->get();
+		$this->theme->add_group_form = FormUI::build('add_group', 'add_group');
 
 		$this->display( 'groups' );
 	}
@@ -88,9 +88,9 @@ class AdminGroupsHandler extends AdminHandler
 	 */
 	public function get_group()
 	{
-		$group = UserGroup::get_by_id( $this->handler_vars['id'] );
+		$group = UserGroup::get_by_id( Controller::get_var('id') );
 		if ( null == $group ) {
-			Utils::redirect( URL::get( 'admin', 'page=groups' ) );
+			Utils::redirect( URL::get( 'display_groups', 'page=groups' ) );
 		}
 		else {
 
@@ -177,7 +177,7 @@ class AdminGroupsHandler extends AdminHandler
 
 			if ( isset( $this->handler_vars['delete'] ) ) {
 				$group->delete();
-				Utils::redirect( URL::get( 'admin', 'page=groups' ) );
+				Utils::redirect( URL::get( 'display_groups' ) );
 			}
 
 			if ( isset( $this->handler_vars['user'] ) ) {
@@ -222,7 +222,7 @@ class AdminGroupsHandler extends AdminHandler
 
 		Session::notice( _t( 'Updated permissions.' ), 'permissions' );
 
-		Utils::redirect( URL::get( 'admin', 'page=group' ) . '?id=' . $group->id );
+		Utils::redirect( URL::get( 'display_group', 'id=' . $group->id ) );
 
 	}
 
@@ -258,7 +258,7 @@ class AdminGroupsHandler extends AdminHandler
 					$users[] = '<strong>' . $user->displayname . '</strong>';
 				}
 				else {
-					$users[] = '<strong><a href="' . URL::get( 'admin', 'page=user&id=' . $user->id ) . '">' . $user->displayname . '</a></strong>';
+					$users[] = '<strong><a href="' . URL::get( 'user_profile', $user, false ) . '">' . $user->displayname . '</a></strong>';
 				}
 			}
 
@@ -334,7 +334,7 @@ class AdminGroupsHandler extends AdminHandler
 				}
 				else {
 					if ( !$ajax ) {
-						Utils::redirect( URL::get( 'admin', 'page=groups' ) );
+						Utils::redirect( URL::get( 'display_groups' ) );
 					}
 				}
 

@@ -703,7 +703,7 @@ ol {}
 	}
 	
 	.item .title {
-		float:left;;
+		float:left;
 	}
 
   .currenttheme .item .title, .availablethemes .item .title {
@@ -854,7 +854,7 @@ input[type=text] {
 			}
 			
 			#select2-drop {
-				width: 100%:
+				width: 100%;
 				padding: 2px 0px;
 			    background: none repeat scroll 0 0 #FFFFFF;
 			    border: 1px solid #CCCCCC;
@@ -912,6 +912,23 @@ input[type=text] {
 		white-space: nowrap;
 	}
 
+.page-sysinfo table {
+	width: 100%;
+	margin-bottom: 30px;
+}
+
+.page-sysinfo table td:first-child {
+	width: 20%;
+	font-weight: bold;
+}
+
+.page-sysinfo table tr td:only-child {
+	/* plugin directories: user, system, 3rdparty, other. */
+}
+
+.page-sysinfo table tr:only-child td:only-child { 
+	/* one row, one column - the User Classes "None found" cell */
+}
 
 .login h1 {
 	margin-top: 40px;

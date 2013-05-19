@@ -21,9 +21,9 @@
 				if ( isset( $active_theme['info']->help ) ):
 					if( Controller::get_var('help') == $active_theme['dir'] ):
 			?>
-				<a class="help active" href="<?php URL::out( 'admin', 'page=themes' ); ?>"><?php _e('Help'); ?></a>
+				<a class="help active" href="<?php URL::out( 'display_themes' ); ?>"><?php _e('Help'); ?></a>
 				<?php else: ?>
-				<a class="help" href="<?php URL::out( 'admin', 'page=themes&help=' . $active_theme['dir'] ); ?>"><?php _e('Help'); ?></a>
+				<a class="help" href="<?php URL::out( 'display_themes', 'help=' . $active_theme['dir'] ); ?>"><?php _e('Help'); ?></a>
 				<?php
 					endif;
 				endif;
@@ -31,7 +31,7 @@
 
 			<?php if ( $configurable ): ?>
 			<ul class="dropbutton">
-				<li><a href="<?php URL::out( 'admin', 'page=themes&configure=' . $active_theme['dir'] ); ?>"><?php _e('Settings'); ?></a></li>
+				<li><a href="<?php URL::out( 'display_themes', 'configure=' . $active_theme['dir'] ); ?>"><?php _e('Settings'); ?></a></li>
 			</ul>
 			<?php endif; ?>
 
@@ -123,11 +123,11 @@ foreach ( $all_themes as $inactive_theme ):
 		    <?php else: ?>
 			<ul class="dropbutton"> 
 				<?php if ($previewed == $inactive_theme['dir']): ?>
-				<li><a href="<?php URL::out( 'admin', 'page=preview_theme&theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('End Preview'); ?></a></li>
+				<li><a href="<?php URL::out( 'preview_theme', 'theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('End Preview'); ?></a></li>
 				<?php else: ?>
-				<li><a href="<?php URL::out( 'admin', 'page=preview_theme&theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('Preview'); ?></a></li>
+				<li><a href="<?php URL::out( 'preview_theme', 'theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('Preview'); ?></a></li>
 				<?php endif; ?>
-				<li><a href="<?php URL::out( 'admin', 'page=activate_theme&theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('Activate'); ?></a></li>
+				<li><a href="<?php URL::out( 'activate_theme', 'theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('Activate'); ?></a></li>
 			</ul>
 		    <?php endif; ?>
 		</div>

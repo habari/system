@@ -18,10 +18,11 @@ class AdminPostsHandler extends AdminHandler
 	 */
 	public function get_publish( $template = 'publish' )
 	{
-		$extract = $this->handler_vars->filter_keys( 'id', 'content_type' );
+		$extract = $this->handler_vars->filter_keys( 'id', 'content_type_name' );
 		foreach ( $extract as $key => $value ) {
 			$$key = $value;
 		}
+		$content_type = Post::type($content_type_name);
 
 		// 0 is what's assigned to new posts
 		if ( isset( $id ) && ( $id != 0 ) ) {
