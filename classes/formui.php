@@ -29,7 +29,6 @@ class FormUI extends FormContainer implements IsContent
 	public $success = false;
 	public $submitted = false;
 
-	private static $outpre = false;
 	public $formtype = '';
 
 	public $properties = array(
@@ -44,6 +43,7 @@ class FormUI extends FormContainer implements IsContent
 	public $success_render = false;
 
 	public static $registered_forms = array();
+	public $dom;
 
 	/**
 	 * FormUI's constructor, called on instantiation.
@@ -83,9 +83,10 @@ class FormUI extends FormContainer implements IsContent
 
 	/**
 	 * Create a new instance of this class and return it, use the fluent interface
-	 * @param string $name
-	 * @param string $formtype
-	 * @return FormUI
+	 * @param string $name The name of the form to build
+	 * @param string $formtype The type of the form
+	 * @param array $extra_data Extra data to pass to the form for configuration purposes
+	 * @return FormUI The instance of the created form
 	 */
 	public static function build($name, $formtype = null, $extra_data = array())
 	{
@@ -279,7 +280,7 @@ class FormUI extends FormContainer implements IsContent
 	/**
 	 * Return the form control HTML.
 	 *
-	 * @param boolean $forvalidation True if the controls should output additional information based on validation.
+	 * @param Theme $theme The theme used to render the controls
 	 * @return string The output of controls' HTML.
 	 */
 	public function output_controls( Theme $theme )
@@ -365,7 +366,7 @@ class FormUI extends FormContainer implements IsContent
 
 		// Set the form to render using the output of the HTMLDoc
 		$form->settings['norender'] = true;
-		$form->settings['content'] = function($form) use($dom) {
+		$form->settings['content'] = function(/* unused $form */) use($dom) {
 			return $dom->get();
 		};
 		$form->dom = $dom;
@@ -374,9 +375,9 @@ class FormUI extends FormContainer implements IsContent
 
 		// Add the _form_id and WSSE elements to the form
 		// Note that these additional fields must be XML-safe, or they won't be added
-		$dom->find('form')->append_html(Utils::setup_wsse());
+		$dom->find_one('form')->append_html(Utils::setup_wsse());
 
-		$dom->find('form')->append_html('<input type="hidden" name="_form_id" value="' . $form->control_id() . '" />');
+		$dom->find_one('form')->append_html('<input type="hidden" name="_form_id" value="' . $form->control_id() . '" />');
 
 		// Add synthetic controls for any found inputs
 		foreach($dom->find('input') as $input) {

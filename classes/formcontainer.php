@@ -25,9 +25,9 @@ class FormContainer extends FormControl
 	}
 
 	/**
-	 * @param $before_index
-	 * @param $control
-	 * @return FormControl
+	 * @param FormControl $before The control to insert the control in front of
+	 * @param FormControl $control The control to insert
+	 * @return FormControl $control via Fluent interface
 	 */
 	public function insert($before, $control)
 	{
@@ -51,9 +51,9 @@ class FormContainer extends FormControl
 		$control = $this;
 		return $this->get_setting(
 			'control_id',
-			function($setting_name, $control) use ($control) {
+			function(/* unused */ $setting_name, $control) use ($control) {
 				$control_id = array($control->name);
-				/** @var FormControl $control */
+				/** @var FormContainer $control */
 				foreach ( $control->controls as $control ) {
 					$control_id[]= $control->control_id();
 				}
@@ -126,12 +126,11 @@ class FormContainer extends FormControl
 	}
 
 	/**
-	 * Produce HTML output for all this fieldset and all contained controls
-	 *
-	 * @param boolean $forvalidation True if this control should render error information based on validation.
-	 * @return string HTML that will render this control in the form
+	 * Get the control contents of this container
+	 * @param Theme $theme The theme used to render the controls
+	 * @return string The requested HTML output
 	 */
-	function get( Theme $theme )
+	function get_contents(Theme $theme)
 	{
 		$content = '';
 		/** @var FormControl $control */
@@ -150,7 +149,20 @@ class FormContainer extends FormControl
 				}
 			}
 		}
-		$this->vars['content'] = $content;
+		return $content;
+	}
+
+	/**
+	 * Produce HTML output for all this fieldset and all contained controls
+	 *
+	 * @param Theme $theme The theme used to render the controls
+	 * @return string HTML that will render this control in the form
+	 */
+	function get( Theme $theme )
+	{
+		if(!isset($this->vars['content'])) {
+			$this->vars['content'] = $this->get_contents($theme);
+		}
 
 		return parent::get($theme);
 	}
@@ -159,14 +171,15 @@ class FormContainer extends FormControl
 	 * Moves a control to target's position to which we add $int if specified
 	 * That integer is useful to move before or move after the target
 	 *
-	 * @param FormControl $control FormControl object to move
+	 * @param FormControl $source FormControl object to move
 	 * @param FormControl $target FormControl object acting as destination
-	 * @param int $int Integer added to $target's position (index)
+	 * @param int $offset Integer added to $target's position (index)
 	 */
 	function move( FormControl $source, FormControl $target, $offset = 0 )
 	{
 		// Remove the source control from its container's list of controls
 		$controls = array();
+		$source_name = false;
 		foreach ( $source->container->controls as $name => $ctrl ) {
 			if ( $ctrl === $source ) {
 				$source_name = $name;
@@ -174,14 +187,16 @@ class FormContainer extends FormControl
 			}
 			$controls[$name] = $ctrl;
 		}
-		$source->container->controls = $controls;
+		if($source_name) {
+			$source->container->controls = $controls;
 
-		// Insert the source control into the destination control's container's list of controls in the correct location
-		$target_index = array_search( $target, array_values( $target->container->controls ), true );
-		$left_slice = array_slice( $target->container->controls, 0, ( $target_index + $offset ), true );
-		$right_slice = array_slice( $target->container->controls, ( $target_index + $offset ), count( $target->container->controls ), true );
+			// Insert the source control into the destination control's container's list of controls in the correct location
+			$target_index = array_search( $target, array_values( $target->container->controls ), true );
+			$left_slice = array_slice( $target->container->controls, 0, ( $target_index + $offset ), true );
+			$right_slice = array_slice( $target->container->controls, ( $target_index + $offset ), count( $target->container->controls ), true );
 
-		$target->container->controls = $left_slice + array( $source_name => $source ) + $right_slice;
+			$target->container->controls = $left_slice + array( $source_name => $source ) + $right_slice;
+		}
 	}
 
 	/**
@@ -210,15 +225,14 @@ class FormContainer extends FormControl
 	 * Move a control into the container
 	 *
 	 * @param FormControl $control FormControl object to move
-	 * @param FormControl $target FormControl object acting as destination
+	 * @param FormContainer $target FormContainer object acting as destination
 	 */
-	public function move_into( FormControl $control, FormControl $target )
+	public function move_into( FormControl $control, FormContainer $target )
 	{
 		// Remove the source control from its container's list of controls
 		$controls = array();
 		foreach ( $control->container->controls as $name => $ctrl ) {
 			if ( $ctrl === $control ) {
-				$source_name = $name;
 				continue;
 			}
 			$controls[$name] = $ctrl;
@@ -250,21 +264,6 @@ class FormContainer extends FormControl
 		// Strictness will skip recursiveness, else you get an exception (recursive dependency)
 		unset( $this->controls[array_search( $target, $this->controls, true )] );
 	}
-
-	/**
-	 * Returns true if any of the controls this container contains should be stored in userinfo
-	 *
-	 * @return boolean True if control data should be sotred in userinfo
-	 */
-	function has_user_options()
-	{
-		$has_user_options = false;
-		foreach ( $this->controls as $control ) {
-			$has_user_options |= $control->has_user_options();
-		}
-		return $has_user_options;
-	}
-
 
 	/**
 	 * Magic property getter, returns the specified control
@@ -328,6 +327,7 @@ class FormContainer extends FormControl
 	function pre_out()
 	{
 		$preout = '';
+		/** @var FormControl $control */
 		foreach ( $this->controls as $control ) {
 			$preout .= $control->pre_out();
 		}
@@ -379,6 +379,7 @@ class FormContainer extends FormControl
 	/**
 	 * Calls the success callback for the form, and optionally saves the form values
 	 * to the options table.
+	 * @param FormUI $form The form for which success is being processed
 	 * @return boolean|string A string to replace the rendering of the form with, or false
 	 */
 	public function do_success($form)
@@ -392,8 +393,6 @@ class FormContainer extends FormControl
 
 	/**
 	 * Store each contained control's value under the control's specified key.
-	 *
-	 * @param string $key (optional) The Options table key to store this option in
 	 */
 	public function save()
 	{
@@ -402,16 +401,6 @@ class FormContainer extends FormControl
 			$control->save();
 		}
 		parent::save();
-	}
-
-	/**
-	 * Explicitly assign the theme object to be used with this container
-	 *
-	 * @param Theme $theme The theme object to use to output this container
-	 */
-	function set_theme( $theme )
-	{
-		$this->theme_obj = $theme;
 	}
 
 	/**
@@ -483,7 +472,9 @@ class FormContainer extends FormControl
 	 * Reset the contained control values to their initial values
 	 */
 	public function clear() {
-		$this->each(function($control) { $control->clear(); });
+		$this->each(function(FormControl $control) {
+			$control->clear();
+		});
 		parent::clear();
 	}
 

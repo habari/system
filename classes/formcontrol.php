@@ -71,7 +71,7 @@ abstract class FormControl
 	 * @param FormStorage|string|null $storage A storage location for the data collected by the control
 	 * @param array $properties An array of properties that apply to the output HTML
 	 * @param array $settings An array of settings that apply to this control object
-	 * @return FormControl An instance of the referenced FormControl with the supplied parameters
+	 * @return mixed|FormControl An instance of the referenced FormControl with the supplied parameters
 	 */
 	public static function create($name, $storage = 'null:null', array $properties = array(), array $settings = array())
 	{
@@ -83,6 +83,7 @@ abstract class FormControl
 	/**
 	 * Take an array of parameters, use the first as the FormControl class/type, and run the constructor with the rest
 	 * @param array $arglist The array of arguments
+	 * @throws \Exception When the requested type is invalid
 	 * @return FormControl The created control.
 	 */
 	public static function from_args($arglist)
@@ -188,6 +189,7 @@ ERR;
 
 	/**
 	 * @param array $settings An array of settings that affect the behavior of this control object
+	 * @param bool $override If true, use the provided array to override the existing one
 	 * @return FormControl $this
 	 */
 	public function set_settings($settings, $override = false)
@@ -303,7 +305,22 @@ ERR;
 	 */
 	public function process()
 	{
-		$this->set_value($_POST->raw($this->input_name()), false);
+		// Can't use $this->input_name() directly because it has the name and array components concat'd
+		if($this->get_setting('process', true)) {
+			$value = $_POST->raw($this->get_setting('input_name', $this->name));
+			$input_array = $this->get_setting('input_array', array());
+			while($input_array) {
+				$idx = array_shift($input_array);
+				if(isset($value[$idx])) {
+					$value = $value[$idx];
+				}
+				else {
+					$value = null;
+					break;
+				}
+			}
+			$this->set_value($value, false);
+		}
 	}
 
 	/**
@@ -599,7 +616,45 @@ ERR;
 			'input_name',
 			$this->name
 		);
+		$input_array = $this->get_setting(
+			'input_array',
+			array()
+		);
+		foreach($input_array as $value) {
+			$name .= '[' . $value . ']';
+		}
 		return $name;
+	}
+
+	/**
+	 * Add a value to the input_array setting
+	 * @param integer|string $value The value to use as the array part of the input name
+	 * @return FormControl $this Fluent interface
+	 */
+	public function add_input_array($value)
+	{
+		$input_array = $this->get_setting(
+			'input_array',
+			array()
+		);
+		$input_array[] = $value;
+		$this->set_setting('input_array', $input_array);
+		return $this;
+	}
+
+	/**
+	 * Remove the most recent input_array setting
+	 * @return FormControl $this Fluent interface
+	 */
+	public function pop_input_array()
+	{
+		$input_array = $this->get_setting(
+			'input_array',
+			array()
+		);
+		array_pop($input_array);
+		$this->set_setting('input_array', $input_array);
+		return $this;
 	}
 
 	/**
@@ -616,10 +671,10 @@ ERR;
 	 * Add a validation function to this control
 	 * Multiple parameters are passed as parameters to the validation function
 	 * @param mixed $validator A callback function
-	 * @param mixed $option... Multiple parameters added to those used to call the validator callback
+	 * @param mixed $option Multiple parameters added to those used to call the validator callback
 	 * @return FormControl Returns the control for chained execution
 	 */
-	public function add_validator()
+	public function add_validator($validator, $option = null)
 	{
 		$args = func_get_args();
 		$validator = reset( $args );

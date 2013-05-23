@@ -18,7 +18,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 		$group_actions->append(
 			FormControlSubmit::create('delete')->set_caption(_t('Delete'))
 				->set_url('javascript:itemManage.remove('. $group->id . ', \'group\');')
-				->set_property('title', _t( 'Delete \'%s\'', array( $group->title ) ) )
+				->set_property('title', _t( 'Delete \'%s\'', array( $group->name ) ) )
 				->set_enable(function($control) {
 					return User::identify()->can('manage_groups');
 				})

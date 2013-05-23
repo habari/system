@@ -119,7 +119,7 @@ class AdminHandler extends ActionHandler
 
 		// The body of this function IS the action method, do it.
 		// If I was smarter, I'd pass this code as a closure to the parent act() via a parameter for DRY, but I'm lazy, ha ha
-		$page = $action;
+		$page = $action == 'admin' ? $this->handler_vars['page'] : $action;
 		$page = filter_var( $page, FILTER_SANITIZE_STRING );
 		if ( isset( $this->handler_vars['content_type'] ) ) {
 			$type_name = $this->handler_vars['content_type'];

@@ -64,11 +64,11 @@ class HTMLDoc
 	/**
 	 * Pass a query on to the XPath query method
 	 * @param string $expression An XPath expression
-	 * @param DomNode $contextnode The context of the query, by default, the root node
+	 * @param \DomNode $contextnode The context of the query, by default, the root node
 	 * @param bool $registerNodeNS true by default, false to disable the automatic registration of the context node
-	 * @return \DOMNodeList A list of qualifying nodes
+	 * @return HTMLNodes A list of qualifying nodes
 	 */
-	public function query($expression, DomNode $contextnode = null, $registerNodeNS = true)
+	public function query($expression, \DomNode $contextnode = null, $registerNodeNS = true)
 	{
 		return new HTMLNodes($this->xp->query($expression, $contextnode, $registerNodeNS));
 	}
