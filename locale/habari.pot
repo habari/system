@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-19 00:00+0000\n"
+"POT-Creation-Date: 2013-05-26 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -212,7 +212,7 @@ msgstr ""
 msgid "Requested property @name does not exist."
 msgstr ""
 
-#: classes/formcontrol.php:96
+#: classes/formcontrol.php:97
 #, php-format
 msgid "The FormControl type \"%s\" is invalid."
 msgstr ""
