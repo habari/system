@@ -1092,8 +1092,8 @@ FLICKR;
 			$markup .= '<img src="';
 			$markup .= $f->getPhotoURL( $flickr, $size );
 			$markup .= '"';
-			if ( $post->author->info->pbem_class ) {
-				$markup .= ' class="' . $post->author->info->pbem_class . '"';
+			if ( isset( $attr_array['class'] ) ) {
+				$markup .= ' class="' . $attr_array['class'] . '"';
 			}
 			$markup .= '></a>';
 		} else {
