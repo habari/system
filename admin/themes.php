@@ -121,14 +121,18 @@ foreach ( $all_themes as $inactive_theme ):
 	      <?php elseif(isset($inactive_theme['req_parent'])): ?>
 			<p class="legacy"><?php _e( 'This theme requires the parent theme named "%s".', array($inactive_theme['req_parent']) ); ?></p>
 		    <?php else: ?>
-			<ul class="dropbutton"> 
-				<?php if ($previewed == $inactive_theme['dir']): ?>
-				<li><a href="<?php URL::out( 'preview_theme', 'theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('End Preview'); ?></a></li>
-				<?php else: ?>
-				<li><a href="<?php URL::out( 'preview_theme', 'theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('Preview'); ?></a></li>
-				<?php endif; ?>
-				<li><a href="<?php URL::out( 'activate_theme', 'theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('Activate'); ?></a></li>
-			</ul>
+					<?php
+					$dbtn = FormControlDropbutton::create('actions');
+					$dbtn->append(FormControlSubmit::create('activate')->set_url(URL::get( 'activate_theme', 'theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ))->set_caption(_t('Activate')));
+					if ($previewed == $inactive_theme['dir']) {
+						$dbtn->append(FormControlSubmit::create('end_preview')->set_url(URL::get( 'preview_theme', 'theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ))->set_caption(_t('End Preview')));
+					}
+					else {
+						$dbtn->append(FormControlSubmit::create('preview')->set_url(URL::get( 'preview_theme', 'theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ))->set_caption(_t('Preview')));
+					}
+					echo $dbtn->pre_out();
+					echo $dbtn->get($theme);
+					?>
 		    <?php endif; ?>
 		</div>
 		<div class="clearfix">
