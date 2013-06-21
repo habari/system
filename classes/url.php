@@ -113,6 +113,7 @@ class URL extends Singleton
 		 * Run the stub through the regex matcher
 		 */
 		self::$stub = $from_url;
+		/** @var RewriteRule $rule */
 		foreach ( $url->rules as $rule ) {
 			if ( $rule->match( $from_url ) ) {
 				$url->matched_rule = $rule;

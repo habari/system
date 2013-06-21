@@ -74,6 +74,8 @@ class RewriteRule extends QueryRecord
 			$this->entire_match = array_shift( $pattern_matches ); // The entire matched string is returned at index 0
 			$named_args = $this->named_args; // Direct call shows a PHP notice
 
+			$result = true;
+
 			if ( (is_string($this->parameters) && $parameters = unserialize( $this->parameters )) || (is_array($this->parameters) && $parameters = $this->parameters )) {
 				$this->named_arg_values = array_merge( $this->named_arg_values, $parameters );
 			}
@@ -91,10 +93,25 @@ class RewriteRule extends QueryRecord
 			}
 
 			if ( isset( $parameters['require_match'] ) ) {
-				return call_user_func( $parameters['require_match'], $this, $stub, $parameters );
+				$result = call_user_func( $parameters['require_match'], $this, $stub, $parameters );
+			}
+			if ( $result && isset( $parameters['require_permission'] ) ) {
+				foreach ( $parameters['require_permission'] as $token => $access ) {
+					$access = Utils::single_array( $access );
+					foreach ( $access as $mask ) {
+						if ( is_bool( $mask ) && User::identify()->can( $token ) ) {
+							$result = true;
+							break;
+						}
+						elseif ( User::identify()->can( $token, $mask ) ) {
+							$result = true;
+							break 2;
+						}
+					}
+				}
 			}
 
-			return true;
+			return $result;
 		}
 		return false;
 	}
