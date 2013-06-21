@@ -1170,3 +1170,24 @@ body.login .humanMsg {
 	.modulecore h2, .modulecore h2 a { font-size: 18px; }
 	#create_content input[type="submit"] { margin-bottom: 10px; }
 }
+
+
+/* Annoying jQueryUI no-flatness themeroller garbage */
+.ui-dialog .ui-widget-header {
+	border: none;
+	background: #B4AD9C;
+	color: white;
+}
+.ui-dialog.ui-widget-content {
+	border: none;
+	background: white;
+	box-shadow: rgba(0, 0, 0, 0.298039) 0px 3px 5px;
+	padding: 0px;
+}
+.ui-dialog.ui-corner-all,
+.ui-dialog .ui-corner-all {
+	border-radius: 0px;
+}
+.ui-dialog .ui-dialog-content {
+	padding: 0 10px;
+}
