@@ -43,6 +43,12 @@ abstract class Pluggable
 		if ( empty( $this->_class_name ) ) {
 			$class = new \ReflectionClass( get_class( $this ) );
 			$this->_class_name = $class->getFileName();
+			// is the file not within the Habari root?
+			if(strpos($this->_class_name, HABARI_PATH) == false) {
+				// Guess at where we really are using the xml file...
+				// Oh, we don't actually know that?
+				// Well, then you're just going to have to stop using symlinks, aren't you?
+			}
 		}
 		return $this->_class_name;
 	}
