@@ -143,42 +143,48 @@ class AdminHandler extends ActionHandler
 			$this->get_blank();
 		}
 
-		switch ( $_SERVER['REQUEST_METHOD'] ) {
-			case 'POST':
-				// Let plugins try to handle the page
-				Plugins::act( 'admin_theme_post_' . $page, $this, $this->theme );
-				// Handle POSTs to the admin pages
-				$fn = 'post_' . $page;
-				if ( method_exists( $this, $fn ) ) {
-					$this->$fn();
-				}
-				else {
-					$classname = get_class( $this );
-					_e( '%1$s->%2$s() does not exist.', array( $classname, $fn ) );
-					exit;
-				}
-				break;
-			case 'GET':
-			case 'HEAD':
-				// Let plugins try to handle the page
-				Plugins::act( 'admin_theme_get_' . $page, $this, $this->theme );
-				// Handle GETs of the admin pages
-				$fn = 'get_' . $page;
-				if ( method_exists( $this, $fn ) ) {
-					$this->$fn();
-					exit;
-				}
-				// If a get_ function doesn't exist, just load the template and display it
-				// @todo Uh, isn't this just an insane idea?  Stop that.
-				if ( $this->theme->template_exists( $page ) ) {
-					Utils::debug('Please report that this page doesn\'t work in the Habari issue queue.');die();
-				}
-				else {
-					// The requested console page doesn't exist
-					header( 'HTTP/1.1 404 Not Found', true, 404 );
-					$this->get_blank( _t( 'The page you were looking for was not found.' ) );
-				}
-				break;
+		if(method_exists($this, $action_method)) {
+			call_user_func(array($this, $action_method));
+		}
+		else {
+
+			switch ( $_SERVER['REQUEST_METHOD'] ) {
+				case 'POST':
+					// Let plugins try to handle the page
+					Plugins::act( 'admin_theme_post_' . $page, $this, $this->theme );
+					// Handle POSTs to the admin pages
+					$fn = 'post_' . $page;
+					if ( method_exists( $this, $fn ) ) {
+						$this->$fn();
+					}
+					else {
+						$classname = get_class( $this );
+						_e( '%1$s->%2$s() does not exist.', array( $classname, $fn ) );
+						exit;
+					}
+					break;
+				case 'GET':
+				case 'HEAD':
+					// Let plugins try to handle the page
+					Plugins::act( 'admin_theme_get_' . $page, $this, $this->theme );
+					// Handle GETs of the admin pages
+					$fn = 'get_' . $page;
+					if ( method_exists( $this, $fn ) ) {
+						$this->$fn();
+						exit;
+					}
+					// If a get_ function doesn't exist, just load the template and display it
+					// @todo Uh, isn't this just an insane idea?  Stop that.
+					if ( $this->theme->template_exists( $page ) ) {
+						Utils::debug('Please report that this page doesn\'t work in the Habari issue queue.');die();
+					}
+					else {
+						// The requested console page doesn't exist
+						header( 'HTTP/1.1 404 Not Found', true, 404 );
+						$this->get_blank( _t( 'The page you were looking for was not found.' ) );
+					}
+					break;
+			}
 		}
 
 		/**
@@ -568,6 +574,9 @@ class AdminHandler extends ActionHandler
 				$result = true;
 				break;
 			case 'locale':
+				$result = true;
+				break;
+			case 'admin_ajax':
 				$result = true;
 				break;
 			default:
