@@ -1360,17 +1360,21 @@ var liveSearch = {
 		liveSearch.searchPrompt = liveSearch.input.attr('placeholder');
 		liveSearch.prevSearch = liveSearch.getSearchText();
 
+		if (document.createElement('input').placeholder === undefined) {
+			liveSearch.input
+				.focus( function() {
+					if ( $.trim( liveSearch.input.val() ) == liveSearch.searchPrompt ) {
+						liveSearch.input.val('');
+					}
+				})
+				.blur( function () {
+					if ( $.trim( liveSearch.input.val() ) === '' ) {
+						liveSearch.input.val( liveSearch.searchPrompt );
+					}
+			});
+		}
+
 		liveSearch.input
-			.focus( function() {
-				if ( $.trim( liveSearch.input.val() ) == liveSearch.searchPrompt ) {
-					liveSearch.input.val('');
-				}
-			})
-			.blur( function () {
-				if ( $.trim( liveSearch.input.val() ) === '' ) {
-					liveSearch.input.val( liveSearch.searchPrompt );
-				}
-			})
 			.keyup( function( event ) {
 				var code = event.keyCode;
 
