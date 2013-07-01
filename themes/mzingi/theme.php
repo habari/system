@@ -129,7 +129,7 @@ class MzingiHi extends Theme
 
 	public function theme_prevpage_results( $theme )
 	{
-		return parent::theme_prev_page_link( $theme, '&laquo; ' . _t('Newer Reults') );
+		return parent::theme_prev_page_link( $theme, '&laquo; ' . _t('Newer Results') );
 	}
 
 	public function theme_nextpage_results( $theme )
