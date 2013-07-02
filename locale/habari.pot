@@ -3637,11 +3637,11 @@ msgid "Older Posts"
 msgstr ""
 
 #: themes/mzingi/theme.php:132
-msgid "Newer Reults"
+msgid "Newer Results"
 msgstr ""
 
 #: themes/mzingi/theme.php:137
-msgid "Older Reults"
+msgid "Older Results"
 msgstr ""
 
 #: themes/mzingi/theme.php:159
@@ -4975,5 +4975,5 @@ msgid "%1$s selected (%2$s visible)"
 msgstr ""
 
 #: admin/js/admin.js:552
-msgid "You did not save the changes you made. \\nLeaving this page will result in the lose of data."
+msgid "You did not save the changes you made. \\nLeaving this page will result in the loss of data."
 msgstr ""
