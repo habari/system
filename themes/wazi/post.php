@@ -26,10 +26,10 @@
 				<?php echo $theme->content($comment); ?>
 			<?php endforeach; ?>
 		<?php endif; ?>
-		<?php if($post->info->comments_disabled): ?>
+		<?php if($content->info->comments_disabled): ?>
 			<p><?php _e('Sorry, commenting on this post is disabled.'); ?>
 		<?php else: ?>
-		<?php $post->comment_form()->out(); ?>
+		<?php $content->comment_form()->out(); ?>
 		<?php endif; ?>
 	</section>
 	<?php endif; ?>
