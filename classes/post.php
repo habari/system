@@ -1280,6 +1280,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$form->add_class($context);
 		$form->add_class('commentform');
 		$form->set_wrap_each('<div>%s</div>');
+		$form->set_setting('use_session_errors', true);
 
 		// Enforce commenting rules
 		if(Options::get('comments_disabled')) {
@@ -1313,7 +1314,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 						array(
 							'id' => 'comment_name',
 							'tabindex' => 1,
-                            'required' => 'required',
+							'required' => 'required',
 						)
 					)->add_validator( 'validate_required', _t( 'The Name field value is required' ) )
 				)
