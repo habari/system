@@ -1,0 +1,1 @@
+<<?= $element ?> <?= $_attributes ?>><?= $content ?></<?= $element ?>>

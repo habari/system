@@ -9,11 +9,12 @@ namespace Habari;
 class FormControlText extends FormControl
 {
 	/**
-	 * Called upon construct.  Sets control properties
+	 * Called upon construct.  Sets default control properties
 	 */
-	public function _extend()
+	public function __construct($name, $storage = 'null:null', array $properties = array(), array $settings = array())
 	{
 		$this->properties['type'] = 'text';
+		parent::__construct($name, $storage, $properties, $settings);
 	}
 
 }
