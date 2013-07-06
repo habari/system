@@ -1313,6 +1313,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 						array(
 							'id' => 'comment_name',
 							'tabindex' => 1,
+                            'required' => 'required',
 						)
 					)->add_validator( 'validate_required', _t( 'The Name field value is required' ) )
 				)
@@ -1329,6 +1330,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			if ( Options::get( 'comments_require_id' ) == 1 ) {
 				$cf_email->add_validator(  'validate_required', _t( 'The Email field value must be a valid email address' ) );
 				$cf_email->label( _t( 'Email <span class="required">*Required</span>' ) );
+				$cf_email->set_property("required", "required");
 			}
 			else {
 				$cf_email->label(_t('Email'));
@@ -1340,6 +1342,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 				FormControlLabel::wrap(_t('Website'), FormControlText::create('cf_url', 'null:null', array(
 					'id' => 'comment_url',
 					'tabindex' => 3,
+					'type' => 'url'
 				)))->add_validator( 'validate_url', _t( 'The Website field value must be a valid URL' ) )
 
 			);
@@ -1350,6 +1353,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 				FormControlTextArea::create('cf_content', 'null:null', array(
 					'id' => 'comment_content',
 					'tabindex' => 4,
+					'required' => 'required'
 				))->add_validator( 'validate_required', _t( 'The Comment field value is required' ) )
 				->label(_t('Content'))
 			);
