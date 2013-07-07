@@ -3,11 +3,12 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-30 00:00+0000\n"
+"POT-Creation-Date: 2013-07-07 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -884,7 +885,7 @@ msgstr ""
 msgid "Permissions to posts of type \"%s\""
 msgstr ""
 
-#: classes/post.php:276 classes/post.php:981 classes/post.php:1354
+#: classes/post.php:276 classes/post.php:981 classes/post.php:1359
 #: classes/acl.php:947 handlers/installhandler.php:1741
 msgid "Content"
 msgstr ""
@@ -1009,85 +1010,85 @@ msgstr ""
 msgid "Deleted the %1$s titled \"%2$s\"."
 msgstr ""
 
-#: classes/post.php:1286
+#: classes/post.php:1287
 msgid "Comments are disabled site-wide."
 msgstr ""
 
-#: classes/post.php:1291
+#: classes/post.php:1292
 msgid "Comments for this post are disabled."
 msgstr ""
 
-#: classes/post.php:1296
+#: classes/post.php:1297
 msgid "Commenting on this site requires authentication."
 msgstr ""
 
-#: classes/post.php:1301
+#: classes/post.php:1302
 msgid "You do not have permission to comment on this site."
 msgstr ""
 
-#: classes/post.php:1311
+#: classes/post.php:1312
 msgid "Name <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: classes/post.php:1317
+#: classes/post.php:1319
 msgid "The Name field value is required"
 msgstr ""
 
-#: classes/post.php:1327 classes/post.php:1330
+#: classes/post.php:1329 classes/post.php:1332
 msgid "The Email field value must be a valid email address"
 msgstr ""
 
-#: classes/post.php:1331
+#: classes/post.php:1333
 msgid "Email <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: classes/post.php:1334 handlers/adminusershandler.php:101
+#: classes/post.php:1337 handlers/adminusershandler.php:101
 msgid "Email"
 msgstr ""
 
-#: classes/post.php:1340 themes/charcoal/theme.php:223
+#: classes/post.php:1343 themes/charcoal/theme.php:223
 msgid "Website"
 msgstr ""
 
-#: classes/post.php:1343
+#: classes/post.php:1347
 msgid "The Website field value must be a valid URL"
 msgstr ""
 
-#: classes/post.php:1353
+#: classes/post.php:1358
 msgid "The Comment field value is required"
 msgstr ""
 
-#: classes/post.php:1360 plugins/coredashmodules/coredashmodules.plugin.php:95
+#: classes/post.php:1365 plugins/coredashmodules/coredashmodules.plugin.php:95
 #: plugins/habarisilo/habarisilo.plugin.php:525 themes/mzingi/theme.php:192
 #: themes/charcoal/theme.php:226
 msgid "Submit"
 msgstr ""
 
-#: classes/post.php:1772
+#: classes/post.php:1777
 msgid "Entry"
 msgstr ""
 
-#: classes/post.php:1773
+#: classes/post.php:1778
 msgid "Entries"
 msgstr ""
 
-#: classes/post.php:1776
+#: classes/post.php:1781
 msgid "Page"
 msgstr ""
 
-#: classes/post.php:1777
+#: classes/post.php:1782
 msgid "Pages"
 msgstr ""
 
-#: classes/post.php:1792
+#: classes/post.php:1797
 msgid "draft"
 msgstr ""
 
-#: classes/post.php:1793
+#: classes/post.php:1798
 msgid "published"
 msgstr ""
 
-#: classes/post.php:1794
+#: classes/post.php:1799
 msgid "scheduled"
 msgstr ""
 
@@ -3641,7 +3642,7 @@ msgid "Newer Results"
 msgstr ""
 
 #: themes/mzingi/theme.php:137
-msgid "Older Results"
+msgid "Older Reults"
 msgstr ""
 
 #: themes/mzingi/theme.php:159
@@ -4975,5 +4976,5 @@ msgid "%1$s selected (%2$s visible)"
 msgstr ""
 
 #: admin/js/admin.js:552
-msgid "You did not save the changes you made. \\nLeaving this page will result in the loss of data."
+msgid "You did not save the changes you made. \\nLeaving this page will result in the lose of data."
 msgstr ""
