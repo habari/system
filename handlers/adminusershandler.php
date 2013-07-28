@@ -16,33 +16,38 @@ class AdminUsersHandler extends AdminHandler
 	public function __construct()
 	{
 		$self = $this;
-		FormUI::register('add_user', function(FormUI $form, $name) use($self) {
-			$form->set_settings(array('use_session_errors' => true));
+		FormUI::register( 'add_user', function( FormUI $form, $name ) use( $self ) {
+			$form->set_settings( array( 'use_session_errors' => true ) );
 			$form->append(
-				FormControlText::create('username')
-					->add_validator('validate_username')
-					->add_validator('validate_required')
-					->label(_t('Username'))->add_class('incontent')->set_template('control.label.outsideleft')
+				FormControlText::create( 'username' )
+					->set_properties( array( 'class' => 'columns three', 'placeholder' => _t( 'Username' ) ) )
+					->add_validator( 'validate_username' )
+					->add_validator( 'validate_required' )
+					//->label(_t('Username'))->add_class('incontent')->set_template('control.label.outsideleft')
 			);
 			$form->append(
-				FormControlText::create('email')
-					->add_validator('validate_email')
-					->add_validator('validate_required')
-					->label(_t('E-Mail'))->add_class('incontent')->set_template('control.label.outsideleft')
+				FormControlText::create( 'email' )
+					->set_properties( array( 'class' => 'columns four', 'placeholder' => _t( 'E-Mail' ) ) )
+					->add_validator( 'validate_email' )
+					->add_validator( 'validate_required' )
+					//->label(_t('E-Mail'))->add_class('incontent')->set_template('control.label.outsideleft')
 			);
-			$password = FormControlPassword::create('password')
-				->add_validator('validate_required');
+			$password = FormControlPassword::create( 'password' )
+				->set_properties( array( 'class' => 'columns three', 'placeholder' => _t( 'Password' ) ) )
+				->add_validator( 'validate_required' );
 			$form->append(
-				$password->label(_t('Password'))->add_class('incontent')->set_template('control.label.outsideleft')
+				//$password->label(_t('Password'))->add_class('incontent')->set_template('control.label.outsideleft')
+				$password
 			);
 			$form->append(
-				FormControlPassword::create('password_again')
-					->add_validator('validate_same', $password)
-					->label(_t('Password Again'))->add_class('incontent')->set_template('control.label.outsideleft')
+				FormControlPassword::create( 'password_again' )
+					->set_properties( array( 'class' => 'columns three', 'placeholder' => _t( 'Password Again' ) ) )
+					->add_validator( 'validate_same', $password )
+					//->label(_t('Password Again'))->add_class('incontent')->set_template('control.label.outsideleft')
 			);
-			$form->append(FormControlSubmit::create('newuser')->set_caption('Add User'));
-			$form->add_validator(array($self, 'validate_add_user'));
-			$form->on_success(array($self, 'do_add_user'));
+			$form->append( FormControlSubmit::create( 'newuser' )->set_caption( 'Add User' ) );
+			$form->add_validator( array( $self, 'validate_add_user' ) );
+			$form->on_success( array( $self, 'do_add_user' ) );
 		});
 
 		FormUI::register('delete_users', function(FormUI $form, $name) use ($self) {
