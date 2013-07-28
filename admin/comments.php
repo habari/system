@@ -28,7 +28,7 @@
 	</ul>
 </div>
 
-<div id="comments" class="container manage comments">
+<div id="comments" class="container main manage comments">
 
 <?php $theme->display('comments_items'); ?>
 
