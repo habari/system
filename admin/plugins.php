@@ -27,7 +27,7 @@
 
 <?php
 if ( isset($config_plugin) ): ?>
-<div class="container plugins configureplugin" id="configureplugin">
+<div class="container main plugins configureplugin" id="configureplugin">
 	<h2><?php echo $config_plugin['info']->name; ?> &middot; <?php echo $config_plugin_caption; ?></h2>
 	<?php
 	$theme->config = true;

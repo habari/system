@@ -86,8 +86,8 @@ class AdminUsersHandler extends AdminHandler
 			// Generate sections
 			foreach ( $field_sections as $key => $name ) {
 				$fieldset = $form->append( 'wrapper', $key, $name );
-				$fieldset->add_class('container settings');
-				$fieldset->append( FormControlStatic::create($key)->set_static('<h2>' . htmlentities( $name, ENT_COMPAT, 'UTF-8' ) . '</h2>') );
+				$fieldset->add_class('container main settings');
+				$fieldset->append( FormControlStatic::create($key)->set_static('<h2 class="lead">' . htmlentities( $name, ENT_COMPAT, 'UTF-8' ) . '</h2>') );
 			}
 
 			// User Info
@@ -150,8 +150,8 @@ class AdminUsersHandler extends AdminHandler
 			// Groups
 			if(User::identify()->can('manage_groups')) {
 				$fieldset = $form->append( FormControlWrapper::create('groups'));
-				$fieldset->add_class('container settings');
-				$fieldset->append( FormControlStatic::create('groups_title')->set_static('<h2>' . htmlentities( _t('Groups'), ENT_COMPAT, 'UTF-8' ) . '</h2>' ));
+				$fieldset->add_class('container main settings');
+				$fieldset->append( FormControlStatic::create('groups_title')->set_static('<h2 class="lead">' . htmlentities( _t('Groups'), ENT_COMPAT, 'UTF-8' ) . '</h2>' ));
 				$fieldset->append( FormControlCheckboxes::create('user_group_membership')->set_options(Utils::array_map_field(UserGroups::get_all(), 'name', 'id'))->set_value($edit_user->groups) );
 			}
 

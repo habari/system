@@ -4,7 +4,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 ?>
 <?php include('header.php'); ?>
 <div class="container navigation">
-	<span>
+	<span class="columns seven">
 		<select name="navigationdropdown" onchange="navigationDropdown.changePage();" tabindex="1">
 			<option value="all"><?php _e('All Groups'); ?></option>
 			<?php foreach($groups as $group): ?>
@@ -12,17 +12,17 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 			<?php endforeach; ?>
 		</select>
 	</span>
-	<span class="or">
+	<span class="columns one or">
 		<?php _e('or'); ?>
 	</span>
-	<span>
+	<span class="columns eight">
 		<input type="search" id="search" placeholder="<?php _e('search settings'); ?>" tabindex="2" autofocus="autofocus">
 	</span>
 </div>
 
 <form method="post" action="" id="groupform">
-<div class="container groups allgroups">
-	<h2><?php _e('Group Management'); ?></h2>
+<div class="container main groups allgroups">
+	<h2 class="lead"><?php _e('Group Management'); ?></h2>
 	<div id="groups">
 		<?php foreach ( $groups as $group ):
 			$users = array();
@@ -42,8 +42,8 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 	</div>
 </div>
 
-<div class="container addgroup">
-	<h2><?php _e('Add Group'); ?></h2>
+<div class="container main addgroup">
+	<h2 class="lead"><?php _e('Add Group'); ?></h2>
 
 	<?php echo $add_group_form->get(); ?>
 

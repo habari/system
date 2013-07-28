@@ -4,7 +4,7 @@ $admin_title = _t( 'System Information' );
 
 include_once( 'header.php' ); ?>
 
-<div class="container">
+<div class="container main">
 	<h2 class="lead"><?php _e( "System Information" ); ?></h2>
 	<?php $plaintext_output = strtoupper( _t( "System Information" ) ) . "\n"; ?>
 
@@ -21,7 +21,7 @@ include_once( 'header.php' ); ?>
 
 </div>
 
-<div class="container">
+<div class="container main">
 	<h2 class="lead"><?php _e( "Site Information" ); ?></h2>
 	<?php $plaintext_output .= "\n" . strtoupper( _t( "Site Information" ) ) . "\n"; ?>
 
@@ -38,7 +38,7 @@ include_once( 'header.php' ); ?>
 
 </div>
 
-<div class="container">
+<div class="container main">
 	<h2 class="lead"><?php _e( "Plugin Information" ); ?></h2>
 	<?php $plaintext_output .= "\n" . strtoupper( _t( "Plugin Information" ) ); ?>
 	<table>
@@ -64,7 +64,7 @@ include_once( 'header.php' ); ?>
 	</table>
 </div>
 
-<div class="container">
+<div class="container main">
 	<h2 class="lead"><?php _e( "User Classes" ); ?></h2>
 	<?php $plaintext_output .= "\n" . strtoupper( _t( "User Classes" ) ) . "\n"; ?>
 
@@ -83,7 +83,7 @@ include_once( 'header.php' ); ?>
 	</table>
 </div>
 
-<div class="container">
+<div class="container main">
 	<h2 class="lead"><?php _e( "All Results" ); ?></h2>
 	<textarea class="full-width" rows = "<?php echo substr_count( $plaintext_output, "\n" ); ?>"><?php echo $plaintext_output; ?></textarea>
 </div>
