@@ -188,7 +188,10 @@ class CoreBlocks extends Plugin
 	 */
 	public function action_block_form_monthly_archives( $form, $block )
 	{
-		$form->append( FormControlLabel::wrap( _t( 'Display full month names:' ), 
+        $form->append( FormControlLabel::wrap( _t( 'Archive ordering:' ),
+            FormControlSelect::create( 'order', $block )->set_options( array('ASC' => _t( 'Oldest to Newest' ), 'DESC' => _t( 'Newest to Oldest' ) ) )
+        ));
+        $form->append( FormControlLabel::wrap( _t( 'Display full month names:' ),
 			FormControlCheckbox::create( 'full_names', $block )
 		));
 		$form->append( FormControlLabel::wrap( _t( 'Append post count:' ), 
@@ -213,7 +216,8 @@ class CoreBlocks extends Plugin
 		$results = Posts::get( array(
 			'content_type' => 'entry',
 			'status' => 'published',
-			'month_cts' => 1 )
+			'month_cts' => 1,
+            'orderby' => 'pubdate '.$block->order)
 			);
 
 		foreach ( $results as $result ) {
