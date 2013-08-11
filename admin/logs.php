@@ -12,7 +12,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 
 </div>
 
-<table class="container" id="log_data">
+<table class="container main" id="log_data">
 
 	<thead>
 		<tr>

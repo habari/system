@@ -4,7 +4,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 ?>
 <?php include('header.php'); ?>
 <div class="container navigation">
-	<span>
+	<span class="columns seven">
 		<select name="navigationdropdown" onchange="navigationDropdown.changePage();" tabindex="1">
 			<option value="<?php echo URL::get('display_groups'); ?>"><?php _e('All Groups'); ?></option>
 			<?php foreach ( $groups as $group_nav ): ?>
@@ -12,10 +12,10 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 			<?php endforeach; ?>
 		</select>
 	</span>
-	<span class="or">
+	<span class="columns one or">
 		<?php _e('or'); ?>
 	</span>
-	<span>
+	<span class="columns seven">
 		<input type="search" id="search" placeholder="<?php _e('search settings'); ?>" tabindex="2" autofocus="autofocus">
 	</span>
 </div>

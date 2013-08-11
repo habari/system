@@ -545,8 +545,15 @@ class Format
 					$key++;
 				}
 
+				// if the element is a text node, there were no tags; probably not autop'ed yet, just add link as new line
+				if($end['type'] == HTMLTokenizer::NODE_TYPE_TEXT) {
+					$summary_set->insert( $link_set, $key + 1 );
+				}
+				else {
 				// inject it, whereever we decided it should go
-				$summary_set->insert( $link_set, $key );
+					$summary_set->insert( $link_set, $key );
+				}
+
 
 				// and return a stringified version
 				return (string)$summary_set;

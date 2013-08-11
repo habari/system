@@ -28,7 +28,7 @@ class AdminOptionsHandler extends AdminHandler
 		// Let's register the options page form so we can use it with ajax
 		$self = $this;
 
-		FormUI::register('admin_options', function($form, $name, $extra_data) use ($self) {
+		FormUI::register( 'admin_options', function( $form, $name, $extra_data ) use ( $self ) {
 			$option_items = array();
 			$timezones = \DateTimeZone::listIdentifiers();
 			$timezones = array_merge( array( ''=>'' ), array_combine( array_values( $timezones ), array_values( $timezones ) ) );
@@ -129,28 +129,28 @@ class AdminOptionsHandler extends AdminHandler
 			$tab_index = 3;
 			foreach ( $option_items as $name => $option_fields ) {
 				/** @var FormControlFieldset $fieldset  */
-				$fieldset = $form->append( FormControlWrapper::create(Utils::slugify( _u( $name ) ))->set_properties(array('class' => 'container settings')));
-				$fieldset->append( FormControlStatic::create($name)->set_static( '<h2>' . htmlentities( $name, ENT_COMPAT, 'UTF-8' ) . '</h2>' ) );
-				$fieldset->set_wrap_each('<div>%s</div>');
+				$fieldset = $form->append( FormControlWrapper::create( Utils::slugify( _u( $name ) ) )->set_properties( array( 'class' => 'container main settings' ) ) );
+				$fieldset->append( FormControlStatic::create( $name )->set_static( '<h2 class="lead">' . htmlentities( $name, ENT_COMPAT, 'UTF-8' ) . '</h2>' ) );
+				$fieldset->set_wrap_each( '<div>%s</div>' );
 				foreach ( $option_fields as $option_name => $option ) {
 					/** @var FormControlLabel $label */
-					$label = $fieldset->append(FormControlLabel::create('label_for_' . $option_name, null)->set_label($option['label']));
+					$label = $fieldset->append( FormControlLabel::create( 'label_for_' . $option_name, null )->set_label( $option['label'] ) );
 					/** @var FormControl $field */
 					$field = $label->append( $option['type'], $option_name, $option_name );
-					$label->set_for($field);
-					if(isset($option['value'])) {
-						$field->set_value($option['value']);
+					$label->set_for( $field );
+					if( isset( $option['value'] ) ) {
+						$field->set_value( $option['value'] );
 					}
-					if(isset($option['disabled'])) {
-						$field->set_properties(array('disabled'=>'disabled'));
+					if( isset( $option['disabled'] ) ) {
+						$field->set_properties( array( 'disabled'=>'disabled' ) );
 					}
 					if ( $option['type'] == 'select' && isset( $option['selectarray'] ) ) {
-						$field->set_options($option['selectarray']);
+						$field->set_options( $option['selectarray'] );
 					}
 					$field->tabindex = $tab_index;
 					$tab_index++;
 					if ( isset( $option['helptext'] ) ) {
-						$field->set_helptext($option['helptext']);
+						$field->set_helptext( $option['helptext'] );
 					}
 				}
 			}
@@ -160,9 +160,9 @@ class AdminOptionsHandler extends AdminHandler
 			 * the form controls, or we could create something different
 			 */
 
-			$buttons = $form->append(new FormControlWrapper('buttons', null, array('class' => 'container')));
+			$buttons = $form->append( new FormControlWrapper( 'buttons', null, array( 'class' => 'container' ) ) );
 
-			$buttons->append( FormControlSubmit::create('apply', null, array('tabindex' => $tab_index))->set_caption(_t('Apply')) );
+			$buttons->append( FormControlSubmit::create( 'apply', null, array( 'tabindex' => $tab_index ) )->set_caption( _t( 'Apply' ) ) );
 			$form->on_success( array( $self, 'form_options_success' ) );
 		});
 	}

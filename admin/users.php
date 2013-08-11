@@ -5,24 +5,21 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 <?php include('header.php');?>
 
 <div class="container navigation">
-	<div>
-
-		<form>
+	<span class="columns seven">
 		<select class="navigationdropdown" onChange="navigationDropdown.changePage(this.form.navigationdropdown)" name="navigationdropdown">
 			<option value=""><?php _e('Complete User List'); ?></option>
 		</select>
-		</form>
-	</div>
-	<span class="or">
+	</span>
+	<span class="columns one or">
 		<?php _e('or'); ?>
 	</span>
-	<span>
+	<span class="columns eight">
 		<input id="search" type="search" placeholder="<?php _e('search users'); ?>" autofocus="autofocus">
 	</span>
 </div>
 
 <form method="post" action="" autocomplete="off">
-<div class="container users">
+<div class="container main users">
 
 	<div class="addnewuser item">
 
