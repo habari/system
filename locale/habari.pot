@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-04 00:02+0000\n"
+"POT-Creation-Date: 2013-08-11 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -958,7 +958,7 @@ msgstr ""
 #: classes/post.php:1068 plugins/menus/menus.plugin.php:796
 #: plugins/habarisilo/habarisilo.plugin.php:542
 #: plugins/habarisilo/habarisilo.plugin.php:558
-#: handlers/adminusershandler.php:176 handlers/admincommentshandler.php:439
+#: handlers/adminusershandler.php:181 handlers/admincommentshandler.php:439
 #: admin/block_instances.php:25 admin/block_instances.php:37
 #: admin/group.php:130 admin/posts_items.php:45 admin/groups_item.php:19
 msgid "Delete"
@@ -1042,7 +1042,7 @@ msgstr ""
 msgid "Email <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: classes/post.php:1337 handlers/adminusershandler.php:101
+#: classes/post.php:1337 handlers/adminusershandler.php:106
 msgid "Email"
 msgstr ""
 
@@ -2533,12 +2533,12 @@ msgstr ""
 msgid "Failed to delete file: /%s"
 msgstr ""
 
-#: handlers/adminusershandler.php:25 installer/db_setup.php:54
+#: handlers/adminusershandler.php:23 installer/db_setup.php:54
 #: installer/db_setup.php:101 installer/db_setup.php:183
 msgid "Username"
 msgstr ""
 
-#: handlers/adminusershandler.php:31
+#: handlers/adminusershandler.php:30
 msgid "E-Mail"
 msgstr ""
 
@@ -2548,185 +2548,185 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
-#: handlers/adminusershandler.php:41
+#: handlers/adminusershandler.php:44
 msgid "Password Again"
 msgstr ""
 
-#: handlers/adminusershandler.php:56 handlers/adminusershandler.php:165
-#: handlers/adminusershandler.php:414
+#: handlers/adminusershandler.php:61 handlers/adminusershandler.php:170
+#: handlers/adminusershandler.php:419
 msgid "nobody"
 msgstr ""
 
-#: handlers/adminusershandler.php:66 handlers/adminlogshandler.php:158
+#: handlers/adminusershandler.php:71 handlers/adminlogshandler.php:158
 #: admin/comments.php:20 admin/comments.php:44 admin/tags.php:32
 #: admin/posts.php:23 admin/posts.php:26
 msgid "Delete Selected"
 msgstr ""
 
-#: handlers/adminusershandler.php:77
+#: handlers/adminusershandler.php:82
 msgid "User Information"
 msgstr ""
 
-#: handlers/adminusershandler.php:78
+#: handlers/adminusershandler.php:83
 msgid "Change Password"
 msgstr ""
 
-#: handlers/adminusershandler.php:79
+#: handlers/adminusershandler.php:84
 msgid "Regional Settings"
 msgstr ""
 
-#: handlers/adminusershandler.php:80 handlers/adminhandler.php:364
+#: handlers/adminusershandler.php:85 handlers/adminhandler.php:364
 msgid "Dashboard"
 msgstr ""
 
-#: handlers/adminusershandler.php:95
+#: handlers/adminusershandler.php:100
 msgid "Display Name"
 msgstr ""
 
-#: handlers/adminusershandler.php:98
+#: handlers/adminusershandler.php:103
 msgid "User Name"
 msgstr ""
 
-#: handlers/adminusershandler.php:104
+#: handlers/adminusershandler.php:109
 msgid "Portrait URL"
 msgstr ""
 
-#: handlers/adminusershandler.php:108
+#: handlers/adminusershandler.php:113
 msgid "New Password"
 msgstr ""
 
-#: handlers/adminusershandler.php:111
+#: handlers/adminusershandler.php:116
 msgid "New Password Again"
 msgstr ""
 
-#: handlers/adminusershandler.php:116
+#: handlers/adminusershandler.php:121
 msgid "Passwords must match."
 msgstr ""
 
-#: handlers/adminusershandler.php:123
+#: handlers/adminusershandler.php:128
 msgid "Timezone"
 msgstr ""
 
-#: handlers/adminusershandler.php:126 handlers/adminoptionshandler.php:85
+#: handlers/adminusershandler.php:131 handlers/adminoptionshandler.php:85
 msgid "Date Format"
 msgstr ""
 
-#: handlers/adminusershandler.php:133 handlers/adminusershandler.php:143
+#: handlers/adminusershandler.php:138 handlers/adminusershandler.php:148
 #, php-format
 msgid "See <a href=\"%s\">php.net/date</a> for details. Current format: %s"
 msgstr ""
 
-#: handlers/adminusershandler.php:136 handlers/adminoptionshandler.php:90
+#: handlers/adminusershandler.php:141 handlers/adminoptionshandler.php:90
 msgid "Time Format"
 msgstr ""
 
-#: handlers/adminusershandler.php:147
+#: handlers/adminusershandler.php:152
 msgid "Hide the number of SPAM comments on your dashboard."
 msgstr ""
 
-#: handlers/adminusershandler.php:148
+#: handlers/adminusershandler.php:153
 msgid "Hide Spam Count"
 msgstr ""
 
-#: handlers/adminusershandler.php:154 handlers/adminhandler.php:371
+#: handlers/adminusershandler.php:159 handlers/adminhandler.php:371
 msgid "Groups"
 msgstr ""
 
-#: handlers/adminusershandler.php:161 handlers/adminoptionshandler.php:165
+#: handlers/adminusershandler.php:166 handlers/adminoptionshandler.php:165
 #: admin/group.php:133
 msgid "Apply"
 msgstr ""
 
-#: handlers/adminusershandler.php:173
+#: handlers/adminusershandler.php:178
 msgid "Reassign posts to:"
 msgstr ""
 
-#: handlers/adminusershandler.php:175
+#: handlers/adminusershandler.php:180
 msgid "and"
 msgstr ""
 
-#: handlers/adminusershandler.php:206
+#: handlers/adminusershandler.php:211
 msgid "No such user!"
 msgstr ""
 
-#: handlers/adminusershandler.php:220 handlers/adminhandler.php:142
+#: handlers/adminusershandler.php:225 handlers/adminhandler.php:142
 msgid "Access to that page has been denied by the administrator."
 msgstr ""
 
-#: handlers/adminusershandler.php:230 handlers/adminhandler.php:370
+#: handlers/adminusershandler.php:235 handlers/adminhandler.php:370
 msgid "My Profile"
 msgstr ""
 
-#: handlers/adminusershandler.php:230
+#: handlers/adminusershandler.php:235
 #, php-format
 msgid "User Profile for %s"
 msgstr ""
 
-#: handlers/adminusershandler.php:249
+#: handlers/adminusershandler.php:254
 msgid "You have insufficient permissions to manage your own user account."
 msgstr ""
 
-#: handlers/adminusershandler.php:254
+#: handlers/adminusershandler.php:259
 msgid "You have insufficient permissions to manage users."
 msgstr ""
 
-#: handlers/adminusershandler.php:273 handlers/adminusershandler.php:481
+#: handlers/adminusershandler.php:278 handlers/adminusershandler.php:486
 msgid "You have insufficient permissions to delete users."
 msgstr ""
 
-#: handlers/adminusershandler.php:277 handlers/adminusershandler.php:486
-#: handlers/adminusershandler.php:508
+#: handlers/adminusershandler.php:282 handlers/adminusershandler.php:491
+#: handlers/adminusershandler.php:513
 msgid "You may not assign posts from deleted users to a user that is being deleted"
 msgstr ""
 
-#: handlers/adminusershandler.php:316
+#: handlers/adminusershandler.php:321
 #, php-format
 msgid "%s has been deleted"
 msgstr ""
 
-#: handlers/adminusershandler.php:319
+#: handlers/adminusershandler.php:324
 #, php-format
 msgid "There was a problem deleting %s"
 msgstr ""
 
-#: handlers/adminusershandler.php:338
+#: handlers/adminusershandler.php:343
 #, php-format
 msgid "%1$s has been renamed to %2$s."
 msgstr ""
 
-#: handlers/adminusershandler.php:351
+#: handlers/adminusershandler.php:356
 msgid "Password changed."
 msgstr ""
 
-#: handlers/adminusershandler.php:393
+#: handlers/adminusershandler.php:398
 msgid "User updated."
 msgstr ""
 
-#: handlers/adminusershandler.php:448
+#: handlers/adminusershandler.php:453
 msgid "You have insufficient permissions to add users."
 msgstr ""
 
-#: handlers/adminusershandler.php:462
+#: handlers/adminusershandler.php:467
 #, php-format
 msgid "Added user '%s'"
 msgstr ""
 
-#: handlers/adminusershandler.php:490
+#: handlers/adminusershandler.php:495
 msgid "No users selected to delete!"
 msgstr ""
 
-#: handlers/adminusershandler.php:515
+#: handlers/adminusershandler.php:520
 msgid "No users deleted."
 msgstr ""
 
-#: handlers/adminusershandler.php:543
+#: handlers/adminusershandler.php:548
 #, php-format
 msgid "Deleted one user."
 msgid_plural "Deleted %s users."
 msgstr[0] ""
 msgstr[1] ""
 
-#: handlers/adminusershandler.php:548
+#: handlers/adminusershandler.php:553
 msgid "There was a problem deleting users."
 msgstr ""
 
@@ -3677,11 +3677,11 @@ msgstr ""
 msgid "Link to this comment"
 msgstr ""
 
-#: themes/wazi/post.php:23
+#: themes/wazi/post.php:27
 msgid "There are no comments on this post."
 msgstr ""
 
-#: themes/wazi/post.php:30
+#: themes/wazi/post.php:34
 msgid "Sorry, commenting on this post is disabled."
 msgstr ""
 
@@ -4293,7 +4293,7 @@ msgstr ""
 msgid "Inactive Plugins"
 msgstr ""
 
-#: admin/plugins.php:21 admin/groups.php:16 admin/users.php:17
+#: admin/plugins.php:21 admin/groups.php:16 admin/users.php:14
 #: admin/group.php:16 admin/user.php:16 admin/options.php:13 admin/tags.php:30
 msgid "or"
 msgstr ""
@@ -4374,11 +4374,11 @@ msgstr ""
 msgid "All Results"
 msgstr ""
 
-#: admin/users.php:12
+#: admin/users.php:10
 msgid "Complete User List"
 msgstr ""
 
-#: admin/users.php:20 admin/user.php:19
+#: admin/users.php:17 admin/user.php:19
 msgid "search users"
 msgstr ""
 
