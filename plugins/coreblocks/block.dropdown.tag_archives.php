@@ -7,7 +7,7 @@
 
 		<option value=''>by tag</option>
 		<?php $tags = $content->tags; foreach( $tags as $tag ): ?>
-			<option value="<?php echo $tag[ 'url' ]; ?>"><?php echo $tag[ 'tag' ] . $tag[ 'count' ];
+			<option value="<?php echo $tag[ 'url' ]; ?>"><?php echo $tag[ 'tag' ] . ' ('. $tag[ 'count' ] . ')';
 	?></option>
 		<?php endforeach; ?>
 </select>

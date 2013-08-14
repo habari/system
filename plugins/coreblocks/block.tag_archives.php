@@ -5,7 +5,7 @@
 	<a href="<?php echo $tag[ 'url' ]; ?>" title="View entries tagged '<?php
 		echo $tag[ 'tag' ];
 	?>'"><?php
-		echo $tag[ 'tag' ] . $tag[ 'count' ];
+		echo $tag[ 'tag' ] . ' ('. $tag[ 'count' ] . ')';
 	?></a>
 		</li>
 	<?php endforeach; ?>

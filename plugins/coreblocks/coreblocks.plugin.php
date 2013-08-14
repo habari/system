@@ -300,15 +300,16 @@ class CoreBlocks extends Plugin
 	{
 		$tags = array();
 		$results = Tags::vocabulary()->get_tree();
+        $minCount = 1000000;
+        $maxCount = 1;
+        if ($block->cloud_max == '') { $block->cloud_max = 3; }
+        if ($block->cloud_min == '') { $block->cloud_min = 0.8; }
+        $sizeIncrement = 0;
 
 		foreach( $results as $result ) {
 
 			$count = '';
-			if ( $block->show_counts && $block->style != 'cloud') {
-				$count = " (" . Posts::count_by_tag( $result->term_display, "published") . ")";
-			} else if ($block->show_counts) {
-                /* we don't want text parens for the cloud because the post count is used
-                to derive the span em sizes */
+			if ( $block->show_counts) {
                 $count = Posts::count_by_tag( $result->term_display, "published");
             }
 
@@ -318,7 +319,14 @@ class CoreBlocks extends Plugin
 				'count' => $count,
 				'url' => $url,
 				);
+
+            if ($count > $maxCount) { $maxCount = $count; }
+            if ($count < $minCount) { $minCount = $count; }
 		}
+
+        $sizeIncrement = round(($block->cloud_max - $block->cloud_min) / ($maxCount - $minCount),1);
+        $block->size_increment = $sizeIncrement;
+        $block->min_post_count = $minCount;
 
 		$block->tags = $tags;
 	}
