@@ -105,6 +105,22 @@ CREATE TABLE {$prefix}commentinfo (
   PRIMARY KEY (comment_id,name)
 );
 
+CREATE SEQUENCE commenttype_pkey_seq;
+CREATE TABLE commenttype (
+  id INTEGER NOT NULL DEFAULT nextval('{$prefix}commenttype_pkey_seq'),
+  name VARCHAR(255), 
+  active INTEGER DEFAULT 1,
+  PRIMARY KEY (id)
+);
+
+CREATE SEQUENCE commentstatus_pkey_seq;
+CREATE TABLE commentstatus (
+  id INTEGER NOT NULL DEFAULT nextval('{$prefix}commentstatus_pkey_seq'),
+  name VARCHAR(255), 
+  internal INTEGER DEFAULT 1,
+  PRIMARY KEY (id)
+);
+
 CREATE SEQUENCE {$prefix}rewrite_rules_pkey_seq;
 CREATE TABLE {$prefix}rewrite_rules (
   rule_id INTEGER NOT NULL DEFAULT nextval('{$prefix}rewrite_rules_pkey_seq'),
