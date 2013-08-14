@@ -33,6 +33,7 @@ class CoreBlocks extends Plugin
 		}
 		$this->add_template( "block.dropdown.tag_archives", dirname( __FILE__ ) . "/block.dropdown.tag_archives.php" );
 		$this->add_template( "block.dropdown.monthly_archives", dirname( __FILE__ ) . "/block.dropdown.monthly_archives.php" );
+        $this->add_template( "block.cloud.tag_archives", dirname( __FILE__ ) . "/block.cloud.tag_archives.php");
 	}
 
 	/**
@@ -275,8 +276,16 @@ class CoreBlocks extends Plugin
 			FormControlCheckbox::create( 'show_counts', $block )
 		));
 		$form->append( FormControlLabel::wrap( _t( 'Preferred Output Style:' ),
-			FormControlSelect::create( 'style', $block )->set_options( array('dropdown' => _t( 'Dropdown' ), 'list' => _t( 'List' ) ) )
+			FormControlSelect::create( 'style', $block )->set_options( array(  'dropdown' => _t( 'Dropdown' ),
+                                                                                'list' => _t( 'List' ),
+                                                                                'cloud' => _t( 'Cloud' )) )
 		));
+        $form->append( FormControlLabel::wrap( _t( 'Cloud tag max font size (em):' ),
+            FormControlText::create('cloud_max',$block)
+        ));
+        $form->append( FormControlLabel::wrap( _t( 'Cloud tag min font size (em):' ),
+            FormControlText::create('cloud_min',$block)
+        ));
 	}
 
 	/**
@@ -295,9 +304,13 @@ class CoreBlocks extends Plugin
 		foreach( $results as $result ) {
 
 			$count = '';
-			if ( $block->show_counts ) {
+			if ( $block->show_counts && $block->style != 'cloud') {
 				$count = " (" . Posts::count_by_tag( $result->term_display, "published") . ")";
-			}
+			} else if ($block->show_counts) {
+                /* we don't want text parens for the cloud because the post count is used
+                to derive the span em sizes */
+                $count = Posts::count_by_tag( $result->term_display, "published");
+            }
 
 			$url = URL::get( 'display_entries_by_tag', array( 'tag' => $result->term ) );
 			$tags[] = array(
