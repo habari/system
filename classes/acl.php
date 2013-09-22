@@ -833,6 +833,7 @@ SQL;
 		$anonymous_group->grant( 'post_entry', 'read' );
 		$anonymous_group->grant( 'post_page', 'read' );
 		$anonymous_group->grant( 'comment' );
+		$anonymous_group->deny( 'post_unpublished' );
 
 		// Add the anonymous user to the anonymous group
 		$anonymous_group->add( 0 );
