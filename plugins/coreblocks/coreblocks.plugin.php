@@ -33,6 +33,7 @@ class CoreBlocks extends Plugin
 		}
 		$this->add_template( "block.dropdown.tag_archives", dirname( __FILE__ ) . "/block.dropdown.tag_archives.php" );
 		$this->add_template( "block.dropdown.monthly_archives", dirname( __FILE__ ) . "/block.dropdown.monthly_archives.php" );
+        $this->add_template( "block.cloud.tag_archives", dirname( __FILE__ ) . "/block.cloud.tag_archives.php");
 	}
 
 	/**
@@ -188,7 +189,10 @@ class CoreBlocks extends Plugin
 	 */
 	public function action_block_form_monthly_archives( $form, $block )
 	{
-		$form->append( FormControlLabel::wrap( _t( 'Display full month names:' ), 
+        $form->append( FormControlLabel::wrap( _t( 'Archive ordering:' ),
+            FormControlSelect::create( 'order', $block )->set_options( array('ASC' => _t( 'Oldest to Newest' ), 'DESC' => _t( 'Newest to Oldest' ) ) )
+        ));
+        $form->append( FormControlLabel::wrap( _t( 'Display full month names:' ),
 			FormControlCheckbox::create( 'full_names', $block )
 		));
 		$form->append( FormControlLabel::wrap( _t( 'Append post count:' ), 
@@ -213,7 +217,8 @@ class CoreBlocks extends Plugin
 		$results = Posts::get( array(
 			'content_type' => 'entry',
 			'status' => 'published',
-			'month_cts' => 1 )
+			'month_cts' => 1,
+            'orderby' => 'pubdate '.$block->order)
 			);
 
 		foreach ( $results as $result ) {
@@ -271,8 +276,16 @@ class CoreBlocks extends Plugin
 			FormControlCheckbox::create( 'show_counts', $block )
 		));
 		$form->append( FormControlLabel::wrap( _t( 'Preferred Output Style:' ),
-			FormControlSelect::create( 'style', $block )->set_options( array('dropdown' => _t( 'Dropdown' ), 'list' => _t( 'List' ) ) )
+			FormControlSelect::create( 'style', $block )->set_options( array(  'dropdown' => _t( 'Dropdown' ),
+                                                                                'list' => _t( 'List' ),
+                                                                                'cloud' => _t( 'Cloud' )) )
 		));
+        $form->append( FormControlLabel::wrap( _t( 'Cloud tag max font size (em):' ),
+            FormControlText::create('cloud_max',$block)
+        ));
+        $form->append( FormControlLabel::wrap( _t( 'Cloud tag min font size (em):' ),
+            FormControlText::create('cloud_min',$block)
+        ));
 	}
 
 	/**
@@ -287,13 +300,18 @@ class CoreBlocks extends Plugin
 	{
 		$tags = array();
 		$results = Tags::vocabulary()->get_tree();
+        $minCount = 1000000;
+        $maxCount = 1;
+        if ($block->cloud_max == '') { $block->cloud_max = 3; }
+        if ($block->cloud_min == '') { $block->cloud_min = 0.8; }
+        $sizeIncrement = 0;
 
 		foreach( $results as $result ) {
 
 			$count = '';
-			if ( $block->show_counts ) {
-				$count = " (" . Posts::count_by_tag( $result->term_display, "published") . ")";
-			}
+			if ( $block->show_counts) {
+                $count = Posts::count_by_tag( $result->term_display, "published");
+            }
 
 			$url = URL::get( 'display_entries_by_tag', array( 'tag' => $result->term ) );
 			$tags[] = array(
@@ -301,7 +319,14 @@ class CoreBlocks extends Plugin
 				'count' => $count,
 				'url' => $url,
 				);
+
+            if ($count > $maxCount) { $maxCount = $count; }
+            if ($count < $minCount) { $minCount = $count; }
 		}
+
+        $sizeIncrement = round(($block->cloud_max - $block->cloud_min) / ($maxCount - $minCount),1);
+        $block->size_increment = $sizeIncrement;
+        $block->min_post_count = $minCount;
 
 		$block->tags = $tags;
 	}
