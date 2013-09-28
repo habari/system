@@ -787,6 +787,27 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	}
 
 	/**
+	 * Overrides QueryRecord __isset to implement custom object properties
+	 * @param string $name Name of property to return
+	 * @return boolean true if var is set and not NULL, false otherwise
+	 */
+
+	public function __isset( $name )
+	{
+		$fieldnames = array_merge( array_keys( $this->fields ), array( 'permalink', 'tags', 'comments', 'comment_count', 'approved_comment_count', 'comment_feed_link', 'author', 'editlink', 'info' ) );
+		
+		// Internal fields
+		if( in_array( $name , $fieldnames ))
+		{
+			$value = $this->__get( $name );
+			if(!empty( $value ) && NULL !== $value)
+				return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Overrides QueryRecord __get to implement custom object properties
 	 * @param string $name Name of property to return
 	 * @return mixed The requested field value
