@@ -1,0 +1,33 @@
+[submodule "plugins/autop"]
+	path = plugins/autop
+	url = https://github.com/habari/autop
+[submodule "plugins/coreblocks"]
+	path = plugins/coreblocks
+	url = https://github.com/habari/coreblocks
+[submodule "plugins/coredashblocks"]
+	path = plugins/coredashblocks
+	url = https://github.com/habari/coredashblocks
+[submodule "plugins/flickrsilo"]
+	path = plugins/flickrsilo
+	url = https://github.com/habari/flickrsilo
+[submodule "plugins/habarisilo"]
+	path = plugins/habarisilo
+	url = https://github.com/habari/habarisilo
+[submodule "plugins/menus"]
+	path = plugins/menus
+	url = https://github.com/habari/menus
+[submodule "plugins/pingback"]
+	path = plugins/pingback
+	url = https://github.com/habari/pingback
+[submodule "plugins/simple_private_posts"]
+	path = plugins/simple_private_posts
+	url = https://github.com/habari/simple_private_posts
+[submodule "plugins/spamchecker"]
+	path = plugins/spamchecker
+	url = https://github.com/habari/spamchecker
+[submodule "plugins/undelete"]
+	path = plugins/undelete
+	url = https://github.com/habari/undelete
+[submodule "plugins/wpimport"]
+	path = plugins/wpimport
+	url = https://github.com/habari/wpimport
