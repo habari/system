@@ -31,3 +31,12 @@
 [submodule "plugins/wpimport"]
 	path = plugins/wpimport
 	url = https://github.com/habari/wpimport
+[submodule "themes/wazi"]
+	path = themes/wazi
+	url = https://github.com/habari/wazi
+[submodule "themes/mzingi"]
+	path = themes/mzingi
+	url = https://github.com/habari/mzingi
+[submodule "themes/charcoal"]
+	path = themes/charcoal
+	url = https://github.com/habari/charcoal
