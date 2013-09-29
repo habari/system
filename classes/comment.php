@@ -196,6 +196,30 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
+	 * Overrides QueryRecord __isset to implement custom object properties
+	 * @param string $name Name of property to return
+	 * @return boolean true if var is set and not NULL, false otherwise
+	 */
+
+	public function __isset( $name )
+	{
+		$fieldnames = array_merge( array_keys( $this->fields ), array('post', 'info', 'editlink' ) );
+		
+		// Parent method
+		if( parent::__isset( $name ))
+			return true;
+		
+		if( in_array( $name , $fieldnames ))
+		{
+			$value = $this->__get( $name );
+			if(!empty( $value ) && NULL !== $value)
+				return true;
+		}
+
+		return false;
+	}
+	
+	/**
 	 * function __get
 	 * Overrides QueryRecord __get to implement custom object properties
 	 * @param string Name of property to return
