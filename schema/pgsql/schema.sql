@@ -105,16 +105,16 @@ CREATE TABLE {$prefix}commentinfo (
   PRIMARY KEY (comment_id,name)
 );
 
-CREATE SEQUENCE commenttype_pkey_seq;
-CREATE TABLE commenttype (
+CREATE SEQUENCE {$prefix}commenttype_pkey_seq;
+CREATE TABLE {$prefix}commenttype (
   id INTEGER NOT NULL DEFAULT nextval('{$prefix}commenttype_pkey_seq'),
   name VARCHAR(255), 
   active INTEGER DEFAULT 1,
   PRIMARY KEY (id)
 );
 
-CREATE SEQUENCE commentstatus_pkey_seq;
-CREATE TABLE commentstatus (
+CREATE SEQUENCE {$prefix}commentstatus_pkey_seq;
+CREATE TABLE {$prefix}commentstatus (
   id INTEGER NOT NULL DEFAULT nextval('{$prefix}commentstatus_pkey_seq'),
   name VARCHAR(255), 
   internal INTEGER DEFAULT 1,
