@@ -598,6 +598,19 @@ JAVSCRIPT_RESPONSE;
 			case 'delete_menu':
 				if(Utils::verify_wsse($_GET, true)) {
 					$menu_vocab = Vocabulary::get_by_id( intval( $handler->handler_vars[ 'menu' ] ) );
+					// Delete blocks using this menu
+					$at = Themes::get_active_data( true );
+					$t = Themes::create(Themes::get_active()['name']);
+					$i = 0;
+					foreach($at['areas'] as $area) {
+						foreach($t->get_blocks($area['name'], 0, $t) as $block) {
+							if( $block->type == 'menu' && $block->menu_taxonomy == $handler->handler_vars[ 'menu' ] ) {
+								$block->delete();
+								$i++;
+							}
+						}
+					}
+					Session::notice( sprintf( _n( '%s block linking to this menu deleted.', '%s blocks linking to this menu deleted.', $i), $i ) );
 					$menu_vocab->delete();
 					// log that it has been deleted?
 					Session::notice( _t( 'Menu deleted.' ) );
