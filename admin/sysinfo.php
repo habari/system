@@ -44,8 +44,8 @@ include_once( 'header.php' ); ?>
 	<table>
 	<?php foreach ( $plugins as $section => $sec_plugins ): ?>
 
-	<tr><td colspan="2"><?php echo $section;
-		$plaintext_output .= "\n/$section/plugins:\n"; ?></td></tr>
+	<tr><td colspan="2"><h3 class="sub"><?php echo $section;
+		$plaintext_output .= "\n/$section/plugins:\n"; ?></h3></td></tr>
 
 	<?php foreach ( $sec_plugins as $name => $pluginfile ) : ?>
 		<tr>
