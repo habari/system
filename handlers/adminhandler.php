@@ -235,9 +235,10 @@ class AdminHandler extends ActionHandler
 			$siteinfo[ _t( 'Habari Version' ) ] .= " " . Version::get_git_short_hash();
 		}
 
+		$theme_info = Themes::get_active_data( true );
 		$siteinfo[ _t( 'Habari API Version' ) ] = Version::get_apiversion();
 		$siteinfo[ _t( 'Habari DB Version' ) ] = Version::get_dbversion();
-		$siteinfo[ _t( 'Active Theme' ) ] = Options::get( 'theme_name' );
+		$siteinfo[ _t( 'Active Theme' ) ] = $theme_info['name'] . ' ' . $theme_info['version'];
 		$siteinfo[ _t( 'System Locale' ) ] = Locale::get();
 		$siteinfo[ _t( 'Cache Class' ) ] = Cache::get_class();
 		$this->theme->siteinfo = $siteinfo;
@@ -271,11 +272,11 @@ class AdminHandler extends ActionHandler
 			}
 			if ( preg_match( '%[\\\\/](system|3rdparty|user)[\\\\/]plugins[\\\\/]%i', $file, $matches ) ) {
 				// A plugin's info is XML, cast the element to a string. See #1026.
-				$plugins[strtolower( $matches[1] )][(string)$plugin->info->name] = $file;
+				$plugins[strtolower( $matches[1] )][(string)$plugin->info->name] = array( 'file' => $file, 'version' => (string)$plugin->info->version);
 			}
 			else {
 				// A plugin's info is XML, cast the element to a string.
-				$plugins['other'][(string)$plugin->info->name] = $file;
+				$plugins['other'][(string)$plugin->info->name] = array( 'file' => $file, 'version' => (string)$plugin->info->version);
 			}
 		}
 		$this->theme->plugins = $plugins;

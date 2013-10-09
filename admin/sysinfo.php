@@ -47,12 +47,12 @@ include_once( 'header.php' ); ?>
 	<tr><td colspan="2"><h3 class="sub"><?php echo $section;
 		$plaintext_output .= "\n/$section/plugins:\n"; ?></h3></td></tr>
 
-	<?php foreach ( $sec_plugins as $name => $pluginfile ) : ?>
+	<?php foreach ( $sec_plugins as $name => $plugindata ) : ?>
 		<tr>
-			<td><?php echo $name;
-				$plaintext_output .= $name; ?></td>
-			<td><?php echo $pluginfile;
-				$plaintext_output .= ": $pluginfile\n"; ?></td>
+			<td><?php echo $name . ' ' . $plugindata['version'] ;
+				$plaintext_output .= $name . ' ' . $plugindata['version']; ?></td>
+			<td><?php echo $plugindata['file'];
+				$plaintext_output .= ": " . $plugindata['file'] . "\n"; ?></td>
 		</tr>
 
 	<?php endforeach; ?>
