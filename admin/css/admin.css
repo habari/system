@@ -680,6 +680,18 @@ ol {}
 		background: #B4AD9C;
 	}
 	
+	h3.sub {
+		font-family: "Montserrat";
+		font-weight: normal;
+		font-size: 15px;
+		margin-bottom: 0px;
+		padding-left: 15px;
+		color: #fff;
+		background: #B4AD9C;
+		line-height: 28px;
+		
+	}
+	
 .main {
 	margin-top: 10px;
 	background: rgb(224, 221, 214);
