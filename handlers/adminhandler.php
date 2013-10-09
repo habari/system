@@ -261,10 +261,10 @@ class AdminHandler extends ActionHandler
 		// Assemble Plugin Info
 		$raw_plugins = Plugins::get_active();
 		$plugins = array( 'system'=>array(), 'user'=>array(), '3rdparty'=>array(), 'other'=>array() );
+		$all_plugins = Plugins::list_all();
 		foreach ( $raw_plugins as $plugin ) {
 			$file = $plugin->get_file();
 			// Catch plugins that are symlinked from other locations as ReflectionClass->getFileName() only returns the ultimate file path, not the symlink path, and we really want the symlink path
-			$all_plugins = Plugins::list_all();
 			$filename = basename( $file );
 			if ( array_key_exists( $filename, $all_plugins ) && $all_plugins[$filename] != $file ) {
 				$file = $all_plugins[$filename];
