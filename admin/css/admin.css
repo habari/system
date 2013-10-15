@@ -2599,15 +2599,18 @@ ul.tabs li.last-child {
 	border: none;
 }
 
-ul.tabs li.ui-tabs-selected {
+ul.tabs li.ui-tabs-selected, 
+ul.tabs li.ui-tabs-active {
 	background-position: -10px bottom;
 }
 
-ul.tabs li.ui-tabs-selected.first-child {
+ul.tabs li.ui-tabs-selected.first-child,
+ul.tabs li.ui-tabs-active.first-child {
 	background-position: left bottom;
 }
 
-ul.tabs li.ui-tabs-selected.last-child {
+ul.tabs li.ui-tabs-selected.last-child,
+ul.tabs li.ui-tabs-active.last-child {
 	background-position: right bottom;
 }
 
