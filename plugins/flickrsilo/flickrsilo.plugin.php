@@ -689,6 +689,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 	private static function element_props( $photo, $url, $size ) 
 	{
 		$props = array();
+		$props['title'] = ( $photo['title'] != '' ) ? (string)$photo['title'] : (string)$photo['id'];
 		$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}{$size}.jpg";
 		$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
 		$props['flickr_url'] = $url;
