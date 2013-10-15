@@ -108,7 +108,6 @@ class XMLRPCClient
 				return XMLRPCUtils::decode_args( $responsestruct );
 			}
 			catch ( \Exception $e ){
-				//Utils::debug( $response, $e );
 				error_reporting( $bit );
 				return false;
 			}

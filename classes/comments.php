@@ -363,7 +363,6 @@ class Comments extends \ArrayObject
 		}
 		$query .= ( $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
 		$query .= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
-		//Utils::debug( $query, $params );
 
 		DB::set_fetch_mode( \PDO::FETCH_CLASS );
 		DB::set_fetch_class( 'Comment' );

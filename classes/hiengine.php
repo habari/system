@@ -44,7 +44,6 @@ class HiEngine extends RawPHPEngine {
 	public function display( $template )
 	{
 		extract( $this->engine_vars );
-		//Utils::debug($this->engine_vars);die();
 		if ( $this->template_exists( $template ) ) {
 			$template_file = isset( $this->template_map[$template] ) ? $this->template_map[$template] : null;
 			$template_file = Plugins::filter( 'include_template_file', $template_file, $template, __CLASS__ );

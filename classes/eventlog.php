@@ -352,8 +352,6 @@ if(isset($paramarray['type'])) {
 		DB::set_fetch_mode( \PDO::FETCH_CLASS );
 		DB::set_fetch_class( 'LogEntry' );
 		$results = DB::$fetch_fn( $query->get(), $query->params(), 'LogEntry' );
-		//Utils::debug($results, $query->get(), $query->params());
-		//Utils::debug( $paramarray, $fetch_fn, $query->get(), $query->params(), $results );
 
 		// If the fetch callback function is not get_results,
 		// return an EventLog ArrayObject filled with the results as LogEntry objects.

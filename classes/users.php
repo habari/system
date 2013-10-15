@@ -194,7 +194,6 @@ class Users extends \ArrayObject
 			$query .= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
 		$query .= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
-		// Utils::debug($paramarray, $fetch_fn, $query, $params);
 
 		DB::set_fetch_mode( \PDO::FETCH_CLASS );
 		DB::set_fetch_class( 'User' );
