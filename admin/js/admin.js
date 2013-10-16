@@ -511,7 +511,7 @@ var themeManage = {
 			block.find('.instance_controls,small').remove();
 			block.append('<div class="close">&nbsp;</div><div class="handle">&nbsp;</div>');
 			// Add the block to the target area
-			var target = $('#'+($(this).attr('class').match(/target_(\w+)/)[1]));
+			var target = $('#'+($(this).attr('class').match(/target_([\w-]+)/)[1]));
 			target.append(block);
 			themeManage.refresh_areas();
 			return false;
