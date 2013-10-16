@@ -141,7 +141,7 @@ class AdminOptionsHandler extends AdminHandler
 					if( isset( $option['value'] ) ) {
 						$field->set_value( $option['value'] );
 					}
-					if( isset( $option['disabled'] ) ) {
+					if( isset( $option['disabled'] ) && $option['disabled'] == true ) {
 						$field->set_properties( array( 'disabled'=>'disabled' ) );
 					}
 					if ( $option['type'] == 'select' && isset( $option['selectarray'] ) ) {
