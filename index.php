@@ -163,7 +163,7 @@ Plugins::act( 'plugins_loaded' );
 Session::init();
 
 // Set the locale from the user info else config, database, then default english locale
-if ( User::identify()->info->locale_lang ) {
+if ( User::identify()->loggedin && User::identify()->info->locale_lang ) {
 	Locale::set( User::identify()->info->locale_lang );
 }
 else {
