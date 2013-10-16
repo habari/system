@@ -161,6 +161,7 @@ class User extends QueryRecord implements FormStorage, IsContent
 		$this->info->locale_tz = Options::get( 'timezone' );
 		$this->info->locale_date_format = Options::get( 'dateformat' );
 		$this->info->locale_time_format = Options::get( 'timeformat' );
+		$this->info->locale_lang = Options::get( 'locale', 'en-us' );
 
 		$this->info->commit();
 

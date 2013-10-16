@@ -132,12 +132,6 @@ else {
 
 /* Habari is installed and we established a connection with the database */
 
-// Set the locale from config, database, then default english locale
-Locale::set( Config::get('locale', Options::get( 'locale', 'en-us' )) );
-if ( Options::get( 'system_locale' ) ) {
-	Locale::set_system_locale( Options::get( 'system_locale' ) );
-}
-
 // Verify if the database has to be upgraded.
 if ( Version::requires_upgrade() ) {
 	$installer = new InstallHandler();
@@ -167,6 +161,17 @@ Plugins::act( 'plugins_loaded' );
 
 // Start the session.
 Session::init();
+
+// Set the locale from the user info else config, database, then default english locale
+if ( User::identify()->info->locale_lang ) {
+	Locale::set( User::identify()->info->locale_lang );
+}
+else {
+	Locale::set( Config::get('locale', Options::get( 'locale', 'en-us' )) );
+}
+if ( Options::get( 'system_locale' ) ) {
+	Locale::set_system_locale( Options::get( 'system_locale' ) );
+}
 
 // Replace the $_COOKIE superglobal with an object representation
 SuperGlobal::process_c();

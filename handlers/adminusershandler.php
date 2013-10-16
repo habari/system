@@ -147,6 +147,9 @@ class AdminUsersHandler extends AdminHandler
 			}
 			$locale_time_format->set_helptext(_t( 'See <a href="%s">php.net/date</a> for details. Current format: %s', array( 'http://php.net/date', $current ) ));
 
+			$locales = array_merge( array( '' => _t( 'System default' ) . ' (' . Options::get( 'locale', 'en-us' ) . ')' ), array_combine( Locale::list_all(), Locale::list_all() ) );
+			$locale_lang = FormcontrolSelect::create( 'locale_lang', null, array( 'multiple' => false ) )->set_options( $locales )->set_value( $edit_user->info->locale_lang );
+			$form->regional_settings->append( FormControlLabel::wrap( _t(' Language' ), $locale_lang ) );
 
 			$spam_count = FormControlCheckbox::create('dashboard_hide_spam_count')
 				->set_helptext(_t( 'Hide the number of SPAM comments on your dashboard.' ))->set_value($edit_user->info->dashboard_hide_spam_count);
@@ -373,7 +376,7 @@ class AdminUsersHandler extends AdminHandler
 		}
 
 		// Set various info fields
-		$info_fields = array( 'displayname', 'imageurl', 'locale_tz', 'locale_date_format', 'locale_time_format', 'dashboard_hide_spam_count' );
+		$info_fields = array( 'displayname', 'imageurl', 'locale_tz', 'locale_lang', 'locale_date_format', 'locale_time_format', 'dashboard_hide_spam_count' );
 
 		// let plugins easily specify other user info fields to pick
 		$info_fields = Plugins::filter( 'adminhandler_post_user_fields', $info_fields );
