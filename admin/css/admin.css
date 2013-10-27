@@ -358,7 +358,7 @@ body, html {
 	z-index: 50;
 }
 
-.page-dashboard #page {
+.page-dashboard #page, .page-publish #page {
 	padding-bottom: 0px;
 }
 
@@ -415,7 +415,7 @@ input.full-width {
 	width: 99%;
 }
 
-#page > .container {
+#page > .container, #page > form {
 	padding-top: 65px;
 }
 
