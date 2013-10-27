@@ -415,7 +415,7 @@ input.full-width {
 	width: 99%;
 }
 
-#status {
+#page > .container {
 	padding-top: 65px;
 }
 
