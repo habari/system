@@ -1096,6 +1096,12 @@ class Posts extends \ArrayObject implements IsContent
 		return array_search( $needle, $this->getArrayCopy() );
 	}
 	
+	/**
+	 * Search this Posts object for the needle, returns its key if found. Only compare the post IDs
+	 *
+	 * @param Post $needle Post object to find within this Posts object
+	 * @return mixed Returns the index of the needle, on failure, null is returned
+	 */
 	public function search_id( $needle )
 	{
 		foreach($this->getArrayCopy() as $index => $post) {
