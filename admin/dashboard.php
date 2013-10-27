@@ -1,7 +1,7 @@
 <?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php include( 'header.php' ); ?>
-<div class="container">
+<div class="container" id="status">
 		<!--[if lte IE 6]>
 		<p><?php
 		

@@ -349,7 +349,6 @@ body, html {
 	z-index: 5;
 	position:relative;
 	padding-bottom: 75px;
-	margin-top: 65px;
 }
 
 #spinner {
@@ -414,6 +413,10 @@ body, html {
 textarea.full-width,
 input.full-width {
 	width: 99%;
+}
+
+#status {
+	padding-top: 65px;
 }
 
 #welcome {
