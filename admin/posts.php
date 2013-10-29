@@ -33,12 +33,13 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 
 </div>
 
+<table class="container main">
+	<tbody class="manage_posts">
 
-<div class="container posts">
+	<?php $theme->display('posts_items'); ?>
 
-<?php $theme->display('posts_items'); ?>
-
-</div>
+	</tbody>
+</table>
 
 <script type="text/javascript">
 	itemManage.updateURL = habari.url.ajaxUpdatePosts;
