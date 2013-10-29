@@ -1614,12 +1614,6 @@ $(document).ready(function(){
 		}, 200);
 	});
 
-	// Alternate the rows' styling.
-	$("table").each( function() {
-		$("tr:odd", this).not(".even").addClass("odd");
-		$("tr:even", this).not(".odd").addClass("even");
-	});
-
 	// Prevent all checkboxes to be unchecked.
 	$(".search_field").click(function(){
 		if ($(".search_field:checked").size() === 0 && !$(this).attr('checked')) {
