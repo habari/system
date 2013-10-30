@@ -33,7 +33,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 
 </div>
 
-<table class="container main">
+<table class="container main" id="post_data">
 	<tbody class="manage_posts">
 
 	<?php $theme->display('posts_items'); ?>

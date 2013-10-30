@@ -10,7 +10,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 <tr class="<?php echo $post->typename . ' ' . $post->statusname; ?>" id="post_<?php echo $post->id; ?>">
 	<?php if ( ACL::access_check( $post_permissions, 'delete' ) ): ?>
 	<td class="checkbox">
-		<input type="checkbox" class="checkbox post_item" name="checkbox_ids[<?php echo $post->id; ?>]" value="<?php echo $post->id; ?>">
+		<input type="checkbox" name="checkbox_ids[<?php echo $post->id; ?>]" value="<?php echo $post->id; ?>">
 	</td>
 	<?php endif; ?>
 	
@@ -26,7 +26,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 	<td class="date"><?php _e('on'); ?> <a href="<?php URL::out('admin', array('page' => 'posts', 'type' => $post->content_type, 'year_month' => $post->pubdate->get('Y-m') ) ); ?>" title="<?php _e('Search for other items from %s', array( $post->pubdate->get( 'M, Y' ) ) ); ?>"><?php $post->pubdate->out( DateTime::get_default_date_format() ); ?></a></td>
 	<td class="time"><?php _e('at'); ?> <?php $post->pubdate->out( DateTime::get_default_time_format()); ?></td>
 
-	<td rowspan="2" class="actions">
+	<td class="actions">
 		<?php
 		$post_actions = FormControlDropbutton::create('post' . $post->id . '_postactions');
 		$post_actions->append(
@@ -57,7 +57,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 	</td>
 </tr>
 <tr class="content">
-	<td colspan="6" class="excerpt" ><?php echo MultiByte::substr( strip_tags( $post->content ), 0, 250); ?>&hellip;</td>
+	<td colspan="7" class="excerpt" ><?php echo MultiByte::substr( strip_tags( $post->content ), 0, 250); ?>&hellip;</td>
 </tr>
 
 <?php endforeach;

@@ -799,6 +799,32 @@ input[type=text] {
 	padding: 5px !important;
 }
 
+.container td {
+	padding: 10px 3px 0px 0px;
+}
+table .checkbox {
+	width: 30px;
+	padding-left: 10px;
+}
+.title {
+	min-width: 320px;
+	padding-left: 5px;
+}
+.date {
+	max-width: 185px;
+}
+.time {
+	max-width: 100px;
+}
+.container .actions {
+	width: 120px;
+	text-align: right;
+	padding-right: 10px;
+}
+.container .excerpt {
+	padding: 10px;
+}
+
 /**  Page-specific **/
 
 #create_content {}
@@ -916,15 +942,22 @@ input[type=text] {
 				text-indent: 0px;
 				padding-left: 5px;
 			}
-	
+
+#post_data td {
+	white-space: nowrap;
+	overflow: hidden;
+	margin-right: 3px;
+}
+
 #log_data {  /* this will do for now */
 	table-layout: fixed;
 }
-	#log_data .checkbox {
-		width: 30px;
-	}
 	#log_data td {
 		white-space: nowrap;
+	}
+	
+	#post_data .content td {
+		white-space: normal;
 	}
 
 .page-sysinfo table {
