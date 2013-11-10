@@ -522,7 +522,7 @@ class Theme extends Pluggable
 		
 		$paramarray['user_filters'] = array_merge( $default_filters, $user_filters );
 
-		$this->assign( 'criteria', Controller::get_handler_vars()->escape( 'criteria' ) );
+		$this->assign( 'criteria', $_GET['criteria'] );
 		return $this->act_display( $paramarray );
 	}
 
