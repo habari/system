@@ -32,33 +32,38 @@ class Theme extends Pluggable
 	 * also, optionally, by the Theme )
 	 */
 	public $valid_filters = array(
-		'preset',
-		'content_type',
-		'not:content_type',
-		'slug',
-		'not:slug',
-		'user_id',
-		'vocabulary',
-		'status',
-		'page',
-		'tag',
-		'not:tag',
-		'month',
-		'year',
-		'day',
-		'criteria',
-		'limit',
-		'nolimit',
-		'offset',
-		'fetch_fn',
-		'id',
-		'info',
-		'has:info',
-		'all:info',
-		'any:info',
-		'not:info',
-		'not:all:info',
-		'not:any:info',
+		'handler_vars' => array(
+			'preset',
+			'content_type',
+			'not:content_type',
+			'slug',
+			'not:slug',
+			'user_id',
+			'vocabulary',
+			'status',
+			'page',
+			'tag',
+			'not:tag',
+			'month',
+			'year',
+			'day',
+			'limit',
+			'nolimit',
+			'offset',
+			'fetch_fn',
+			'id',
+			'info',
+			'has:info',
+			'all:info',
+			'any:info',
+			'not:info',
+			'not:all:info',
+			'not:any:info',
+		),
+		'GET' => array(
+			'criteria',
+		),
+		'POST' => array(),
 	);
 
 	/**
@@ -205,8 +210,18 @@ class Theme extends Pluggable
 			}
 		}
 
+		/**
+		 * Since handler_vars no longer contains $_GET and $_POST, we have broken out our valid filters into
+		 * an array based upon where we should expect them to be. We then only merge those specific pieces together.
+		 *
+		 * These are ordered so that handler vars gets overwritten by POST, which gets overwritten by GET, should the
+		 * same key exist multiple places. This seemed logical to me at the time, but needs further thought.
+		 */
 		$where_filters = array();
-		$where_filters = Controller::get_handler_vars()->filter_keys( $this->valid_filters );
+		$where_filters_hv = Controller::get_handler_vars()->filter_keys( $this->valid_filters['handler_vars'] );
+		$where_filters_post = $_POST->filter_keys( $this->valid_filters['POST'] );
+		$where_filters_get = $_GET->filter_keys( $this->valid_filters['GET'] );
+		$where_filters = $where_filters_hv->merge( $where_filters_post, $where_filters_get );
 		$where_filters['vocabulary'] = array();
 
 		if ( array_key_exists( 'tag', $where_filters ) ) {
