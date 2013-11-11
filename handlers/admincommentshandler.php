@@ -516,8 +516,8 @@ class AdminCommentsHandler extends AdminHandler
 		$ar = new AjaxResponse();
 
 		// check WSSE authentication
-		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
-		if ( $handler_vars['digest'] != $wsse['digest'] ) {
+		$wsse = Utils::WSSE( $_POST['nonce'], $_POST['timestamp'] );
+		if ( $_POST['digest'] != $wsse['digest'] ) {
 			$ar->message = _t( 'WSSE authentication failed.' );
 			$ar->out();
 			return;
@@ -532,17 +532,17 @@ class AdminCommentsHandler extends AdminHandler
 			}
 		}
 
-		if ( ( ! isset( $ids ) || empty( $ids ) ) && $handler_vars['action'] == 'delete' ) {
+		if ( ( ! isset( $ids ) || empty( $ids ) ) && $_POST['action'] == 'delete' ) {
 			$ar->message = _t( 'No comments selected.' );
 			$ar->out();
 			return;
 		}
 
 		$comments = Comments::get( array( 'id' => $ids, 'nolimit' => true ) );
-		Plugins::act( 'admin_moderate_comments', $handler_vars['action'], $comments, $this );
+		Plugins::act( 'admin_moderate_comments', $_POST['action'], $comments, $this );
 		$status_msg = _t( 'Unknown action "%s"', array( $handler_vars['action'] ) );
 
-		switch ( $handler_vars['action'] ) {
+		switch ( $_POST['action'] ) {
 			case 'delete_spam':
 				Comments::delete_by_status( 'spam' );
 				$status_msg = _t( 'Deleted all spam comments' );
@@ -575,7 +575,7 @@ class AdminCommentsHandler extends AdminHandler
 				break;
 			default:
 				// Specific plugin-supplied action
-				$status_msg = Plugins::filter( 'admin_comments_action', $status_msg, $handler_vars['action'], $comments );
+				$status_msg = Plugins::filter( 'admin_comments_action', $status_msg, $_POST['action'], $comments );
 				break;
 		}
 
