@@ -816,8 +816,8 @@ table .checkbox {
 .time {
 	max-width: 100px;
 }
-.container .actions {
-	width: 120px;
+.container .actions div {
+	width: 110px;
 	text-align: right;
 	padding-right: 10px;
 }
