@@ -18,7 +18,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 	</span>
 </div>
 
-<form method="post" action="" autocomplete="off">
+
 <div class="container main users">
 
 	<div class="addnewuser item">
@@ -37,7 +37,6 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 
 	</div>
 </div>
-</form>
 
 
 
