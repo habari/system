@@ -423,8 +423,8 @@ class AdminPostsHandler extends AdminHandler
 		Utils::check_request_method( array( 'POST' ) );
 		$response = new AjaxResponse();
 
-		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
-		if ( $handler_vars['digest'] != $wsse['digest'] ) {
+		$wsse = Utils::WSSE( $_POST['nonce'], $_POST['timestamp'] );
+		if ( $_POST['digest'] != $wsse['digest'] ) {
 			$response->message = _t( 'WSSE authentication failed.' );
 			$response->out();
 			return;
@@ -444,9 +444,9 @@ class AdminPostsHandler extends AdminHandler
 			$posts = Posts::get( array( 'id' => $ids, 'nolimit' => true ) );
 		}
 
-		Plugins::act( 'admin_update_posts', $handler_vars['action'], $posts, $this );
-		$status_msg = _t( 'Unknown action "%s"', array( $handler_vars['action'] ) );
-		switch ( $handler_vars['action'] ) {
+		Plugins::act( 'admin_update_posts', $_POST['action'], $posts, $this );
+		$status_msg = _t( 'Unknown action "%s"', array( $_POST['action'] ) );
+		switch ( $_POST['action'] ) {
 			case 'delete':
 				$deleted = 0;
 				foreach ( $posts as $post ) {
@@ -464,7 +464,7 @@ class AdminPostsHandler extends AdminHandler
 				break;
 			default:
 				// Specific plugin-supplied action
-				Plugins::act( 'admin_posts_action', $response, $handler_vars['action'], $posts );
+				Plugins::act( 'admin_posts_action', $response, $_POST['action'], $posts );
 				break;
 		}
 
