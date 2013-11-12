@@ -924,6 +924,10 @@ input[type=text] {
 }
 
 /* Manage page */
+.aggregate_ui, .aggregate_control + label {
+	float: left;
+}
+
 #page > .container.posts {
 	padding-top: 10px;
 }
