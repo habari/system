@@ -931,29 +931,29 @@ input[type=text] {
 #page > .container.posts {
 	padding-top: 10px;
 }
-.container li {
+.posts ul li {
 	padding: 10px 3px 0px 0px;
 }
-.meta {
+.posts ul .meta {
 	float: right;
 	display: inline;
 }
-ul .checkbox, .title, .state, .author, .date, .time {
+.posts ul .checkbox, .posts ul .title, .posts ul .state, .posts ul .author, .posts ul .date, .posts ul .time {
 	padding-left: 5px;
 	float: left;
 	line-height: 31px;
 }
-.actions {
+.posts ul .actions {
 	display: inline-block;
 	width: 110px;
 	text-align: right;
 	float: right;
 	padding-left: 15px;
 }
-.content {
+.posts ul .content {
 	clear: both;
 }
-.excerpt {
+.posts ul .excerpt {
 	padding: 10px;
 }
 
