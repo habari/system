@@ -348,7 +348,6 @@ body, html {
 	min-height: 100%;
 	z-index: 5;
 	position:relative;
-	padding-bottom: 75px;
 }
 
 #spinner {
@@ -356,10 +355,6 @@ body, html {
 	top: 45px;
 	right: 10px;
 	z-index: 50;
-}
-
-.page-dashboard #page, .page-publish #page {
-	padding-bottom: 0px;
 }
 
 #menubar {
@@ -1030,7 +1025,6 @@ input[type=text] {
 	color: #fff;
 	padding: 20px 0px;
 	text-align: center;
-	width: 100%;
 }
 	#footer span {
 		font-weight: bold;
