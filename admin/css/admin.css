@@ -419,6 +419,10 @@ input.full-width {
 	padding-top: 65px;
 }
 
+#page .container + .container {
+	padding-top: 0px;
+}
+
 #welcome {
 	margin-top: 25px;
 	margin-bottom: 20px;
@@ -477,7 +481,6 @@ input.full-width {
 			}
 				.modulecore ul li .date {
 					float:left;
-					margin-right: 20px;
 				}
 				
 				.modulecore ul li .comments {
@@ -548,7 +551,7 @@ input.full-width {
 		}
 
 #add-item-module  {
-	height: 60px;
+	height: 80px;
 }
 
 .navigation {
@@ -1021,7 +1024,6 @@ input[type=text] {
 #humanMsgLog {display:none;}
 
 #footer {
-	position:absolute;
 	bottom:0px;
 	left: 0px;
 	background: #333;
