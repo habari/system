@@ -150,6 +150,7 @@ class Site
 				if ( isset( $_SERVER['HTTPS'] ) && !empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' ) {
 					$protocol = 'https';
 				}
+				$protocol = Config::get( 'custom_http_protocol', $protocol );
 				$url = $protocol . '://' . $host . $portpart;
 				break;
 			case 'habari':
