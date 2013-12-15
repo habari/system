@@ -53,8 +53,9 @@
 		</span>
 	</div>
 </li>
-<?php endforeach;
-else : ?>
+<?php endforeach; ?>
+</ul>
+<?php else : ?>
 <div class="message none">
 	<p><?php _e('No comments could be found to match the query criteria.'); ?></p>
 </div>
