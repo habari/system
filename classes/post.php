@@ -230,10 +230,10 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	{
 		$types = Post::list_active_post_types();
 		if ( is_numeric( $name ) && ( false !== in_array( $name, $types ) ) ) {
-			return $name;
+			return (int) $name;
 		}
 		if ( isset( $types[ MultiByte::strtolower( $name ) ] ) ) {
-			return $types[ MultiByte::strtolower( $name ) ];
+			return (int) $types[ MultiByte::strtolower( $name ) ];
 		}
 		return false;
 	}
