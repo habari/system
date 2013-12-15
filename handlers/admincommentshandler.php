@@ -453,6 +453,8 @@ class AdminCommentsHandler extends AdminHandler
 					// just grab something so the thing is labeled
 					$action['label'] = _t($name);
 				}
+				// replace constants/placeholders
+				$action['url'] = str_replace('__commentid__', $comment->id, $action['url']);
 				$entry = FormControlSubmit::create($name)
 					->set_caption($action['label'])
 					->set_url($action['url'])
