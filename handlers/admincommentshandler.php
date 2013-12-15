@@ -21,8 +21,6 @@ class AdminCommentsHandler extends AdminHandler
 	{
 		$form = new FormUI( 'comment' );
 
-		$user = User::identify();
-
 		// Create the top description
 		$top = $form->append( FormControlWrapper::create( 'buttons_1', null, array( 'class' => array( 'container', 'buttons', 'comment', 'overview' ) ) ) );
 		$top->append( FormControlStatic::create( 'overview', null )->set_static( $this->theme->fetch( 'comment.overview' ) ) );
