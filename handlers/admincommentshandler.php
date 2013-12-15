@@ -439,18 +439,29 @@ class AdminCommentsHandler extends AdminHandler
 
 		/* Allow plugins to apply actions */
 		$actions = Plugins::filter( 'comments_actions', $baseactions, $this->theme->comments );
-
+		
 		foreach ( $this->theme->comments as $comment ) {
 			// filter the actions based on the user's permissions
 			$comment_access = $comment->get_access();
-			$menu = array();
+			$menu = FormControlDropbutton::create('comment' . $comment->id . '_commentactions');
 			foreach ( $actions as $name => $action ) {
-				if ( !isset( $action['access'] ) || ACL::access_check( $comment_access, $action['access'] ) ) {
-					$menu[$name] = $action;
+				if($name == Comment::status_name($comment->status)) {
+					// skip current status
+					continue;
+				}
+				if(!isset($action['label']) || empty($action['label'])) {	
+					// just grab something so the thing is labeled
+					$action['label'] = _t($name);
+				}
+				$entry = FormControlSubmit::create($name)
+					->set_caption($action['label'])
+					->set_url($action['url'])
+					->set_property('title', $action['title']);
+				if(!isset($action['access']) || ACL::access_check($comment_access, $action['access'])) {
+					$menu->append($entry);
 				}
 			}
-			// remove the current status from the dropmenu
-			unset( $menu[Comment::status_name( $comment->status )] );
+
 			$comment->menu = Plugins::filter( 'comment_actions', $menu, $comment );
 		}
 	}

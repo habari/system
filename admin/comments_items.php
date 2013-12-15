@@ -17,19 +17,10 @@
 		</span>
 		<div class="actions">
 			<?php
-			$comment_actions = FormControlDropbutton::create('comment' . $comment->id . '_commentactions');
+			echo $comment->menu->pre_out();
+			echo $comment->menu->get($theme);
 			?>
 		</div>
-	<!--
-		<ul class="dropbutton">
-			<?php
-			foreach($comment->menu as $act_id => $action):
-				$url = str_replace('__commentid__', $comment->id, $action['url']);
-			?>
-			<li class="<?php echo $act_id; if (isset($action['nodisplay']) && $action['nodisplay'] == true) { echo ' nodisplay'; } ?>"><a href="<?php echo $url; ?>" title="<?php echo $action['title']; ?>"><?php echo $action['label']; ?></a></li>
-			<?php endforeach;?>
-			<?php $theme->admin_comment_actions($comment); ?>
-		</ul>-->
 	</div>
 
 	<div>
