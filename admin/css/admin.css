@@ -955,10 +955,14 @@ input[type=text] {
 }
 .manage ul .actions {
 	display: inline-block;
-	width: 110px;
+	width: 180px;
 	text-align: right;
 	float: right;
 	padding-left: 15px;
+}
+.manage ul .actions li {
+	padding: 0;
+	border: 0;
 }
 .manage ul .head + div {
 	clear: both;
