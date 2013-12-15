@@ -1,24 +1,26 @@
 <?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-<?php if ( count($comments) != 0 ) :
-	foreach ( $comments as $comment ) : ?>
-
-<div class="item <?php echo strtolower( $comment->statusname ); ?>" id="comment_<?php echo $comment->id; ?>" style="<?php echo Plugins::filter('comment_style', '', $comment); ?>">
+<?php if ( count($comments) != 0 ) : ?>
+<ul>
+<?php foreach ( $comments as $comment ) : ?>
+<li class="comment <?php echo strtolower( $comment->statusname ); ?>" id="comment_<?php echo $comment->id; ?>" style="<?php echo Plugins::filter('comment_style', '', $comment); ?>">
 	<div class="head">
-		<span class="checkbox title">
-			<input type="checkbox" class="checkbox" name="comment_ids[<?php echo $comment->id; ?>]" id="comments_ids[<?php echo $comment->id; ?>]" value="1">
+		<span class="checkbox">
+			<input class="comment_checkbox" type="checkbox" name="checkbox_ids[<?php echo $comment->id; ?>]" value="<?php echo $comment->id; ?>">
 		</span>
-		<span class="checkbox title">
-			<?php if ( $comment->url != '' ): ?>
-			<a href="#" class="author" title="<?php echo Utils::htmlspecialchars( $comment->name ); ?>"><?php echo Utils::htmlspecialchars( $comment->name ); ?></a>
-			<?php else: ?>
-			<?php echo Utils::htmlspecialchars( $comment->name ); ?>
-			<?php endif; ?>
+		<div class="comment-info">
+			<span class="comment-status"><?php _e($comment->statusname); ?></span>
+			<span class="comment-type"><?php echo Plugins::filter( 'comment_type_display', $comment->typename, 'singular' ); ?></span>
+		</div>
+		<span class="title comment_post">
+			<?php _e('in'); ?> <a href="<?php echo $comment->post->permalink ?>#comment-<?php echo $comment->id; ?>" title="<?php _e( 'Go to %s', array( $comment->post->title ) ); ?>"><?php echo $comment->post->title; ?></a>
 		</span>
-		<span class="title"><span class="dim"><?php _e('in'); ?> '</span><a href="<?php echo $comment->post->permalink ?>#comment-<?php echo $comment->id; ?>" title="<?php _e( 'Go to %s', array( $comment->post->title ) ); ?>"><?php echo $comment->post->title; ?></a><span class="dim">'</span></span>
-		<span class="date"><span class="dim"><?php _e('on'); ?></span> <a href="<?php URL::out('admin', array('page' => 'comments', 'status' => $comment->status, 'year' => $comment->date->year, 'month' => $comment->date->mon )); ?>" title="<?php _e('Search for other comments from %s', array($comment->date->format( 'M, Y' ) ) ); ?>"><?php $comment->date->out( DateTime::get_default_date_format() ); ?></a></span>
-		<span class="time dim"><?php _e('at'); ?> <span><?php $comment->date->out( DateTime::get_default_time_format() );?></span></span>
-
+		<div class="actions">
+			<?php
+			$comment_actions = FormControlDropbutton::create('comment' . $comment->id . '_commentactions');
+			?>
+		</div>
+	<!--
 		<ul class="dropbutton">
 			<?php
 			foreach($comment->menu as $act_id => $action):
@@ -27,48 +29,40 @@
 			<li class="<?php echo $act_id; if (isset($action['nodisplay']) && $action['nodisplay'] == true) { echo ' nodisplay'; } ?>"><a href="<?php echo $url; ?>" title="<?php echo $action['title']; ?>"><?php echo $action['label']; ?></a></li>
 			<?php endforeach;?>
 			<?php $theme->admin_comment_actions($comment); ?>
-		</ul>
+		</ul>-->
 	</div>
 
-	<div class="infoandcontent">
-		<div class="authorinfo">
-			<ul>
-				<?php if ( $comment->url != '' ) {
-						echo '<li><a class="url" href="' . $comment->url . '">' . $comment->url . '</a></li>'."\r\n";
-					}
-					else {
-						echo '<li class="empty">' . _t( 'no url given' ) . '</li>';
-					} ?>
-				<?php if ( $comment->email != '' ) {
-						echo '<li><a class="email" href="mailto:' . $comment->email . '">' . $comment->email . '</a></li>'."\r\n";
-					}
-					else {
-						echo '<li class="empty">' . _t( 'no email provided' ) . '</li>';
-					} ?>
-				<?php if ( $comment->ip ): ?>
-					<li><?php echo $comment->ip; ?></li>
-				<?php endif; ?>
-			</ul>
-			<?php if ( $comment->is_spam ) :?>
-				<p><?php _e('Marked as spam'); ?></p>
+	<div>
+		<ul class="meta">
+			<li>
+				<span class="date"><a href="<?php URL::out('admin', array('page' => 'comments', 'status' => $comment->status, 'year' => $comment->date->year, 'month' => $comment->date->mon )); ?>" title="<?php _e('Search for other comments from %s', array($comment->date->format( 'M, Y' ) ) ); ?>"><?php $comment->date->out( DateTime::get_default_date_format() ); ?></a></span>
+				<span class="time"><?php _e('at'); ?> <?php $comment->date->out( DateTime::get_default_time_format() );?></span>
+			</li>
+			<li class="comment_author"><?php echo Utils::htmlspecialchars( $comment->name ); ?></li>
+			<?php if ( $comment->url != '' ) {
+					echo '<li><a class="url" href="' . $comment->url . '">' . $comment->url . '</a></li>'."\r\n";
+				}
+				else {
+					echo '<li class="empty">' . _t( 'no url given' ) . '</li>';
+				} ?>
+			<?php if ( $comment->email != '' ): ?>
+				<li><a class="email" href="mailto:<?php echo $comment->email; ?>"><?php echo $comment->email; ?></a></li>
+			<?php endif ?>
+			<?php if ( $comment->ip ): ?>
+				<li><?php echo $comment->ip; ?></li>
 			<?php endif; ?>
-
-			<?php Plugins::act('comment_info', $comment); ?>
-
-			<p class="comment-type"><?php echo Plugins::filter( 'comment_type_display', $comment->typename, 'singular' ); ?></p>
-		</div>
-		<span class="content"><?php
-			if ( MultiByte::valid_data( $comment->content ) ) {
-				echo nl2br( Utils::htmlspecialchars( $comment->content ) );
-			}
-			else {
-				_e('this post contains text in an invalid encoding');
-			}
-		?></span>
+		</ul>
+		<span class="excerpt"><?php
+			if ( MultiByte::valid_data( $comment->content ) ):
+				echo MultiByte::substr( strip_tags( $comment->content ), 0, 250);
+				?>&hellip;<?php
+			else:
+				_e('this feedback contains text in an invalid encoding');
+			endif; ?>
+		</span>
 	</div>
-</div>
-
-<?php 	endforeach;
+</li>
+<?php endforeach;
 else : ?>
 <div class="message none">
 	<p><?php _e('No comments could be found to match the query criteria.'); ?></p>

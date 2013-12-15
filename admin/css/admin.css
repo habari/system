@@ -926,33 +926,66 @@ input[type=text] {
 	float: left;
 }
 
-#page > .container.posts {
+#page > .container.manage {
 	padding-top: 10px;
 }
-.posts ul li {
+.manage ul li {
 	padding: 10px 3px 0px 0px;
 }
-.posts ul .meta {
+.manage ul .head {
+	line-height: 31px;
+	clear: both;
+}
+.comment-info {
+	width: 25%;
+	padding: 0;
+	margin: 0;
+	float: left;
+}
+.head .meta {
 	float: right;
 	display: inline;
 }
-.posts ul .checkbox, .posts ul .title, .posts ul .state, .posts ul .author, .posts ul .date, .posts ul .time {
+.head .checkbox {
+	width: 20px;
+}
+.head .checkbox, .head ul .title, .head .state, .head .author, .head .date, .head .time, .head .comment-status, .head .comment-type {
 	padding-left: 5px;
 	float: left;
-	line-height: 31px;
 }
-.posts ul .actions {
+.manage ul .actions {
 	display: inline-block;
 	width: 110px;
 	text-align: right;
 	float: right;
 	padding-left: 15px;
 }
-.posts ul .content {
+.manage ul .head + div {
 	clear: both;
 }
 .posts ul .excerpt {
 	padding: 10px;
+}
+
+.comment ul.meta {
+	float: left;
+	padding: 0px 0px 0px 25px;
+	margin: 0;
+	width: 25%;
+}
+.comment.unapproved ul.meta {
+	border-left: 3px solid #FCD915;
+	padding: 0px 0px 0px 8px;
+	margin: 0px 0px 0px 14px;
+}
+.comment.spam ul.meta {
+	border-left: 3px solid #F8595F;
+	padding: 0px 0px 0px 8px;
+	margin: 0px 0px 0px 14px;
+}
+ul.meta li {
+	padding: 0px 0px 0px 5px;
+	margin: 0;
 }
 
 #log_data {  /* this will do for now */
