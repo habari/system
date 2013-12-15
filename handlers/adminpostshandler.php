@@ -98,17 +98,17 @@ class AdminPostsHandler extends AdminHandler
 			'search' => '',
 		);
 		foreach ( $locals as $varname => $default ) {
-			$$varname = isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : ( isset( $params[$varname] ) ? $params[$varname] : $default );
+			$$varname = isset( $_GET[$varname] ) ? $_GET[$varname] : ( isset( $params[$varname] ) ? $params[$varname] : $default );
 		}
 
 		// numbers submitted by HTTP forms are seen as strings
 		// but we want the integer value for use in Posts::get,
 		// so cast these two values to (int)
-		if ( isset( $this->handler_vars['type'] ) ) {
-			$type = (int) $this->handler_vars['type'];
+		if ( isset( $_GET['type'] ) ) {
+			$type = Post::type($_GET['type']);
 		}
-		if ( isset( $this->handler_vars['status'] ) ) {
-			$status = (int) $this->handler_vars['status'];
+		if ( isset( $_GET['status'] ) ) {
+			$status = Post::status($_GET['status']);
 		}
 
 		// if we're updating posts, let's do so:
