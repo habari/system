@@ -366,17 +366,17 @@ var itemManage = {
 		spinner.start();
 		var query = {};
 		if ( id === undefined ) {
-			//query = itemManage.selected;
+			query.selected = JSON.parse($('#manage_selected_items').attr('value'));
 		}
 		else {
-			query['p' + id]= 1;
+			query.selected = id;
 		}
 
 		query.action = action;
 		query.timestamp = $('input[name=timestamp]').attr('value');
 		query.nonce = $('input[name=nonce]').attr('value');
 		query.digest = $('input[name=digest]').attr('value');
-		query.selected = JSON.parse($('#manage_selected_items').attr('value'));
+		
 		
 		if ( $('.manage.users').length !== 0 ) {
 			query.reassign = $('select#reassign').attr('value');
