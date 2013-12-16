@@ -812,20 +812,9 @@ input[type=text] {
 	
 	#create_content .viewpost {
 		float:right;
-		color: #fff;
-		padding: 10px;
-		background: #333;
-		line-height: 11px;
-		font-size: 12px;
-		font-weight: normal;
+		padding: 10px 0px 0px 0px;
 		margin: 0px;
-		border-radius: 3px;
-		border: 0px;
-		text-shadow: none;
 	}
-		#create_content .viewpost:hover {
-			background:#666;
-		}
 	#create_content label {}
 	
 	#create_content textarea {
