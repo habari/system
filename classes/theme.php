@@ -630,6 +630,31 @@ class Theme extends Pluggable
 	 */
 	public function theme_header( $theme )
 	{
+		// Add prev and next links
+		if( isset($theme->posts) && $theme->posts instanceof Posts ) {
+			$settings = array();
+			$settings['page'] = (int) ( $theme->page + 1 );
+			$items_per_page = isset( $theme->posts->get_param_cache['limit'] ) ?
+				$theme->posts->get_param_cache['limit'] :
+				Options::get( 'pagination' );
+			$total = Utils::archive_pages( $theme->posts->count_all(), $items_per_page );
+			if( $settings['page'] <= $total ) {
+				Stack::add( 'template_atom', array( 'next', 'text/html', _t('Page %s', array( $settings['page']) ), URL::get( null, $settings, false ) ) );
+			}
+
+			$settings['page'] = (int) ( $theme->page - 1 );
+			if ( $settings['page'] >= 1 ) {
+				Stack::add( 'template_atom', array( 'prev', 'text/html', _t('Page %s', array( $settings['page']) ), URL::get( null, $settings, false ) ) );
+			}
+		}
+		elseif( $theme->posts instanceof Post ) {
+			if( $next = $theme->posts->ascend() ) {
+				Stack::add( 'template_atom', array( 'next', 'text/html', $next->title, $next->permalink ) );
+			}
+			if( $previous = $theme->posts->descend() ) {
+				Stack::add( 'template_atom', array( 'prev', 'text/html', $previous->title, $previous->permalink ) );
+			}
+		}
 		
 		// create a stack of the atom tags before the first action so they can be unset if desired
 		Stack::add( 'template_atom', array( 'alternate', 'application/atom+xml', 'Atom 1.0', implode( '', $this->feed_alternate_return() ) ), 'atom' );
