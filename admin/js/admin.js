@@ -195,16 +195,6 @@ var itemManage = {
 
 		itemManage.initItems();
 
-/*
-		$('.item.controls input[type=checkbox]').change(function () {
-			if ($('.item.controls label.selectedtext').hasClass('all')) {
-				itemManage.uncheckAll();
-			} else {
-				itemManage.checkAll();
-			}
-		});
-*/
-
 		/* for all manage pages except for comments, add an ajax call to the
 		 * delete button
 		 */
@@ -249,7 +239,7 @@ var itemManage = {
 	contract: function(item) {
 		item.removeClass('expanded');
 	},
-	selected: [],
+	selected: {},
 	searchCache: [],
 	searchRows: [],
 	simpleFilter: function( search ) {
@@ -360,7 +350,7 @@ var itemManage = {
 		$('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').each(function() {
 			this.checked = 0;
 		});
-		itemManage.selected = [];
+		itemManage.selected = {};
 		itemManage.changeItem();
 	},
 	checkAll: function() {
@@ -376,16 +366,18 @@ var itemManage = {
 		spinner.start();
 		var query = {};
 		if ( id === undefined ) {
-			query = itemManage.selected;
+			//query = itemManage.selected;
 		}
 		else {
 			query['p' + id]= 1;
 		}
 
 		query.action = action;
-		query.timestamp = $('input#timestamp').attr('value');
-		query.nonce = $('input#nonce').attr('value');
-		query.digest = $('input#password_digest').attr('value');
+		query.timestamp = $('input[name=timestamp]').attr('value');
+		query.nonce = $('input[name=nonce]').attr('value');
+		query.digest = $('input[name=digest]').attr('value');
+		query.selected = $('#manage_posts_selected_posts').attr('value');
+		
 		if ( $('.manage.users').length !== 0 ) {
 			query.reassign = $('select#reassign').attr('value');
 		}
@@ -417,7 +409,7 @@ var itemManage = {
 					window.scroll(0,0);
 				}
 
-				itemManage.selected = [];
+				itemManage.selected = {};
 			}
 		);
 	},
