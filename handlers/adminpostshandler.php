@@ -257,7 +257,7 @@ class AdminPostsHandler extends AdminHandler
 		// Create search controls and global buttons for the manage page
 		// I'm pretty sure there's more work to be done...
 		$search = FormControlFacet::create('search');
-		$aggregate = FormControlAggregate::create('selected_posts')->set_selector('.post_item')->label('None Selected');
+		$aggregate = FormControlAggregate::create('selected_items')->set_selector('.post_item')->label('None Selected');
 
 		$page_actions = FormControlDropbutton::create('page_actions');
 		$page_actions->append(
@@ -270,7 +270,7 @@ class AdminPostsHandler extends AdminHandler
 		);
 		Plugins::act('posts_manage_actions', $page_actions);
 		
-		$form = new FormUI('manage_posts');
+		$form = new FormUI('manage');
 		$form->append($search);
 		$form->append($aggregate);
 		$form->append($page_actions);

@@ -554,14 +554,7 @@ class AdminCommentsHandler extends AdminHandler
 			return;
 		}
 
-		$ids = array();
-
-		foreach ( $_POST as $id => $update ) {
-			// skip POST elements which are not comment ids
-			if ( preg_match( '/^p\d+$/', $id ) && $update ) {
-				$ids[] = (int) substr( $id, 1 );
-			}
-		}
+		$ids = $_POST['selected'];
 
 		if ( ( ! isset( $ids ) || empty( $ids ) ) && $_POST['action'] == 'delete' ) {
 			$ar->message = _t( 'No comments selected.' );
