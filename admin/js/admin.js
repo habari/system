@@ -376,7 +376,7 @@ var itemManage = {
 		query.timestamp = $('input[name=timestamp]').attr('value');
 		query.nonce = $('input[name=nonce]').attr('value');
 		query.digest = $('input[name=digest]').attr('value');
-		query.selected = $('#manage_posts_selected_posts').attr('value');
+		query.selected = JSON.parse($('#manage_posts_selected_posts').attr('value'));
 		
 		if ( $('.manage.users').length !== 0 ) {
 			query.reassign = $('select#reassign').attr('value');
