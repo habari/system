@@ -153,7 +153,7 @@ class UserHandler extends ActionHandler
 		$login_form_title = sprintf('<h1><a href="%s" title="%s"><img src="%s" style="height:1em;margin-right:10px;vertical-align:top;">%s</a></h1>', Site::get_url('site'), _t('Go to Site'), Site::get_url('habari', '/system/admin/images/habari.logo.png'), Options::get('title') );
 		$form->append( FormControlStatic::create('title')->set_static($login_form_title) );
 		$form->append( FormControlStatic::create('reset_message')->set_static('<p id="reset_message" class="on_reset">' . _t('Please enter the username you wish to reset the password for.  A unique password reset link will be emailed to that user.') . '</p>' ) );
-		$form->append( FormControlLabel::wrap(_t('Name'), FormControlText::create('habari_username'))->set_template('control.label.outsideleft'));
+		$form->append( FormControlLabel::wrap(_t('Name'), FormControlText::create('habari_username')->set_property('autofocus', 'autofocus'))->set_template('control.label.outsideleft'));
 		$form->append(
 			FormControlLabel::wrap(
 				_t('Password'),
