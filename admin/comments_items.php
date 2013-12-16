@@ -3,7 +3,7 @@
 <?php if ( count($comments) != 0 ) : ?>
 <ul>
 <?php foreach ( $comments as $comment ) : ?>
-<li class="comment <?php echo strtolower( $comment->statusname ); ?>" id="comment_<?php echo $comment->id; ?>" style="<?php echo Plugins::filter('comment_style', '', $comment); ?>">
+<li class="comment <?php echo strtolower( $comment->statusname ); ?> manage_item" id="comment_<?php echo $comment->id; ?>" style="<?php echo Plugins::filter('comment_style', '', $comment); ?>">
 	<div class="head">
 		<span class="checkbox">
 			<input class="comment_checkbox" type="checkbox" name="checkbox_ids[<?php echo $comment->id; ?>]" value="<?php echo $comment->id; ?>">

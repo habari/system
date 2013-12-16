@@ -8,7 +8,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 	foreach ( $posts as $post ) :
 		$post_permissions = $post->get_access();
 ?>
-<li class="<?php echo $post->typename . ' ' . $post->statusname; ?>" id="post_<?php echo $post->id; ?>">
+<li class="<?php echo $post->typename . ' ' . $post->statusname; ?> manage_item" id="post_<?php echo $post->id; ?>">
 	<div class="head">
 		<?php if ( ACL::access_check( $post_permissions, 'delete' ) ): ?>
 		<span class="checkbox">
