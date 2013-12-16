@@ -3,7 +3,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title><?php printf( _t('Login to %s'), Options::get( 'title' ) ); ?></title>
+	<title><?php _e('Login to %s', array(Options::get( 'title' ))); ?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 	<script type="text/javascript">
