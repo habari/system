@@ -5,28 +5,7 @@
 <div class="container transparent item controls">
 
 	<?php
-
-	// $search = FormControlFacet::create('search');
-	// echo $search->pre_out();
-	// echo $search->get($theme);
-
-	$aggregate = FormControlAggregate::create('selected_comments')->set_selector('.comment_checkbox')->label('None Selected');
-	echo $aggregate->pre_out();
-	echo $aggregate->get($theme);
-
-
-	$page_actions = FormControlDropbutton::create('page_actions');
-	$page_actions->append(
-		FormControlSubmit::create('delete')
-			->set_caption(_t('Delete Selected'))
-			->set_properties(array(
-				'onclick' => 'itemManage.update(\'delete\');return false;',
-				'title' => _t('Delete Selected'),
-			))
-	);
-	Plugins::act('comments_manage_actions', $page_actions);
-	echo $page_actions->pre_out();
-	echo $page_actions->get($theme);
+	echo $theme->form->get();
 	?>
 
 </div>

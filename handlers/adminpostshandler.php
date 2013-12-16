@@ -452,7 +452,7 @@ class AdminPostsHandler extends AdminHandler
 			return;
 		}
 		
-		$ids = json_decode($_POST['selected']);
+		$ids = $_POST['selected'];
 		
 		if ( count( $ids ) == 0 ) {
 			$posts = new Posts();
