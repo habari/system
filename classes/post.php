@@ -662,6 +662,10 @@ class Post extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function update( $minor = true )
 	{
+		if($this->id == 0) {
+			return $this->insert() !== false;
+		}
+		
 		$this->modified = DateTime::create();
 		if ( ! $minor && $this->status != Post::status( 'draft' ) ) {
 			$this->updated = $this->modified;
