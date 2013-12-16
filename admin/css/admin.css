@@ -348,6 +348,7 @@ body, html {
 	min-height: 100%;
 	z-index: 5;
 	position:relative;
+	padding-bottom: 75px;
 }
 
 #spinner {
@@ -476,6 +477,7 @@ input.full-width {
 			}
 				.modulecore ul li .date {
 					float:left;
+					margin-right: 20px;
 				}
 				
 				.modulecore ul li .comments {
@@ -546,7 +548,7 @@ input.full-width {
 		}
 
 #add-item-module  {
-	height: 80px;
+	height: 60px;
 }
 
 .navigation {
@@ -929,10 +931,10 @@ input[type=text] {
 #page > .container.manage {
 	padding-top: 10px;
 }
-.manage ul li {
+.manage_item {
 	padding: 10px 3px 0px 0px;
 }
-.manage ul .head {
+.manage_item .head {
 	line-height: 31px;
 	clear: both;
 }
@@ -952,22 +954,19 @@ input[type=text] {
 .head .checkbox, .head ul .title, .head .state, .head .author, .head .date, .head .time, .head .comment-status, .head .comment-type {
 	padding-left: 5px;
 	float: left;
+	line-height: 31px;
 }
-.manage ul .actions {
+.manage_item .actions {
 	display: inline-block;
-	width: 180px;
+	min-width: 110px;
 	text-align: right;
 	float: right;
 	padding-left: 15px;
 }
-.manage ul .actions li {
-	padding: 0;
-	border: 0;
-}
-.manage ul .head + div {
+.manage_item .head + div {
 	clear: both;
 }
-.posts ul .excerpt {
+.manage_item .excerpt {
 	padding: 10px;
 }
 
@@ -1056,12 +1055,14 @@ ul.meta li {
 #humanMsgLog {display:none;}
 
 #footer {
+	position:absolute;
 	bottom:0px;
 	left: 0px;
 	background: #333;
 	color: #fff;
 	padding: 20px 0px;
 	text-align: center;
+	width: 100%;
 }
 	#footer span {
 		font-weight: bold;
