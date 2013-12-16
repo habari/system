@@ -209,24 +209,6 @@ var itemManage = {
 			itemManage.rename();
 		});
 	},
-	initItems: function() {
-/*
-		$('.item:not(.ignore) .checkbox input[type=checkbox]').change(function () {
-			itemManage.changeItem();
-		});
-		$('.item:not(.ignore) .checkbox input[type=checkbox]').each(function() {
-			id = $(this).attr('id');
-			id = id.replace(/.*\[(.*)\]/, "$1" ); // checkbox ids have the form name[id]
-			if (itemManage.selected['p' + id] == 1) {
-				this.checked = 1;
-			}
-		});
-		$('.item .less').click(function() {
-			itemManage.expand($(this).parent());
-		});
-		itemManage.changeItem();
-*/
-	},
 	expand: function(item) {
 		$('.item').removeClass('expanded');
 
@@ -264,100 +246,9 @@ var itemManage = {
 		if ($('div.settings').length !== 0 || $('.container.plugins:visible').length > 1) {
 			$('select[name=navigationdropdown]').val('all');
 		}
-
-		/*
-		if ($('li.item').length != 0) {
-			itemManage.changeItem();
-		}*/
-	},
-	changeItem: function() {
-		var selected = {};
-
-		if (itemManage.selected.length !== 0) {
-			selected = itemManage.selected;
-		}
-
-		$('.item:not(.ignore) .checkbox input[type=checkbox]:checked').each(function() {
-			check = $(this);
-			id = check.attr('id');
-			id = id.replace(/.*\[(.*)\]/, "$1" );
-			selected['p' + id] = 1;
-			check.parent().parent().filter('.item').addClass('selected');
-			check.parent().parent().parent().filter('.item').addClass('selected');
-			
-		});
-		$('.item:not(.ignore) .checkbox input[type=checkbox]:not(:checked)').each(function() {
-			check = $(this);
-			id = check.attr('id');
-			id = id.replace(/.*\[(.*)\]/, "$1" );
-			selected['p' + id] = 0;
-			check.parent().parent().filter('.item').removeClass('selected');
-			check.parent().parent().parent().filter('.item').removeClass('selected');
-			
-		});
-
-		itemManage.selected = selected;
-
-		visible = $('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]:checked').length;
-
-		total = $('.currentposition .total').text();
-
-		count = 0;
-		for (var id in itemManage.selected)	{
-			if (itemManage.selected[id] == 1) {
-				count = count + 1;
-			}
-		}
-
-		if (count === 0) {
-			$('.item.controls input[type=checkbox]').each(function() {
-				this.checked = 0;
-			});
-			$('.item.controls label.selectedtext').addClass('none').removeClass('all').text(_t('None selected'));
-		} else if (visible == $('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').length) {
-			$('.item.controls input[type=checkbox]').each(function() {
-				this.checked = 1;
-			});
-			$('.item.controls label.selectedtext').removeClass('none').addClass('all').html(_t('All %1$s visible selected (<a href="#all" class="everything">Select all %2$s</a>)', count, total));
-
-			$('.item.controls label.selectedtext .everything').click(function() {
-				itemManage.checkEverything();
-				return false;
-			});
-
-			if (visible != count) {
-				$('.item.controls label.selectedtext').text('All visible selected (' + count + ' total)');
-			}
-
-			if ((total == count) || $('.currentposition .total').length === 0) {
-				$('.item.controls label.selectedtext').removeClass('none').addClass('all').addClass('total').html(_t('All %s selected', total));
-			}
-		} else {
-			$('.item.controls input[type=checkbox]').each(function() {
-				this.checked = 0;
-			});
-			$('.item.controls label.selectedtext').removeClass('none').removeClass('all').text(_t('%s selected', count));
-
-			if (visible != count) {
-				$('.item.controls label.selectedtext').text(_t('%1$s selected (%2$s visible)', count, visible));
-			}
-		}
 	},
 	checkEverything: function() {
 		itemManage.fetch(0, $('.currentposition .total').text(), false, true);
-	},
-	uncheckAll: function() {
-		$('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').each(function() {
-			this.checked = 0;
-		});
-		itemManage.selected = {};
-		itemManage.changeItem();
-	},
-	checkAll: function() {
-		$('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').each(function() {
-			this.checked = 1;
-		});
-		itemManage.changeItem();
 	},
 	purge: function () {
 		itemManage.update( 'purge' );
