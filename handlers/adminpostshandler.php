@@ -277,7 +277,7 @@ class AdminPostsHandler extends AdminHandler
 		);
 		Plugins::act('posts_manage_actions', $page_actions);
 		
-		$form = new FormUI('manage_posts');
+		$form = new FormUI('manage');
 		$form->append($search);
 		$form->append($aggregate);
 		$form->append($page_actions);
