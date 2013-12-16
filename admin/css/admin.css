@@ -370,6 +370,7 @@ body, html {
 	#menubar a {color: #fff; text-decoration: none;}
 	#menu { float:left; background: #555; line-height: 15px; width: 200px; margin-left: 5px;}
 		#menulist { display:none; position:absolute;background-color: #555; padding-top:0px;top:40px;width:220px; border-top: 1px solid #444; font-size: 13px;}
+		#menulist.hovering { display: block; }
 		#menulist ul { margin-bottom:5px; }
 		#menulist li { margin: 0px; }
 		#menulist li.over-spacer { padding-bottom: 5px; }
@@ -398,6 +399,9 @@ body, html {
 	}
 	ul.submenu {
 		display:none;
+	}
+	.hovering > ul.submenu {
+		display: block;
 	}
 
 #site {

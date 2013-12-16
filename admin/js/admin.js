@@ -1047,30 +1047,18 @@ var navigationDropdown = {
 // THE MENU
 var theMenu = {
 	init: function() {
-		// Carrot functionality
-		$('#menulist li').hover(function() {
-			$('#menulist li').removeClass('carrot');
-			$(this).addClass('carrot');
-		}, function() {
-			$('#menulist li').removeClass('carrot');
-		});
-
 		// Open menu on Q
 		$.hotkeys.add('q', {propagate:true, disableInInput: true}, function(){
-			if ($('#menu #menulist > ul').css('display') != 'block') {
-				dropButton.currentDropButton = $('#menu');
-				dropButton.showMenu();
-			} else if ($('#menu #menulist > ul').css('display') == 'block') {
-				dropButton.hideMenu();
+			if (!$('#menulist').hasClass('hovering')) {
+				$('#menulist').addClass('hovering');
 			} else {
-				return false;
+				$('#menulist').removeClass('hovering');
 			}
 		});
 
 		// Close menu on ESC
 		$.hotkeys.add('esc', {propagate:true, disableInInput: false}, function(){
-			$('.carrot').removeClass('carrot');
-			dropButton.hideMenu();
+			$('#menulist').removeClass('hovering');
 		});
 
 		// Down arrow
@@ -1175,10 +1163,13 @@ var theMenu = {
 
 			if (hotkey) {
 				$.hotkeys.add(hotkey, { propagate: true, disableInInput: true }, function() {
-					if ($('#menu').hasClass('hovering') === true) {
+					if ($('#menulist').hasClass('hovering') === true) {
 						if (owner.hasClass('submenu')) {
-							$('.carrot').removeClass('carrot');
-							owner.addClass('carrot');
+							if(!owner.hasClass('hovering')) {
+								owner.addClass('hovering');
+							} else {
+								owner.removeClass('hovering');
+							}
 						} else if (owner.hasClass('sub')) {
 							// Exists in a submenu
 							if ($('#menu li.carrot li.hotkey-' + hotkey).length !== 0) {
@@ -1218,8 +1209,8 @@ var theMenu = {
 
 		// If menu is open and mouse is clicked outside menu, close menu.
 		$('html').click(function() {
-			if ($('#menu #menulist').css('display') == 'block') {
-				dropButton.hideMenu();
+			if ($('#menulist').hasClass('hovering')) {
+				$('#menulist').removeClass('hovering');
 			}
 		});
 	},
