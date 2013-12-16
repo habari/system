@@ -580,6 +580,9 @@ class AdminHandler extends ActionHandler
 			case 'admin_ajax':
 				$result = true;
 				break;
+			case 'ajax_facets':
+				$result = true;
+				break;
 			default:
 				break;
 		}
