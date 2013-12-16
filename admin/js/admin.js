@@ -193,8 +193,6 @@ var itemManage = {
 
 		if (!$('.item.controls input[type=checkbox]')) {return;}
 
-		itemManage.initItems();
-
 		/* for all manage pages except for comments, add an ajax call to the
 		 * delete button
 		 */
@@ -320,14 +318,12 @@ var itemManage = {
 			function(json) {
 				if (silent) {
 					itemManage.selected = json.item_ids;
-					itemManage.initItems();
 				} else {
 					itemManage.fetchReplace.html(json.items);
 					// if we have a timeline, replace its content
 					if ( resetTimeline && $('.timeline').length !== 0 ) {
 						// we hide and show the timeline to fix a firefox display bug
 						$('.years').html(json.timeline).hide();
-						itemManage.initItems();
 						setTimeout( function() {
 							$('.years').show();
 							timeline.reset();
@@ -335,7 +331,6 @@ var itemManage = {
 						$('input.checkbox').rangeSelect();
 					}
 					else {
-						itemManage.initItems();
 						$('input.checkbox').rangeSelect();
 					}
 					findChildren();
