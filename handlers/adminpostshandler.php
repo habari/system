@@ -264,7 +264,7 @@ class AdminPostsHandler extends AdminHandler
 				'valuesURL' => URL::get('admin_ajax_facets', array('context' => 'facets', 'component' => 'values')),
 			));
 
-		$aggregate = FormControlAggregate::create('selected_posts')->set_selector('.post_item')->label('None Selected');
+		$aggregate = FormControlAggregate::create('selected_items')->set_selector('.post_item')->label('None Selected');
 
 		$page_actions = FormControlDropbutton::create('page_actions');
 		$page_actions->append(
