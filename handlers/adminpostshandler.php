@@ -253,6 +253,28 @@ class AdminPostsHandler extends AdminHandler
 		$special_searches = array_merge( $statuses, $types );
 		// Add a filter to get only the user's posts
 		$special_searches["author:" . User::identify()->username] = _t( 'My Posts' );
+		
+		// Create search controls and global buttons for the manage page
+		// I'm pretty sure there's more work to be done...
+		$search = FormControlFacet::create('search');
+		$aggregate = FormControlAggregate::create('selected_posts')->set_selector('.post_item')->label('None Selected');
+
+		$page_actions = FormControlDropbutton::create('page_actions');
+		$page_actions->append(
+			FormControlSubmit::create('delete')
+				->set_caption(_t('Delete Selected'))
+				->set_properties(array(
+					'onclick' => 'itemManage.update(\'delete\');return false;',
+					'title' => _t('Delete Selected'),
+				))
+		);
+		Plugins::act('posts_manage_actions', $page_actions);
+		
+		$form = new FormUI('manage_posts');
+		$form->append($search);
+		$form->append($aggregate);
+		$form->append($page_actions);
+		$this->theme->form = $form;
 
 		$this->theme->admin_page = _t( 'Manage Posts' );
 		$this->theme->admin_title = _t( 'Manage Posts' );
@@ -429,14 +451,9 @@ class AdminPostsHandler extends AdminHandler
 			$response->out();
 			return;
 		}
-
-		$ids = array();
-		foreach ( $_POST as $id => $delete ) {
-			// skip POST elements which are not post ids
-			if ( preg_match( '/^p\d+$/', $id ) && $delete ) {
-				$ids[] = (int) substr( $id, 1 );
-			}
-		}
+		
+		$ids = json_decode($_POST['selected']);
+		
 		if ( count( $ids ) == 0 ) {
 			$posts = new Posts();
 		}
