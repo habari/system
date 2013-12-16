@@ -368,7 +368,7 @@ body, html {
 	border-bottom: 1px solid #e3e1dc;
 }
 	#menubar a {color: #fff; text-decoration: none;}
-	#menu { float:left; background: #555; line-height: 15px; width: 200px; margin-left: 5px;}
+	#menu { float:left; background: #555; line-height: 15px; min-width: 200px; margin-left: 5px;}
 		#menulist { display:none; position:absolute;background-color: #555; padding-top:0px;top:40px;width:220px; border-top: 1px solid #444; font-size: 13px;}
 		#menulist.hovering { display: block; }
 		#menulist ul { margin-bottom:5px; }
@@ -378,10 +378,11 @@ body, html {
 		#menulist li.last-child {padding-bottom: 0px;margin-bottom: 0px;}
 		#menulist li a { display:block; padding: 5px 10px;}
 		#menulist li:hover { background-color: #666; }
-		h1#menubutton {line-height: 15px; padding: 0px 15px; }
+		h1#menubutton {line-height: 15px; padding: 0px 10px; }
 			#menubar:hover { cursor: pointer; }
 			#menubutton a { font-size: 13px; color: #fff; }
-			#menubutton .hotkey { float:right; padding: 12px 0px; }
+			#menubutton .menutext {float: left; padding: 12px 0px;}
+			#menubutton .hotkey { float:right; padding: 12px 0px; margin-left: 10px; }
 			#menubutton .arrow {float:right;font-size: 15px; padding: 13px 0px;margin-left: 15px;}
 			#menulist .hotkey { float:right; margin-right: 30px; }
 			#menubutton .hotkey.enabled { color: #fff; font-weight: bold}

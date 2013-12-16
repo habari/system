@@ -49,7 +49,7 @@ header( 'X-Frame-Options: DENY' );
 <div id="menubar">
 	
 	<div id="menu">
-		<h1 id="menubutton"><a href="<?php echo $admin_page_url; ?>"><?php echo ( isset( $mainmenu[$admin_page]['text'] ) ? $mainmenu[$admin_page]['text'] : $admin_page ); ?> <i class="arrow icon-circle-arrow-down"></i><span class="hotkey">Q</span></a></h1>
+		<h1 id="menubutton"><a href="<?php echo $admin_page_url; ?>"><span class="menutext"><?php echo ( isset( $mainmenu[$admin_page]['text'] ) ? $mainmenu[$admin_page]['text'] : $admin_page ); ?> </span><i class="arrow icon-circle-arrow-down"></i><span class="hotkey">Q</span></a></h1>
 		
 		<div id="menulist">
 			<ul>
