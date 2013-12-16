@@ -65,7 +65,9 @@ controls.init(function(){
 			showFacets: false,
 			callbacks: {
 				search: function(query, searchCollection) {
-					console.log(query, searchCollection);
+					if(facet_config.onsearch != undefined) {
+						eval(facet_config.onsearch);
+					}
 				},
 				facetMatches: function(callback) {
 					if(facet_config.facetsURL != undefined) {
@@ -73,7 +75,7 @@ controls.init(function(){
 							facet_config.facetsURL,
 							{},
 							function(response) {
-								callback(response);
+								callback(response.data);
 							}
 						)
 					}
@@ -90,7 +92,7 @@ controls.init(function(){
 								q: searchTerm
 							},
 							function(response) {
-								callback(response);
+								callback(response.data);
 							}
 						)
 					}
@@ -101,8 +103,8 @@ controls.init(function(){
 					}
 				}
 			}
-		}));
-		self.closest('form').on('submit', function(){
+		}))
+		.closest('form').on('submit', function(){
 			target.val(self.data('visualsearch').searchBox.value());
 		});
 	});
