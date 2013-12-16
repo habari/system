@@ -216,6 +216,26 @@ class AdminCommentsHandler extends AdminHandler
 		$this->theme->special_searches = array_merge( $statuses, $types );
 
 		$this->fetch_comments();
+		
+		// Create the form for the search and manage dropbutton. I bet we can save some code when combining this with the other manage pages.
+		$form = new FormUI('manage');
+		//$search = FormControlFacet::create('search');
+		//$form->append($search);
+		$aggregate = FormControlAggregate::create('selected_items')->set_selector('.comment_checkbox')->label('None Selected');
+		$form->append($aggregate);
+		$page_actions = FormControlDropbutton::create('page_actions');
+		$page_actions->append(
+			FormControlSubmit::create('delete')
+				->set_caption(_t('Delete Selected'))
+				->set_properties(array(
+					'onclick' => 'itemManage.update(\'delete\');return false;',
+					'title' => _t('Delete Selected'),
+				))
+		);
+		Plugins::act('comments_manage_actions', $page_actions);
+		$form->append($page_actions);
+		
+		$this->theme->form = $form;
 		$this->display( 'comments' );
 	}
 
