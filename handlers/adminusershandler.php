@@ -198,6 +198,25 @@ class AdminUsersHandler extends AdminHandler
 	{
 		$edit_user = User::get_by_id( $form->edit_user->value );
 		$current_user = User::identify();
+		$permission = false;
+
+		// Check if the user is editing their own profile
+		if ($edit_user->id == $current_user->id) {
+			if ( $edit_user->can( 'manage_self' ) || $edit_user->can( 'manage_users' ) ) {
+				$permission = true;
+			}
+		}
+		else {
+			if ( $edit_user->can( 'manage_users' ) ) {
+				$permission = true;
+			}
+		}
+
+		if ( !$permission ) {
+			Session::error( _t( 'Access to that page has been denied by the administrator.' ) );
+			$this->get_blank();
+			return;
+		}
 
 		// Let's check for deletion
 		if ( Controller::get_var( 'delete' ) != null ) {
