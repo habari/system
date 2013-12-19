@@ -54,6 +54,8 @@ class AdminDashboardHandler extends AdminHandler
 
 		$this->get_additem_form();
 
+        Stack::add('admin_header_javascript', 'dashboard-js' );
+
 		$this->display( 'dashboard' );
 	}
 

@@ -27,6 +27,7 @@ class AdminLogsHandler extends AdminHandler
 	public function post_logs()
 	{
 		$this->fetch_logs();
+        Stack::add('admin_header_javascript', 'manage-js' );
 		$this->display( 'logs' );
 	}
 

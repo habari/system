@@ -234,6 +234,8 @@ class AdminCommentsHandler extends AdminHandler
 		);
 		Plugins::act('comments_manage_actions', $page_actions);
 		$form->append($page_actions);
+
+        Stack::add('admin_header_javascript', 'manage-js' );
 		
 		$this->theme->form = $form;
 		$this->display( 'comments' );
