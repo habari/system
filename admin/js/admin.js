@@ -447,7 +447,6 @@ $(window).load( function() {
 $(document).ready(function(){
 	theMenu.init();
 	helpToggler.init();
-	liveSearch.init();
 	findChildren();
 	labeler.init();
 	
@@ -497,16 +496,6 @@ $(document).ready(function(){
 
 	// LOGIN: Focus cursor on 'Name'.
 	$('body.login #habari_username').focus();
-
-	// SEARCH: Set default special search terms and assign click handler
-	$('.special_search a')
-		.click(toggleSearch)
-		.each(function(){
-			var re = new RegExp($(this).attr('href').substr(1));
-			if ($('#search').val().match(re)) {
-				$(this).addClass('active');
-			}
-		});
 
 	// Take care of AJAX calls
 	$('body').bind('ajaxSuccess', function(event, req, opts){
