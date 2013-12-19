@@ -301,7 +301,7 @@ class AdminPostsHandler extends AdminHandler
 	{
 		Utils::check_request_method( array( 'POST' ) );
 
-		$path = $handler_vars['path'];
+		$path = $_POST['path'];
 		$rpath = $path;
 		$silo = Media::get_silo( $rpath, true );  // get_silo sets $rpath by reference to the path inside the silo
 		$assets = Media::dir( $path );
@@ -345,8 +345,8 @@ class AdminPostsHandler extends AdminHandler
 	{
 		Utils::check_request_method( array( 'POST' ) );
 
-		$path = $handler_vars['path'];
-		$panelname = $handler_vars['panel'];
+		$path = $_POST['path'];
+		$panelname = $_POST['panel'];
 		$rpath = $path;
 		$silo = Media::get_silo( $rpath, true );  // get_silo sets $rpath by reference to the path inside the silo
 
@@ -381,8 +381,8 @@ class AdminPostsHandler extends AdminHandler
 	{
 		Utils::check_request_method( array( 'POST' ) );
 
-		$path = $handler_vars['path'];
-		$panelname = $handler_vars['panel'];
+		$path = $_POST['path'];
+		$panelname = $_POST['panel'];
 		$rpath = $path;
 		$silo = Media::get_silo( $rpath, true );  // get_silo sets $rpath by reference to the path inside the silo
 
