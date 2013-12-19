@@ -275,9 +275,7 @@ var theMenu = {
 	},
 	blinkCarrot: function(owner) {
 		var blinkSpeed = 100;
-		$(owner).addClass('carrot').addClass('blinking').fadeOut(blinkSpeed).fadeIn(blinkSpeed).fadeOut(blinkSpeed).fadeIn(blinkSpeed, function() {
-			dropButton.hideMenu();
-		});
+		$(owner).addClass('carrot').addClass('blinking').fadeOut(blinkSpeed).fadeIn(blinkSpeed).fadeOut(blinkSpeed).fadeIn(blinkSpeed);
 	}
 };
 
