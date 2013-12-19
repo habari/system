@@ -494,9 +494,6 @@ $(document).ready(function(){
 		}
 	});
 
-	// LOGIN: Focus cursor on 'Name'.
-	$('body.login #habari_username').focus();
-
 	// Take care of AJAX calls
 	$('body').bind('ajaxSuccess', function(event, req, opts){
 		if (opts.dataType == 'json') {
