@@ -468,43 +468,6 @@ var spinner = {
 	}
 };
 
-
-// NAVIGATION DROPDOWNS
-var navigationDropdown = {
-	init: function() {
-		if ($('.page-user').length === 0 && $('.page-options').length === 0) {
-			return;
-		}
-
-		$('.container.settings, .optiongroup').each(function() {
-			$('<option></option>').attr('value', $(this).attr('id')).text($('h2', this).text()).appendTo($('select[name=navigationdropdown]'));
-		});
-	},
-	changePage: function(location) {
-		if ( location === undefined ) {
-			nextPage = $('select[name=navigationdropdown]').val();
-		} else {
-			nextPage = location.options[location.selectedIndex].value;
-		}
-
-		if (nextPage !== "" && nextPage != document.location.href) {
-			document.location.href = nextPage;
-		}
-	},
-	filter: function() {
-		var selected = $('select[name=navigationdropdown]').val();
-
-		if ( selected == 'all' ) {
-			$('.settings, .container.plugins, .optiongroup').removeClass('hidden');
-		}
-		else {
-			$('.settings:not(#' + selected + '), .container.plugins:not(#' + selected + '), .optiongroup:not(#' + selected + ')').addClass('hidden');
-			$('.settings#' + selected + ', .container.plugins#' + selected + ', .optiongroup#' + selected ).removeClass('hidden');
-		}
-	}
-};
-
-
 // THE MENU
 var theMenu = {
 	init: function() {
@@ -930,7 +893,6 @@ $(document).ready(function(){
 	helpToggler.init();
 	liveSearch.init();
 	findChildren();
-	navigationDropdown.init();
 	labeler.init();
 	
 	// fix autofilled passwords overlapping labels
