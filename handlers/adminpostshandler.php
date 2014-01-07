@@ -496,4 +496,78 @@ class AdminPostsHandler extends AdminHandler
 		$response->out();
 		exit;
 	}
+
+	/**
+	 * Plugin hook filter for the facet list
+	 * @param array $facets An array of facets for manage posts search
+	 * @return array The array of facets
+	 */
+	public static function filter_facets($facets) {
+		$result = array_merge($facets, array(
+			'type',
+			'status',
+			'author',
+			'after',
+			'before',
+			'tag',
+		));
+		return $result;
+	}
+
+	/**
+	 * Plugin hook filter for the values of a faceted search
+	 * @param array $values The incoming array of values for this facet
+	 * @param string $facet The selected facet
+	 * @param string $q A string filter for facet values
+	 * @return array The returned list of possible values
+	 */
+	public static function filter_facetvalues($values, $facet, $q) {
+		switch($facet) {
+			case 'type':
+				$values = array_keys(Post::list_active_post_types());
+				break;
+			case 'status':
+				$values = array_keys(Post::list_post_statuses());
+				break;
+			case 'tag':
+				$tags = Tags::search($q);
+				$values = array();
+				foreach($tags as $tag) {
+					$values[] = $tag->term;
+				}
+				break;
+			case 'author':
+				$values = array();
+				$users = Users::get(array('criteria' => $q));
+				foreach($users as $user) {
+					$values[] = $user->username;
+				}
+				break;
+			case 'before':
+			case 'after':
+				$values = array($q);
+				break;
+		}
+		return $values;
+	}
+
+	/**
+	 * Handle ajax requests for facets on the manage posts page
+	 * @param $handler_vars
+	 */
+	public function ajax_facets($handler_vars) {
+
+		switch($handler_vars['component']) {
+			case 'facets':
+				$result = Plugins::filter('facets', array());
+				break;
+			case 'values':
+				$result = Plugins::filter('facetvalues', array(), $_POST['facet'], $_POST['q']);
+				break;
+		}
+
+		$ar = new AjaxResponse();
+		$ar->data = $result;
+		$ar->out();
+	}
 }

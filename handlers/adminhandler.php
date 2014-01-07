@@ -626,11 +626,23 @@ class AdminHandler extends ActionHandler
 		$this->theme->display( $template_name );
 	}
 
-
+	/**
+	 * Create the active theme instance
+	 */
 	public function create_theme()
 	{
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+	}
+
+
+	/**
+	 * Register plugin hooks
+	 * @static
+	 */
+	public static function __static()
+	{
+		Pluggable::load_hooks(get_called_class());
 	}
 
 }
