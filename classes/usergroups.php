@@ -143,7 +143,8 @@ class UserGroups extends ArrayObject
 	 * @param  string $access The access level for that token, defaults to 'full'
 	 * @return UserGroups
 	 */
-	public static function get_by_token( $token, $access = 'full' ) {
+	public static function get_by_token( $token, $access = 'full' )
+	{
 		$token_id = ACL::token_id( $token );
 
 		$sql = 'SELECT * FROM {groups}
