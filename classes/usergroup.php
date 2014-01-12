@@ -143,9 +143,9 @@ class UserGroup extends QueryRecord
 
 		// Prevent the deletion of the last group with superuser priviledges
 		if ( $this->can( 'super_user' ) ) {
-			$groups = UserGroups::get_by_token('super_user');
+			$groups = UserGroups::get_by_token( 'super_user' );
 
-			if (count($groups) <= 1) {
+			if ( count( $groups ) <= 1 ) {
 				$allow = false;
 				Session::notice( _t( 'You cannot delete the last group with super user permissions') );
 			}
