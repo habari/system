@@ -138,6 +138,32 @@ class UserGroups extends ArrayObject
 	}
 
 	/**
+	 * Gets a set of groups based on their access to a certain token
+	 * @param  string $token  The token to check for
+	 * @param  string $access The access level for that token, defaults to 'full'
+	 * @return UserGroups
+	 */
+	public static function get_by_token( $token, $access = 'full' ) {
+		$token_id = ACL::token_id( $token );
+
+		$sql = 'SELECT * FROM {groups}
+				INNER JOIN {group_token_permissions} on ({groups}.id = {group_token_permissions}.group_id)
+				AND {group_token_permissions}.token_id = :token_id';
+
+		$results = DB::get_results( $sql, array( ':token_id' => $token_id ), 'UserGroup' );
+
+		foreach ( $results as $i => $group ) {
+			if ( !$group->can( $token ) ) {
+				unset( $groups[$i] );
+			}
+		}
+
+		$c = __CLASS__;
+		$return_value = new $c( $results );
+		return $return_value;
+	}
+
+	/**
 	 * Select all groups from the database
 	 *
 	 * @return Groups
