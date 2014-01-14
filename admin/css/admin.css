@@ -986,12 +986,16 @@ ul.meta li {
 }
 
 #log_data {  /* this will do for now */
-	table-layout: fixed;
+	/*table-layout: fixed;*/
 }
+
 	#log_data td {
 		white-space: nowrap;
+		/* someone who knows what they're doing, can you fix this? */
+		border-top: 1px solid grey;
+		padding: 1px 5px 1px 5px;
 	}
-	
+
 	#post_data .content td {
 		white-space: normal;
 	}
