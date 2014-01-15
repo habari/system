@@ -1,5 +1,8 @@
 <?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
+
+</div>
+
 	<div id="footer" class="columns sixteen">
 		<p>
 			<span><a href="http://habariproject.org/" title="<?php _e('Go to the Habari site'); ?>">Habari
@@ -31,8 +34,6 @@
 	Stack::out( 'admin_footer_javascript', Method::create('\\Habari\\Stack', 'scripts') );
 	include ('db_profiling.php');
 ?>
-
-</div>
 
 <?php if ( Session::has_messages() ): ?>
 	<script type="text/javascript">

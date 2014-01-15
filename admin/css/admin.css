@@ -346,9 +346,12 @@ body, html {
 
 #page {
 	min-height: 100%;
-	z-index: 5;
 	position:relative;
-	padding-bottom: 75px;
+}
+#page:after {
+	content: ' ';
+	height: 70px;
+	display: block;
 }
 
 #spinner {
@@ -704,7 +707,8 @@ ol {}
 	margin-top: 10px;
 	background: rgb(224, 221, 214);
 	color: #333;
-	padding: 10px 20px 0px;
+	padding: 10px 20px;
+	box-sizing: border-box;
 }
 
 .more {
@@ -1053,7 +1057,7 @@ ul.meta li {
 #humanMsgLog {display:none;}
 
 #footer {
-	position:absolute;
+	position:fixed;
 	bottom:0px;
 	left: 0px;
 	background: #333;
