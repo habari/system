@@ -14,10 +14,22 @@ var habari_ajax = {
 			url: url,
 			data: data,
 			success: function(json_data) {
-				if($.isPlainObject(ahah_target)) {
-					for(var i in ahah_target) {
-						if(json_data.html && json_data.html[i]) {
-							$(ahah_target[i]).html(json_data.html[i]);
+				if(json_data.html) {
+					if($.isPlainObject(ahah_target)) {
+						for(var i in ahah_target) {
+							if(json_data.html[i]) {
+								$(ahah_target[i]).html(json_data.html[i]);
+							}
+						}
+					}
+					else if(ahah_target instanceof jQuery) {
+						for(var i in json_data.html) {
+							if(ahah_target.is(i)) {
+								$(ahah_target).html(json_data.html[i]);
+							}
+							else {
+								$(ahah_target.find[i]).html(json_data.html[i]);
+							}
 						}
 					}
 				}
