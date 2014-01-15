@@ -14,7 +14,7 @@ include_once( 'header.php' ); ?>
 			<td><?php echo $key;
 				$plaintext_output .= $key; ?></td>
 			<td><?php echo $value;
-				$plaintext_output .= ": $value\n"; ?></td>
+				$plaintext_output .= ': ' . str_replace('<br>', "\n\t", $value) . "\n"; ?></td>
 		</tr>
 	<?php endforeach; ?>
 	</table>
@@ -51,7 +51,7 @@ include_once( 'header.php' ); ?>
 		<tr>
 			<td><?php echo $name . ' ' . $plugindata['version'] ;
 				$plaintext_output .= $name . ' ' . $plugindata['version']; ?></td>
-			<td><?php echo $plugindata['file'];
+			<td><?php echo str_replace('/', '<wbr/>/', $plugindata['file']);
 				$plaintext_output .= ": " . $plugindata['file'] . "\n"; ?></td>
 		</tr>
 
