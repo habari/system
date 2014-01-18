@@ -44,11 +44,11 @@ class MySQLConnection extends DatabaseConnection
 	 * Call with a database independent SQL string and it will be translated
 	 * to a MySQL specific SQL string.
 	 *
-	 * @param $sql database independent SQL
+	 * @param string $sql database independent SQL
+	 * @param array $args An array of SQL arguments
 	 * @return string translated SQL string
-	 * @todo Actually implement this.
 	 */
-	function sql_t( $sql )
+	function sql_t( $sql, &$args )
 	{
 		return $sql;
 	}

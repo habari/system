@@ -224,7 +224,8 @@ class DatabaseConnection
 		// Allow plugins to modify the query
 		$query = Plugins::filter( 'db_exec', $query, array() );
 		// Translate the query for the database engine
-		$query = $this->sql_t( $query, array() );
+		$ary = array();
+		$query = $this->sql_t( $query, $ary );
 		// Replace braced table names in the query with their prefixed counterparts
 		$query = self::filter_tables( $query );
 		// Allow plugins to modify the query after it has been processed
@@ -779,9 +780,10 @@ class DatabaseConnection
 	 * Translates the query for the current database engine
 	 *
 	 * @param string $query The query to translate for the current database engine
+	 * @param array $args An array of SQL arguments
 	 * @return string The translated query
 	 */
-	public function sql_t( $query )
+	public function sql_t( $query, &$args )
 	{
 		return $query;
 	}
