@@ -34,10 +34,11 @@ class PGSQLConnection extends DatabaseConnection
 	 * Call with a database independent SQL string and it will be translated
 	 * to a PostgreSQL specific SQL string.
 	 *
-	 * @param $sql database independent SQL
+	 * @param string $sql database independent SQL
+	 * @param array $args An array of SQL arguments
 	 * @return string translated SQL string
 	 */
-	function sql_t( $sql )
+	function sql_t( $sql, &$args )
 	{
 		$sql = preg_replace_callback( '%concat\(([^)]+?)\)%i', array( &$this, 'replace_concat' ), $sql );
 		$sql = preg_replace( '%DATE_SUB\s*\(\s*NOW\(\s*\)\s*,\s*INTERVAL\s+([0-9]+)\s+DAY\s*\)%ims', 'NOW() - INTERVAL \'${1} DAYS\'', $sql );
