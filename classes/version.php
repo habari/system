@@ -15,7 +15,7 @@ namespace Habari;
 class Version
 {
 	// DB and API versions are incremented by one as the DB structure or API change
-	const DB_VERSION = 5115;
+	const DB_VERSION = 5116;
 	const API_VERSION = 4960;
 
 	const HABARI_MAJOR_MINOR = '0.10';
