@@ -1766,6 +1766,17 @@ class InstallHandler extends ActionHandler
 		}
 	}
 	
+	private function upgrade_db_post_5116 ( ) {
+		
+		// make sure the update cronjob has not failed too many times during our server move
+		$cron = CronTab::get_cronjob( 'update_check' );
+		$cron->active = true;
+		$cron->failures = 0;
+		
+		$cron->update();
+		
+	}
+	
 	/**
 	 * Validate database credentials for MySQL
 	 * Try to connect and verify if database name exists
