@@ -207,7 +207,7 @@ class AdminUsersHandler extends AdminHandler
 			}
 		}
 		else {
-			if ( $edit_user->can( 'manage_users' ) ) {
+			if ( $current_user->can( 'manage_users' ) ) {
 				$permission = true;
 			}
 		}
