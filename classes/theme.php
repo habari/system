@@ -810,6 +810,9 @@ class Theme extends Pluggable
 			return '';
 		}
 		$current = $theme->page;
+		if( isset( $theme->posts->get_param_cache['nolimit'] ) ) {
+			return;
+		}
 		$items_per_page = isset( $theme->posts->get_param_cache['limit'] ) ?
 			$theme->posts->get_param_cache['limit'] :
 			Options::get( 'pagination' );
@@ -906,6 +909,9 @@ class Theme extends Pluggable
 
 		// If there's no next page, skip and return null
 		$settings['page'] = (int) ( $theme->page + 1 );
+		if( isset( $theme->posts->get_param_cache['nolimit'] ) ) {
+			return null;
+		}
 		$items_per_page = isset( $theme->posts->get_param_cache['limit'] ) ?
 			$theme->posts->get_param_cache['limit'] :
 			Options::get( 'pagination' );
