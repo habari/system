@@ -62,7 +62,7 @@ class RewriteRules extends \ArrayObject
 			array( 'name' => 'get_locale', 'parse_regex' => '#^admin/locale/?$#i', 'build_str' => 'admin/locale', 'handler' => 'AdminLocaleHandler', 'action' => 'locale', 'priority' => 4, 'description' => 'Fetch the locale data as javascript' ),
 			array( 'name' => 'display_sysinfo', 'parse_regex' => '#^admin/sysinfo/?$#i', 'build_str' => 'admin/sysinfo', 'handler' => 'AdminHandler', 'action' => 'sysinfo', 'priority' => 4, 'description' => 'Display system info' ),
 
-			array( 'name' => 'admin', 'parse_regex' => '#^admin(?:/?$|/(?P<page>[^/]*))/?$#i', 'build_str' => 'admin/({$page})', 'handler' => 'AdminHandler', 'action' => 'admin', 'priority' => 6, 'description' => 'An admin action' ),
+			array( 'name' => 'admin', 'parse_regex' => '#^admin(?:/?$|/(?P<page>[^/]*))(/?$|(?P<subpage>[^/]*))/?$#i', 'build_str' => 'admin/({$page})/({$subpage})', 'handler' => 'AdminHandler', 'action' => 'admin', 'priority' => 6, 'description' => 'An admin action' ),
 
 			// Admin AJAX actions
 			array( 'name' => 'admin_ajax_dashboard', 'parse_regex' => '#^admin_ajax/(?P<context>dashboard)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminDashboardHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for the admin dashboard' ),

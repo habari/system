@@ -85,10 +85,16 @@ class UserHandler extends ActionHandler
 						$login_dest = Site::get_url( 'admin' );
 					}
 					else {
-						// Replace '?' with '&' in $dest[1] before call URL::get()
+						// Replace '?' with '&' in the page parts in $dest before call URL::get()
 						// Therefore calling URL::get() with a query string
-						$dest[1] = str_replace( '?', '&', $dest[1] );
-						$login_dest = URL::get( 'admin', 'page=' . $dest[1] );
+						if(isset($dest[2])) {
+							$dest[2] = str_replace( '?', '&', $dest[2] );
+							$login_dest = URL::get( 'admin', 'page=' . $dest[1] . '&subpage=' . $dest[2] );
+						}
+						else {
+							$dest[1] = str_replace( '?', '&', $dest[1] );
+							$login_dest = URL::get( 'admin', 'page=' . $dest[1] );
+						}
 					}
 				}
 				else {
