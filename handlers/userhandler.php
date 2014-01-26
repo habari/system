@@ -79,17 +79,8 @@ class UserHandler extends ActionHandler
 						Session::add_to_set( 'last_form_data', $last_form_data['get'], 'get' );
 					}
 
-					/* Redirect to the correct admin page */
-					$dest = explode( '/', MultiByte::substr( $login_session['original'], MultiByte::strpos( $login_session['original'], 'admin/' ) ) );
-					if ( '' == $dest[0] ) {
-						$login_dest = Site::get_url( 'admin' );
-					}
-					else {
-						// Replace '?' with '&' in $dest[1] before call URL::get()
-						// Therefore calling URL::get() with a query string
-						$dest[1] = str_replace( '?', '&', $dest[1] );
-						$login_dest = URL::get( 'admin', 'page=' . $dest[1] );
-					}
+					// don't bother parsing out the URL, we store the URI that was requested, so just append that to the hostname and we're done
+					$login_dest = Site::get_url('host') . $login_session['original'];
 				}
 				else {
 					$login_session = null;
