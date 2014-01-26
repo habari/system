@@ -868,6 +868,9 @@ class Theme extends Pluggable
 
 			$prevpage = $page;
 		}
+		
+		// Run the result through filters so plugins may overwrite it
+		$out = Plugins::filter( 'page_selector', $out, $pages, $rr_name );
 
 		return $out;
 	}
