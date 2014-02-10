@@ -673,6 +673,32 @@ ol {}
 		box-shadow: none;
 	}
 
+/* Faceted Search and Select2 style Overrides */
+#page .VS-search .VS-search-box {
+	cursor: text;
+	position: relative;
+	background: transparent;
+	border: 1px solid #ccc;
+	border-radius: 2px;
+	-webkit-border-radius: 0px;
+	-moz-border-radius: 0px;
+	background-color: #fafafa;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+	min-height: 28px;
+	height: auto;
+}
+
+#page .VS-search .VS-search-box.VS-focus,
+#page .select2-container-multi.select2-container-active .select2-choices {
+	border: 1px solid #aaa;
+	color: #444;
+	-moz-box-shadow: 0 0 3px rgba(0,0,0,.2);
+	-webkit-box-shadow: 0 0 3px rgba(0,0,0,.2);
+	box-shadow: 0 0 3px rgba(0,0,0,.2);
+}
+
 /* Common */
 	h2.lead {
 		font-family: "Montserrat";
