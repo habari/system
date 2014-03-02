@@ -365,8 +365,8 @@ class Stack
 		StackItem::register( 'media', Site::get_url( 'admin_theme', '/js/media.js' ) )->add_dependency( 'jquery' )->add_dependency( 'locale-js' );
 		StackItem::register( 'admin-js', Site::get_url( 'admin_theme', '/js/admin.js' ) )->add_dependency( 'jquery' )->add_dependency( 'locale-js' );
 		StackItem::register( 'dashboard-js', Site::get_url( 'admin_theme', '/js/dashboard.js' ) )->add_dependency( 'admin-js' )->add_dependency( 'locale-js' );
-        StackItem::register( 'groups-js', Site::get_url( 'admin_theme', '/js/groups.js' ) )->add_dependency( 'admin-js' )->add_dependency( 'locale-js' );
-        StackItem::register( 'manage-js', Site::get_url( 'admin_theme', '/js/manage.js' ) )->add_dependency( 'admin-js' )->add_dependency( 'locale-js' );
+		StackItem::register('groups-js', Site::get_url('admin_theme', '/js/groups.js'))->add_dependency('admin-js')->add_dependency('locale-js');
+		StackItem::register('manage-js', Site::get_url('admin_theme', '/js/manage.js'))->add_dependency('admin-js')->add_dependency('locale-js');
 		StackItem::register( 'themes-js', Site::get_url( 'admin_theme', '/js/themes.js' ) )->add_dependency( 'admin-js' )->add_dependency( 'locale-js' );
 		StackItem::register( 'crc32', Site::get_url( 'vendor', '/crc32.js' ), '1.2' );
 		StackItem::register( 'select2', Site::get_url( 'vendor', '/select2/select2.min.js' ), '3.3.2' )->add_dependency( 'jquery' );
