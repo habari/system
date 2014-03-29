@@ -1156,7 +1156,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		// sorry, we just don't allow changing content types to types you don't have rights to
 		$type = 'post_' . Post::type_name( $form->content_type->value );
 		if ( $form->content_type->value != $post->content_type && ( $user->cannot( $type ) || ! $user->can_any( array( 'own_posts' => 'edit', 'post_any' => 'edit', $type => 'edit' ) ) ) ) {
-			Session::error( _t( 'Changing content types is not allowed' ) );
+			Session::error( _t( 'You don\'t have permission to change to that content type' ) );
 			// @todo This isn't ideal at all, since it loses all of the changes...
 			Utils::redirect( URL::get( 'display_publish', $post, false ) );
 			exit;
@@ -1167,7 +1167,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			// check the user can create new posts of the set type.
 			$type = 'post_'  . Post::type_name( $form->content_type->value );
 			if ( ACL::user_cannot( $user, $type ) || ( ! ACL::user_can( $user, 'post_any', 'create' ) && ! ACL::user_can( $user, $type, 'create' ) ) ) {
-				Session::error( _t( 'Creating that post type is denied' ) );
+				Session::error( _t( 'You don\'t have permission to create posts of that type' ) );
 				Utils::redirect( URL::get( 'display_publish', $post, false) );
 				exit;
 			}
@@ -1180,7 +1180,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			// check the user can create new posts of the set type.
 			$type = 'post_'  . Post::type_name( $form->content_type->value );
 			if ( ! ACL::access_check( $post->get_access(), 'edit' ) ) {
-				Session::error( _t( 'Editing that post type is denied' ) );
+				Session::error( _t( 'You don\'t have permission to edit posts of that type' ) );
 				Utils::redirect( URL::get( 'display_publish', $post, false) );
 				exit;
 			}
