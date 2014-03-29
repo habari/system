@@ -940,6 +940,68 @@ input[type=text] {
 				text-indent: 0px;
 				padding-left: 5px;
 			}
+	
+	#create_content	#mediatabs ~ .splitter {
+		position: relative;
+		top: -23px;
+	}
+	#create_content	#mediatabs ~ .splitter .splitterinside {
+		background: #333;
+	}
+	#create_content .media_controls {
+		height: 25px;
+		width: 100%;
+		padding: 5px;
+		background: #333;
+	}
+	#create_content .media_controls ul {
+		margin: 0;
+	}
+	#create_content .media_controls ul li {
+		float: left;
+		margin: 0;
+		margin-right: 10px;
+		padding: 5px;
+	}
+	#create_content .media_controls ul li a {
+		color: #fff;
+	}
+	
+	#create_content .media_browser,  #create_content .media_panel {
+		clear: both;
+		color: #fff;
+	}
+	#create_content .media_row {
+		background: #444;
+	}
+	#create_content .media_browser .media_dirlevel {
+		float: left;
+		height: 180px;
+		margin: 0;
+		padding: 5px;
+		padding-right: 10px;
+		border-right: 1px solid #666;
+		overflow-x: hidden;
+		overflow-y: auto;
+		background: #555;
+	}
+	#create_content .media_browser .media_dirlevel ul {
+		margin: 0;
+		padding: 0;
+	}
+	#create_content .media_browser .media_dirlevel ul li {
+		cursor: pointer;
+	}
+	
+	#create_content .mediaphotos {
+		display: inline-block;
+		height: 180px;
+		padding: 5px;
+		background: #444;
+	}
+	#create_content .mediaphotos .media {
+		max-width: 180px;
+	}
 
 #post_data td {
 	white-space: nowrap;

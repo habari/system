@@ -112,10 +112,10 @@ habari.media = {
 			$(this).find('.directory').each(function(){
 				maxw = Math.max(maxw, $(this).outerWidth());
 			});
-			$(this).width(maxw);
+			//$(this).width(maxw);
 			dirswidth += maxw;
 		});
-		$('.mediasplitter:visible .media_row').width(dirswidth + $('.mediasplitter:visible .mediaphotos').outerWidth() + 33);
+		//$('.mediasplitter:visible .media_row').width(dirswidth + $('.mediasplitter:visible .mediaphotos').outerWidth() + 33);
 	},
 
 	clickdir: function(el, path) {
