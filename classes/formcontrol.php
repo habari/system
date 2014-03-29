@@ -418,8 +418,8 @@ ERR;
 				$output .= $theme->display_fallback( $this->get_template(), 'fetch' );
 			}
 		}
-		// Is there htlp text?  Output it, if so.
-		if($this->helptext) {
+		// Is there help text? Output it, if so.
+		if(isset($this->helptext) && !empty($this->helptext)) {
 			$output .= $this->wrap_by($this->get_setting('wrap_help', '<div class="helptext">%s</div>'), $this->helptext);
 		}
 		$output .= $this->get_setting('postfix_html', '');
