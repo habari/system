@@ -941,6 +941,10 @@ input[type=text] {
 				padding-left: 5px;
 			}
 	
+	#create_content .silos {
+		width: 100%;
+	}
+	
 	#create_content	#mediatabs ~ .splitter {
 		position: relative;
 		top: -23px;
