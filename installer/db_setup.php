@@ -223,7 +223,7 @@
 			<div class="item clear clearfix">
 				<div class="head">
 					<span class="checkbox">
-						<input type="radio" name="theme" value="<?php echo $key; ?>"
+						<input type="radio" name="theme_dir" value="<?php echo $theme['dir']; ?>"
 							id="theme_<?php echo $theme['dir']; ?>" tabindex="<?php echo $tab++ ?>"
 							class="theme_selection"
 							data-requires="<?php echo isset($theme['requires']) ? (string)InstallHandler::get_feature_list($theme['requires']) : ''; ?>"
