@@ -289,7 +289,7 @@ class Pingback extends Plugin
 					return false;
 				}
 			}
-			catch ( \Exception $e ) {
+			catch ( Exception $e ) {
 				// log the pingback error
 				EventLog::log( _t( 'Unable to retrieve target, can\'t detect pingback endpoint. (Source: %1$s | Target: %2$s)', array( $source_uri, $target_uri ) ), 'err', 'Pingback' );
 				return false;
