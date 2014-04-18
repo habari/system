@@ -163,7 +163,6 @@ var installer = {
 						.find('.feature_note').html(_t('This plugin provides a requirement of the theme: %s', providing.join(',')));
 					for(i in providing) {
 						if(installer.getProviders(providing[i]).length == 1) {
-							p.attr('checked', true).attr('disabled', true);
 							break;
 						}
 					}
