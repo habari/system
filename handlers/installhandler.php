@@ -180,8 +180,8 @@ class InstallHandler extends ActionHandler
 
 		// activate plugins on POST
 		if ( count( $_POST ) > 0 ) {
-			$this->activate_theme();
 			$this->activate_plugins();
+			$this->activate_theme();
 		}
 
 
