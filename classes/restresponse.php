@@ -97,6 +97,8 @@ class RestResponse
 	public function get() {
 		$mimelist = $this->get_mime_list();
 		$accept = $this->get_accept();
+		$response = null;
+		
 		if(is_string($this->response)) {
 			$response = $this->response;
 		}
