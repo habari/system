@@ -79,7 +79,7 @@ class RestResponse
 			$mimelist = array(
 				'text/plain' => array($this, 'convert_text_plain'),
 				'text/html' => array($this, 'convert_text_html'),
-				'application/json' => array($this, 'convert_applicaton_json'),
+				'application/json' => array($this, 'convert_application_json'),
 				'application/xml' => array($this, 'convert_application_xml'),
 			);
 			$mimelist = Plugins::filter('rest_mime_list', $mimelist);
