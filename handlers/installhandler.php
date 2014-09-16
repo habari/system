@@ -180,8 +180,8 @@ class InstallHandler extends ActionHandler
 
 		// activate plugins on POST
 		if ( count( $_POST ) > 0 ) {
-			$this->activate_theme();
 			$this->activate_plugins();
+			$this->activate_theme();
 		}
 
 
@@ -1008,7 +1008,7 @@ class InstallHandler extends ActionHandler
 
 	public function activate_theme()
 	{
-		$theme_dir = $this->handler_vars['theme'];
+		$theme_dir = $this->handler_vars['theme_dir'];
 
 		// set the user_id in the session in case theme activation methods need it
 		if ( ! $u = User::get_by_name( $this->handler_vars['admin_username'] ) ) {
