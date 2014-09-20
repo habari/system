@@ -106,10 +106,14 @@ class RestResponse
 			$response = $this->response;
 		}
 		elseif(is_array($this->response)) {
-			$response = $mimelist[$accept]($this->response);
+			if (method_exists($mimelist, $accept)) {
+				$response = $mimelist[$accept]($this->response);
+			}
 		}
 		elseif($this->response instanceof DOMElement) {
-			$response = $mimelist[$accept]($this->response);
+			if (method_exists($mimelist, $accept)) {
+				$response = $mimelist[$accept]($this->response);
+			}
 		}
 
 		$response = Plugins::filter('rest_response', $response, $accept, $this->response);
