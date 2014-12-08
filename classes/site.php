@@ -329,6 +329,8 @@ class Site
 					$coresubdir = explode( '/', trim( $server['path'], '/' ) );
 					$basesegments += count($coresubdir);
 				}
+				// Preserve $request without directories for fallback
+				$request_base = $request;
 				// Add directory part
 				if(!empty(trim( $_SERVER['REQUEST_URI'], '/' ))) {
 					$subdirectories = explode( '/', trim( $_SERVER['REQUEST_URI'], '/' ) );
@@ -348,9 +350,9 @@ class Site
 
 					array_shift($request);
 					$x--;
-					// Do not fallback to only the directory
+					// Do not fallback to only the directory, instead, try to match without directory
 					if($basesegments + $x == 0) {
-						break;
+						$request = $request_base;
 					}
 					// What does the following check do?!
 					if ( $x < -10 ) {
