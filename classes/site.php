@@ -329,8 +329,11 @@ class Site
 					$coresubdir = explode( '/', trim( $server['path'], '/' ) );
 					$basesegments += count($coresubdir);
 				}
-				$request = array_merge($request, explode( '/', trim( $_SERVER['REQUEST_URI'], '/' ) ) );
-				// Now cut parts from the end until we found a matching site directory
+				// Add directory part
+				if(!empty(trim( $_SERVER['REQUEST_URI'], '/' ))) {
+					$request = array_merge($request, explode( '/', trim( $_SERVER['REQUEST_URI'], '/' ) ) );
+				}
+				// Now cut parts from the beginning until we found a matching site directory
 				$x = 0;
 				do {
 					$match = implode('.', $request);
@@ -342,7 +345,7 @@ class Site
 						break;
 					}
 
-					array_pop($request);
+					array_shift($request);
 					$x--;
 					if ( $x < -10 ) {
 						echo $x;
