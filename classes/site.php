@@ -344,7 +344,7 @@ class Site
 						self::$config_dir = $match;
 						self::$config_path = HABARI_PATH . '/user/sites/' . self::$config_dir;
 						self::$config_type = ( isset($subdirectories) && array_intersect($subdirectories, $request) == $subdirectories ) ? Site::CONFIG_SUBDIR : Site::CONFIG_SUBDOMAIN;
-						self::$config_urldir = implode('/', array_slice($request, $basesegments));
+						self::$config_urldir = implode('/', array_slice($request, $basesegments + $x));
 						break;
 					}
 
