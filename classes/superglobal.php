@@ -38,11 +38,6 @@ class SuperGlobal extends \ArrayIterator
 			return;
 		}
 
-		if ( get_magic_quotes_gpc() ) {
-			$_GET = Utils::stripslashes( $_GET );
-			$_POST = Utils::stripslashes( $_POST );
-		}
-
 		$_GET = new SuperGlobal( $_GET );
 		$_POST = new SuperGlobal( $_POST );
 		$_SERVER = new SuperGlobal( $_SERVER );
@@ -63,10 +58,6 @@ class SuperGlobal extends \ArrayIterator
 		if ( !$revert ) {
 			// our work has already been done
 			return;
-		}
-
-		if ( get_magic_quotes_gpc() ) {
-			$_COOKIE = Utils::stripslashes( $_COOKIE );
 		}
 
 		$_COOKIE = new SuperGlobal( $_COOKIE );

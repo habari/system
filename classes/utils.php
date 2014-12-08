@@ -174,21 +174,6 @@ class Utils
 	}
 
 	/**
-	 * Reverts magicquotes_gpc behavior
-	 */
-	public static function revert_magic_quotes_gpc()
-	{
-		/* We should only revert the magic quotes once per page hit */
-		static $revert = true;
-		if ( get_magic_quotes_gpc() && $revert ) {
-			$_GET = self::stripslashes( $_GET );
-			$_POST = self::stripslashes( $_POST );
-			$_COOKIE = self::stripslashes( $_COOKIE );
-			$revert = false;
-		}
-	}
-
-	/**
 	 * Adds quotes around values that have spaces in them
 	 * @param string $value A string value that might have spaces
 	 * @return string The string value, quoted if it has spaces
