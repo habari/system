@@ -30,20 +30,10 @@ class SuperGlobal extends \ArrayIterator
 	 */
 	public static function process_gps()
 	{
-		/* We should only revert the magic quotes once per page hit */
-		static $revert = true;
-
-		if ( !$revert ) {
-			// our work has already been done
-			return;
-		}
-
 		$_GET = new SuperGlobal( $_GET );
 		$_POST = new SuperGlobal( $_POST );
 		$_SERVER = new SuperGlobal( $_SERVER );
 		unset( $_REQUEST );
-
-		$revert = false;
 	}
 
 	/**
@@ -52,17 +42,7 @@ class SuperGlobal extends \ArrayIterator
 	 */
 	public static function process_c()
 	{
-		/* We should only revert the magic quotes once per page hit */
-		static $revert = true;
-
-		if ( !$revert ) {
-			// our work has already been done
-			return;
-		}
-
 		$_COOKIE = new SuperGlobal( $_COOKIE );
-
-		$revert = false;
 	}
 
 	/**
