@@ -329,6 +329,7 @@ class Site
 					$coresubdir = explode( '/', trim( $server['path'], '/' ) );
 					$basesegments += count($coresubdir);
 				}
+
 				// Preserve $request without directories for fallback
 				$request_base = $request;
 				// Add directory part
@@ -336,7 +337,7 @@ class Site
 					$subdirectories = explode( '/', trim( $_SERVER['REQUEST_URI'], '/' ) );
 					$request = array_merge($request, $subdirectories);
 				}
-				// Now cut parts from the beginning until we found a matching site directory
+				// Now cut parts until we found a matching site directory
 				$cuts = 0;
 				$dir_cuts = 0;
 				do {
@@ -349,14 +350,15 @@ class Site
 						break;
 					}
 
+					// Cut a part from the beginning
 					array_shift($request);
 					$cuts--;
 					
 					// Do not fallback to only the directory part, instead, cut one and start over
-					if($basesegments + $cuts < 0 && isset($subdirectories) && $dir_cuts < count($subdirectories)) {
+					if($basesegments + $cuts <= 0 && isset($subdirectories) && $dir_cuts < count($subdirectories)) {
 						$cuts = 0;
 						$dir_cuts++;
-						$request = array_merge($request_base, array_slice($subdirectories, 0, $dir_cuts));
+						$request = array_merge($request_base, array_slice($subdirectories, 0, count($subdirectories) - $dir_cuts));
 					}
 					// What does the following check do?!
 					if ( $cuts < -10 ) {
