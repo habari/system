@@ -30,17 +30,23 @@ class FormValidators
 	 * @param string $warning An optional error message
 	 * @return array An empty array if the string is a valid URL, or an array with strings describing the errors
 	 */
-	public static function validate_url( $text, $control, $form, $warning = null, $schemes = array( 'http', 'https' ) )
+	public static function validate_url( $text, $control, $form, $warning = null, $schemes = array( 'http', 'https' ), $guess = true )
 	{
 		if ( ! empty( $text ) ) {
 			$parsed = InputFilter::parse_url( $text );
 			if ( $parsed['is_relative'] ) {
-				// guess if they meant to use an absolute link
-				$parsed = InputFilter::parse_url( 'http://' . $text );
-				if ( $parsed['is_error'] ) {
-					// disallow relative URLs
-					$warning = empty( $warning ) ? _t( 'Relative urls are not allowed' ) : $warning;
-					return array( $warning );
+				if( $guess ) {
+					// guess if they meant to use an absolute link
+					$parsed = InputFilter::parse_url( 'http://' . $text );
+					if ( $parsed['is_error'] ) {
+						// disallow relative URLs
+						$warning = empty( $warning ) ? _t( 'Relative urls are not allowed' ) : $warning;
+						return array( $warning );
+					}
+					else {
+						$warning = empty( $warning ) ? _t( 'Relative urls are not allowed' ) : $warning;
+						return array( $warning );
+					}
 				}
 			}
 			if ( $parsed['is_pseudo'] || ! in_array( $parsed['scheme'], $schemes ) ) {
