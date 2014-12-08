@@ -337,26 +337,30 @@ class Site
 					$request = array_merge($request, $subdirectories);
 				}
 				// Now cut parts from the beginning until we found a matching site directory
-				$x = 0;
+				$cuts = 0;
+				$dir_cuts = 0;
 				do {
 					$match = implode('.', $request);
 					if ( in_array( $match, $config_dirs ) ) {
 						self::$config_dir = $match;
 						self::$config_path = HABARI_PATH . '/user/sites/' . self::$config_dir;
 						self::$config_type = ( isset($subdirectories) && array_intersect($subdirectories, $request) == $subdirectories ) ? Site::CONFIG_SUBDIR : Site::CONFIG_SUBDOMAIN;
-						self::$config_urldir = implode('/', array_slice($request, $basesegments + $x));
+						self::$config_urldir = implode('/', array_slice($request, $basesegments + $cuts));
 						break;
 					}
 
 					array_shift($request);
-					$x--;
-					// Do not fallback to only the directory, instead, try to match without directory
-					if($basesegments + $x == 0) {
-						$request = $request_base;
+					$cuts--;
+					
+					// Do not fallback to only the directory part, instead, cut one and start over
+					if($basesegments + $cuts < 0 && isset($subdirectories) && $dir_cuts < count($subdirectories)) {
+						$cuts = 0;
+						$dir_cuts++;
+						$request = array_merge($request_base, array_slice($subdirectories, 0, $dir_cuts));
 					}
 					// What does the following check do?!
-					if ( $x < -10 ) {
-						echo $x;
+					if ( $cuts < -10 ) {
+						echo $cuts;
 						var_dump($request);
 						die('too many ');
 					}
