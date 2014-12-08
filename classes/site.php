@@ -347,6 +347,11 @@ class Site
 
 					array_shift($request);
 					$x--;
+					// Do not fallback to only the directory
+					if($basesegments + $x == 0) {
+						break;
+					}
+					// What does the following check do?!
 					if ( $x < -10 ) {
 						echo $x;
 						var_dump($request);
