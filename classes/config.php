@@ -94,7 +94,6 @@ class Config
 			self::$registry[ $key ] = $val;
 		}
 		else {
-			$val = (object)$val;
 			self::$registry[ $key ] = (object)$val;
 		}
 		return $new;
