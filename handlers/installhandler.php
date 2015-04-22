@@ -178,11 +178,9 @@ class InstallHandler extends ActionHandler
 			$this->display( 'db_setup' );
 		}
 
-		// activate plugins on POST
-		if ( count( $_POST ) > 0 ) {
-			$this->activate_plugins();
-			$this->activate_theme();
-		}
+		// Try activating plugins and themes
+		$this->activate_plugins();
+		$this->activate_theme();
 
 
 
@@ -1009,7 +1007,10 @@ class InstallHandler extends ActionHandler
 	public function activate_theme()
 	{
 		$theme_dir = $this->handler_vars['theme_dir'];
-
+		if(!isset($theme_dir) || empty($theme_dir)) {
+			return;
+		}
+		
 		// set the user_id in the session in case theme activation methods need it
 		if ( ! $u = User::get_by_name( $this->handler_vars['admin_username'] ) ) {
 			// @todo die gracefully
@@ -1037,6 +1038,10 @@ class InstallHandler extends ActionHandler
 			elseif ( preg_match( '/plugin_(.+)/u', $id, $matches ) && $activate ) {
 				$plugin_ids[] = $matches[1];
 			}
+		}
+		
+		if(count($plugin_ids) == 0) {
+			return;
 		}
 
 		// set the user_id in the session in case plugin activation methods need it
