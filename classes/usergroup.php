@@ -128,11 +128,18 @@ class UserGroup extends QueryRecord
 		$this->load_member_cache();
 
 		// Remove all users from this group in preparation for adding the current list
-		DB::query( 'DELETE FROM {users_groups} WHERE group_id=?', array( $this->id ) );
+		$placeholder = "(" . implode( ",", array_fill( 0, count( $this->member_ids ), "?" ) ) . ")";
+		$data = array_merge( array( $this->id ), $this->member_ids );
+		DB::query( 'DELETE FROM {users_groups} WHERE group_id=? AND user_id NOT IN '. $placeholder, $data );
+
 		// Add the current list of users into the group
+		$placeholder = implode( ",", array_fill( 0, count( $this->member_ids ), "(?, ?)" ) );
 		foreach ( $this->member_ids as $user_id ) {
-			DB::query( 'INSERT INTO {users_groups} (user_id, group_id) VALUES (?, ?)', array( $user_id, $this->id ) );
+			$data[] = $user_id;
+			$data[] = $this->id;
 		}
+		DB::query( 'INSERT INTO {users_groups} (user_id, group_id) VALUES ' . $placeholder, $data );
+
 		EventLog::log( _t( 'User Group %s: Member list reset', array( $this->name ) ), 'notice', 'user', 'habari' );
 	}
 
