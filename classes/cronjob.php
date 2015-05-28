@@ -118,14 +118,14 @@ class CronJob extends QueryRecord
 		// check to see if we have failed too many times before we update, we might go ahead and skip this one
 		if ( $this->failures > Options::get( 'cron_max_failures', 10 ) ) {
 			EventLog::log( _t( 'CronJob %s has failed %d times and is being deactivated!', array( $this->name, $this->failures - 1 ) ), 'alert', 'cron' );
-			$this->active = false;
+			$this->active = 0;
 		}
 
 		// update before we run it
 		$this->update();
 
 		// if the check has been deactivated, just return
-		if ( $this->active == false ) {
+		if ( $this->active == 0 ) {
 			return;
 		}
 
