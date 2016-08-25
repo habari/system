@@ -8,7 +8,7 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 			$url = Url::get( 'own_user_profile' );
 		}
 		else {
-			$url = Url::get( 'user_profile', array( 'page' => 'user', 'user' => $user->username ) );
+			$url = Url::get( 'user_profile', array( 'user' => $user->username ) );
 		}
 	?>
 
