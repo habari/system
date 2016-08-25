@@ -163,6 +163,9 @@ class User extends QueryRecord implements FormStorage, IsContent
 		$this->info->locale_time_format = Options::get( 'timeformat' );
 		$this->info->locale_lang = Options::get( 'locale', 'en-us' );
 
+		// Save when this user was created
+		$this->info->creation_time = DateTime::create()->format( 'Y-m-d H:i:s' );
+
 		$this->info->commit();
 
 		if ( $result ) {
