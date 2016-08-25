@@ -23,6 +23,7 @@ class DateTime extends \DateTime
 	private static $default_datetime_format = 'c';
 	private static $default_date_format;
 	private static $default_time_format;
+	private static $last_exception;
 	
 	// various time increments in seconds
 	const YEAR		= 31556926;
@@ -106,6 +107,14 @@ class DateTime extends \DateTime
 	}
 
 	/**
+	 * Get the last exception thrown when trying to create
+	 */
+	public static function get_last_exception()
+	{
+		return self::$last_exception;
+	}
+
+	/**
 	 * This function should not be used.  Use ::create() instead
 	 * @deprecated
 	 */
@@ -144,9 +153,16 @@ class DateTime extends \DateTime
 			$timezone = self::$default_timezone;
 		}
 
-		// passing the timezone to construct doesn't seem to do anything.
-		$datetime = new DateTime( $time );
-		$datetime->set_timezone( $timezone );
+		try {
+			$datetime = new DateTime( $time );
+			// passing the timezone to construct doesn't seem to do anything.
+			$datetime->set_timezone( $timezone );
+		}
+		catch(\Exception $e) {
+			// Do not crash if invalid data has been passed but save the exception
+			self::$last_exception = $e;
+			return false;
+		}
 		return $datetime;
 	}
 
