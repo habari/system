@@ -154,15 +154,12 @@ class AdminOptionsHandler extends AdminHandler
 				}
 			}
 
-			/* @todo: filter for additional options from plugins
-			 * We could either use existing config forms and simply extract
-			 * the form controls, or we could create something different
-			 */
-
 			$buttons = $form->append( new FormControlWrapper( 'buttons', null, array( 'class' => 'container' ) ) );
 
 			$buttons->append( FormControlSubmit::create( 'apply', null, array( 'tabindex' => $tab_index ) )->set_caption( _t( 'Apply' ) ) );
 			$form->on_success( array( $self, 'form_options_success' ) );
+
+			$form = Plugins::filter( 'admin_options_form', $form );
 		});
 	}
 
