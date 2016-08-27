@@ -123,7 +123,6 @@ class AdminOptionsHandler extends AdminHandler
 				),
 			);
 
-			// This form is pretty silly.  Why doesn't this just use FormUI methods directly?  It would probably be shorter code and native.
 			$option_items = Plugins::filter( 'admin_option_items', $option_items );
 
 			$tab_index = 3;
