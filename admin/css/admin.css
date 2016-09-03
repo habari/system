@@ -1116,6 +1116,12 @@ li.tag.selected {
   background: #fff;
 }
 
+.tag .count {
+  font-size: 10px;
+  margin-left: 2px;
+  vertical-align: super;
+}
+
 #log_data {  /* this will do for now */
 	/*table-layout: fixed;*/
 }
