@@ -23,6 +23,11 @@ class AdminTagsHandler extends AdminHandler
 		$this->theme->tags = Tags::vocabulary()->get_tree( 'term_display asc' );
 		$this->theme->max = Tags::vocabulary()->max_count();
 
+		$form = new FormUI('tags');
+		$aggregate = FormControlAggregate::create('selected_items')->set_selector('.tag_item')->label('0 Selected');
+		$form->append($aggregate);
+		$this->theme->form = $form;
+
 		$this->display( 'tags' );
 	}
 

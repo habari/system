@@ -8,11 +8,17 @@
 
 <!--<div class="instructions"><span>Click to select</span> &middot; <span>Double-click to open</span></div>-->
 
+<div class="container transparent item controls">
+
+	<?php echo $form->get(); ?>
+
+</div>
+
 <ul id="tag_collection" class="container items">
 	<?php $theme->display( 'tag_collection' ); ?>
 </ul>
 
-
+<!--
 <div class="container transparent item controls">
 	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
 	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
@@ -31,6 +37,7 @@
 
 	<span class="buttons"><input type="button" value="<?php _e('Delete Selected'); ?>" class="delete button"></span>
 </div>
+-->
 
 <script type="text/javascript">
 itemManage.fetch = function(offset, limit, resetTimeline, silent) {
