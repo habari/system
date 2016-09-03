@@ -14,10 +14,6 @@
 
 </div>
 
-<ul id="tag_collection" class="container items">
-	<?php $theme->display( 'tag_collection' ); ?>
-</ul>
-
 <!--
 <div class="container transparent item controls">
 	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">

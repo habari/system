@@ -33,7 +33,7 @@ class AdminTagsHandler extends AdminHandler
 
 		$form = new FormUI('tags');
 		
-		$aggregate = FormControlAggregate::create('selected_items')->set_selector('.tag_item')->label('0 Selected');
+		$aggregate = FormControlAggregate::create('selected_items')->set_selector("input[name='tags[]']")->label('0 Selected');
 
 		$page_actions = FormControlDropbutton::create('page_actions');
 		$page_actions->append(
@@ -53,9 +53,30 @@ class AdminTagsHandler extends AdminHandler
 				))
 		);
 
+		if(count($this->theme->tags) > 0) {
+			$tag_collection = $form->append(FormControlWrapper::create('tag_collection')
+				->add_class('container items')
+				->set_setting('wrap_element', 'ul')
+			);
+			foreach($this->theme->tags as $tag) {
+				$weight = round(10 * log($tag->count + 1) / log($this->theme->max + 1.01));
+				$tag_collection->append(FormControlCheckbox::create('tag_' . $tag->id)
+					->add_class('tag_item')
+					->set_returned_value($tag->id)
+					->set_property('name', 'tags[]')
+					->label($tag->term_display . '<span class="count"><a href="' . URL::get( 'admin', array( 'page' => 'posts', 'search' => 'tag:'. $tag->tag_text_searchable) ) . '" title="' . Utils::htmlspecialchars( _t( 'Manage posts tagged %1$s', array( $tag->term_display ) ) ) . '">' . $tag->count .'</a></span>')
+					->set_setting('wrap', '<li class="tag wt' . $weight . '">%s</li>')
+				);
+			}
+		}
+		else {
+			$tag_collection = $form->append(FormControlStatic::create('<p>' . _t('No tags could be found to match the query criteria.') . '</p>'));
+		}
+
 		$form->append($aggregate);
 		$form->append($page_actions);
 		$form->append($rename);
+		$form->append($tag_collection);
 		$form->on_success(array($this, 'process_tags'));
 
 		$this->theme->form = $form;
