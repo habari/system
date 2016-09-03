@@ -30,6 +30,7 @@ class AdminTagsHandler extends AdminHandler
 
 		$this->theme->tags = Tags::vocabulary()->get_tree( 'term_display asc' );
 		$this->theme->max = Tags::vocabulary()->max_count();
+		$this->theme->min = Tags::vocabulary()->min_count();
 
 		$form = new FormUI('tags');
 		
@@ -58,14 +59,23 @@ class AdminTagsHandler extends AdminHandler
 				->add_class('container items')
 				->set_setting('wrap_element', 'ul')
 			);
+			// Calculation preparation for statistical weighting
+			$count_range = $this->theme->max - $this->theme->min;
+			if($count_range > 5) {
+				$p10 = $this->theme->min + $count_range / 10;
+				$p25 = $this->theme->min + $count_range / 4;
+				$p50 = $this->theme->min + $count_range / 2;
+				$p75 = $this->theme->min + $count_range / 100 * 75;
+				$p90 = $this->theme->min + $count_range / 100 * 90;
+			}
 			foreach($this->theme->tags as $tag) {
-				$weight = round(10 * log($tag->count + 1) / log($this->theme->max + 1.01));
+				// The actual weighting happens through classifying into one of 6 statistically relevant areas
+				$weight = ($tag->count < $p10) ? 1 : (($tag->count < $p25) ? 2 : (($tag->count < $p50) ? 3 : (($tag->count < $p75) ? 4 : (($tag->count < $p90) ? 5 : 6))));
 				$tag_collection->append(FormControlCheckbox::create('tag_' . $tag->id)
-					->add_class('tag_item')
 					->set_returned_value($tag->id)
 					->set_property('name', 'tags[]')
 					->label($tag->term_display . '<span class="count"><a href="' . URL::get( 'admin', array( 'page' => 'posts', 'search' => 'tag:'. $tag->tag_text_searchable) ) . '" title="' . Utils::htmlspecialchars( _t( 'Manage posts tagged %1$s', array( $tag->term_display ) ) ) . '">' . $tag->count .'</a></span>')
-					->set_setting('wrap', '<li class="tag wt' . $weight . '">%s</li>')
+					->set_setting('wrap', '<li class="item tag wt' . $weight . '">%s</li>')
 				);
 			}
 		}

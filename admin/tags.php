@@ -36,6 +36,9 @@
 -->
 
 <script type="text/javascript">
+$('li.tag input').click(function() {
+	$(this).parent().parent().toggleClass('selected');
+});
 itemManage.fetch = function(offset, limit, resetTimeline, silent) {
 	query = {};
 	query['timestamp'] = $('input#timestamp').attr('value');

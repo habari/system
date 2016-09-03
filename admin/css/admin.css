@@ -1081,6 +1081,41 @@ ul.meta li {
 	margin: 0;
 }
 
+/* Tags page */
+.tag.wt1 {
+  border-bottom: 3px solid #CDE0E5;
+}
+.tag.wt2 {
+  border-bottom: 3px solid #9BC2CA;
+}
+.tag.wt3 {
+  border-bottom: 3px solid #79AEB9;
+}
+.tag.wt4 {
+  border-bottom: 3px solid #4F8A96;
+}
+.tag.wt5 {
+  border-bottom: 3px solid #3E6C75;
+}
+.tag.wt6 {
+  border-bottom: 3px solid #233D43;
+}
+
+li.tag {
+  display: inline-block;
+  width: 180px;
+  padding: 5px;
+  margin: 3px;
+}
+
+li.tag input {
+  display: none;
+}
+
+li.tag.selected {
+  background: #fff;
+}
+
 #log_data {  /* this will do for now */
 	/*table-layout: fixed;*/
 }
