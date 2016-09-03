@@ -55,15 +55,14 @@ class FormControlFacet extends FormControl
 			$out = <<<  CUSTOM_AUTOCOMPLETE_JS
 				<script type="text/javascript">
 controls.init(function(){
-	$('.facet_ui:not(.initok)').each(function(){
+	$('.facet_ui').each(function(){
 		var self = $(this);
-		self.addClass('initok');
 		var target = $('#' + self.data('target'));
 		var facet_config = target.data('facet-config');
 		self.data('visualsearch', VS.init({
 			container: self,
-			query: target.val(),
-			showFacets: false, /* true makes them pop up automatically, but is kind of weird */
+			query: '',
+			showFacets: false,
 			callbacks: {
 				search: function(query, searchCollection) {
 					if(facet_config.onsearch != undefined) {
