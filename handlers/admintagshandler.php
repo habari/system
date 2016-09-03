@@ -14,6 +14,14 @@ namespace Habari;
 class AdminTagsHandler extends AdminHandler
 {
 	/**
+	 * Handle POST requests for /admin/tags
+	 */
+	public function post_tags()
+	{
+		return $this->get_tags();
+	}
+
+	/**
 	 * Handle GET requests for /admin/tags to display the tags.
 	 */
 	public function get_tags()
@@ -24,11 +32,54 @@ class AdminTagsHandler extends AdminHandler
 		$this->theme->max = Tags::vocabulary()->max_count();
 
 		$form = new FormUI('tags');
+		
 		$aggregate = FormControlAggregate::create('selected_items')->set_selector('.tag_item')->label('0 Selected');
+
+		$page_actions = FormControlDropbutton::create('page_actions');
+		$page_actions->append(
+			FormControlSubmit::create('action')
+				->set_caption(_t('Delete selected'))
+				->set_properties(array(
+					'title' => _t('Delete selected'),
+				))
+		);
+		
+		$rename = FormControlDropbutton::create('rename_dropbutton');
+		$rename->append(
+			FormControlSubmit::create('action')
+				->set_caption(_t('Rename selected'))
+				->set_properties(array(
+					'title' => _t('Rename selected'),
+				))
+		);
+
 		$form->append($aggregate);
+		$form->append($page_actions);
+		$form->append($rename);
+		$form->on_success(array($this, 'process_tags'));
+
 		$this->theme->form = $form;
 
 		$this->display( 'tags' );
+	}
+
+	/**
+	 * Handles submitted tag forms and processes tag actions
+	 * @param FormUI $form The tag form
+	 */
+	public function process_tags( $form )
+	{
+		if( $_POST['action'] == _t('Delete selected') ) {
+			$tag_names = array();
+			foreach ( $form->selected_items->value as $id ) {
+				$tag = Tags::get_by_id( $id );
+				$tag_names[] = $tag->term_display;
+				Tags::vocabulary()->delete_term( $tag );
+			}
+			Session::notice( _n( _t( 'Tag %s has been deleted.', array( implode( '', $tag_names ) ) ), _t( '%d tags have been deleted.', array( count( $tag_names ) ) ), count( $tag_names ) ) );
+		}
+
+		Utils::redirect( URL::get( 'display_tags' ) );
 	}
 
 	/**
