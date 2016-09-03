@@ -1116,6 +1116,10 @@ li.tag.selected {
   background: #fff;
 }
 
+.tag label {
+  word-break: break-word;
+}
+
 .tag .count {
   font-size: 10px;
   margin-left: 2px;
