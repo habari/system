@@ -783,6 +783,16 @@ SQL;
 	}
 
 	/**
+	 * Returns the number of times the least used tag is used.
+	 *
+	 * @return int The number of times the least used tag is used.
+	 **/
+	public function min_count()
+	{
+		return DB::get_value( 'SELECT count( t2.object_id ) AS min FROM {terms} t, {object_terms} t2 WHERE t2.term_id = t.id AND t.vocabulary_id = ? GROUP BY t.id ORDER BY min ASC LIMIT 1', array( $this->id ) );
+	}
+
+	/**
 	 * Renames terms.
 	 * If the master term exists, the terms will be merged with it.
 	 * If not, it will be created first.
