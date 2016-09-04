@@ -25,10 +25,8 @@ class FormControlDropbutton extends FormContainer
 			self::$outpre = true;
 			$out = <<<  CUSTOM_DROPBUTTON_JS
 				<script type="text/javascript">
+var dropbuttonUndrop = function(){ $('.dropbutton').removeClass('dropped'); };
 controls.init(function(){
-	$('body').on('click', function(e){
-		$('.dropbutton').removeClass('dropped');
-	});
 	$('.dropbutton_control').each(function(){
 		var self = $(this);
 		var needWidth = self.find('.primary').outerWidth()+self.find('.dropdown').outerWidth();
@@ -40,13 +38,19 @@ controls.init(function(){
 			$('li:first-child input', menu).css('border-top-left-radius', '3px');
 		}
 		menu.width(toWidth).css('margin-left', marginleft);
-		self.find('.dropdown').on('click', function(event){
-			$('.dropbutton_control').not(self).removeClass('dropped');
-			self.toggleClass('dropped');
-			event.preventDefault();
-			return false;
-		});
 	});
+	$(document)
+		.off('click', '.dropbutton_control .dropdown')
+		.on('click', '.dropbutton_control .dropdown', function(event){
+			btn = $(this).closest('.dropbutton_control');
+			$('.dropbutton_control').not(btn).removeClass('dropped');
+			btn.toggleClass('dropped');
+			event.preventDefault();
+			event.stopPropagation();
+			return false;
+		})
+		.off('click', dropbuttonUndrop)
+		.on('click', dropbuttonUndrop);
 });
 				</script>
 CUSTOM_DROPBUTTON_JS;

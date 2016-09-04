@@ -98,16 +98,17 @@ class AdminPostsHandler extends AdminHandler
 			'search' => '',
 		);
 		foreach ( $locals as $varname => $default ) {
-			$$varname = isset( $_GET[$varname] ) ? $_GET[$varname] : ( isset( $params[$varname] ) ? $params[$varname] : $default );
+			$$varname = isset( $params[$varname] ) ? $params[$varname] : $default;
 		}
 
 		// numbers submitted by HTTP forms are seen as strings
 		// but we want the integer value for use in Posts::get,
 		// so cast these two values to (int)
-		if ( isset( $_GET['type'] ) ) {
+		// We want the integer value of these
+		if (empty($type) && isset($_GET['type'])) {
 			$type = Post::type($_GET['type']);
 		}
-		if ( isset( $_GET['status'] ) ) {
+		if (empty($status) && isset($_GET['status'])) {
 			$status = Post::status($_GET['status']);
 		}
 
@@ -255,11 +256,14 @@ class AdminPostsHandler extends AdminHandler
 		$special_searches["author:" . User::identify()->username] = _t( 'My Posts' );
 		
 		// Create search controls and global buttons for the manage page
-		// I'm pretty sure there's more work to be done...
+		$search_value = '';
+		if(isset($_GET['type'])) {
+			$search_value .= 'type: ' . Post::type_name($_GET['type']);
+		}
 		$search = FormControlFacet::create('search');
-		$search->set_value('tag: exploding')
+		$search->set_value($search_value)
 			->set_property('data-facet-config', array(
-				'onsearch' => 'itemManage.fetch();',
+				'onsearch' => '$(".posts").manager("update", self.data("visualsearch").searchQuery.facets());',
 				'facetsURL' => URL::get('admin_ajax_facets', array('context' => 'facets', 'component' => 'facets')),
 				'valuesURL' => URL::get('admin_ajax_facets', array('context' => 'facets', 'component' => 'values')),
 			));
@@ -417,13 +421,26 @@ class AdminPostsHandler extends AdminHandler
 	 */
 	public function ajax_posts()
 	{
-		Utils::check_request_method( array( 'GET', 'HEAD' ) );
+		Utils::check_request_method( array( 'POST', 'HEAD' ) );
 
 		$this->create_theme();
 
-		$params = $_GET;
+		$params = $_POST['query'];
 
-		$this->fetch_posts( $params );
+		$fetch_params = array();
+		foreach($params as $param) {
+			$key = key($param);
+			$value = current($param);
+			if(isset($fetch_params[$key])) {
+				$fetch_params[$key] = Utils::single_array($fetch_params[$key]);
+				$fetch_params[$key][] = $value;
+			}
+			else {
+				$fetch_params[$key] = $value;
+			}
+		}
+
+		$this->fetch_posts( $fetch_params );
 		$items = $this->theme->fetch( 'posts_items' );
 		$timeline = $this->theme->fetch( 'timeline_items' );
 
@@ -436,6 +453,7 @@ class AdminPostsHandler extends AdminHandler
 		}
 
 		$ar = new AjaxResponse();
+		$ar->html('.posts', $items);
 		$ar->data = array(
 			'items' => $items,
 			'item_ids' => $item_ids,
