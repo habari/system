@@ -1082,6 +1082,17 @@ ul.meta li {
 }
 
 /* Tags page */
+.page-tags .container.item, .page-tags #tags {
+  display: flex;
+  max-width: 100%;
+}
+
+.page-tags #tags ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
 .tag.wt1 {
   border-bottom: 3px solid #CDE0E5;
 }
@@ -1103,9 +1114,8 @@ ul.meta li {
 
 li.tag {
   display: inline-block;
-  width: 180px;
-  padding: 5px;
-  margin: 3px;
+  padding: 3px 0;
+  margin: 5px 3px;
 }
 
 li.tag input {
@@ -1124,6 +1134,13 @@ li.tag.selected {
   font-size: 10px;
   margin-left: 2px;
   vertical-align: super;
+}
+
+.tag_controls {
+  width: 200px;
+  border-right: 2px solid #999;
+  padding: 10px 5px 0 0;
+  margin-right: 9px;
 }
 
 #log_data {  /* this will do for now */

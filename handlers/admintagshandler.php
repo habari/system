@@ -54,6 +54,12 @@ class AdminTagsHandler extends AdminHandler
 				))
 		);
 
+		$tag_controls = $form->append(FormControlWrapper::create('tag_controls'))
+			->add_class("container tag_controls");
+		$tag_controls->append($aggregate);
+		$tag_controls->append($page_actions);
+		$tag_controls->append($rename);
+
 		if(count($this->theme->tags) > 0) {
 			$tag_collection = $form->append(FormControlWrapper::create('tag_collection')
 				->add_class('container items')
@@ -82,11 +88,7 @@ class AdminTagsHandler extends AdminHandler
 		else {
 			$tag_collection = $form->append(FormControlStatic::create('<p>' . _t('No tags could be found to match the query criteria.') . '</p>'));
 		}
-
-		$form->append($aggregate);
-		$form->append($page_actions);
-		$form->append($rename);
-		$form->append($tag_collection);
+		
 		$form->on_success(array($this, 'process_tags'));
 
 		$this->theme->form = $form;
