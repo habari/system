@@ -2,10 +2,6 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php include('header.php');?>
 
-<div class="container navigator">
-	<span class="search pct100"><input type="search" id="search" placeholder="<?php _e('Type and wait to search tags'); ?>" autofocus="autofocus"></span>
-</div>
-
 <!--<div class="instructions"><span>Click to select</span> &middot; <span>Double-click to open</span></div>-->
 
 <div class="container transparent item controls">
@@ -13,27 +9,6 @@
 	<?php echo $form->get(); ?>
 
 </div>
-
-<!--
-<div class="container transparent item controls">
-	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
-	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-	<input type="hidden" name="password_digest" id="password_digest" value="<?php echo $wsse['digest']; ?>">
-
-	<span class="checkboxandselected">
-		<input type="checkbox" id="master_checkbox" name="master_checkbox">
-		<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
-	</span>
-
-	<span class="renamecontrols"><input type="text" class="renametext"></span>
-
-	<span class="buttons"><input type="button" value="<?php _e('Rename'); ?>" class="rename button"></span>
-
-	<span class="or"><?php _e('or'); ?></span>
-
-	<span class="buttons"><input type="button" value="<?php _e('Delete Selected'); ?>" class="delete button"></span>
-</div>
--->
 
 <script type="text/javascript">
 // this is just visual effect stuff, the actual selecting and processing is done with FormUI
@@ -56,6 +31,7 @@ $('#tag_collection li.tag input').click(function() {
 });
 
 //legacy code
+/*
 itemManage.fetch = function(offset, limit, resetTimeline, silent) {
 	query = {};
 	query['timestamp'] = $('input#timestamp').attr('value');
@@ -182,6 +158,7 @@ itemManage.changeItem = function() {
 		$(".controls input.renametext").focus();
 	}
 }
+*/
 </script>
 
 <?php include('footer.php');?>
