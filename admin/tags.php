@@ -36,9 +36,26 @@
 -->
 
 <script type="text/javascript">
-$('li.tag input').click(function() {
-	$(this).parent().parent().toggleClass('selected');
+// this is just visual effect stuff, the actual selecting and processing is done with FormUI
+$('#tag_collection li.tag input').click(function() {
+	var listitem = $(this).parent().parent();
+	if(listitem.hasClass('selected')) {
+		listitem.removeClass('selected');
+		// remove item from selected list (again, visually, the actual removing is done by FormUI)
+		var regex = /tag_[0-9]+/;
+		var idclass = regex.exec(listitem.attr('class'));
+		$('#selected_tags .' + idclass).remove();
+	}
+	else {
+		listitem.addClass('selected');
+		// keep all the properties and the input so we can click the item in both lists, but get rid of id to avoid conflicts
+		var cloneli = listitem.clone();
+		cloneli.find('input').removeAttr('id');
+		cloneli.appendTo('#selected_tags');
+	}
 });
+
+//legacy code
 itemManage.fetch = function(offset, limit, resetTimeline, silent) {
 	query = {};
 	query['timestamp'] = $('input#timestamp').attr('value');

@@ -59,11 +59,16 @@ class AdminTagsHandler extends AdminHandler
 		$tag_controls->append($aggregate);
 		$tag_controls->append($page_actions);
 		$tag_controls->append($rename);
+		$tag_controls->append(FormControlWrapper::create('selected_tags')
+			->set_setting('wrap_element', 'ul')
+			->set_property('id', 'selected_tags')
+		);
 
 		if(count($this->theme->tags) > 0) {
 			$tag_collection = $form->append(FormControlWrapper::create('tag_collection')
 				->add_class('container items')
 				->set_setting('wrap_element', 'ul')
+				->set_property('id', 'tag_collection')
 			);
 			// Calculation preparation for statistical weighting
 			$count_range = $this->theme->max - $this->theme->min;
@@ -81,7 +86,7 @@ class AdminTagsHandler extends AdminHandler
 					->set_returned_value($tag->id)
 					->set_property('name', 'tags[]')
 					->label($tag->term_display . '<span class="count"><a href="' . URL::get( 'admin', array( 'page' => 'posts', 'search' => 'tag:'. $tag->tag_text_searchable) ) . '" title="' . Utils::htmlspecialchars( _t( 'Manage posts tagged %1$s', array( $tag->term_display ) ) ) . '">' . $tag->count .'</a></span>')
-					->set_setting('wrap', '<li class="item tag wt' . $weight . '">%s</li>')
+					->set_setting('wrap', '<li class="tag_' . $tag->id . ' item tag wt' . $weight . '">%s</li>')
 				);
 			}
 		}

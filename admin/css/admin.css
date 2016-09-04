@@ -1087,11 +1087,13 @@ ul.meta li {
   max-width: 100%;
 }
 
-.page-tags #tags ul {
+.page-tags #tag_collection {
   display: flex;
   flex-wrap: wrap;
   flex: 4 1;
   justify-content: space-around;
+  align-items: flex-start;
+  align-content: flex-start;
 }
 
 .tag.wt1 {
@@ -1125,6 +1127,7 @@ li.tag input {
 
 li.tag.selected {
   background: #fff;
+  border-bottom: 3px solid #CC3333;
 }
 
 .tag label {
@@ -1145,6 +1148,15 @@ li.tag.selected {
   border-right: 2px solid #999;
   padding-right: 10px;
   margin-right: 10px;
+}
+
+.page-tags #selected_tags {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-tags #selected_tags .selected {
+  background: none;
 }
 
 #log_data {  /* this will do for now */
