@@ -1090,6 +1090,7 @@ ul.meta li {
 .page-tags #tags ul {
   display: flex;
   flex-wrap: wrap;
+  flex: 4 1;
   justify-content: space-around;
 }
 
@@ -1128,6 +1129,7 @@ li.tag.selected {
 
 .tag label {
   word-break: break-word;
+  font-size: 15px;
 }
 
 .tag .count {
@@ -1137,10 +1139,12 @@ li.tag.selected {
 }
 
 .tag_controls {
-  width: 200px;
+  display: flex;
+  flex-direction: column;
+  flex: 1 4;
   border-right: 2px solid #999;
-  padding: 10px 5px 0 0;
-  margin-right: 9px;
+  padding-right: 10px;
+  margin-right: 10px;
 }
 
 #log_data {  /* this will do for now */
