@@ -33,6 +33,16 @@ class AdminTagsHandler extends AdminHandler
 		$this->theme->min = Tags::vocabulary()->min_count();
 
 		$form = new FormUI('tags');
+
+		$form->append(FormControlFacet::create('search')
+			// ->set_value($search_value)
+			->set_property('data-facet-config', array(
+				// #tag_collection is the object the manager function works on - the corresponding AJAX function will replace its content
+				'onsearch' => '$("#tag_collection").manager("update", self.data("visualsearch").searchQuery.facets());',
+				'facetsURL' => URL::get('admin_ajax_tag_facets', array('context' => 'tag_facets', 'component' => 'facets')),
+				'valuesURL' => URL::get('admin_ajax_tag_facets', array('context' => 'tag_facets', 'component' => 'values')),
+			))
+		);
 		
 		$aggregate = FormControlAggregate::create('selected_items')->set_selector("input[name='tags[]']")->label('0 Selected');
 
@@ -70,24 +80,10 @@ class AdminTagsHandler extends AdminHandler
 				->set_setting('wrap_element', 'ul')
 				->set_property('id', 'tag_collection')
 			);
-			// Calculation preparation for statistical weighting
-			$count_range = $this->theme->max - $this->theme->min;
-			if($count_range > 5) {
-				$p10 = $this->theme->min + $count_range / 10;
-				$p25 = $this->theme->min + $count_range / 4;
-				$p50 = $this->theme->min + $count_range / 2;
-				$p75 = $this->theme->min + $count_range / 100 * 75;
-				$p90 = $this->theme->min + $count_range / 100 * 90;
-			}
-			foreach($this->theme->tags as $tag) {
-				// The actual weighting happens through classifying into one of 6 statistically relevant areas
-				$weight = ($tag->count < $p10) ? 1 : (($tag->count < $p25) ? 2 : (($tag->count < $p50) ? 3 : (($tag->count < $p75) ? 4 : (($tag->count < $p90) ? 5 : 6))));
-				$tag_collection->append(FormControlCheckbox::create('tag_' . $tag->id)
-					->set_returned_value($tag->id)
-					->set_property('name', 'tags[]')
-					->label($tag->term_display . '<span class="count"><a href="' . URL::get( 'admin', array( 'page' => 'posts', 'search' => 'tag:'. $tag->tag_text_searchable) ) . '" title="' . Utils::htmlspecialchars( _t( 'Manage posts tagged %1$s', array( $tag->term_display ) ) ) . '">' . $tag->count .'</a></span>')
-					->set_setting('wrap', '<li class="tag_' . $tag->id . ' item tag wt' . $weight . '">%s</li>')
-				);
+			
+			$listitems = $this->get_tag_listitems();
+			foreach($listitems as $item) {
+				$tag_collection->append($item);
 			}
 		}
 		else {
@@ -98,7 +94,42 @@ class AdminTagsHandler extends AdminHandler
 
 		$this->theme->form = $form;
 
+		Stack::add('admin_header_javascript', 'visualsearch' );
+		Stack::add('admin_header_javascript', 'manage-js' );
+		Stack::add('admin_stylesheet', 'visualsearch-css');
+		Stack::add('admin_stylesheet', 'visualsearch-datauri-css');
+
 		$this->display( 'tags' );
+	}
+
+	/**
+	 * Generate FormUI checkboxes wrapped in listitems for the tag collection. Is used with and without AJAX
+	 */
+	public function get_tag_listitems()
+	{
+		$listitems = array();
+
+		// Calculation preparation for statistical weighting
+		$count_range = $this->theme->max - $this->theme->min;
+		if($count_range > 5) {
+			$p10 = $this->theme->min + $count_range / 10;
+			$p25 = $this->theme->min + $count_range / 4;
+			$p50 = $this->theme->min + $count_range / 2;
+			$p75 = $this->theme->min + $count_range / 100 * 75;
+			$p90 = $this->theme->min + $count_range / 100 * 90;
+		}
+
+		foreach($this->theme->tags as $tag) {
+			// The actual weighting happens through classifying into one of 6 statistically relevant areas
+			$weight = ($tag->count < $p10) ? 1 : (($tag->count < $p25) ? 2 : (($tag->count < $p50) ? 3 : (($tag->count < $p75) ? 4 : (($tag->count < $p90) ? 5 : 6))));
+			$listitems[] = FormControlCheckbox::create('tag_' . $tag->id)
+				->set_returned_value($tag->id)
+				->set_property('name', 'tags[]')
+				->label($tag->term_display . '<span class="count"><a href="' . URL::get( 'admin', array( 'page' => 'posts', 'search' => 'tag:'. $tag->tag_text_searchable) ) . '" title="' . Utils::htmlspecialchars( _t( 'Manage posts tagged %1$s', array( $tag->term_display ) ) ) . '">' . $tag->count .'</a></span>')
+				->set_setting('wrap', '<li class="tag_' . $tag->id . ' item tag wt' . $weight . '">%s</li>');
+		}
+
+		return $listitems;
 	}
 
 	/**
@@ -121,96 +152,82 @@ class AdminTagsHandler extends AdminHandler
 	}
 
 	/**
-	 * Handles ajax searching from admin/tags
-	 * @param type $handler_vars The variables passed to the page by the server
-	 * @return AjaxResponse The updated data for the tags page, with any messages
+	 * Handles AJAX from /admin/tags
+	 * Used to search for, delete and rename tags
 	 */
-	public function ajax_get_tags( $handler_vars )
+	public function ajax_tags()
 	{
-		Utils::check_request_method( array( 'GET', 'HEAD' ) );
-		$response = new AjaxResponse();
-
-		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
-		if ( $handler_vars['digest'] != $wsse['digest'] ) {
-			$response->message = _t( 'WSSE authentication failed.' );
-			$response->out();
-			return;
-		}
+		Utils::check_request_method( array( 'POST', 'HEAD' ) );
 
 		$this->create_theme();
 
-		$search = $handler_vars['search'];
+		$params = $_POST['query'];
 
-		$this->theme->tags = Tags::vocabulary()->get_search( $search, 'term_display asc' );
+		// Get a usable array with filter parameters from the odd syntax we received from the faceted search
+		$fetch_params = array();
+		if(isset($params)) {
+			foreach($params as $param) {
+				$key = key($param);
+				$value = current($param);
+				if(array_key_exists($key, $fetch_params)) {
+					$fetch_params[$key] = Utils::single_array($fetch_params[$key]);
+					$fetch_params[$key][] = $value;
+				}
+				else {
+					$fetch_params[$key] = $value;
+				}
+			}
+		}
+
+		// Classic text search
+		if(array_key_exists('text', $fetch_params)) {
+			$this->theme->tags = Tags::vocabulary()->get_search( $fetch_params['text'], 'term_display asc' );
+		}
+		else {
+			$this->theme->tags = Tags::vocabulary()->get_tree( 'term_display asc' );
+		}
+
+		// Create FormUI elements (list items) from the filtered tag list
 		$this->theme->max = Tags::vocabulary()->max_count();
-		$response->data = $this->theme->fetch( 'tag_collection' );
-		$response->out();
+		$this->theme->min = Tags::vocabulary()->min_count();
+		$listitems = $this->get_tag_listitems();
+
+		// Get HTML from FormUI
+		$output = '';
+		foreach($listitems as $listitem) {
+			$output .= $listitem->get($this->theme);
+		}
+
+		$ar = new AjaxResponse();
+		$ar->html('#tag_collection', $output);
+		// $ar->data = array(
+		// 	'items' => $items,
+		// 	'item_ids' => $item_ids,
+		// 	'timeline' => $timeline,
+		// );
+		$ar->out();
 	}
 
 	/**
-	 * Handles AJAX from /admin/tags
-	 * Used to delete and rename tags
+	 * Handle ajax requests for facets
+	 * @param $handler_vars
 	 */
-	public function ajax_tags( $handler_vars )
-	{
-		Utils::check_request_method( array( 'POST' ) );
-		$response = new AjaxResponse();
+	public function ajax_tag_facets($handler_vars) {
 
-		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
-		if ( $handler_vars['digest'] != $wsse['digest'] ) {
-			$response->message = _t( 'WSSE authentication failed.' );
-			$response->out();
-			return;
+		switch($handler_vars['component']) {
+			case 'facets':
+				// $result = Plugins::filter('facets', array(), $handler_vars['subject']);
+				$result = [];
+				break;
+			case 'values':
+				// $result = Plugins::filter('facetvalues', array(), $handler_vars['subject'], $_POST['facet'], $_POST['q']);
+				$result = [];
+				break;
 		}
 
-		$tag_names = array();
-		$this->create_theme();
-		$action = $this->handler_vars['action'];
-		switch ( $action ) {
-			case 'delete':
-				foreach ( $_POST as $id => $delete ) {
-					// skip POST elements which are not tag ids
-					if ( preg_match( '/^tag_\d+/', $id ) && $delete ) {
-						$id = substr( $id, 4 );
-						$tag = Tags::get_by_id( $id );
-						$tag_names[] = $tag->term_display;
-						Tags::vocabulary()->delete_term( $tag );
-					}
-				}
-				$response->message = _n( _t( 'Tag %s has been deleted.', array( implode( '', $tag_names ) ) ), _t( '%d tags have been deleted.', array( count( $tag_names ) ) ), count( $tag_names ) );
-				break;
-
-			case 'rename':
-				if ( !isset( $this->handler_vars['master'] ) ) {
-					$response->message = _t( 'Error: New name not specified.' );
-					$response->out();
-					return;
-				}
-				$master = $this->handler_vars['master'];
-				$tag_names = array();
-				foreach ( $_POST as $id => $rename ) {
-					// skip POST elements which are not tag ids
-					if ( preg_match( '/^tag_\d+/', $id ) && $rename ) {
-						$id = substr( $id, 4 );
-						$tag = Tags::get_by_id( $id );
-						$tag_names[] = $tag->term_display;
-					}
-				}
-				Tags::vocabulary()->merge( $master, $tag_names );
-				$response->message = sprintf(
-					_n('Tag %1$s has been renamed to %2$s.',
-						'Tags %1$s have been renamed to %2$s.',
-							count( $tag_names )
-					), implode( $tag_names, ', ' ), $master
-				);
-				break;
-
-		}
-		$this->theme->tags = Tags::vocabulary()->get_tree( 'term_display ASC' );
-		$this->theme->max = Tags::vocabulary()->max_count();
-		$response->data = $this->theme->fetch( 'tag_collection' );
-		$response->out();
+		$ar = new AjaxResponse();
+		$ar->data = $result;
+		$ar->out();
 	}
-
 }
 ?>

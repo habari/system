@@ -1082,8 +1082,13 @@ ul.meta li {
 }
 
 /* Tags page */
+.page-tags .facet_ui {
+  width: 100%;
+}
+
 .page-tags .container.item, .page-tags #tags {
   display: flex;
+  flex-wrap: wrap;
   max-width: 100%;
 }
 

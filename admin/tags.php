@@ -11,6 +11,9 @@
 </div>
 
 <script type="text/javascript">
+// Tell the item manager what to update and from where
+$('#tag_collection').manager({updateURL: "<?php echo URL::get('admin_ajax', array('context' => 'tags')) ?>"});
+
 // this is just visual effect stuff, the actual selecting and processing is done with FormUI
 $('#tag_collection li.tag input').click(function() {
 	var listitem = $(this).parent().parent();
