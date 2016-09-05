@@ -13,6 +13,18 @@ namespace Habari;
  */
 class AdminTagsHandler extends AdminHandler
 {
+	// Use an array to store translated facet strings so we have them in only one place
+	private $facets = array();
+
+	public function __construct()
+	{
+		$this->facets = array(
+			_t('More than .. posts') => 'morethan',
+			_t('Less than .. posts') => 'lessthan',
+		);
+		return parent::__construct();
+	}
+
 	/**
 	 * Handle POST requests for /admin/tags
 	 */
@@ -107,6 +119,10 @@ class AdminTagsHandler extends AdminHandler
 	 */
 	public function get_tag_listitems()
 	{
+		if(count($this->theme->tags) < 1) {
+			return null;
+		}
+
 		$listitems = array();
 
 		// Calculation preparation for statistical weighting
@@ -168,6 +184,10 @@ class AdminTagsHandler extends AdminHandler
 		if(isset($params)) {
 			foreach($params as $param) {
 				$key = key($param);
+				// Revert translation
+				if($key != 'text') {
+					$key = $this->facets[$key];
+				}
 				$value = current($param);
 				if(array_key_exists($key, $fetch_params)) {
 					$fetch_params[$key] = Utils::single_array($fetch_params[$key]);
@@ -185,6 +205,13 @@ class AdminTagsHandler extends AdminHandler
 		}
 		else {
 			$this->theme->tags = Tags::vocabulary()->get_tree( 'term_display asc' );
+		}
+
+		// Filter by associated post count
+		if(array_key_exists('morethan', $fetch_params) || array_key_exists('lessthan', $fetch_params)) {
+			$max = (array_key_exists('lessthan', $fetch_params)) ? $fetch_params['lessthan'] - 1 : null;
+			$min = (array_key_exists('morethan', $fetch_params)) ? $fetch_params['morethan'] + 1 : null;
+			$this->theme->tags = Tags::get_by_frequency(null, null, $min, $max);
 		}
 
 		// Create FormUI elements (list items) from the filtered tag list
@@ -217,7 +244,7 @@ class AdminTagsHandler extends AdminHandler
 		switch($handler_vars['component']) {
 			case 'facets':
 				// $result = Plugins::filter('facets', array(), $handler_vars['subject']);
-				$result = [];
+				$result = array_keys($this->facets);
 				break;
 			case 'values':
 				// $result = Plugins::filter('facetvalues', array(), $handler_vars['subject'], $_POST['facet'], $_POST['q']);
