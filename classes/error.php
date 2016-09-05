@@ -61,8 +61,8 @@ class Error extends \Exception
 			"<pre class=\"error\">\n<b>%s:</b> %s in %s line %s\n</pre>",
 			get_class( $exception ),
 			$exception->getMessage(),
-			$exception->file,
-			$exception->line
+			$exception->getFile(),
+			$exception->getLine()
 		);
 
 		if ( DEBUG ) {
