@@ -78,9 +78,11 @@ class Tags extends Vocabulary
 	 *
 	 * @param int $limit If supplied, limits the results to the specified number
 	 * @param mixed $post_type If a name or id of a post type is supplied, limits the results to the terms applying to that type
+	 * @param int $min If supplied, limits the results to tags associated with at least this number of posts
+	 * @param int $max If supplied, limits the results to tags associated with at most this number of posts
 	 * @return Tags A Tags instance containing the terms, each having an additional property of "count" that tells how many times the term was used
 	 */
-	public static function get_by_frequency($limit = null, $post_type = null)
+	public static function get_by_frequency($limit = null, $post_type = null, $min = null, $max = null)
 	{
 		$query = '
 			SELECT t.*, count(*) as `count`
@@ -97,9 +99,24 @@ class Tags extends Vocabulary
 			$params[] = Post::type($post_type);
 		}
 
-		$query .= '
-			GROUP BY t.id
-			ORDER BY `count` DESC, term_display ASC';
+		$query .= ' GROUP BY t.id';
+
+		if( is_int($min) || is_int($max) ) {
+			$query .= ' HAVING';
+		}
+		if( is_int($min) ) {
+			$query .= ' `count` >= ?';
+			$params[] = $min;
+		}
+		if( is_int($min) && is_int($max) ) {
+			$query .= ' AND';
+		}
+		if( is_int($max) ) {
+			$query .= ' `count` <= ?';
+			$params[] = $max;
+		}
+
+		$query .= ' ORDER BY `count` DESC, term_display ASC';
 
 		if ( is_int($limit) ) {
 			$query .= ' LIMIT ' . $limit;
