@@ -397,38 +397,38 @@ var labeler = {
 // EDITOR INTERACTION
 habari.editor = {
 	insertSelection: function(value) {
-		var contentel = $('#content')[0];
+		var contentel = $('#create_content_content')[0];
 		if ('selectionStart' in contentel) {
-			var content = $('#content').val();
-			$('#content').val(content.substr(0, contentel.selectionStart) + value + contentel.value.substr(contentel.selectionEnd, content.length));
+			var content = $('#create_content_content').val();
+			$('#create_content_content').val(content.substr(0, contentel.selectionStart) + value + contentel.value.substr(contentel.selectionEnd, content.length));
 		}
 		else if (document.selection) {
 			contentel.focus();
 			document.selection.createRange().text = value;
 		}
 		else {
-			$('#content').filter('.islabeled')
+			$('#create_content_content').filter('.islabeled')
 				.val(value);
 		}
 		$('label[for=content].overcontent').addClass('abovecontent').removeClass('overcontent').hide();
 	},
 	getContents: function() {
-		return $('#content').val();
+		return $('#create_content_content').val();
 	},
 	setContents: function(contents) {
-		$('#content').filter('.islabeled')
+		$('#create_content_content').filter('.islabeled')
 			.val('')
 			.removeClass('islabeled');
-		$('#content').val(contents);
+		$('#create_content_content').val(contents);
 	},
 	getSelection: function(contents) {
-		if ($('#content').val() === '') {
+		if ($('#create_content_content').val() === '') {
 			return '';
 		}
 		else {
-			var contentel = $('#content')[0];
+			var contentel = $('#create_content_content')[0];
 			if ('selectionStart' in contentel) {
-				return $('#content').val().substr(contentel.selectionStart, contentel.selectionEnd - contentel.selectionStart);
+				return $('#create_content_content').val().substr(contentel.selectionStart, contentel.selectionEnd - contentel.selectionStart);
 			}
 			else if (document.selection) {
 				contentel.focus();
@@ -439,7 +439,7 @@ habari.editor = {
 				return range.text;
 			}
 			else {
-				return $('#content').val();
+				return $('#create_content_content').val();
 			}
 		}
 	}
