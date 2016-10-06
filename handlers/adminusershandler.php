@@ -421,7 +421,7 @@ class AdminUsersHandler extends AdminHandler
 			Session::notice( _t( 'User updated.' ) );
 		}
 
-		Utils::redirect( URL::get( 'admin', array( 'page' => 'user', 'user' => $edit_user->username ) ) );
+		Utils::redirect( URL::get( 'user_profile', array( 'user' => $edit_user->username ) ) );
 	}
 
 	/**

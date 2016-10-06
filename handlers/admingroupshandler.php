@@ -98,6 +98,7 @@ class AdminGroupsHandler extends AdminHandler
 		else {
 
 			$tokens = ACL::all_tokens( 'id' );
+			$tokens = Plugins::filter( 'token_list_display', $tokens );
 			array_walk( $tokens, function( &$value, $key) {
 				$value->description = Plugins::filter( 'token_description_display', $value->name);
 				$value->token_group = Plugins::filter( 'token_group_display', $value->token_group );

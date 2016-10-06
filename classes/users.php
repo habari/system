@@ -245,8 +245,10 @@ class Users extends \ArrayObject
 	public static function get_all()
 	{
 		$params = array(
-			'orderby' => 'username ASC'
+			'orderby' => 'LOWER(username) ASC'
 		);
+
+		$params = Plugins::filter('users_get_all_params', $params);
 
 		return self::get( $params );
 	}

@@ -31,6 +31,12 @@ namespace Habari;
 		<p><?php echo _t('The XML file for the plugin %s contained errors and could not be loaded.', array( basename( $plugin['file'] ) ) ); ?></p>
 	</div>
 </div>
+<?php elseif ( $plugin['info'] == 'missingorempty' ): ?>
+<div class="item plugin">
+	<div class="head">
+		<p><?php echo _t('The XML file for the plugin %s is missing or empty.', array( basename( $plugin['file'] ) ) ); ?></p>
+	</div>
+</div>
 <?php else: ?>
 <div class="item plugin" id="plugin_<?php echo $plugin['plugin_id']; ?>">
 	<div class="head">

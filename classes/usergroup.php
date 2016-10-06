@@ -127,12 +127,17 @@ class UserGroup extends QueryRecord
 	{
 		$this->load_member_cache();
 
-		// Remove all users from this group in preparation for adding the current list
+		// Remove all non-current users from this group in preparation for adding the current list
 		$placeholder = "(" . implode( ",", array_fill( 0, count( $this->member_ids ), "?" ) ) . ")";
 		$data = array_merge( array( $this->id ), $this->member_ids );
 		DB::query( 'DELETE FROM {users_groups} WHERE group_id=? AND user_id NOT IN '. $placeholder, $data );
 
+		if( count( $this->member_ids ) == 0 ) {
+			return;
+		}
+
 		// Add the current list of users into the group
+		$data = array();
 		$placeholder = implode( ",", array_fill( 0, count( $this->member_ids ), "(?, ?)" ) );
 		foreach ( $this->member_ids as $user_id ) {
 			$data[] = $user_id;

@@ -488,6 +488,10 @@ class Plugins
 			libxml_use_internal_errors( $old_error );
 			
 		}
+		else {
+			EventLog::log( _t( 'Missing or empty plugin XML file: %1$s', array( $xml_file ) ), 'err', 'plugin' );
+			$info = 'missingorempty';
+		}
 		
 		return $info;
 	}

@@ -1114,6 +1114,10 @@ class Post extends QueryRecord implements IsContent, FormStorage
 					->set_caption( _t( 'Publish' ) )
 					->add_validator(function($value, FormControlSubmit $control, FormUI $form){
 						$form->status->set_value(Post::status('published'));
+						$allow = Plugins::filter( 'post_publish_allow', true, $this );
+						if( !$allow ) {
+							return array( 'Publishing has been denied' );
+						}
 					})
 			);
 		}

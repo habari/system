@@ -261,8 +261,8 @@ class AdminPluginsHandler extends AdminHandler
 	 */
 	protected function compare_names( $a, $b )
 	{
-		$aname = isset($a['info']) ? $a['info']->name : '';
-		$bname = isset($b['info']) ? $b['info']->name : '';
+		$aname = is_object($a['info']) ? $a['info']->name : '';
+		$bname = is_object($b['info']) ? $b['info']->name : '';
 		return strcmp( MultiByte::strtolower( $aname), MultiByte::strtolower( $bname ) );
 	}
 
