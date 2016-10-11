@@ -20,6 +20,7 @@ class Monolith extends Theme
 		Stack::add( 'admin_header_javascript', 'locale-js' );
 		Stack::add( 'admin_header_javascript', 'media' );
 		Stack::add( 'admin_header_javascript', 'admin-js' );
+		Stack::add( 'admin_header_javascript', 'themes-js' );
 		Stack::add( 'admin_header_javascript', 'crc32' );
 		Stack::add( 'admin_header_javascript', 'select2' );
 
