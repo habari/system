@@ -168,7 +168,12 @@ habari.media = {
 	preview: {
 		_: function(fileindex, fileobj) {
 			var stats = '';
-			return '<div class="mediatitle"><a class="mediadelete" title="Delete file" href="#" onclick="habari.media.showpanel(\'' + fileobj.path +'\', \'delete\');return false;">#</a>' + fileobj.title + '</div><div class="mediathumb"><img src="' + fileobj.thumbnail_url + '"></div><div class="mediastats"> ' + stats + '</div>';
+			return '<div class="mediatitle">' +
+					'<a class="mediadelete" title="Delete file" href="#" onclick="habari.media.showpanel(\'' + fileobj.path +'\', \'delete\');return false;">#</a>' +
+					fileobj.title +
+				'</div>' +
+				'<div class="mediathumb"><img src="' + fileobj.thumbnail_url + '"></div>' +
+				'<div class="mediastats"> ' + stats + '</div>';
 		}
 	},
 
