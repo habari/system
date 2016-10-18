@@ -225,6 +225,12 @@ class LogEntry extends QueryRecord
 			$this->fields['data'] = serialize( $this->fields['data'] );
 		}
 
+		// data is BLOB/BYTEA, PostgreSQL treats \ specially for BYTEA, escape it to \\ to
+		// avoid processing (invalid) escapes sequences.
+		if ( DB::get_driver_name() == 'pgsql' && is_string($this->fields['data']) ) {
+			$this->fields['data'] = str_replace('\\', '\\\\', $this->fields['data'] );
+		}
+
 		Plugins::filter( 'insert_logentry', $this );
 		parent::insertRecord( DB::table( 'log' ) );
 
