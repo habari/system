@@ -288,8 +288,44 @@ var theMenu = {
 	blinkCarrot: function(owner) {
 		var blinkSpeed = 100;
 		$(owner).addClass('carrot').addClass('blinking').fadeOut(blinkSpeed).fadeIn(blinkSpeed).fadeOut(blinkSpeed).fadeIn(blinkSpeed);
+	},
+	supportTouch: function () {
+		var menulink = $("#menu > li > a");
+		// 1st click, add "clicked" class, preventing the location change. 2nd click will go through.
+		menulink.click(function(event) {
+			// Perform a reset - Remove the "clicked" class on all other menu items
+			menulink.not(this).removeClass("clicked");
+			this.toggleClass("clicked");
+			if (this.hasClass("clicked")) {
+				event.preventDefault();
+			}
+		});
 	}
 };
+
+function isTouchDevice(){
+	return typeof window.ontouchstart !== 'undefined';
+}
+
+/**
+ * original code based on
+ * http://stackoverflow.com/questions/11850466/mobile-touch-device-friendly-drop-down-menu-in-css-jquery/25778756#25778756
+ */
+/**
+jQuery(document).ready(function(){
+	if(isTouchDevice()) {
+		// 1st click, add "clicked" class, preventing the location change. 2nd click will go through.
+		jQuery("#menu > li > a").click(function(event) {
+			// Perform a reset - Remove the "clicked" class on all other menu items
+			jQuery("#menu > li > a").not(this).removeClass("clicked");
+			jQuery(this).toggleClass("clicked");
+			if (jQuery(this).hasClass("clicked")) {
+				event.preventDefault();
+			}
+		});
+	}
+});
+*/
 
 // RESIZABLE TEXTAREAS
 $.fn.resizeable = function(){
@@ -397,38 +433,38 @@ var labeler = {
 // EDITOR INTERACTION
 habari.editor = {
 	insertSelection: function(value) {
-		var contentel = $('#content')[0];
+		var contentel = $('#create_content_content')[0];
 		if ('selectionStart' in contentel) {
-			var content = $('#content').val();
-			$('#content').val(content.substr(0, contentel.selectionStart) + value + contentel.value.substr(contentel.selectionEnd, content.length));
+			var content = $('#create_content_content').val();
+			$('#create_content_content').val(content.substr(0, contentel.selectionStart) + value + contentel.value.substr(contentel.selectionEnd, content.length));
 		}
 		else if (document.selection) {
 			contentel.focus();
 			document.selection.createRange().text = value;
 		}
 		else {
-			$('#content').filter('.islabeled')
+			$('#create_content_content').filter('.islabeled')
 				.val(value);
 		}
 		$('label[for=content].overcontent').addClass('abovecontent').removeClass('overcontent').hide();
 	},
 	getContents: function() {
-		return $('#content').val();
+		return $('#create_content_content').val();
 	},
 	setContents: function(contents) {
-		$('#content').filter('.islabeled')
+		$('#create_content_content').filter('.islabeled')
 			.val('')
 			.removeClass('islabeled');
-		$('#content').val(contents);
+		$('#create_content_content').val(contents);
 	},
 	getSelection: function(contents) {
-		if ($('#content').val() === '') {
+		if ($('#create_content_content').val() === '') {
 			return '';
 		}
 		else {
-			var contentel = $('#content')[0];
+			var contentel = $('#create_content_content')[0];
 			if ('selectionStart' in contentel) {
-				return $('#content').val().substr(contentel.selectionStart, contentel.selectionEnd - contentel.selectionStart);
+				return $('#create_content_content').val().substr(contentel.selectionStart, contentel.selectionEnd - contentel.selectionStart);
 			}
 			else if (document.selection) {
 				contentel.focus();
@@ -439,7 +475,7 @@ habari.editor = {
 				return range.text;
 			}
 			else {
-				return $('#content').val();
+				return $('#create_content_content').val();
 			}
 		}
 	}
@@ -461,6 +497,9 @@ $(document).ready(function(){
 	helpToggler.init();
 	findChildren();
 	labeler.init();
+	if(isTouchDevice()) {
+		theMenu.supportTouch();
+	}
 	
 	// fix autofilled passwords overlapping labels
 	$(window).load(function(){

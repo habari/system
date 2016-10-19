@@ -229,9 +229,9 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 						<input type="radio" name="theme_dir" value="<?php echo $theme['dir']; ?>"
 							id="theme_<?php echo $theme['dir']; ?>" tabindex="<?php echo $tab++ ?>"
 							class="theme_selection"
-							data-requires="<?php echo isset($theme['requires']) ? (string)InstallHandler::get_feature_list($theme['requires']) : ''; ?>"
-							data-provides="<?php echo isset($theme['provides']) ? (string)InstallHandler::get_feature_list($theme['provides']) : ''; ?>"
-							data-conflicts="<?php echo isset($theme['conflicts']) ? (string)InstallHandler::get_feature_list($theme['conflicts']) : ''; ?>"
+							data-requires="<?php echo isset($theme['requires']) ? (string)\Habari\InstallHandler::get_feature_list($theme['requires']) : ''; ?>"
+							data-provides="<?php echo isset($theme['provides']) ? (string)\Habari\InstallHandler::get_feature_list($theme['provides']) : ''; ?>"
+							data-conflicts="<?php echo isset($theme['conflicts']) ? (string)\Habari\InstallHandler::get_feature_list($theme['conflicts']) : ''; ?>"
 							/>
 					</span>
 					<label for="theme_<?php echo $theme['dir']; ?>" class="name"><?php echo $theme['info']->name; ?> <span class="version"><?php echo $theme['info']->version; ?></span></label>
