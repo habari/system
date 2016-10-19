@@ -76,7 +76,7 @@ class Error extends \Exception
 			$backtrace = null;
 		}
 
-		EventLog::log( $exception->getMessage() . ' in ' . $exception->file . ':' . $exception->line, 'err', 'default', null, $backtrace );
+		EventLog::log( $exception->getMessage() . ' in ' . $exception->getFile() . ':' . $exception->getLine(), 'err', 'default', null, $backtrace );
 	}
 
 	/**
