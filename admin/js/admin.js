@@ -288,8 +288,44 @@ var theMenu = {
 	blinkCarrot: function(owner) {
 		var blinkSpeed = 100;
 		$(owner).addClass('carrot').addClass('blinking').fadeOut(blinkSpeed).fadeIn(blinkSpeed).fadeOut(blinkSpeed).fadeIn(blinkSpeed);
+	},
+	supportTouch: function () {
+		var menulink = $("#menu > li > a");
+		// 1st click, add "clicked" class, preventing the location change. 2nd click will go through.
+		menulink.click(function(event) {
+			// Perform a reset - Remove the "clicked" class on all other menu items
+			menulink.not(this).removeClass("clicked");
+			this.toggleClass("clicked");
+			if (this.hasClass("clicked")) {
+				event.preventDefault();
+			}
+		});
 	}
 };
+
+function isTouchDevice(){
+	return typeof window.ontouchstart !== 'undefined';
+}
+
+/**
+ * original code based on
+ * http://stackoverflow.com/questions/11850466/mobile-touch-device-friendly-drop-down-menu-in-css-jquery/25778756#25778756
+ */
+/**
+jQuery(document).ready(function(){
+	if(isTouchDevice()) {
+		// 1st click, add "clicked" class, preventing the location change. 2nd click will go through.
+		jQuery("#menu > li > a").click(function(event) {
+			// Perform a reset - Remove the "clicked" class on all other menu items
+			jQuery("#menu > li > a").not(this).removeClass("clicked");
+			jQuery(this).toggleClass("clicked");
+			if (jQuery(this).hasClass("clicked")) {
+				event.preventDefault();
+			}
+		});
+	}
+});
+*/
 
 // RESIZABLE TEXTAREAS
 $.fn.resizeable = function(){
@@ -461,6 +497,9 @@ $(document).ready(function(){
 	helpToggler.init();
 	findChildren();
 	labeler.init();
+	if(isTouchDevice()) {
+		theMenu.supportTouch();
+	}
 	
 	// fix autofilled passwords overlapping labels
 	$(window).load(function(){
