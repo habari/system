@@ -15,7 +15,7 @@
 $('#tag_collection').manager({updateURL: "<?php echo URL::get('admin_ajax', array('context' => 'tags')) ?>"});
 
 // this is just visual effect stuff, the actual selecting and processing is done with FormUI
-$('#tag_collection li.tag input').click(function() {
+$('#tag_collection li.tag input').change(function() {
 	var listitem = $(this).parent().parent();
 	if(listitem.hasClass('selected')) {
 		listitem.removeClass('selected');
@@ -30,6 +30,30 @@ $('#tag_collection li.tag input').click(function() {
 		var cloneli = listitem.clone();
 		cloneli.find('input').removeAttr('id');
 		cloneli.appendTo('#selected_tags');
+	}
+});
+
+// we need additional code when all of the tags are selected with the FormUI aggregate control
+// that is because programmatical changes of the checked state do not trigger events
+$('.aggregate_ui[data-target=tags_selected_items]').change(function() {
+	if($(this).attr("checked") == "checked") {
+		$('#tag_collection li.tag input').each(function() {
+			var listitem = $(this).parent().parent();
+			if(!listitem.hasClass('selected')) {
+				$(this).attr("checked", "checked");
+				$(this).trigger("change");
+			}
+		});
+
+	}
+	else {
+		$('#tag_collection li.tag input').each(function() {
+			var listitem = $(this).parent().parent();
+			if(listitem.hasClass('selected')) {
+				$(this).removeAttr("checked");
+				$(this).trigger("change");
+			}
+		});
 	}
 });
 
