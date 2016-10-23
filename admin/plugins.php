@@ -1,6 +1,6 @@
 <?php namespace Habari; ?>
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-<?php include('header.php'); ?>
+<?php $theme->display('header'); ?>
 
 <div class="container navigation">
 	<span class="columns seven">
@@ -77,4 +77,4 @@ if ( isset($config_plugin) ): ?>
 	</div>
 </div>-->
 
-<?php include('footer.php'); ?>
+<?php $theme->display('footer'); ?>
