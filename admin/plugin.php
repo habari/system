@@ -73,12 +73,6 @@ namespace Habari;
 		endif;
 		?>
 
-		<?php if ( isset($plugin['update']) ): ?>
-		<ul class="dropbutton alert">
-			<li><a href="#"><?php _e('v1.1 Update Available Now'); ?></a></li>
-		</ul>
-		<?php endif; ?>
-
 		<p class="description"><?php echo $plugin['info']->description; ?></p>
 
 	</div>
