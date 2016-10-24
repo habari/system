@@ -2,29 +2,19 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php $theme->display('header'); ?>
 
-<div class="container navigation">
-	<span class="columns seven">
-		<select name="navigationdropdown" onchange="navigationDropdown.filter();" tabindex="1">
-			<option value="all"><?php _e('All plugins'); ?></option>
-			<?php if ( isset($config_plugin) ): ?>
-				<option value="configureplugin"><?php echo $config_plugin_caption; ?></option>
-			<?php endif; ?>
-			<?php if ( count($active_plugins) > 0 ): ?>
-				<option value="activeplugins"><?php _e('Active Plugins'); ?></option>
-			<?php endif; ?>
-			<?php if ( count($inactive_plugins) > 0 ): ?>
-				<option value="inactiveplugins"><?php _e('Inactive Plugins'); ?></option>
-			<?php endif; ?>
-		</select>
-	</span>
-	<span class="columns one or">
-		<?php _e('or'); ?>
-	</span>
-	<span class="columns eight">
-		<input type="search" id="search" placeholder="<?php _e('search plugins'); ?>" tabindex="2" autofocus="autofocus">
-	</span>
+<div class="container main plugins">
+<?php $facet = FormControlFacet::create('search')
+	->set_property('data-facet-config', array(
+			// #tag_collection is the object the manager function works on - the corresponding AJAX function will replace its content
+		'onsearch' => '$("plugin_collection").manager("quicksearch", self.data("visualsearch").searchQuery.facets());',
+		'facetsURL' => URL::get('admin_ajax_tag_facets', array('context' => 'tag_facets', 'component' => 'facets')),
+		'valuesURL' => URL::get('admin_ajax_tag_facets', array('context' => 'tag_facets', 'component' => 'values')),
+	));
+echo $facet->pre_out();
+echo $facet->get($theme); ?>
 </div>
 
+<div id="plugin_collection">
 <?php
 if ( isset($config_plugin) ): ?>
 <div class="container main plugins configureplugin" id="configureplugin">
@@ -64,6 +54,7 @@ if ( isset($config_plugin) ): ?>
 
 </div>
 <?php endif; ?>
+</div>
 
 <?php if ( isset($plugin_loader) && $plugin_loader != '' ): ?>
 <?php echo $plugin_loader; ?>
@@ -76,5 +67,9 @@ if ( isset($config_plugin) ): ?>
 		<input type="submit" value="<?php _e('Upload'); ?>">
 	</div>
 </div>-->
+
+<script type="text/javascript">
+$('#plugin_collection').manager();
+</script>
 
 <?php $theme->display('footer'); ?>

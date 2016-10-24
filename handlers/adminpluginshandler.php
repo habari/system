@@ -195,6 +195,11 @@ class AdminPluginsHandler extends AdminHandler
 
 		$this->theme->plugin_loader = Plugins::filter( 'plugin_loader', '', $this->theme );
 
+		Stack::add('admin_header_javascript', 'visualsearch' );
+ 		Stack::add('admin_header_javascript', 'manage-js' );
+ 		Stack::add('admin_stylesheet', 'visualsearch-css');
+ 		Stack::add('admin_stylesheet', 'visualsearch-datauri-css');
+
 		$this->display( 'plugins' );
 	}
 
