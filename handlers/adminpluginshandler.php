@@ -18,6 +18,7 @@ class AdminPluginsHandler extends AdminHandler
 	 */
 	public function get_plugins()
 	{
+		// Grab pathes to plugins
 		$all_plugins = Plugins::list_all();
 		$active_plugins = Plugins::get_active();
 
@@ -37,14 +38,14 @@ class AdminPluginsHandler extends AdminHandler
 			if ( Utils::php_check_file_syntax( $file, $error ) ) {
 				$plugin['debug'] = false;
 				$plugin['info'] = Plugins::load_info( $file );
-				$plugin['core'] = (strpos($file, 'system' . DIRECTORY_SEPARATOR . 'plugins') !== false);
+				$plugin['core'] = (strpos($file, 'system' . DIRECTORY_SEPARATOR . 'plugins') !== false); // should rather be named "is_core"
 				if ( array_key_exists( $plugin_id, $active_plugins ) ) {
 					$plugin['verb'] = _t( 'Deactivate' );
 					$pluginobj = $active_plugins[$plugin_id];
 					$plugin['active'] = true;
 					$plugin_actions = array();
-					$plugin_actions1 = Plugins::filter_id( 'plugin_config', $plugin_id, $plugin_actions, $plugin_id );
-					$plugin_actions = Plugins::filter( 'plugin_config_any', $plugin_actions1, $plugin_id );
+					$plugin_actions = Plugins::filter_id( 'plugin_config', $plugin_id, $plugin_actions, $plugin_id );
+					$plugin_actions = Plugins::filter( 'plugin_config_any', $plugin_actions, $plugin_id );
 					$plugin['actions'] = array();
 					foreach ( $plugin_actions as $plugin_action => $plugin_action_caption ) {
 						if ( is_numeric( $plugin_action ) ) {
@@ -193,6 +194,11 @@ class AdminPluginsHandler extends AdminHandler
 		$this->theme->inactive_plugins = $sort_inactive_plugins;
 
 		$this->theme->plugin_loader = Plugins::filter( 'plugin_loader', '', $this->theme );
+
+		Stack::add('admin_header_javascript', 'visualsearch' );
+ 		Stack::add('admin_header_javascript', 'manage-js' );
+ 		Stack::add('admin_stylesheet', 'visualsearch-css');
+ 		Stack::add('admin_stylesheet', 'visualsearch-datauri-css');
 
 		$this->display( 'plugins' );
 	}

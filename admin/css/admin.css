@@ -1081,7 +1081,7 @@ ul.meta li {
 	margin: 0;
 }
 
-/* Tags page */
+/* TAGS PAGE SPECIFIC */
 .page-tags .facet_ui {
   width: 100%;
 }
@@ -1173,6 +1173,70 @@ li.tag.selected {
     border-bottom: 2px solid #999;
   }
 }
+
+/* PLUGINS PAGE-SPECIFIC */
+/* Most of this should be admin-wide, but for now we restrict it to the plugins page with .plugins */
+.container.plugins {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  width: 100%;
+  max-width: 960px;
+}
+
+.container.plugins.main {
+  padding: 0;
+}
+
+.container.plugins .item {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5% 1%;
+}
+
+.container.plugins .item .head {
+  display: flex;
+  flex-direction: column;
+}
+
+.container.plugins .item .basics { /* I did not come up with a better name... */
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.container.plugins h2.lead {
+  margin: 0 0 10px 0;
+}
+
+.container.plugins .item .head .dropbutton {
+  display: flex;
+  float: none;
+  height: auto;
+}
+
+.container.plugins .item .head .dropbutton .dropdown {
+  float: none;
+  height: auto;
+}
+
+/* dirty hack for dropbuttons that do not work with flex - on mobile, it's actually not bad, but on desktop it's ugly */
+.container.plugins .item .head .dropbutton .dropdown-menu {
+  position: relative;
+}
+
+.container.plugins .item .head .dropbutton input {
+  float: none;
+  height: auto;
+}
+
+@media screen and (min-width: 800px) {
+  .container.plugins .item .head {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+/* LOGS PAGE */
 
 #log_data {  /* this will do for now */
 	/*table-layout: fixed;*/
