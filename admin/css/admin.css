@@ -1155,6 +1155,16 @@ li.tag.selected {
   margin-right: 10px;
 }
 
+#tags .dropbutton, #tags .dropbutton input {
+  float: none;
+  height: auto;
+  width: 100%;
+}
+
+#tags .dropbutton {
+  margin-bottom: 5px;
+}
+
 .page-tags #selected_tags {
   display: flex;
   flex-direction: column;
