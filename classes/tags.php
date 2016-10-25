@@ -105,15 +105,13 @@ class Tags extends Vocabulary
 			$query .= ' HAVING';
 		}
 		if( is_int($min) ) {
-			$query .= ' `count` >= ?';
-			$params[] = $min;
+			$query .= " count >= {$min}";
 		}
 		if( is_int($min) && is_int($max) ) {
 			$query .= ' AND';
 		}
 		if( is_int($max) ) {
-			$query .= ' `count` <= ?';
-			$params[] = $max;
+			$query .= " count <= {$max}";
 		}
 
 		$query .= ' ORDER BY `count` DESC, term_display ASC';
