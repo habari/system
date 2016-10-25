@@ -57,6 +57,8 @@ class AdminTagsHandler extends AdminHandler
 		);
 		
 		$aggregate = FormControlAggregate::create('selected_items')->set_selector("input[name='tags[]']")->label('0 Selected');
+		$aggr_wrap = FormControlWrapper::create('tag_controls_aggregate');
+		$aggr_wrap->append($aggregate);
 
 		$page_actions = FormControlDropbutton::create('page_actions');
 		$page_actions->append(
@@ -78,7 +80,7 @@ class AdminTagsHandler extends AdminHandler
 
 		$tag_controls = $form->append(FormControlWrapper::create('tag_controls'))
 			->add_class("container tag_controls");
-		$tag_controls->append($aggregate);
+		$tag_controls->append($aggr_wrap);
 		$tag_controls->append($page_actions);
 		$tag_controls->append($rename);
 		$tag_controls->append(FormControlWrapper::create('selected_tags')
