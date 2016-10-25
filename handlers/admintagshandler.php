@@ -144,6 +144,7 @@ class AdminTagsHandler extends AdminHandler
 				->set_returned_value($tag->id)
 				->set_property('name', 'tags[]')
 				->label($tag->term_display . '<span class="count"><a href="' . URL::get( 'admin', array( 'page' => 'posts', 'search' => 'tag:'. $tag->tag_text_searchable) ) . '" title="' . Utils::htmlspecialchars( _t( 'Manage posts tagged %1$s', array( $tag->term_display ) ) ) . '">' . $tag->count .'</a></span>')
+				->set_template('control.label.outsideright')
 				->set_setting('wrap', '<li class="tag_' . $tag->id . ' item tag wt' . $weight . '">%s</li>');
 		}
 
@@ -201,6 +202,7 @@ class AdminTagsHandler extends AdminHandler
 			}
 		}
 
+		// Grab facets / params
 		$search = (array_key_exists('text', $fetch_params)) ? $fetch_params['text'] : null;
 		$min = (array_key_exists('morethan', $fetch_params)) ? $fetch_params['morethan'] + 1 : null;
 		$max = (array_key_exists('lessthan', $fetch_params)) ? $fetch_params['lessthan'] - 1 : null;

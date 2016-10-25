@@ -1101,28 +1101,28 @@ ul.meta li {
   align-content: flex-start;
 }
 
-.tag.wt1 {
+.tag.wt1 label {
   border-bottom: 3px solid #CDE0E5;
 }
-.tag.wt2 {
+.tag.wt2 label {
   border-bottom: 3px solid #9BC2CA;
 }
-.tag.wt3 {
+.tag.wt3 label {
   border-bottom: 3px solid #79AEB9;
 }
-.tag.wt4 {
+.tag.wt4 label {
   border-bottom: 3px solid #4F8A96;
 }
-.tag.wt5 {
+.tag.wt5 label {
   border-bottom: 3px solid #3E6C75;
 }
-.tag.wt6 {
+.tag.wt6 label {
   border-bottom: 3px solid #233D43;
 }
 
 li.tag {
   display: inline-block;
-  padding: 3px 0;
+  padding: 0;
   margin: 5px 3px;
 }
 
@@ -1130,12 +1130,13 @@ li.tag input {
   display: none;
 }
 
-li.tag.selected {
+li.tag input:checked + label {
   background: #fff;
   border-bottom: 3px solid #CC3333;
 }
 
 .tag label {
+  padding: 3px 0;
   word-break: break-word;
   font-size: 15px;
 }

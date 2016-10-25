@@ -16,16 +16,14 @@ $('#tag_collection').manager({updateURL: "<?php echo URL::get('admin_ajax', arra
 
 // this is just visual effect stuff, the actual selecting and processing is done with FormUI
 $('#tag_collection li.tag input').change(function() {
-	var listitem = $(this).parent().parent();
-	if(listitem.hasClass('selected')) {
-		listitem.removeClass('selected');
+	var listitem = $(this).parent();
+	if(!$(this).attr('checked')) { // "checked" is set afterwards, therefore the "not"
 		// remove item from selected list (again, visually, the actual removing is done by FormUI)
 		var regex = /tag_[0-9]+/;
 		var idclass = regex.exec(listitem.attr('class'));
 		$('#selected_tags .' + idclass).remove();
 	}
 	else {
-		listitem.addClass('selected');
 		// keep all the properties and the input so we can click the item in both lists, but get rid of id to avoid conflicts
 		var cloneli = listitem.clone();
 		cloneli.find('input').removeAttr('id');
