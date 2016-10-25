@@ -80,9 +80,10 @@ class Tags extends Vocabulary
 	 * @param mixed $post_type If a name or id of a post type is supplied, limits the results to the terms applying to that type
 	 * @param int $min If supplied, limits the results to tags associated with at least this number of posts
 	 * @param int $max If supplied, limits the results to tags associated with at most this number of posts
+	 * @param mixed $search If supplied, limits the results to tags containing that value in their display string
 	 * @return Tags A Tags instance containing the terms, each having an additional property of "count" that tells how many times the term was used
 	 */
-	public static function get_by_frequency($limit = null, $post_type = null, $min = null, $max = null)
+	public static function get_by_frequency($limit = null, $post_type = null, $min = null, $max = null, $search = null)
 	{
 		$query = '
 			SELECT t.*, count(*) as `count`
@@ -97,6 +98,11 @@ class Tags extends Vocabulary
 		if ( isset($post_type) ) {
 			$query .= ' AND p.content_type = ?';
 			$params[] = Post::type($post_type);
+		}
+
+		if ( isset($search) ) {
+			$query .= " AND term_display LIKE ?";
+			$params[] = '%' . $search . '%';
 		}
 
 		$query .= ' GROUP BY t.id';

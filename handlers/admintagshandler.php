@@ -201,20 +201,10 @@ class AdminTagsHandler extends AdminHandler
 			}
 		}
 
-		// Classic text search
-		if(array_key_exists('text', $fetch_params)) {
-			$this->theme->tags = Tags::vocabulary()->get_search( $fetch_params['text'], 'term_display asc' );
-		}
-		else {
-			$this->theme->tags = Tags::vocabulary()->get_tree( 'term_display asc' );
-		}
-
-		// Filter by associated post count
-		if(array_key_exists('morethan', $fetch_params) || array_key_exists('lessthan', $fetch_params)) {
-			$max = (array_key_exists('lessthan', $fetch_params)) ? $fetch_params['lessthan'] - 1 : null;
-			$min = (array_key_exists('morethan', $fetch_params)) ? $fetch_params['morethan'] + 1 : null;
-			$this->theme->tags = Tags::get_by_frequency(null, null, $min, $max);
-		}
+		$search = (array_key_exists('text', $fetch_params)) ? $fetch_params['text'] : null;
+		$min = (array_key_exists('morethan', $fetch_params)) ? $fetch_params['morethan'] + 1 : null;
+		$max = (array_key_exists('lessthan', $fetch_params)) ? $fetch_params['lessthan'] - 1 : null;
+		$this->theme->tags = Tags::get_by_frequency(null, null, $min, $max, $search);
 
 		// Create FormUI elements (list items) from the filtered tag list
 		$this->theme->max = Tags::vocabulary()->max_count();
