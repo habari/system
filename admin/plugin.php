@@ -40,26 +40,30 @@ namespace Habari;
 <?php else: ?>
 <div class="item plugin" id="plugin_<?php echo $plugin['plugin_id']; ?>">
 	<div class="head">
-		<div class="title">
-		<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a>
-		<?php _e('by'); ?>
+		<div class="left">
+			<div class="basics title">
+				<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a>
+				&nbsp;<?php _e('by'); ?>&nbsp;
 
-		<?php
-		$authors = array();
-		foreach ( $plugin['info']->author as $author ) {
-			$authors[] = isset( $author['url'] ) ? '<a href="' . $author['url'] . '">' . $author . '</a>' : $author;
-		}
-		// @locale The string used between the last two items in the list of authors of a plugin on the admin page (one, two, three *and* four).
-		echo Format::and_list( $authors,  _t( ' and ' ));
-		?>
+				<?php
+				$authors = array();
+				foreach ( $plugin['info']->author as $author ) {
+					$authors[] = isset( $author['url'] ) ? '<a href="' . $author['url'] . '">' . $author . '</a>' : $author;
+				}
+				// @locale The string used between the last two items in the list of authors of a plugin on the admin page (one, two, three *and* four).
+				echo Format::and_list( $authors,  _t( ' and ' ));
+				?>
+				<?php if ( $plugin['core'] ): ?>
+					<span class="core"><?php _e('core'); ?></span>
+				<?php endif; ?>
+
+				<?php if ( isset($plugin['help']) ): ?>
+				<a class="help" href="<?php echo $plugin['help']['url']; ?>">?</a>
+				<?php endif; ?>
+			</div>
+
+			<p class="description"><?php echo $plugin['info']->description; ?></p>
 		</div>
-		<?php if ( $plugin['core'] ): ?>
-			<span class="core"><?php _e('core'); ?></span>
-		<?php endif; ?>
-
-		<?php if ( isset($plugin['help']) ): ?>
-		<a class="help" href="<?php echo $plugin['help']['url']; ?>">?</a>
-		<?php endif; ?>
 
 		<?php
 		/** @var FormControlDropbutton $dbtn */
@@ -72,15 +76,6 @@ namespace Habari;
 			echo $dbtn->get($theme);
 		endif;
 		?>
-
-		<?php if ( isset($plugin['update']) ): ?>
-		<ul class="dropbutton alert">
-			<li><a href="#"><?php _e('v1.1 Update Available Now'); ?></a></li>
-		</ul>
-		<?php endif; ?>
-
-		<p class="description"><?php echo $plugin['info']->description; ?></p>
-
 	</div>
 	
 	<div class="requirements">

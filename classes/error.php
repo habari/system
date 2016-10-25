@@ -61,8 +61,8 @@ class Error extends \Exception
 			"<pre class=\"error\">\n<b>%s:</b> %s in %s line %s\n</pre>",
 			get_class( $exception ),
 			$exception->getMessage(),
-			$exception->file,
-			$exception->line
+			$exception->getFile(),
+			$exception->getLine()
 		);
 
 		if ( DEBUG ) {
@@ -76,7 +76,7 @@ class Error extends \Exception
 			$backtrace = null;
 		}
 
-		EventLog::log( $exception->getMessage() . ' in ' . $exception->file . ':' . $exception->line, 'err', 'default', null, $backtrace );
+		EventLog::log( $exception->getMessage() . ' in ' . $exception->getFile() . ':' . $exception->getLine(), 'err', 'default', null, $backtrace );
 	}
 
 	/**
