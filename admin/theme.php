@@ -22,6 +22,7 @@ class Monolith extends Theme
 		Stack::add( 'admin_header_javascript', 'admin-js' );
 		Stack::add( 'admin_header_javascript', 'crc32' );
 		Stack::add( 'admin_header_javascript', 'select2' );
+		Stack::add( 'admin_header_javascript', 'jquery.touch-events' );
 
 		Stack::add( 'admin_stylesheet', 'jquery.ui-css' );
 		Stack::add( 'admin_stylesheet', 'select2-css' );
