@@ -6,7 +6,7 @@
 
 namespace Habari;
 
-define( 'MIN_PHP_VERSION', '5.3.3' );
+define( 'MIN_PHP_VERSION', '5.4' );
 
 /**
  * The class which responds to installer actions
