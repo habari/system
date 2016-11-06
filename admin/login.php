@@ -5,7 +5,7 @@
 <head>
 	<title><?php _e('Login to %s', array(Options::get( 'title' ))); ?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-
+	<meta name="viewport" content="width=device-width">
 	<script type="text/javascript">
 	var habari = {
 		url: { habari: '<?php Site::out_url('habari'); ?>' }
