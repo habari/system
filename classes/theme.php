@@ -266,6 +266,7 @@ class Theme extends Pluggable
 			if ( count( $posts ) == 1 ) {
 				$post = $posts instanceof Post ? $posts : reset( $posts );
 				Stack::add( 'body_class', Post::type_name( $post->content_type ) . '-' . $post->id );
+				Stack::add( 'body_class', 'single' );
 			}
 			else {
 				$post = reset( $posts );
