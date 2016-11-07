@@ -15,12 +15,31 @@ class AdminTagsHandler extends AdminHandler
 {
 	// Use an array to store translated facet strings so we have them in only one place
 	private $facets = array();
+	private $facet_values = array();
+	private $orderby_translate = array();
 
 	public function __construct()
 	{
 		$this->facets = array(
 			_t('More than .. posts') => 'morethan',
 			_t('Less than .. posts') => 'lessthan',
+			_t('Order by') => 'orderby',
+		);
+		$this->facet_values = array(
+			'orderby' => array(
+				_t('Publication date (descending)') => 'pubdate_desc',
+				_t('Publication date (ascending)') => 'pubdate_asc',
+				_t('Post count (descending)') => 'count_desc',
+				_t('Post count (ascending)') => 'count_asc',
+				_t('Alphabetical (descending)') => 'alphabetical_desc',
+				_t('Alphabetical (ascending)') => 'alphabetical_asc',
+			),
+		);
+		// We could avoid "translating" for sure, but it adds an additional layer of security, so we keep it
+		$this->orderby_translate = array(
+			'pubdate' => 'pubdate',
+			'count' => 'count',
+			'alphabetical' => 'term_display',
 		);
 		return parent::__construct();
 	}
@@ -224,10 +243,12 @@ class AdminTagsHandler extends AdminHandler
 
 		// Grab facets / params
 		$search = (array_key_exists('text', $fetch_params)) ? $fetch_params['text'] : null;
-		$min = (array_key_exists('morethan', $fetch_params)) ? $fetch_params['morethan'] + 1 : null;
+		$min = (array_key_exists('morethan', $fetch_params)) ? $fetch_params['morethan'] + 1 : 0;
 		$max = (array_key_exists('lessthan', $fetch_params)) ? $fetch_params['lessthan'] - 1 : null;
-		$this->theme->tags = Tags::get_by_frequency(null, null, $min, $max, $search);
+		$orderby_code = (array_key_exists('orderby', $fetch_params)) ? $fetch_params['orderby'] : null;
+		$orderby = isset($orderby_code) ? explode('_', $this->facet_values['orderby'][$orderby_code]) : ['alphabetical', 'asc'];
 
+		$this->theme->tags = Tags::get_by_frequency(null, null, $min, $max, $search, $this->orderby_translate[$orderby[0]], $orderby[1] == 'asc');
 		// Create FormUI elements (list items) from the filtered tag list
 		$this->theme->max = Tags::vocabulary()->max_count();
 		$this->theme->min = Tags::vocabulary()->min_count();
@@ -241,11 +262,6 @@ class AdminTagsHandler extends AdminHandler
 
 		$ar = new AjaxResponse();
 		$ar->html('#tag_collection', $output);
-		// $ar->data = array(
-		// 	'items' => $items,
-		// 	'item_ids' => $item_ids,
-		// 	'timeline' => $timeline,
-		// );
 		$ar->out();
 	}
 
@@ -254,15 +270,13 @@ class AdminTagsHandler extends AdminHandler
 	 * @param $handler_vars
 	 */
 	public function ajax_tag_facets($handler_vars) {
-
 		switch($handler_vars['component']) {
 			case 'facets':
 				// $result = Plugins::filter('facets', array(), $handler_vars['subject']);
 				$result = array_keys($this->facets);
 				break;
 			case 'values':
-				// $result = Plugins::filter('facetvalues', array(), $handler_vars['subject'], $_POST['facet'], $_POST['q']);
-				$result = [];
+				$result = ( isset($this->facet_values[$this->facets[$_POST['facet']]]) ? array_keys($this->facet_values[$this->facets[$_POST['facet']]]) : [] );
 				break;
 		}
 
