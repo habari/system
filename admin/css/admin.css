@@ -589,7 +589,7 @@ input.full-width {
 		margin-bottom: 0;
 		line-height: 7px;
 	}
-	.dropbutton input[type=submit] {
+	.dropbutton input[type=submit], .dropbutton button {
 		color: #fff;
 		padding: 10px;
 		display: inline-block;
@@ -1156,14 +1156,21 @@ li.tag input:checked + label {
   margin-right: 10px;
 }
 
-#tags .dropbutton, #tags .dropbutton input {
+.tag_controls input {
+  margin-bottom: 5px;
+}
+.tag_controls .aggregate_wrapper {
+  padding: 10px 0;
+}
+.tag_controls input[type=text] {
+  width: 100%;
+  box-sizing: border-box;
+}
+.tag_controls .dropbutton button {
+  width: 100%;
+  margin-bottom: 10px;
   float: none;
   height: auto;
-  width: 100%;
-}
-
-#tags .dropbutton {
-  margin-bottom: 5px;
 }
 
 .page-tags #selected_tags {
@@ -1171,7 +1178,7 @@ li.tag input:checked + label {
   flex-direction: column;
 }
 
-.page-tags #selected_tags .selected {
+.page-tags #selected_tags label {
   background: none;
 }
 

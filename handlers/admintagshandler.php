@@ -57,32 +57,38 @@ class AdminTagsHandler extends AdminHandler
 		);
 		
 		$aggregate = FormControlAggregate::create('selected_items')->set_selector("input[name='tags[]']")->label('0 Selected');
-		$aggr_wrap = FormControlWrapper::create('tag_controls_aggregate');
+		$aggr_wrap = FormControlWrapper::create('tag_controls_aggregate')
+			->add_class('aggregate_wrapper');
 		$aggr_wrap->append($aggregate);
 
 		$delete = FormControlDropbutton::create('delete_dropbutton');
 		$delete->append(
-			FormControlSubmit::create('action')
+			FormControlButton::create('action')
 				->set_caption(_t('Delete selected'))
 				->set_properties(array(
 					'title' => _t('Delete selected'),
+					'value' => 'delete',
 				))
 		);
+
+		$rename_text = FormControlText::create('rename_text');
 		
 		$rename = FormControlDropbutton::create('rename_dropbutton');
 		$rename->append(
-			FormControlSubmit::create('action')
+			FormControlButton::create('action')
 				->set_caption(_t('Rename selected'))
 				->set_properties(array(
 					'title' => _t('Rename selected'),
+					'value' => 'rename',
 				))
 		);
 
 		$tag_controls = $form->append(FormControlWrapper::create('tag_controls'))
 			->add_class("container tag_controls");
 		$tag_controls->append($aggr_wrap);
-		$tag_controls->append($delete);
+		$tag_controls->append($rename_text);
 		$tag_controls->append($rename);
+		$tag_controls->append($delete);
 		$tag_controls->append(FormControlWrapper::create('selected_tags')
 			->set_setting('wrap_element', 'ul')
 			->set_property('id', 'selected_tags')
@@ -157,14 +163,29 @@ class AdminTagsHandler extends AdminHandler
 	 */
 	public function process_tags( $form )
 	{
-		if( $_POST['action'] == _t('Delete selected') ) {
+		if( $_POST['action'] == 'delete' ) {
 			$tag_names = array();
 			foreach ( $form->selected_items->value as $id ) {
+				// We only collect the names so we can display them - deletion could also happen directly using the id
 				$tag = Tags::get_by_id( $id );
 				$tag_names[] = $tag->term_display;
 				Tags::vocabulary()->delete_term( $tag );
 			}
 			Session::notice( _n( _t( 'Tag %s has been deleted.', array( implode( '', $tag_names ) ) ), _t( '%d tags have been deleted.', array( count( $tag_names ) ) ), count( $tag_names ) ) );
+		}
+		elseif( $_POST['action'] == 'rename' ) {
+			if ( !isset( $_POST['rename_text'] ) || empty( $_POST['rename_text'] ) ) {
+				Session::error( _t( 'Error: New name not specified.' ) );
+			}
+			else {
+				$tag_names = array();
+				foreach ( $form->selected_items->value as $id ) {
+					$tag = Tags::get_by_id( $id );
+					$tag_names[] = $tag->term_display;
+				}
+				Tags::vocabulary()->merge( $_POST['rename_text'], $tag_names );
+				Session::notice( sprintf( _n('Tag %1$s has been renamed to %2$s.', 'Tags %1$s have been renamed to %2$s.', count( $tag_names ) 			), implode( $tag_names, ', ' ), $_POST['rename_text'] ) );
+			}
 		}
 
 		Utils::redirect( URL::get( 'display_tags' ) );
