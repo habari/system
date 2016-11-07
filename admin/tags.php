@@ -52,14 +52,21 @@ $('.aggregate_ui[data-target=tags_selected_items]').change(function() {
 
 	}
 	else {
-		$('#tag_collection li.tag input').each(function() {
-			if($(this).attr('checked')) {
-				$(this).removeAttr("checked");
-				$(this).trigger("change");
-			}
-		});
+		deselect_all();
 	}
 });
+
+// Helper function to remove all selection
+// Used when searching to avoid hidden selected items
+function deselect_all()
+{
+	$('#tag_collection li.tag input').each(function() {
+		if($(this).attr('checked')) {
+			$(this).removeAttr("checked");
+			$(this).trigger("change");
+		}
+	});
+}
 
 //legacy code
 /*

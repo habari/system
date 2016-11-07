@@ -50,7 +50,7 @@ class AdminTagsHandler extends AdminHandler
 			// ->set_value($search_value)
 			->set_property('data-facet-config', array(
 				// #tag_collection is the object the manager function works on - the corresponding AJAX function will replace its content
-				'onsearch' => '$("#tag_collection").manager("update", self.data("visualsearch").searchQuery.facets());',
+				'onsearch' => 'deselect_all(); $("#tag_collection").manager("update", self.data("visualsearch").searchQuery.facets());',
 				'facetsURL' => URL::get('admin_ajax_tag_facets', array('context' => 'tag_facets', 'component' => 'facets')),
 				'valuesURL' => URL::get('admin_ajax_tag_facets', array('context' => 'tag_facets', 'component' => 'values')),
 			))
