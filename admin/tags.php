@@ -23,7 +23,7 @@ function visual_hooks() {
 
 	$('#tag_collection li.tag input').change(function() {
 		var listitem = $(this).parent();
-		if(!$(this).attr('checked')) { // "checked" is set afterwards, therefore the "not"
+		if(!$(this).attr('checked')) {
 			// remove item from selected list (again, visually, the actual removing is done by FormUI)
 			var regex = /tag_[0-9]+/;
 			var idclass = regex.exec(listitem.attr('class'));
@@ -44,8 +44,7 @@ visual_hooks();
 $('.aggregate_ui[data-target=tags_selected_items]').change(function() {
 	if($(this).attr("checked") == "checked") {
 		$('#tag_collection li.tag input').each(function() {
-			var listitem = $(this).parent().parent();
-			if(!listitem.hasClass('selected')) {
+			if(!$(this).attr('checked')) {
 				$(this).attr("checked", "checked");
 				$(this).trigger("change");
 			}
@@ -54,8 +53,7 @@ $('.aggregate_ui[data-target=tags_selected_items]').change(function() {
 	}
 	else {
 		$('#tag_collection li.tag input').each(function() {
-			var listitem = $(this).parent().parent();
-			if(listitem.hasClass('selected')) {
+			if($(this).attr('checked')) {
 				$(this).removeAttr("checked");
 				$(this).trigger("change");
 			}
