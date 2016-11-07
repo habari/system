@@ -60,8 +60,8 @@ class AdminTagsHandler extends AdminHandler
 		$aggr_wrap = FormControlWrapper::create('tag_controls_aggregate');
 		$aggr_wrap->append($aggregate);
 
-		$page_actions = FormControlDropbutton::create('page_actions');
-		$page_actions->append(
+		$delete = FormControlDropbutton::create('delete_dropbutton');
+		$delete->append(
 			FormControlSubmit::create('action')
 				->set_caption(_t('Delete selected'))
 				->set_properties(array(
@@ -81,7 +81,7 @@ class AdminTagsHandler extends AdminHandler
 		$tag_controls = $form->append(FormControlWrapper::create('tag_controls'))
 			->add_class("container tag_controls");
 		$tag_controls->append($aggr_wrap);
-		$tag_controls->append($page_actions);
+		$tag_controls->append($delete);
 		$tag_controls->append($rename);
 		$tag_controls->append(FormControlWrapper::create('selected_tags')
 			->set_setting('wrap_element', 'ul')
