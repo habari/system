@@ -95,6 +95,8 @@ class AdminPostsHandler extends AdminHandler
 			'status' => null,
 			'limit' => null,
 			'offset' => null,
+			'after' => null,
+			'before' => null,
 			'search' => '',
 		);
 		foreach ( $locals as $varname => $default ) {
@@ -172,6 +174,12 @@ class AdminPostsHandler extends AdminHandler
 		}
 		if ( isset( $user_id ) ) {
 			$user_filters['user_id'] = $user_id;
+		}
+		if ( isset( $before ) ) {
+			$user_filters['before'] = $before;
+		}
+		if ( isset( $after ) ) {
+			$user_filters['after'] = $after;
 		}
 
 		if ( '' != $search ) {
