@@ -225,36 +225,7 @@ class AdminPostsHandler extends AdminHandler
 	public function post_posts()
 	{
 		$this->fetch_posts();
-		// Get special search statuses
-		$statuses = array_keys( Post::list_post_statuses() );
-		array_shift( $statuses );
-		$labels = array_map(
-			function($a) {return MultiByte::ucfirst(Plugins::filter("post_status_display", $a));},
-			$statuses
-		);
-		$terms = array_map(
-			function($a) {return "status:{$a}";},
-			$statuses
-		);
-		$statuses = array_combine( $terms, $labels );
-
-		// Get special search types
-		$types = array_keys( Post::list_active_post_types() );
-		array_shift( $types );
-		$labels = array_map(
-			function($a) {return Plugins::filter("post_type_display", $a, "singular");},
-			$types
-		);
-		$terms = array_map(
-			function($a) {return "type:{$a}";},
-			$types
-		);
-		$types = array_combine( $terms, $labels );
-
-		$special_searches = array_merge( $statuses, $types );
-		// Add a filter to get only the user's posts
-		$special_searches["author:" . User::identify()->username] = _t( 'My Posts' );
-		
+	
 		// Create search controls and global buttons for the manage page
 		$search_value = '';
 		if(isset($_GET['type'])) {
@@ -289,7 +260,6 @@ class AdminPostsHandler extends AdminHandler
 
 		$this->theme->admin_page = _t( 'Manage Posts' );
 		$this->theme->admin_title = _t( 'Manage Posts' );
-		$this->theme->special_searches = Plugins::filter( 'special_searches', $special_searches );
 
 		Stack::add('admin_header_javascript', 'visualsearch' );
 		Stack::add('admin_header_javascript', 'manage-js' );
