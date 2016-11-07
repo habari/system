@@ -377,7 +377,6 @@ class Utils
 			$output2 = $comma = $argtypes = '';
 			foreach ( (array)$args as $arg ) {
 				$argout = str_replace( "\n", '\n', addslashes( print_r( $arg, 1 ) ) );
-				//$output .= $comma . Utils::debug_reveal( gettype($arg), htmlentities($argout), $debugid . $tracect, true );
 				$argtypes .= $comma . gettype( $arg );
 				$output2 .= "console.log(\"$argout\");\n";
 				$comma = ', ';
