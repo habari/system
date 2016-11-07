@@ -47,7 +47,6 @@ class AdminTagsHandler extends AdminHandler
 		$form = new FormUI('tags');
 
 		$form->append(FormControlFacet::create('search')
-			// ->set_value($search_value)
 			->set_property('data-facet-config', array(
 				// #tag_collection is the object the manager function works on - the corresponding AJAX function will replace its content
 				'onsearch' => 'deselect_all(); $("#tag_collection").manager("update", self.data("visualsearch").searchQuery.facets());',
