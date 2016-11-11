@@ -6,8 +6,6 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 
 <div class="container transparent item controls">
 
-<?php include( 'navigator.php' ); ?>
-
 <?php echo $form; ?>
 
 </div>
