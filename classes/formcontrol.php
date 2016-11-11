@@ -569,7 +569,7 @@ ERR;
 		if(isset($this->settings[$name])) {
 			return $this->settings[$name];
 		}
-		elseif(is_callable($default)) {
+		elseif(is_callable($default) && !is_string($default)) {
 			return $default($name, $this);
 		}
 		else {
