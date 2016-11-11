@@ -1000,7 +1000,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		$form->append( FormControlData::create('post')->set_value($this) );
 
 		// Create the Title field
-		$form->append( FormControlLabel::wrap(_t('Title'), FormControlText::create('title', null, array('class' => array('check-change full-width'), 'tabindex' => 1))->set_value($this->title_internal)) );
+		$form->append( FormControlLabel::wrap(_t('Title'), FormControlText::create('title', null, array('class' => array('check-change full-width')))->set_value($this->title_internal)) );
 
 		// Create the silos
 		if ( count( Plugins::get_by_interface( 'MediaSilo' ) ) ) {
@@ -1009,7 +1009,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		}
 
 		// Create the Content field
-		$form->append( FormControlLabel::wrap( _t('Content'), FormControlTextArea::create('content', null, array('class' => array('resizable', 'check-change full-width rte'), 'tabindex' => 2))->set_value($this->content_internal)) );
+		$form->append( FormControlLabel::wrap( _t('Content'), FormControlTextArea::create('content', null, array('class' => array('resizable', 'check-change full-width rte')))->set_value($this->content_internal)) );
 		$form->content->raw = true;  // @todo What does this do?
 
 		// Create the tags field
@@ -1020,7 +1020,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 				$tags_control = FormControlAutocomplete::create(
 					'tags',
 					null,
-					array('style' => 'width:100%;margin:0px 0px 20px;', 'class' => 'check-change full-width', 'tabindex' => 3),
+					array('style' => 'width:100%;margin:0px 0px 20px;', 'class' => 'check-change full-width'),
 					array('allow_new' => true, 'init_selection' => true)
 				)
 			)->set_properties(array('style' => 'width:100%;margin:0px 0px 20px;'))
@@ -1095,7 +1095,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		if(isset($show_buttons['delete'])) {
 			// Create the Delete button
 			$buttons->append(
-				FormControlSubmit::create('delete', null, array('tabindex' => 4, 'class'=>'three columns'))
+				FormControlSubmit::create('delete', null, array('class'=>'three columns'))
 					->set_caption( _t( 'Delete' ) )
 					->on_success(array($this, 'form_publish_delete'))
 			);
@@ -1103,14 +1103,14 @@ class Post extends QueryRecord implements IsContent, FormStorage
 		if(isset($show_buttons['save'])) {
 			// Create the Save button
 			$buttons->append(
-				FormControlSubmit::create('save', null, array('tabindex' => 4, 'class'=>'three columns'))
+				FormControlSubmit::create('save', null, array('class'=>'three columns'))
 					->set_caption( _t( 'Save' ) )
 			);
 		}
 		if(isset($show_buttons['publish'])) {
 			// Create the Publish button
 			$buttons->append(
-				FormControlSubmit::create('publish', null, array('tabindex' => 4, 'class'=>'three columns'))
+				FormControlSubmit::create('publish', null, array('class'=>'three columns'))
 					->set_caption( _t( 'Publish' ) )
 					->add_validator(function($value, FormControlSubmit $control, FormUI $form){
 						$form->status->set_value(Post::status('published'));
@@ -1348,7 +1348,6 @@ class Post extends QueryRecord implements IsContent, FormStorage
 						'cf_commenter', 'null:null',
 						array(
 							'id' => 'comment_name',
-							'tabindex' => 1,
 							'required' => 'required',
 						)
 					)->add_validator( 'validate_required', _t( 'The Name field value is required' ) )
@@ -1360,7 +1359,6 @@ class Post extends QueryRecord implements IsContent, FormStorage
 				$cf_email = FormControlText::create('cf_email', 'null:null', array(
 						'id' => 'comment_email',
 						'type' => 'email',
-						'tabindex' => 2
 				))->add_validator('validate_email', _t('The Email field value must be a valid email address'))
 			);
 			if ( Options::get( 'comments_require_id' ) == 1 ) {
@@ -1377,7 +1375,6 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			$form->append(
 				FormControlLabel::wrap(_t('Website'), FormControlText::create('cf_url', 'null:null', array(
 					'id' => 'comment_url',
-					'tabindex' => 3,
 					'type' => 'url'
 				)))->add_validator( 'validate_url', _t( 'The Website field value must be a valid URL' ) )
 
@@ -1388,7 +1385,6 @@ class Post extends QueryRecord implements IsContent, FormStorage
 			$form->append(
 				FormControlTextArea::create('cf_content', 'null:null', array(
 					'id' => 'comment_content',
-					'tabindex' => 4,
 					'required' => 'required'
 				))->add_validator( 'validate_required', _t( 'The Comment field value is required' ) )
 				->label(_t('Content'))
@@ -1397,7 +1393,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 
 			// Create the Submit button
 
-			$form->append( FormControlSubmit::create('cf_submit')->set_properties(array('value' => _t('Submit'), 'tabindex' => 5)));
+			$form->append( FormControlSubmit::create('cf_submit')->set_properties(array('value' => _t('Submit'))));
 
 			// Let plugins alter this form
 			Plugins::act( 'form_comment', $form, $this, $context );
