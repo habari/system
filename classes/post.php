@@ -1118,6 +1118,7 @@ class Post extends QueryRecord implements IsContent, FormStorage
 						if( !$allow ) {
 							return array( 'Publishing has been denied' );
 						}
+						return array();
 					})
 			);
 		}
