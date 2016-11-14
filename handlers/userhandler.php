@@ -53,10 +53,10 @@ class UserHandler extends ActionHandler
 			$user = User::authenticate( $name, $pass );
 
 			if ( ( $user instanceOf User ) && ( $user != false ) ) {
-
+				$userinfo = $user->info;
 				// if there's an unused password reset token, unset it to make sure there's no possibility of a compromise that way
-				if ( isset( $user->info->password_reset ) ) {
-					unset( $user->info->password_reset );
+				if ( isset( $userinfo->password_reset ) ) {
+					unset( $userinfo->password_reset );
 				}
 
 				/* Successfully authenticated. */

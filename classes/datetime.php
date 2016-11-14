@@ -75,7 +75,8 @@ class DateTime extends \DateTime
 	 */
 	public static function get_default_datetime_format()
 	{
-		$user_datetime_format = User::identify()->info->locale_date_format . ' ' . User::identify()->info->locale_time_format;
+		$uinfo = User::identify()->info;
+		$user_datetime_format = $uinfo->locale_date_format . ' ' . $uinfo->locale_time_format;
 		if ( $user_datetime_format != self::$default_datetime_format ) {
 			self::set_default_datetime_format( $user_datetime_format );
 		}
@@ -427,8 +428,9 @@ class DateTime extends \DateTime
 	 **/
 	public static function get_default_date_format()
 	{
-		if ( isset(User::identify()->info->local_date_format) && User::identify()->info->locale_date_format != Options::get( 'dateformat' ) ) {
-			self::set_default_date_format( User::identify()->info->locale_date_format );
+		$uinfo = User::identify()->info;
+		if ( isset($uinfo->local_date_format) && $uinfo->locale_date_format != Options::get( 'dateformat' ) ) {
+			self::set_default_date_format( $uinfo->locale_date_format );
 		}
 		return self::$default_date_format;
 	}
@@ -452,8 +454,9 @@ class DateTime extends \DateTime
 	 **/
 	public static function get_default_time_format()
 	{
-		if ( isset(User::identify()->info->local_time_format) && User::identify()->info->locale_time_format != Options::get( 'timeformat' ) ) {
-			self::set_default_time_format( User::identify()->info->locale_time_format );
+		$uinfo = User::identify()->info;
+		if ( isset($uinfo->local_time_format) && $uinfo->locale_time_format != Options::get( 'timeformat' ) ) {
+			self::set_default_time_format( $uinfo->locale_time_format );
 		}
 		return self::$default_time_format;
 	}

@@ -43,7 +43,8 @@ class AdminDashboardHandler extends AdminHandler
 
 		// check for first run
 		$u = User::identify();
-		if ( ! isset( $u->info->experience_level ) ) {
+		$uinfo = $u->info;
+		if ( ! isset( $uinfo->experience_level ) ) {
 			$this->theme->first_run = true;
 			$u->info->experience_level = 'user';
 			$u->info->commit();

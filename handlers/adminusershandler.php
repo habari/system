@@ -129,18 +129,19 @@ class AdminUsersHandler extends AdminHandler
 
 			$locale_date_format = FormControlText::create('locale_date_format')->set_value($edit_user->info->locale_date_format);
 			$form->regional_settings->append( FormControlLabel::wrap(_t( 'Date Format' ), $locale_date_format ));
-			if ( isset( $edit_user->info->locale_date_format ) && $edit_user->info->locale_date_format != '' ) {
-				$current = DateTime::create()->get( $edit_user->info->locale_date_format );
+			$edit_user_info = $edit_user->info;
+			if ( isset( $edit_user_info->locale_date_format ) && $edit_user_info->locale_date_format != '' ) {
+				$current = DateTime::create()->get( $edit_user_info->locale_date_format );
 			}
 			else {
 				$current = DateTime::create()->date;
 			}
 			$locale_date_format->set_helptext(_t( 'See <a href="%s">php.net/date</a> for details. Current format: %s', array( 'http://php.net/date', $current )));
 
-			$locale_time_format = FormControlText::create('locale_time_format')->set_value($edit_user->info->locale_time_format);
+			$locale_time_format = FormControlText::create('locale_time_format')->set_value($edit_user_info->locale_time_format);
 			$form->regional_settings->append( FormControlLabel::wrap(_t( 'Time Format' ), $locale_time_format) );
-			if ( isset( $edit_user->info->locale_time_format ) && $edit_user->info->locale_time_format != '' ) {
-				$current = DateTime::create()->get( $edit_user->info->locale_time_format );
+			if ( isset( $edit_user_info->locale_time_format ) && $edit_user_info->locale_time_format != '' ) {
+				$current = DateTime::create()->get( $edit_user_info->locale_time_format );
 			}
 			else {
 				$current = DateTime::create()->time;
@@ -148,11 +149,11 @@ class AdminUsersHandler extends AdminHandler
 			$locale_time_format->set_helptext(_t( 'See <a href="%s">php.net/date</a> for details. Current format: %s', array( 'http://php.net/date', $current ) ));
 
 			$locales = array_merge( array( '' => _t( 'System default' ) . ' (' . Options::get( 'locale', 'en-us' ) . ')' ), array_combine( Locale::list_all(), Locale::list_all() ) );
-			$locale_lang = FormcontrolSelect::create( 'locale_lang', null, array( 'multiple' => false ) )->set_options( $locales )->set_value( $edit_user->info->locale_lang );
+			$locale_lang = FormcontrolSelect::create( 'locale_lang', null, array( 'multiple' => false ) )->set_options( $locales )->set_value( $edit_user_info->locale_lang );
 			$form->regional_settings->append( FormControlLabel::wrap( _t(' Language' ), $locale_lang ) );
 
 			$spam_count = FormControlCheckbox::create('dashboard_hide_spam_count')
-				->set_helptext(_t( 'Hide the number of SPAM comments on your dashboard.' ))->set_value($edit_user->info->dashboard_hide_spam_count);
+				->set_helptext(_t( 'Hide the number of SPAM comments on your dashboard.' ))->set_value($edit_user_info->dashboard_hide_spam_count);
 			$form->dashboard->append( FormControlLabel::wrap(_t( 'Hide Spam Count' ), $spam_count ));
 
 			// Groups
@@ -358,7 +359,8 @@ class AdminUsersHandler extends AdminHandler
 	public function edit_user_apply( FormUI $form )
 	{
 		$edit_user = User::get_by_id( $form->edit_user->value );
-
+		$edit_user_info = $edit_user->info;
+		
 		$update = false;
 
 		// Change username
@@ -402,12 +404,12 @@ class AdminUsersHandler extends AdminHandler
 		$info_fields = Plugins::filter( 'adminhandler_post_user_fields', $info_fields );
 
 		foreach ( $info_fields as $info_field ) {
-			if ( isset( $form->{$info_field} ) && ( $edit_user->info->{$info_field} != $form->{$info_field}->value ) && !empty( $form->{$info_field}->value ) ) {
-				$edit_user->info->{$info_field} = $form->$info_field->value;
+			if ( isset( $form->{$info_field} ) && ( $edit_user_info->{$info_field} != $form->{$info_field}->value ) && !empty( $form->{$info_field}->value ) ) {
+				$edit_user_info->{$info_field} = $form->$info_field->value;
 				$update = true;
 			}
-			else if ( isset( $edit_user->info->{$info_field} ) && empty( $form->{$info_field}->value ) ) {
-				unset( $edit_user->info->{$info_field} );
+			else if ( isset( $edit_user_info->{$info_field} ) && empty( $form->{$info_field}->value ) ) {
+				unset( $edit_user_info->{$info_field} );
 				$update = true;
 			}
 		}
