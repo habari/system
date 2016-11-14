@@ -195,10 +195,10 @@ class UserHandler extends ActionHandler
 	 */
 	public function act_password_reset()
 	{
-		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
+		Utils::check_request_method( array( 'GET' ) );
 
-		$id = $this->handler_vars['id'];
-		$hash = $this->handler_vars['hash'];
+		$id = $_GET['id'];
+		$hash = $_GET['hash'];
 
 		if ( $user = User::get( $id ) ) {
 			if ( is_string( $hash ) && ( $user->info->password_reset == md5( $hash ) ) ) {
