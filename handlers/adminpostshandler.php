@@ -97,6 +97,7 @@ class AdminPostsHandler extends AdminHandler
 			'offset' => null,
 			'after' => null,
 			'before' => null,
+			'tag' => null,
 			'search' => '',
 		);
 		foreach ( $locals as $varname => $default ) {
@@ -180,6 +181,12 @@ class AdminPostsHandler extends AdminHandler
 		}
 		if ( isset( $after ) ) {
 			$user_filters['after'] = $after;
+		}
+		if ( isset( $tag ) ) {
+			if ( !is_array( $tag ) ) {
+				$tag = Utils::single_array( $tag );
+			}
+			$user_filters['vocabulary'][Tags::vocabulary()->name . ':term_display'] = $tag;
 		}
 
 		if ( '' != $search ) {
@@ -529,7 +536,7 @@ class AdminPostsHandler extends AdminHandler
 				$tags = Tags::search($q);
 				$values = array();
 				foreach($tags as $tag) {
-					$values[] = $tag->term;
+					$values[] = $tag->term_display;
 				}
 				break;
 			case 'author':
