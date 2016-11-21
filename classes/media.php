@@ -86,12 +86,15 @@ class Media
 			$path = $filedata->path;
 		}
 		$silo = Media::get_silo( $path, true );
+		Plugins::act( 'media_put_before', $path, $filedata );
 		if ( $path == '' ) {
-			return false;
+			$result = false;
 		}
 		else {
-			return $silo->silo_put( $path, $filedata );
+			$result = $silo->silo_put( $path, $filedata );
 		}
+		Plugins::act( 'media_put_after', $path, $filedata, $result );
+		return $result;
 	}
 
 	/**
@@ -103,12 +106,15 @@ class Media
 	public static function delete( $path )
 	{
 		$silo = Media::get_silo( $path, true );
+		Plugins::act( 'media_delete_before', $path );
 		if ( $path == '' ) {
-			return false;
+			$result = false;
 		}
 		else {
-			return $silo->silo_delete( $path );
+			$result = $silo->silo_delete( $path );
 		}
+		Plugins::act( 'media_delete_after', $path, $result );
+		return $result;
 	}
 
 	/**
