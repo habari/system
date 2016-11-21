@@ -78,16 +78,19 @@ class Tags extends Vocabulary
 	 *
 	 * @param int $limit If supplied, limits the results to the specified number
 	 * @param mixed $post_type If a name or id of a post type is supplied, limits the results to the terms applying to that type
+	 * @param int $min If supplied, limits the results to tags associated with at least this number of posts
+	 * @param int $max If supplied, limits the results to tags associated with at most this number of posts
+	 * @param mixed $search If supplied, limits the results to tags containing that value in their display string
 	 * @return Tags A Tags instance containing the terms, each having an additional property of "count" that tells how many times the term was used
 	 */
-	public static function get_by_frequency($limit = null, $post_type = null)
+	public static function get_by_frequency($limit = null, $post_type = null, $min = 1, $max = null, $search = null, $orderby = 'count', $inverse = false)
 	{
 		$query = '
-			SELECT t.*, count(*) as `count`
+			SELECT t.*, tp.object_id, count(tp.object_id) as `count`
 			FROM {terms} t
-			INNER JOIN {object_terms} tp ON t.id=tp.term_id
-			INNER JOIN {posts} p ON tp.object_id=p.id
-			INNER JOIN {object_types} ot ON tp.object_type_id=ot.id and ot.name="post"
+			LEFT JOIN {object_terms} tp ON t.id=tp.term_id
+			LEFT JOIN {posts} p ON tp.object_id=p.id
+			LEFT JOIN {object_types} ot ON tp.object_type_id=ot.id and ot.name="post"
 			WHERE t.vocabulary_id = ?';
 
 		$params = array(Tags::vocabulary()->id);
@@ -97,9 +100,40 @@ class Tags extends Vocabulary
 			$params[] = Post::type($post_type);
 		}
 
-		$query .= '
-			GROUP BY t.id
-			ORDER BY `count` DESC, term_display ASC';
+		if ( isset($search) ) {
+			$query .= " AND term_display LIKE ?";
+			$params[] = '%' . $search . '%';
+		}
+
+		$query .= ' GROUP BY t.id';
+
+		if( is_int($min) || is_int($max) ) {
+			$query .= ' HAVING';
+		}
+		if( is_int($min) ) {
+			$query .= " count >= {$min}";
+		}
+		if( is_int($min) && is_int($max) ) {
+			$query .= ' AND';
+		}
+		if( is_int($max) ) {
+			$query .= " count <= {$max}";
+		}
+
+		$valid_orderbys = array('pubdate', 'count', 'term_display');
+		if(!in_array($orderby, $valid_orderbys)) {
+			$orderby = 'count';
+		}
+
+		$query .= " ORDER BY `{$orderby}`";
+		// Inverse both directions so the result is actually reversed tag by tag and not in blocks
+		if($inverse) {
+			$query .= ' ASC, term_display DESC';
+		}
+		else {
+			$query .= ' DESC, term_display ASC';
+		}
+
 
 		if ( is_int($limit) ) {
 			$query .= ' LIMIT ' . $limit;

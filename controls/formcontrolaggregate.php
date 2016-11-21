@@ -36,8 +36,9 @@ controls.init(function(){
 		// visualizer - the master checkbox that checks/unchecks all those checkboxes indicated by the selector
 		var visualizer = $('.aggregate_ui[data-target=' + self.attr('id') + ']');
 		// checkboxes - the checkboxes selected by the aggregator
-		var checkboxes = $(self.data('selector'));
+		var checkboxes;
 		var do_update = function(){
+			checkboxes = $(self.data('selector'));
 			var results = [];
 			// get the json for the checked boxes and put it in the control's hidden input
 			checkboxes.filter(':checked').each(function(){

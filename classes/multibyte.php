@@ -416,7 +416,7 @@ class MultiByte
 		}
 
 		if ( self::$use_library == self::USE_MBSTRING ) {
-			return mb_check_encoding($str, $enc);
+			return \mb_check_encoding($str, $enc);
 		}
 
 		return true;

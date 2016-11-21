@@ -589,7 +589,7 @@ input.full-width {
 		margin-bottom: 0;
 		line-height: 7px;
 	}
-	.dropbutton input[type=submit] {
+	.dropbutton input[type=submit], .dropbutton button {
 		color: #fff;
 		padding: 10px;
 		display: inline-block;
@@ -1079,6 +1079,129 @@ input[type=text] {
 ul.meta li {
 	padding: 0px 0px 0px 5px;
 	margin: 0;
+}
+
+/* TAGS PAGE SPECIFIC */
+.page-tags .facet_ui {
+  width: 100%;
+}
+
+.page-tags .container.item, .page-tags #tags {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.page-tags #tag_collection {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 4 1;
+  justify-content: space-around;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
+.tag.wt1 label {
+  border-bottom: 3px solid #CDE0E5;
+}
+.tag.wt2 label {
+  border-bottom: 3px solid #9BC2CA;
+}
+.tag.wt3 label {
+  border-bottom: 3px solid #79AEB9;
+}
+.tag.wt4 label {
+  border-bottom: 3px solid #4F8A96;
+}
+.tag.wt5 label {
+  border-bottom: 3px solid #3E6C75;
+}
+.tag.wt6 label {
+  border-bottom: 3px solid #233D43;
+}
+
+li.tag {
+  display: inline-block;
+  padding: 0;
+  margin: 5px 3px;
+}
+
+li.tag input {
+  display: none;
+}
+
+li.tag input:checked + label {
+  background: #fff;
+  border-bottom: 3px solid #CC3333;
+}
+
+.tag label {
+  padding: 3px 0;
+  word-break: break-word;
+  font-size: 15px;
+}
+
+.tag .count {
+  font-size: 10px;
+  margin-left: 2px;
+  vertical-align: super;
+}
+
+.tag_controls {
+  display: flex;
+  flex-direction: column;
+  flex: 1 4;
+  border-right: 2px solid #999;
+  padding-right: 10px;
+  margin-right: 10px;
+}
+
+.tag_controls input {
+  margin-bottom: 5px;
+}
+.tag_controls .aggregate_wrapper {
+  padding: 10px 0;
+}
+.tag_controls input[type=text] {
+  width: 100%;
+  box-sizing: border-box;
+}
+.tag_controls .dropbutton button {
+  width: 100%;
+  margin-bottom: 10px;
+  float: none;
+  height: auto;
+}
+
+.page-tags #selected_tags {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-tags #selected_tags label {
+  background: none;
+}
+
+@media only screen and (max-width: 539px) {
+  .page-tags #tags {
+    flex-direction: column;
+  }
+  #tags .facet_ui {
+    order: 1;
+  }
+  #tag_collection {
+    order: 2;
+  }
+  .tag_controls {
+    flex: 0 1 auto; /* Revert to default because on mobile it's column layout */
+    order: 3;
+    border-right: none;
+    border-top: 2px solid #999;
+    padding-right: 0;
+    padding-top: 10px;
+    margin-right: 0;
+    margin-top: 10px;
+  }
 }
 
 /* PLUGINS PAGE-SPECIFIC */

@@ -2,162 +2,70 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php include('header.php');?>
 
-<div class="container navigator">
-	<span class="search pct100"><input type="search" id="search" placeholder="<?php _e('Type and wait to search tags'); ?>" autofocus="autofocus"></span>
-</div>
-
 <!--<div class="instructions"><span>Click to select</span> &middot; <span>Double-click to open</span></div>-->
 
-<ul id="tag_collection" class="container items">
-	<?php $theme->display( 'tag_collection' ); ?>
-</ul>
-
-
 <div class="container transparent item controls">
-	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
-	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-	<input type="hidden" name="password_digest" id="password_digest" value="<?php echo $wsse['digest']; ?>">
 
-	<span class="checkboxandselected">
-		<input type="checkbox" id="master_checkbox" name="master_checkbox">
-		<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
-	</span>
+	<?php echo $form->get(); ?>
 
-	<span class="renamecontrols"><input type="text" class="renametext"></span>
-
-	<span class="buttons"><input type="button" value="<?php _e('Rename'); ?>" class="rename button"></span>
-
-	<span class="or"><?php _e('or'); ?></span>
-
-	<span class="buttons"><input type="button" value="<?php _e('Delete Selected'); ?>" class="delete button"></span>
 </div>
 
 <script type="text/javascript">
-itemManage.fetch = function(offset, limit, resetTimeline, silent) {
-	query = {};
-	query['timestamp'] = $('input#timestamp').attr('value');
-	query['nonce'] = $('input#nonce').attr('value');
-	query['digest'] = $('input#password_digest').attr('value');
-	query['search'] = liveSearch.getSearchText();
+// Tell the item manager what to update and from where
+$('#tag_collection').manager({updateURL: "<?php echo URL::get('admin_ajax', array('context' => 'tags')) ?>", after_update: "visual_hooks"});
 
-	habari_ajax.get(
-		"<?php echo URL::get('admin_ajax', array('context' => 'get_tags')); ?>",
-		query,
-		function(result) {
-			//TODO When there's a loupe, update it
-			//timelineHandle.updateLoupeInfo();
-			$('#tag_collection').html(result['data']);
-			itemManage.selected = {};
-			itemManage.initItems();
+// this is just visual effect stuff, the actual selecting and processing is done with FormUI
+function visual_hooks() {
+	// Cleanup as we call this after filtering
+	// @TODO Do not lose selection when filtering
+	$("#selected_tags li").remove();
+	$("#tags_selected_items").val("")
+
+	$('#tag_collection li.tag input').change(function() {
+		var listitem = $(this).parent();
+		if(!$(this).attr('checked')) {
+			// remove item from selected list (again, visually, the actual removing is done by FormUI)
+			var regex = /tag_[0-9]+/;
+			var idclass = regex.exec(listitem.attr('class'));
+			$('#selected_tags .' + idclass).remove();
 		}
-	);
-};
-
-itemManage.update = function( action, id ) {
-	spinner.start();
-
-	selected = $('.tag.selected');
-	if ( selected.length == 0 ) {
-		human_msg.display_msg( "<?php _e('Error: No tags selected.'); ?>" );
-		spinner.stop();
-		return;
-	}
-	var query = {}
-
-	selected.each(function() {
-		query[$(this).attr('id')] = 1;
+		else {
+			// keep all the properties and the input so we can click the item in both lists, but get rid of id to avoid conflicts
+			var cloneli = listitem.clone();
+			cloneli.find('input').removeAttr('id');
+			cloneli.appendTo('#selected_tags');
+		}
 	});
+}
+visual_hooks();
 
-	query['action'] = 'delete';
-	query['timestamp'] = $('input#timestamp').attr('value');
-	query['nonce'] = $('input#nonce').attr('value');
-	query['digest'] = $('input#password_digest').attr('value');
-
-	habari_ajax.post(
-		"<?php echo URL::get('admin_ajax', array('context' => 'tags')); ?>",
-		query,
-		function(result) {
-			//TODO When there's a loupe, update it
-			//timelineHandle.updateLoupeInfo();
-			$('#tag_collection').html(result);
-			itemManage.selected = {};
-			itemManage.initItems();
-		}
-	);
-};
-
-itemManage.rename = function() {
-	var master = $('.controls input.renametext').val();
-
-	// Unselect the master, if it's selected
-	if ( master ) {
-		$('.tag:contains(' + master + ')').each(function() {
-			if ($(this).find('span').text() == master) {
-				$(this).removeClass('selected');
+// we need additional code when all of the tags are selected with the FormUI aggregate control
+// that is because programmatical changes of the checked state do not trigger events
+$('.aggregate_ui[data-target=tags_selected_items]').change(function() {
+	if($(this).attr("checked") == "checked") {
+		$('#tag_collection li.tag input').each(function() {
+			if(!$(this).attr('checked')) {
+				$(this).attr("checked", "checked");
+				$(this).trigger("change");
 			}
 		});
+
 	}
-
-	var selected = $('.tag.selected');
-
-	if ( selected.length == 0 ) {
-		human_msg.display_msg( "<?php _e('Error: No tags selected.'); ?>" );
-		return;
+	else {
+		deselect_all();
 	}
-	else if ( master == '' ) {
-		human_msg.display_msg( "<?php _e('Error: New name not specified.'); ?>" );
-		return;
-	}
-	else if ( $.trim( master ) == '' ) {
-		human_msg.display_msg( "<?php _e("Error: New name can't be just whitespace."); ?>" );
-		return;
-	}
-	var query = {}
+});
 
-	spinner.start();
-
-	selected.each(function() {
-		query[$(this).attr('id')] = 1;
-	});
-
-	query['master'] = master;
-	query['action'] = 'rename';
-	query['timestamp'] = $('input#timestamp').attr('value');
-	query['nonce'] = $('input#nonce').attr('value');
-	query['digest'] = $('input#password_digest').attr('value');
-	habari_ajax.post(
-		"<?php echo URL::get('admin_ajax', array('context' => 'tags')); ?>",
-		query,
-		function(result) {
-			//TODO When there's a loupe, update it
-			//timelineHandle.updateLoupeInfo();
-			$('.controls input.renametext').val('').blur();
-			$('#tag_collection').html(result);
-
-			itemManage.selected = {};
-			itemManage.initItems();
+// Helper function to remove all selection
+// Used when searching to avoid hidden selected items
+function deselect_all()
+{
+	$('#tag_collection li.tag input').each(function() {
+		if($(this).attr('checked')) {
+			$(this).removeAttr("checked");
+			$(this).trigger("change");
 		}
-	);
-};
-
-// overload changeItem()
-var parentChangeItem = itemManage.changeItem;
-
-itemManage.changeItem = function() {
-	parentChangeItem();
-	
-	var checked = $('.item:not(.ignore) .checkbox input[type=checkbox]:checked');
-	
-	if ( !checked.length ) {
-		$(".controls input.rename").val("<?php _e('Rename'); ?>");
-		$(".controls input.renametext").blur();
-	} else if ( checked.length == 1 ) {
-		$(".controls input.rename").val("<?php _e('Rename'); ?>");
-		$(".controls input.renametext").focus();
-	} else {
-		$(".controls input.rename").val("<?php _e('Merge'); ?>");
-		$(".controls input.renametext").focus();
-	}
+	});
 }
 </script>
 

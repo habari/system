@@ -27,6 +27,10 @@
 					spinner.start();
 					habari_ajax.post(options.updateURL, query, self, function(){
 						spinner.stop();
+						// if after_update is set, we expect it to be the name of a global function
+						if(typeof window[options.after_update] == 'function') {
+							window[options.after_update]();
+						}
 					});
 					return this;
 				case 'quicksearch':
