@@ -19,31 +19,37 @@ class FormControlTextMulti extends FormControl
 		$out = '';
 		if ( !FormControlTextMulti::$outpre ) {
 			FormControlTextMulti::$outpre = true;
-			$out .= '
+			if(is_array($this->value)) {
+				$fieldcount = count($this->value);
+			}
+			else {
+				$fieldcount = 0;
+			}
+			// translatable strings
+			// very bad practice but the below code is just horrible to read already and heredoc does not support method calls
+			$removeitem = _t( 'Remove item' );
+			$remove = _t( '[remove]' );
+			$removethisitem = _t( 'Remove this item?' );
+			$out .= <<< JSCODE
 				<script type="text/javascript">
 				controls.textmulti = {
-					add: function(e, field){
-						$(e).before(" <span class=\"textmulti_item\"><input type=\"text\" name=\"" + field + "[]\"> <a href=\"#\" onclick=\"return controls.textmulti.remove(this);\" title=\"'. _t( 'Remove item' ).'\" class=\"textmulti_remove opa50\">[' . _t( 'remove' ) . ']</a></span>");
+					add: function(e, controlname){
+						$(e).before('<div><input type="text" name="' + controlname + '[]"> <a href="#" onclick="return controls.textmulti.remove(this);" title="{$removeitem}" class="textmulti_remove">{$remove}</a></div>');
 						return false;
 					},
-					remove: function(e){
-						if (confirm("' . _t( 'Remove this item?' ) . '")) {
-							if ( $(e).parent().parent().find("input").length == 1) {
-								field = $(e).prev().attr("name");
-								$(e).parent().prev().before("<input type=\"hidden\" name=\"" + field + "\" value=\"\">");
-							}
-							$(e).parent().prev("input").remove();
-							$(e).parent().remove();
+					remove: function(e) {
+						var item = $(e).prev();
+						if (confirm("{$removethisitem} " + item.val())) {
+							item.parent().remove();
 						}
 						return false;
-					}
+					},
 				}
 				</script>
-			';
+JSCODE;
 		}
 		return $this->controls_js($out);
 	}
-
 }
 
 ?>
