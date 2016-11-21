@@ -74,7 +74,7 @@ class AdminTagsHandler extends AdminHandler
 			))
 		);
 		
-		$aggregate = FormControlAggregate::create('selected_items')->set_selector("input[name='tags[]']")->label('0 Selected');
+		$aggregate = FormControlAggregate::create('selected_items')->set_selector("#tag_collection input")->label('0 Selected');
 		$aggr_wrap = FormControlWrapper::create('tag_controls_aggregate')
 			->add_class('aggregate_wrapper');
 		$aggr_wrap->append($aggregate);
