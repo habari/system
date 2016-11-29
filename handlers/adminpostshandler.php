@@ -98,7 +98,7 @@ class AdminPostsHandler extends AdminHandler
 			'after' => null,
 			'before' => null,
 			'tag' => null,
-			'search' => '',
+			'text' => '',
 		);
 		foreach ( $locals as $varname => $default ) {
 			$$varname = isset( $params[$varname] ) ? $params[$varname] : $default;
@@ -182,6 +182,10 @@ class AdminPostsHandler extends AdminHandler
 		if ( isset( $after ) ) {
 			$user_filters['after'] = $after;
 		}
+		if ( isset( $text ) ) {
+			$user_filters['criteria'] = $text;
+		}
+		
 		if ( isset( $tag ) ) {
 			if ( !is_array( $tag ) ) {
 				$tag = Utils::single_array( $tag );
@@ -189,9 +193,9 @@ class AdminPostsHandler extends AdminHandler
 			$user_filters['vocabulary'][Tags::vocabulary()->name . ':term_display'] = $tag;
 		}
 
-		if ( '' != $search ) {
-			$user_filters = array_merge( $user_filters, Posts::search_to_get( $search ) );
-		}
+		// if ( '' != $search ) {
+		// 	$user_filters = array_merge( $user_filters, Posts::search_to_get( $search ) );
+		// }
 		$this->theme->posts = Posts::get( array_merge( array( 'preset' => 'admin' ), $user_filters ) );
 
 		// setup keyword in search field if a status or type was passed in POST
