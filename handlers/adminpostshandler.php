@@ -185,7 +185,6 @@ class AdminPostsHandler extends AdminHandler
 		if ( isset( $text ) ) {
 			$user_filters['criteria'] = $text;
 		}
-		
 		if ( isset( $tag ) ) {
 			if ( !is_array( $tag ) ) {
 				$tag = Utils::single_array( $tag );
@@ -193,25 +192,7 @@ class AdminPostsHandler extends AdminHandler
 			$user_filters['vocabulary'][Tags::vocabulary()->name . ':term_display'] = $tag;
 		}
 
-		// if ( '' != $search ) {
-		// 	$user_filters = array_merge( $user_filters, Posts::search_to_get( $search ) );
-		// }
 		$this->theme->posts = Posts::get( array_merge( array( 'preset' => 'admin' ), $user_filters ) );
-
-		// setup keyword in search field if a status or type was passed in POST
-		$this->theme->search_args = '';
-		if ( $status != Post::status( 'any' ) ) {
-			$this->theme->search_args = 'status:' . Post::status_name( $status ) . ' ';
-		}
-		if ( $type != Post::type( 'any' ) ) {
-			$this->theme->search_args .= 'type:' . Post::type_name( $type ) . ' ';
-		}
-		if ( $user_id != 0 ) {
-			$this->theme->search_args .= 'author:' . User::get_by_id( $user_id )->username .' ';
-		}
-		// if ( $search != '' ) {
-		// 	$this->theme->search_args .= $search;
-		// }
 
 		$monthcts = Posts::get( array_merge( $user_filters, array( 'month_cts' => true, 'nolimit' => true ) ) );
 		$years = array();
