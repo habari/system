@@ -252,12 +252,15 @@ class AdminTagsHandler extends AdminHandler
 		// Create FormUI elements (list items) from the filtered tag list
 		$this->theme->max = Tags::vocabulary()->max_count();
 		$this->theme->min = Tags::vocabulary()->min_count();
-		$listitems = $this->get_tag_listitems();
-
-		// Get HTML from FormUI
+		
 		$output = '';
-		foreach($listitems as $listitem) {
-			$output .= $listitem->get($this->theme);
+		if(count($this->theme->tags) > 0) {
+			$listitems = $this->get_tag_listitems();
+
+			// Get HTML from FormUI
+			foreach($listitems as $listitem) {
+				$output .= $listitem->get($this->theme);
+			}
 		}
 
 		$ar = new AjaxResponse();
