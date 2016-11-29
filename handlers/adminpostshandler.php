@@ -209,9 +209,9 @@ class AdminPostsHandler extends AdminHandler
 		if ( $user_id != 0 ) {
 			$this->theme->search_args .= 'author:' . User::get_by_id( $user_id )->username .' ';
 		}
-		if ( $search != '' ) {
-			$this->theme->search_args .= $search;
-		}
+		// if ( $search != '' ) {
+		// 	$this->theme->search_args .= $search;
+		// }
 
 		$monthcts = Posts::get( array_merge( $user_filters, array( 'month_cts' => true, 'nolimit' => true ) ) );
 		$years = array();
@@ -417,15 +417,18 @@ class AdminPostsHandler extends AdminHandler
 		$params = $_POST['query'];
 
 		$fetch_params = array();
-		foreach($params as $param) {
-			$key = key($param);
-			$value = current($param);
-			if(isset($fetch_params[$key])) {
-				$fetch_params[$key] = Utils::single_array($fetch_params[$key]);
-				$fetch_params[$key][] = $value;
-			}
-			else {
-				$fetch_params[$key] = $value;
+
+		if( isset($params) && !empty($params) ) {
+			foreach($params as $param) {
+				$key = key($param);
+				$value = current($param);
+				if(isset($fetch_params[$key])) {
+					$fetch_params[$key] = Utils::single_array($fetch_params[$key]);
+					$fetch_params[$key][] = $value;
+				}
+				else {
+					$fetch_params[$key] = $value;
+				}
 			}
 		}
 
