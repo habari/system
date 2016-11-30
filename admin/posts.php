@@ -20,10 +20,11 @@ if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); }
 </div>
 
 <script type="text/javascript">
-	$('.posts').manager({updateURL: "<?php echo URL::get('admin_ajax', array('context' => 'posts')) ?>"});
-//	itemManage.updateURL = habari.url.ajaxUpdatePosts;
-//	itemManage.fetchURL = "<?php echo URL::get('admin_ajax', array('context' => 'posts')) ?>";
-//	itemManage.fetchReplace = $('.posts');
+	$('.posts').manager({after_update: "update_querystring", updateURL: "<?php echo URL::get('admin_ajax', array('context' => 'posts')) ?>"});
+
+	function update_querystring() {
+		window.history.replaceState(document.title, document.title, window.location.pathname + "?" + $('.posts').manager('nothing').data('querystring'));
+	}
 </script>
 
 <?php include('footer.php');?>

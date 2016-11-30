@@ -23,6 +23,25 @@
 				case 'init':
 					return $.fn.manager.init(opt);
 				case 'update':
+					// Create URL parameter list for this query
+					var tags = [];
+					var params = []
+					for(var param in parameters) {
+						for(var prop in parameters[param]) {
+							if(prop == 'tag') {
+								tags.push(parameters[param][prop]);
+							}
+							else {
+								params.push(prop + "=" + parameters[param][prop]);
+							}
+						}
+					}
+					if(tags.length > 0) {
+						params.push("tag=" + tags.join(','));
+					}
+					$(this).data('querystring', params.join('&'));
+
+					// Do the actual update
 					query = {query: parameters};
 					spinner.start();
 					habari_ajax.post(options.updateURL, query, self, function(){
