@@ -94,7 +94,6 @@ class AdminPostsHandler extends AdminHandler
 			'type' => null,
 			'status' => null,
 			'limit' => null,
-			'offset' => null,
 			'after' => null,
 			'before' => null,
 			'tag' => null,
@@ -170,9 +169,6 @@ class AdminPostsHandler extends AdminHandler
 		}
 		if ( isset( $limit ) ) {
 			$user_filters['limit'] = $limit;
-		}
-		if ( isset( $offset ) ) {
-			$user_filters['offset'] = $offset;
 		}
 		if ( isset( $author ) ) {
 			$user_filters['user_id'] = User::get($author)->id;
@@ -506,6 +502,7 @@ class AdminPostsHandler extends AdminHandler
 			'before',
 			'tag',
 			'page',
+			'limit',
 		));
 		return $result;
 	}
