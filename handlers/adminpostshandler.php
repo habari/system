@@ -105,17 +105,6 @@ class AdminPostsHandler extends AdminHandler
 			$$varname = isset( $params[$varname] ) ? $params[$varname] : $default;
 		}
 
-		// numbers submitted by HTTP forms are seen as strings
-		// but we want the integer value for use in Posts::get,
-		// so cast these two values to (int)
-		// We want the integer value of these
-		if (empty($type) && isset($_GET['type'])) {
-			$type = Post::type($_GET['type']);
-		}
-		if (empty($status) && isset($_GET['status'])) {
-			$status = Post::status($_GET['status']);
-		}
-
 		// if we're updating posts, let's do so:
 		if ( $do_update && isset( $post_ids ) ) {
 			$okay = true;
