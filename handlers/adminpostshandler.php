@@ -194,20 +194,6 @@ class AdminPostsHandler extends AdminHandler
 		}
 
 		$this->theme->posts = Posts::get( array_merge( array( 'preset' => 'admin' ), $user_filters ) );
-
-		$monthcts = Posts::get( array_merge( $user_filters, array( 'month_cts' => true, 'nolimit' => true ) ) );
-		$years = array();
-		foreach ( $monthcts as $month ) {
-			if ( isset( $years[$month->year] ) ) {
-				$years[$month->year][] = $month;
-			}
-			else {
-				$years[$month->year] = array( $month );
-			}
-		}
-
-		$this->theme->years = $years;
-
 	}
 
 	/**
