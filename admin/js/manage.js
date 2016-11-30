@@ -23,15 +23,19 @@
 				case 'init':
 					return $.fn.manager.init(opt);
 				case 'update':
-					// Create URL parameter list for this query
+					// Create URL parameter list for this query and save page on the way
 					var tags = [];
-					var params = []
+					var params = [];
+					$(this).data('page', 1);
 					for(var param in parameters) {
 						for(var prop in parameters[param]) {
 							if(prop == 'tag') {
 								tags.push(parameters[param][prop]);
 							}
 							else {
+								if(prop == 'page') {
+									$(this).data('page', parameters[param][prop]);
+								}
 								params.push(prop + "=" + parameters[param][prop]);
 							}
 						}

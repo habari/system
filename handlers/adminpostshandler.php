@@ -180,6 +180,10 @@ class AdminPostsHandler extends AdminHandler
 		}
 		if ( isset( $page ) ) {
 			$user_filters['page'] = $page;
+			$this->theme->pagenr = $page;
+		}
+		else {
+			$this->theme->pagenr = 1;
 		}
 
 		$this->theme->posts = Posts::get( array_merge( array( 'preset' => 'admin' ), $user_filters ) );
@@ -244,6 +248,10 @@ class AdminPostsHandler extends AdminHandler
 				'valuesURL' => URL::get('admin_ajax_facets', array('context' => 'facets', 'component' => 'values')),
 			));
 
+		$navigation = FormControlStatic::create('navigation')
+			->set_static('<a href="" id="nav_prev" class="navigation">' . _t('Previous page') . '</a>'
+			. '<a href="" id="nav_next" class="navigation">' . _t('Next page') . '</a>');
+
 		$aggregate = FormControlAggregate::create('selected_items')->set_selector('.post_item')->label('None Selected');
 
 		$page_actions = FormControlDropbutton::create('page_actions');
@@ -259,6 +267,7 @@ class AdminPostsHandler extends AdminHandler
 		
 		$form = new FormUI('manage');
 		$form->append($search);
+		$form->append($navigation);
 		$form->append($aggregate);
 		$form->append($page_actions);
 		$this->theme->form = $form;
