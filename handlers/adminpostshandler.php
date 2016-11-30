@@ -90,7 +90,7 @@ class AdminPostsHandler extends AdminHandler
 			'timestamp' => '',
 			'password_digest' => '',
 			'change' => '',
-			'user_id' => null,
+			'author' => null,
 			'type' => null,
 			'status' => null,
 			'limit' => null,
@@ -99,6 +99,7 @@ class AdminPostsHandler extends AdminHandler
 			'before' => null,
 			'tag' => null,
 			'text' => '',
+			'page' => 1,
 		);
 		foreach ( $locals as $varname => $default ) {
 			$$varname = isset( $params[$varname] ) ? $params[$varname] : $default;
@@ -173,8 +174,8 @@ class AdminPostsHandler extends AdminHandler
 		if ( isset( $offset ) ) {
 			$user_filters['offset'] = $offset;
 		}
-		if ( isset( $user_id ) ) {
-			$user_filters['user_id'] = $user_id;
+		if ( isset( $author ) ) {
+			$user_filters['user_id'] = User::get($author)->id;
 		}
 		if ( isset( $before ) ) {
 			$user_filters['before'] = $before;
@@ -190,6 +191,9 @@ class AdminPostsHandler extends AdminHandler
 				$tag = Utils::single_array( $tag );
 			}
 			$user_filters['vocabulary'][Tags::vocabulary()->name . ':term_display'] = $tag;
+		}
+		if ( isset( $page ) ) {
+			$user_filters['page'] = $page;
 		}
 
 		$this->theme->posts = Posts::get( array_merge( array( 'preset' => 'admin' ), $user_filters ) );
@@ -501,6 +505,7 @@ class AdminPostsHandler extends AdminHandler
 			'after',
 			'before',
 			'tag',
+			'page',
 		));
 		return $result;
 	}
