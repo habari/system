@@ -13,6 +13,26 @@ namespace Habari;
  */
 class AdminPostsHandler extends AdminHandler
 {
+	// Make certain handler_vars local with defaults
+	// Do not provide defaults for the vars included in the Posts::get(), those will get defaults from the preset
+	private $locals = array(
+		'do_update' => false,
+		'post_ids' => null,
+		'nonce' => '',
+		'timestamp' => '',
+		'password_digest' => '',
+		'change' => '',
+		'author' => null,
+		'type' => null,
+		'status' => null,
+		'limit' => null,
+		'after' => null,
+		'before' => null,
+		'tag' => null,
+		'text' => '',
+		'page' => 1,
+	);
+
 	/**
 	 * Handles GET requests of the publish page.
 	 */
@@ -81,26 +101,7 @@ class AdminPostsHandler extends AdminHandler
 	 */
 	private function fetch_posts( $params = array() )
 	{
-		// Make certain handler_vars local with defaults, and add them to the theme output
-		// Do not provide defaults for the vars included in the Posts::get(), those will get defaults from the preset
-		$locals = array(
-			'do_update' => false,
-			'post_ids' => null,
-			'nonce' => '',
-			'timestamp' => '',
-			'password_digest' => '',
-			'change' => '',
-			'author' => null,
-			'type' => null,
-			'status' => null,
-			'limit' => null,
-			'after' => null,
-			'before' => null,
-			'tag' => null,
-			'text' => '',
-			'page' => 1,
-		);
-		foreach ( $locals as $varname => $default ) {
+		foreach ( $this->locals as $varname => $default ) {
 			$$varname = isset( $params[$varname] ) ? $params[$varname] : $default;
 		}
 
@@ -184,7 +185,7 @@ class AdminPostsHandler extends AdminHandler
 		}
 		if ( isset( $tag ) ) {
 			if ( !is_array( $tag ) ) {
-				$tag = Utils::single_array( $tag );
+				$tag = explode(',', $tag); // also makes $tag an array in every case
 			}
 			$user_filters['vocabulary'][Tags::vocabulary()->name . ':term_display'] = $tag;
 		}
@@ -224,13 +225,42 @@ class AdminPostsHandler extends AdminHandler
 	 */
 	public function post_posts()
 	{
-		$this->fetch_posts();
+		// Simply pass $_GET to the function, it's save as only values we understand will be read
+		$this->fetch_posts($_GET);
 	
-		// Create search controls and global buttons for the manage page
-		$search_value = '';
-		if(isset($_GET['type'])) {
-			$search_value .= 'type: ' . Post::type_name($_GET['type']);
+		// Check which values have been passed and translate them for the faceted seach
+		$search_values = array();
+		foreach ( $this->locals as $varname => $default ) {
+			if(isset($_GET[$varname])) {
+				switch($varname) {
+					case 'type':
+						$search_values[] = 'type: ' . Post::type_name($_GET['type']);
+						break;
+					case 'status':
+						$search_values[] = 'status: ' . Post::status_name($_GET['status']);
+						break;
+					case 'tag':
+						$tags = explode(',', $_GET['tag']);
+						foreach($tags as $tag) {
+							$search_values[] = 'tag: ' . $tag;
+						}
+						break;
+					case 'author':
+						$search_values[] = 'author: ' . User::get($_GET['author'])->username;
+						break;
+					default:
+						$search_values[] = $varname . ': ' . $_GET[$varname];
+				}
+			}
 		}
+		if(count($search_values) > 0) {
+			$search_value = implode(' ', $search_values);
+		}
+		else {
+			$search_value = '';
+		}
+
+		// Create search controls and global buttons for the manage page
 		$search = FormControlFacet::create('search');
 		$search->set_value($search_value)
 			->set_property('data-facet-config', array(
