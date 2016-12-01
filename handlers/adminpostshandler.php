@@ -244,8 +244,8 @@ class AdminPostsHandler extends AdminHandler
 		$search->set_value($search_value)
 			->set_property('data-facet-config', array(
 				'onsearch' => '$(".posts").manager("update", self.data("visualsearch").searchQuery.facets());',
-				'facetsURL' => URL::get('admin_ajax_facets', array('context' => 'facets', 'component' => 'facets')),
-				'valuesURL' => URL::get('admin_ajax_facets', array('context' => 'facets', 'component' => 'values')),
+				'facetsURL' => URL::get('admin_ajax_facets', array('context' => 'facets', 'page' => 'manage', 'component' => 'facets')),
+				'valuesURL' => URL::get('admin_ajax_facets', array('context' => 'facets', 'page' => 'manage', 'component' => 'values')),
 			));
 
 		$navigation = FormControlStatic::create('navigation')
@@ -504,7 +504,7 @@ class AdminPostsHandler extends AdminHandler
 
 	/**
 	 * Plugin hook filter for the facet list
-	 * @param array $facets An array of facets for manage posts search
+	 * @param array $facets An array of facets for the current faceted search
 	 * @return array The array of facets
 	 */
 	public static function filter_facets($facets) {
@@ -558,23 +558,5 @@ class AdminPostsHandler extends AdminHandler
 		return $values;
 	}
 
-	/**
-	 * Handle ajax requests for facets on the manage posts page
-	 * @param $handler_vars
-	 */
-	public function ajax_facets($handler_vars) {
 
-		switch($handler_vars['component']) {
-			case 'facets':
-				$result = Plugins::filter('facets', array());
-				break;
-			case 'values':
-				$result = Plugins::filter('facetvalues', array(), $_POST['facet'], $_POST['q']);
-				break;
-		}
-
-		$ar = new AjaxResponse();
-		$ar->data = $result;
-		$ar->out();
-	}
 }

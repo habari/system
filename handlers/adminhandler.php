@@ -222,6 +222,36 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
+	 * Handle ajax requests for facets on admin pages
+	 * @param $handler_vars
+	 */
+	public function ajax_facets($handler_vars) {
+		// As we grabbed the facet request in the global AdminHandler, determine which Handler should actually be used for that page
+		// The handlers need to be instantiated so their methods can be used as hooks and this was the only way that worked
+		switch($handler_vars['page']) {
+			case 'manage':
+				$handler = new AdminPostsHandler();
+				break;
+			case 'tags':
+				$handler = new AdminTagsHandler();
+				break;
+		}
+
+		switch($handler_vars['component']) {
+			case 'facets':
+				$result = Plugins::filter('facets', array(), $handler_vars['page']);
+				break;
+			case 'values':
+				$result = Plugins::filter('facetvalues', array(), $_POST['facet'], $_POST['q'], $handler_vars['page']);
+				break;
+		}
+
+		$ar = new AjaxResponse();
+		$ar->data = $result;
+		$ar->out();
+	}
+
+	/**
 	* Handles get requests for the system information page.
 	*/
 	public function get_sysinfo()
@@ -581,7 +611,6 @@ class AdminHandler extends ActionHandler
 				$result = true;
 				break;
 			case 'ajax_facets':
-			case 'ajax_tag_facets':
 				$result = true;
 				break;
 			default:

@@ -14,18 +14,18 @@ namespace Habari;
 class AdminTagsHandler extends AdminHandler
 {
 	// Use an array to store translated facet strings so we have them in only one place
-	private $facets = array();
-	private $facet_values = array();
-	private $orderby_translate = array();
+	private static $facets = array();
+	private static $facet_values = array();
+	private static $orderby_translate = array();
 
 	public function __construct()
 	{
-		$this->facets = array(
+		self::$facets = array(
 			_t('More than .. posts') => 'morethan',
 			_t('Less than .. posts') => 'lessthan',
 			_t('Order by') => 'orderby',
 		);
-		$this->facet_values = array(
+		self::$facet_values = array(
 			'orderby' => array(
 				_t('Publication date (descending)') => 'pubdate_desc',
 				_t('Publication date (ascending)') => 'pubdate_asc',
@@ -36,7 +36,7 @@ class AdminTagsHandler extends AdminHandler
 			),
 		);
 		// We could avoid "translating" for sure, but it adds an additional layer of security, so we keep it
-		$this->orderby_translate = array(
+		self::$orderby_translate = array(
 			'pubdate' => 'pubdate',
 			'count' => 'count',
 			'alphabetical' => 'term_display',
@@ -69,8 +69,8 @@ class AdminTagsHandler extends AdminHandler
 			->set_property('data-facet-config', array(
 				// #tag_collection is the object the manager function works on - the corresponding AJAX function will replace its content
 				'onsearch' => 'deselect_all(); $("#tag_collection").manager("update", self.data("visualsearch").searchQuery.facets());',
-				'facetsURL' => URL::get('admin_ajax_tag_facets', array('context' => 'tag_facets', 'component' => 'facets')),
-				'valuesURL' => URL::get('admin_ajax_tag_facets', array('context' => 'tag_facets', 'component' => 'values')),
+				'facetsURL' => URL::get('admin_ajax_facets', array('context' => 'facets', 'page' => 'tags', 'component' => 'facets')),
+				'valuesURL' => URL::get('admin_ajax_facets', array('context' => 'facets', 'page' => 'tags', 'component' => 'values')),
 			))
 		);
 		
@@ -228,7 +228,7 @@ class AdminTagsHandler extends AdminHandler
 				$key = key($param);
 				// Revert translation
 				if($key != 'text') {
-					$key = $this->facets[$key];
+					$key = self::$facets[$key];
 				}
 				$value = current($param);
 				if(array_key_exists($key, $fetch_params)) {
@@ -246,9 +246,9 @@ class AdminTagsHandler extends AdminHandler
 		$min = (array_key_exists('morethan', $fetch_params)) ? $fetch_params['morethan'] + 1 : 0;
 		$max = (array_key_exists('lessthan', $fetch_params)) ? $fetch_params['lessthan'] - 1 : null;
 		$orderby_code = (array_key_exists('orderby', $fetch_params)) ? $fetch_params['orderby'] : null;
-		$orderby = isset($orderby_code) ? explode('_', $this->facet_values['orderby'][$orderby_code]) : ['alphabetical', 'asc'];
+		$orderby = isset($orderby_code) ? explode('_', self::$facet_values['orderby'][$orderby_code]) : ['alphabetical', 'asc'];
 
-		$this->theme->tags = Tags::get_by_frequency(null, null, $min, $max, $search, $this->orderby_translate[$orderby[0]], $orderby[1] == 'asc');
+		$this->theme->tags = Tags::get_by_frequency(null, null, $min, $max, $search, self::$orderby_translate[$orderby[0]], $orderby[1] == 'asc');
 		// Create FormUI elements (list items) from the filtered tag list
 		$this->theme->max = Tags::vocabulary()->max_count();
 		$this->theme->min = Tags::vocabulary()->min_count();
@@ -269,23 +269,23 @@ class AdminTagsHandler extends AdminHandler
 	}
 
 	/**
-	 * Handle ajax requests for facets
-	 * @param $handler_vars
+	 * Plugin hook filter for the facet list
+	 * @param array $facets An array of facets for the current faceted search
+	 * @return array The array of facets
 	 */
-	public function ajax_tag_facets($handler_vars) {
-		switch($handler_vars['component']) {
-			case 'facets':
-				// $result = Plugins::filter('facets', array(), $handler_vars['subject']);
-				$result = array_keys($this->facets);
-				break;
-			case 'values':
-				$result = ( isset($this->facet_values[$this->facets[$_POST['facet']]]) ? array_keys($this->facet_values[$this->facets[$_POST['facet']]]) : [] );
-				break;
-		}
+	public static function filter_facets($facets) {
+		return array_merge($facets, array_keys(self::$facets));
+	}
 
-		$ar = new AjaxResponse();
-		$ar->data = $result;
-		$ar->out();
+	/**
+	 * Plugin hook filter for the values of a faceted search
+	 * @param array $values The incoming array of values for this facet
+	 * @param string $facet The selected facet
+	 * @param string $q A string filter for facet values
+	 * @return array The returned list of possible values
+	 */
+	public static function filter_facetvalues($values, $facet, $q) {
+		return array_merge( $values, ( isset(self::$facet_values[self::$facets[$facet]]) ? array_keys(self::$facet_values[self::$facets[$facet]]) : [] ) );
 	}
 }
 ?>
