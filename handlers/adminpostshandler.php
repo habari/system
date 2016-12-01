@@ -508,7 +508,7 @@ class AdminPostsHandler extends AdminHandler
 	 * @return array The array of facets
 	 */
 	public static function filter_facets($facets) {
-		$result = array_merge($facets, array(
+		return array_merge($facets, array(
 			'type',
 			'status',
 			'author',
@@ -518,17 +518,16 @@ class AdminPostsHandler extends AdminHandler
 			'page',
 			'limit',
 		));
-		return $result;
 	}
 
 	/**
 	 * Plugin hook filter for the values of a faceted search
-	 * @param array $values The incoming array of values for this facet
+	 * @param array $other_values The incoming array of values for this facet
 	 * @param string $facet The selected facet
 	 * @param string $q A string filter for facet values
 	 * @return array The returned list of possible values
 	 */
-	public static function filter_facetvalues($values, $facet, $q) {
+	public static function filter_facetvalues($other_values, $facet, $q) {
 		switch($facet) {
 			case 'type':
 				$values = array_keys(Post::list_active_post_types());
@@ -555,7 +554,7 @@ class AdminPostsHandler extends AdminHandler
 				$values = array($q);
 				break;
 		}
-		return $values;
+		return array_merge($other_values, $values);
 	}
 
 
