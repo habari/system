@@ -1123,8 +1123,11 @@ class Utils
 	*
 	* @return string The escaped string
 	*/
-	public static function htmlspecialchars( $string, $quote_flag = ENT_COMPAT | ENT_HTML5 | ENT_SUBSTITUTE, $encoding = 'UTF-8', $decode = true, $double_encode = true )
+	public static function htmlspecialchars( $string, $quote_flag = null, $encoding = 'UTF-8', $decode = true, $double_encode = true )
 	{
+		if($quote_flag === null) {
+			$quote_flag = ENT_COMPAT | ENT_HTML5 | ENT_SUBSTITUTE;
+		}
 		if(is_array($string)) {
 			if( $decode ) {
 				return array_map(
