@@ -948,7 +948,7 @@ class Utils
 		}
 		else {
 			$additional_headers = array();
-			foreach ( $headers as $header_key => $header_value ) {
+			foreach ( $mail['headers'] as $header_key => $header_value ) {
 				$header_key = trim( $header_key );
 				$header_value = trim( $header_value );
 				if ( strpos( $header_key . $header_value, "\n" ) === false ) {
@@ -957,7 +957,7 @@ class Utils
 			}
 			$additional_headers = implode( "\r\n", $additional_headers );
 		}
-		return mail( $to, $subject, $message, $additional_headers, $parameters );
+		return mail( $mail['to'], $mail['subject'], $mail['message'], $additional_headers, $mail['parameters'] );
 	}
 
 	/**
