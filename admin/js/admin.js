@@ -117,6 +117,27 @@ var spinner = {
 
 // THE MENU
 var theMenu = {
+    touchsupport: function () {
+        // Open menu on tap, close on next tap, nothing else
+        $('#menubutton a').tap(function(e) {
+            $('#menulist').toggleClass('hovering');
+            e.preventDefault();
+        });
+
+        // we are in menulist
+        $('#menulist li a').tap(function(e) {
+            //if submenu exists open on tap, close on next tap
+            if ($(this).closest("li").children("ul").length) {
+				// remove hovering class on other submenus at same level,
+				// prevents strange menu-cascades
+				$(this).closest("ul").children("li").removeClass('hovering');
+				// now add/remove hovering class to current li item to display submenu
+                $(this).closest("li").toggleClass('hovering');
+                e.preventDefault();
+            }
+        });
+    },
+
 	init: function() {
 		// Open menu on Q
 		$.hotkeys.add('q', {propagate:true, disableInInput: true}, function(){
@@ -394,7 +415,6 @@ var labeler = {
 };
 
 
-// EDITOR INTERACTION
 habari.editor = {
 	insertSelection: function(value) {
 		var contentel = $('#content')[0];
@@ -444,9 +464,10 @@ habari.editor = {
 		}
 	}
 };
-
-
 // ON PAGE STARTUP
+
+
+// EDITOR INTERACTION
 var tagskeyup;
 
 $(window).load( function() {
@@ -458,6 +479,7 @@ $(window).load( function() {
 
 $(document).ready(function(){
 	theMenu.init();
+    theMenu.touchsupport();
 	helpToggler.init();
 	findChildren();
 	labeler.init();
