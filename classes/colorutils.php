@@ -32,7 +32,7 @@ class ColorUtils
 	{
 		$hex_string = ltrim( $hex_string, '#' );
 		if ( ! preg_match( '/^[0-9a-f]+$/i', $hex_string ) ) {
-			return Error::raise( _t( 'Not a valid hex color.' ) );
+			return HabariError::raise( _t( 'Not a valid hex color.' ) );
 		}
 		
 		$normalized = '';
@@ -54,7 +54,7 @@ class ColorUtils
 				$normalized = $hex_string . str_repeat( '0', 6 - strlen( $hex_string ) );
 				break;
 			default:
-				return Error::raise( _t( 'Not a valid color format.' ) );
+				return HabariError::raise( _t( 'Not a valid color format.' ) );
 		}
 		
 		return self::rgb_rgbarr(

@@ -61,7 +61,7 @@ class Site
 				self::$scriptname = $_SERVER['PHP_SELF'];
 				break;
 			default:
-				Error::raise( _t( 'Could not determine script name.' ) );
+				HabariError::raise( _t( 'Could not determine script name.' ) );
 				die();
 		}
 		return self::$scriptname;

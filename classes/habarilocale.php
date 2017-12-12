@@ -145,11 +145,11 @@ class HabariLocale
 	private static function load_file( $domain, $file )
 	{
 		if ( ! file_exists( $file ) ) {
-			Error::raise( _t( 'No translations found for locale %s, domain %s!', array( self::$locale, $domain ) ) );
+			HabariError::raise( _t( 'No translations found for locale %s, domain %s!', array( self::$locale, $domain ) ) );
 			return false;
 		}
 		if ( filesize( $file ) < 24 ) {
-			Error::raise( _t( 'Invalid .MO file for locale %s, domain %s!', array( self::$locale, $domain ) ) );
+			HabariError::raise( _t( 'Invalid .MO file for locale %s, domain %s!', array( self::$locale, $domain ) ) );
 			return false;
 		}
 
@@ -169,13 +169,13 @@ class HabariLocale
 				$little_endian = false;
 				break;
 			default:
-				Error::raise( _t( 'Invalid magic number 0x%08x in %s!', array( $magic, $file ) ) );
+				HabariError::raise( _t( 'Invalid magic number 0x%08x in %s!', array( $magic, $file ) ) );
 				return false;
 		}
 
 		$revision = substr( $data, 4, 4 );
 		if ( $revision != 0 ) {
-			Error::raise( _t( 'Unknown revision number %d in %s!', array( $revision, $file ) ) );
+			HabariError::raise( _t( 'Unknown revision number %d in %s!', array( $revision, $file ) ) );
 			return false;
 		}
 
@@ -186,7 +186,7 @@ class HabariLocale
 			$header = unpack( "{$l}1msgcount/{$l}1msgblock/{$l}1transblock", $header );
 
 			if ( $header['msgblock'] + ($header['msgcount'] - 1 ) * 8 > filesize( $file ) ) {
-				Error::raise( _t( 'Message count (%d) out of bounds in %s!', array( $header['msgcount'], $file ) ) );
+				HabariError::raise( _t( 'Message count (%d) out of bounds in %s!', array( $header['msgcount'], $file ) ) );
 				return false;
 			}
 

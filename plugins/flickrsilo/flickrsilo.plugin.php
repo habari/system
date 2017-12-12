@@ -203,7 +203,7 @@ class Flickr extends flickrAPI
 		}
 
 		$xml = $this->call( 'flickr.photosets.getList', $params );
-		if ( Error::is_error( $xml ) ){
+		if ( HabariError::is_error( $xml ) ){
 			throw $xml;
 		}
 		return $xml;
@@ -213,7 +213,7 @@ class Flickr extends flickrAPI
 	{
 		$params = array( 'photoset_id' => $photoset_id );
 		$xml = $this->call( 'flickr.photosets.getInfo', $params );
-		if ( Error::is_error( $xml ) ){
+		if ( HabariError::is_error( $xml ) ){
 			throw $xml;
 		}
 		return $xml;
@@ -228,7 +228,7 @@ class Flickr extends flickrAPI
 	{
 		$params = array( 'photoset_id' => $photoset_id );
 		$xml = $this->call( 'flickr.photosets.getPhotos', $params );
-		if ( Error::is_error( $xml ) ){
+		if ( HabariError::is_error( $xml ) ){
 			throw $xml;
 		}
 		return $xml;
@@ -254,7 +254,7 @@ class Flickr extends flickrAPI
 
 		$xml = $this->call( 'flickr.photos.recentlyUpdated', $params );
 
-		if ( Error::is_error( $xml ) ){
+		if ( HabariError::is_error( $xml ) ){
 			throw $xml;
 		}
 		return $xml;
@@ -273,7 +273,7 @@ class Flickr extends flickrAPI
 
 		$xml = $this->call( 'flickr.photos.search', $params );
 
-		if ( Error::is_error( $xml ) ){
+		if ( HabariError::is_error( $xml ) ){
 			throw $xml;
 		}
 		return $xml;
@@ -298,7 +298,7 @@ class Flickr extends flickrAPI
 
 		$xml = $this->call( 'flickr.photos.search', $params );
 
-		if ( Error::is_error( $xml ) ){
+		if ( HabariError::is_error( $xml ) ){
 			throw $xml;
 		}
 		return $xml;
@@ -318,7 +318,7 @@ class Flickr extends flickrAPI
 
 		$xml = $this->call( 'flickr.photos.search', $params );
 
-		if ( Error::is_error( $xml ) ){
+		if ( HabariError::is_error( $xml ) ){
 			throw $xml;
 		}
 		return $xml;
@@ -346,7 +346,7 @@ class Flickr extends flickrAPI
 
 		$xml = $this->call( 'flickr.photos.getInfo', $params );
 
-		if ( Error::is_error( $xml ) ){
+		if ( HabariError::is_error( $xml ) ){
 			throw $xml;
 		}
 
@@ -402,7 +402,7 @@ class Flickr extends flickrAPI
 		// call the upload method.
 		$xml = $this->call( 'upload', $params );
 
-		if ( Error::is_error( $xml ) ){
+		if ( HabariError::is_error( $xml ) ){
 			throw $xml;
 		}
 
@@ -429,7 +429,7 @@ class Flickr extends flickrAPI
 		}
 
 		$xml = $this->call( 'flickr.photos.upload.checkTickets', $params );
-		if ( Error::is_error( $xml ) ){
+		if ( HabariError::is_error( $xml ) ){
 			throw $xml;
 		}
 

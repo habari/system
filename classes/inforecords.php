@@ -203,7 +203,7 @@ abstract class InfoRecords implements URLProperties
 			WHERE ' . $this->_key_name . ' = ?',
 			array( $this->_key_value )
 		);
-		if ( Error::is_error( $result ) ) {
+		if ( HabariError::is_error( $result ) ) {
 			$result->out();
 			return false;
 		}
@@ -256,7 +256,7 @@ abstract class InfoRecords implements URLProperties
 					);
 				}
 
-				if ( Error::is_error( $result ) ) {
+				if ( HabariError::is_error( $result ) ) {
 					$result->out();
 				}
 				$this->__inforecord_array[$name] = array('value'=>$value);
