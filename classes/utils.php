@@ -426,7 +426,7 @@ class Utils
 					case 'md5':
 						return self::$algo( $password, $hash );
 					default:
-						Error::raise( _t( 'Unsupported digest algorithm "%s"', array( $algo ) ) );
+						HabariError::raise( _t( 'Unsupported digest algorithm "%s"', array( $algo ) ) );
 						return false;
 				}
 			}
@@ -436,7 +436,7 @@ class Utils
 			}
 		}
 		else {
-			Error::raise( _t( 'Invalid hash' ) );
+			HabariError::raise( _t( 'Invalid hash' ) );
 		}
 	}
 
@@ -497,7 +497,7 @@ class Utils
 		else { // verify
 			// is this a SSHA hash?
 			if ( ! substr( $hash, 0, strlen( $marker ) ) == $marker ) {
-				Error::raise( _t( 'Invalid hash' ) );
+				HabariError::raise( _t( 'Invalid hash' ) );
 				return false;
 			}
 			// cut off {SSHA} marker
@@ -536,7 +536,7 @@ class Utils
 		}
 		else { // verify
 			if ( ! substr( $hash, 0, strlen( $marker ) ) == $marker ) {
-				Error::raise( _t( 'Invalid hash' ) );
+				HabariError::raise( _t( 'Invalid hash' ) );
 				return false;
 			}
 			$hash = substr( $hash, strlen( $marker ) );

@@ -406,7 +406,7 @@ class InputFilter
 					return preg_match( '/^[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](?:Z|[\+-][0-2][0-9]:[0-5][0-9])$/', $v );
 					break;
 				default:
-					Error::raise( _t( 'Unknown attribute type "%s" in %s', array( $type, __CLASS__ ) ) );
+					HabariError::raise( _t( 'Unknown attribute type "%s" in %s', array( $type, __CLASS__ ) ) );
 					return false;
 			}
 		}

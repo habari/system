@@ -57,7 +57,7 @@ SuperGlobal::process_gps();
 
 // Use our own error reporting class.
 if ( !defined( 'SUPPRESS_ERROR_HANDLER' ) ) {
-	Error::handle_errors();
+	HabariError::handle_errors();
 }
 
 /**

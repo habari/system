@@ -45,7 +45,7 @@ class UserThemeHandler extends ActionHandler
 				$this->theme->$action_method();
 			}
 		}
-		catch( Error $e ) {
+		catch( HabariError $e ) {
 			EventLog::log( $e->humane_error(), 'error', 'theme', 'habari', print_r( $e, 1 ) );
 			Session::error( $e->humane_error() ); //Should we display any error here?
 			if ( DEBUG ) {
@@ -73,7 +73,7 @@ class UserThemeHandler extends ActionHandler
 		try {
 			$this->theme->display( $template_name );
 		}
-		catch( Error $e ) {
+		catch( HabariError $e ) {
 			EventLog::log( $e->humane_error(), 'error', 'theme', 'habari', print_r( $e, 1 ) );
 		}
 	}

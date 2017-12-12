@@ -23,7 +23,7 @@ class RPCClient
 	function __construct( $url, $method, $params )
 	{
 		if ( ! function_exists( 'xmlrpc_encode_request' ) ) {
-			return Error::raise( _t( 'xmlrpc extension not found' ) );
+			return HabariError::raise( _t( 'xmlrpc extension not found' ) );
 		}
 		$this->url = $url;
 		$this->method = $method;

@@ -77,7 +77,7 @@ class HTMLTokenizer
 					$this->state = $this->parse_pi();
 					break;
 				default:
-					Error::raise( _t( 'Invalid state %d in %s->parse()', array( $this->state, __CLASS__ ) ) );
+					HabariError::raise( _t( 'Invalid state %d in %s->parse()', array( $this->state, __CLASS__ ) ) );
 					$this->state = self::$STATE_FINISHED;
 					break;
 			}
